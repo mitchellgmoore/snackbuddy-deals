@@ -59,7 +59,13 @@ def build_card_html(deal):
     percent_off = float(deal.get("percent_off", 0.0))
     image_url = html.escape(deal.get("image_url", ""))
     retailer_url = html.escape(deal.get("retailer_url", "#"))
-    availability = html.escape(deal.get("availability", ""))
+    availability = deal.get("availability", "")
+
+    # Normalise availability to a clean string
+    if not isinstance(availability, str):
+        availability = ""
+    else:
+        availability = availability.strip()
 
     badge_label, badge_class = get_badge_label_and_class(percent_off)
 
