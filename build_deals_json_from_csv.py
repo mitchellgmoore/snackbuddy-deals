@@ -13,16 +13,23 @@ def build_product_name(row: pd.Series) -> str:
     """
     Build a readable product name like:
     'Clif Builders Protein Bar Chocolate Mint (1ct)'
+    But avoid double brand names like 'Clif Clif Builders ...'
     """
     parts = []
 
     brand = row.get("brand")
-    if isinstance(brand, str) and brand.strip():
-        parts.append(brand.strip())
-
     base_name = row.get("product_name")
-    if isinstance(base_name, str) and base_name.strip():
-        parts.append(base_name.strip())
+
+    brand_str = (brand or "").strip()
+    base_str = (base_name or "").strip()
+
+    if brand_str:
+        # Only add brand if base_name doesn't already start with it (case-insensitive)
+        if not base_str.lower().startswith(brand_str.lower()):
+            parts.append(brand_str)
+
+    if base_str:
+        parts.append(base_str)
 
     flavor = row.get("flavor")
     if isinstance(flavor, str) and flavor.strip():
@@ -34,11 +41,9 @@ def build_product_name(row: pd.Series) -> str:
         if pack_size and not pd.isna(pack_size):
             parts.append(f"({int(pack_size)}ct)")
     except Exception:
-        # If pack_size is weird, just skip it
         pass
 
     return " ".join(parts) if parts else "Unknown product"
-
 
 def get_percent_off(row):
     pct_off_raw = row.get("pct_off")
@@ -155,6 +160,9 @@ def main():
         deal = {
             "product_name": product_name,
             "retailer": row.get("retailer", ""),
+            # Top-level grouping: Food / Drinks
+            "section": row.get("section", ""),
+            # Sub-category within that section: bars, chips, energy drinks, etc.
             "category": row.get("category", ""),
             "old_price": old_price,
             "new_price": new_price,

@@ -54,7 +54,7 @@ def retailer_classes(retailer: str):
 
 def normalise_availability(raw):
     if not isinstance(raw, str):
-        return "", ""
+        return "Check store availability", "availability check"
     val = raw.strip().lower()
     if val == "in_store":
         return "In-store", "availability in-store"
@@ -62,7 +62,8 @@ def normalise_availability(raw):
         return "In-store & online", "availability both"
     if val == "online_only":
         return "Online only", "availability online-only"
-    return "", "availability"
+    # Unknown / blank / other → generic helpful message
+    return "Check store availability", "availability check"
 
 
 def get_badge(deal):
@@ -104,6 +105,15 @@ def build_card_html(deal):
     percent_off = float(deal.get("percent_off", 0.0))
     image_url = html.escape(deal.get("image_url", ""))
     retailer_url = html.escape(deal.get("retailer_url", "#"))
+
+    # Normalized values for filters (used in data-* attributes)
+    section_raw = (deal.get("section") or "").strip().lower()
+    category_raw = (deal.get("category") or "").strip().lower()
+    retailer_raw = (deal.get("retailer") or "").strip().lower()
+
+    section_attr = html.escape(section_raw)
+    category_attr = html.escape(category_raw)
+    retailer_attr = html.escape(retailer_raw)
 
     # Retailer specific styling
     pill_class, button_class = retailer_classes(deal.get("retailer", ""))
@@ -158,7 +168,7 @@ def build_card_html(deal):
         badge_html = f"<div class='{badge_class}'>{badge_label}</div>"
 
     return f"""
-    <div class="card">
+    <div class="card" data-section="{section_attr}" data-category="{category_attr}" data-retailer="{retailer_attr}">
         <div class="card-image-wrap">
             <img src="{image_url}" alt="{name}" class="card-image"/>
             {pack_pill_html}
@@ -185,7 +195,6 @@ def build_card_html(deal):
         </div>
     </div>
     """
-
 
 def build_page_html(deals):
     total = len(deals)
@@ -225,6 +234,7 @@ def build_page_html(deals):
             --shadow-soft: 0 8px 20px rgba(15, 23, 42, 0.08);
             --radius-lg: 16px;
             --radius-pill: 999px;
+            --navy: #0f172a;
         }}
 
         * {{
@@ -241,55 +251,281 @@ def build_page_html(deals):
 
         .page {{
             max-width: 1100px;
-            margin: 24px auto 40px auto;
-            padding: 0 16px;
+            margin: 0 auto 40px auto;
+            padding: 0 16px 40px 16px;
         }}
 
-        .page-header {{
-            margin-bottom: 16px;
+        /* ============================ */
+        /* SECTION 1A: SITE HEADER NAV  */
+        /* ============================ */
+
+        .sb-header {{
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            background-color: #ffffff;
+            border-bottom: 1px solid var(--border-subtle);
         }}
 
-        .page-title {{
-            font-size: 26px;
-            font-weight: 700;
-            margin: 0 0 4px 0;
-        }}
-
-        .page-subtitle {{
-            font-size: 14px;
-            color: var(--text-muted);
-            margin: 0 0 6px 0;
-        }}
-
-        .timestamp {{
-            font-size: 12px;
-            color: var(--text-muted);
-        }}
-
-        .controls-row {{
+        .sb-header-inner {{
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 10px 16px;
             display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 12px;
+        }}
+
+        .sb-header-left {{
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }}
+
+        .sb-logo {{
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background-color: #e5f3ff; /* placeholder if no logo image yet */
+        }}
+
+        .sb-header-title {{
+            font-weight: 600;
+            font-size: 18px;
+            color: var(--text-main);
+        }}
+
+        .sb-menu-button {{
+            border: none;
+            background: transparent;
+            font-size: 20px;
+            cursor: pointer;
+        }}
+
+        /* Slide-out nav drawer */
+
+        .sb-nav-backdrop {{
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.35);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.18s ease-out;
+            z-index: 39;
+        }}
+
+        .sb-nav-backdrop.open {{
+            opacity: 1;
+            pointer-events: auto;
+        }}
+
+        .sb-nav-drawer {{
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100vh;
+            width: 260px;
+            background: #ffffff;
+            box-shadow: -8px 0 20px rgba(15,23,42,0.25);
+            transform: translateX(100%);
+            transition: transform 0.2s ease-out;
+            z-index: 40;
+            display: flex;
+            flex-direction: column;
+        }}
+
+        .sb-nav-drawer.open {{
+            transform: translateX(0%);
+        }}
+
+        .sb-nav-inner {{
+            padding: 16px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            height: 100%;
+        }}
+
+        .sb-nav-header {{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }}
+
+        .sb-nav-title {{
+            font-weight: 600;
+            font-size: 18px;
+        }}
+
+        .sb-nav-close {{
+            border: none;
+            background: transparent;
+            font-size: 20px;
+            cursor: pointer;
+        }}
+
+        .sb-nav-link {{
+            display: block;
+            padding: 8px 0;
+            font-size: 14px;
+            color: var(--text-main);
+            text-decoration: none;
+        }}
+
+        .sb-nav-link:hover {{
+            color: var(--blue);
+        }}
+
+        .sb-nav-footer {{
+            margin-top: auto;
             font-size: 12px;
             color: var(--text-muted);
+        }}
+
+        /* ============================ */
+        /* SECTION 1B: HERO BANNER      */
+        /* ============================ */
+
+        .sb-hero {{
+            margin-top: 8px;
+        }}
+
+        .sb-hero-bg {{
+            max-width: 1100px;
+            margin: 0 auto;
+            border-radius: 18px;
+            padding: 16px 18px;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0ea5e9, #10b981); /* blue → green */
+            color: #ffffff;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.25);
+        }}
+
+        /* subtle pattern using CSS only */
+        .sb-hero-pattern {{
+            position: absolute;
+            inset: 0;
+            opacity: 0.12;
+            background-image:
+                radial-gradient(circle at 0 0, rgba(255,255,255,0.4) 1px, transparent 1px),
+                radial-gradient(circle at 20px 20px, rgba(255,255,255,0.2) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+        }}
+
+        .sb-hero-content {{
+            position: relative;
+            z-index: 1;
+        }}
+
+        .sb-hero-kicker {{
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }}
+
+        .sb-hero-title {{
+            font-weight: 700;
+            font-size: 20px;
+            margin: 4px 0;
+        }}
+
+        @media (min-width: 768px) {{
+            .sb-hero-title {{
+                font-size: 24px;
+            }}
+        }}
+
+        .sb-hero-subtitle {{
+            font-size: 14px;
+            margin: 4px 0 10px;
+            opacity: 0.95;
+        }}
+
+        .sb-hero-cta {{
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: var(--radius-pill);
+            background-color: var(--navy); /* dark navy CTA */
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+        }}
+
+        .sb-hero-cta:hover {{
+            filter: brightness(1.02);
+        }}
+
+        /* =================================== */
+        /* SECTION 1C: SORT + COUNT UTIL ROW   */
+        /* =================================== */
+
+        .sb-utility-row {{
+            max-width: 1100px;
+            margin: 12px auto 12px;
+            padding: 0 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }}
+
+        @media (min-width: 640px) {{
+            .sb-utility-row {{
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }}
+        }}
+
+        .pill-label,
+        .count-pill {{
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 12px;
+            border-radius: var(--radius-pill);
+            font-size: 13px;
         }}
 
         .pill-label {{
-            padding: 4px 10px;
-            border-radius: var(--radius-pill);
-            background-color: #e5e7eb;
+            border: 1px solid var(--border-subtle);
+            background-color: #f9fafb;
+            color: var(--text-main);
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
         }}
 
         .count-pill {{
-            padding: 4px 10px;
-            border-radius: var(--radius-pill);
-            background-color: #e5e7eb;
+            background-color: var(--navy);
+            color: #ffffff;
+            font-weight: 600;
         }}
+.filter-controls {{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}}
+
+.sb-filter {{
+    padding: 6px 10px;
+    border-radius: 12px;
+    border: 1px solid var(--border-subtle);
+    background-color: #ffffff;
+    font-size: 13px;
+    min-width: 120px;
+}}
+
+        /* ============================ */
+        /* SECTION 2: DEAL CARD GRID    */
+        /* (unchanged from before)     */
+        /* ============================ */
 
         .card-grid {{
+            max-width: 1100px;
+            margin: 0 auto;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 14px;
@@ -391,19 +627,18 @@ def build_page_html(deals):
             font-weight: 600;
         }}
 
-        /* Brand-true retailer pills */
         .retailer-walmart {{
-            background-color: #0071CE; /* Walmart blue */
-            color: #F9C80E;           /* Walmart spark gold */
+            background-color: #0071CE;
+            color: #F9C80E;
         }}
 
         .retailer-kroger {{
-            background-color: #003087; /* Kroger navy */
+            background-color: #003087;
             color: #ffffff;
         }}
 
         .retailer-target {{
-            background-color: #CC0000; /* Target red */
+            background-color: #CC0000;
             color: #ffffff;
         }}
 
@@ -435,17 +670,18 @@ def build_page_html(deals):
             text-decoration: line-through;
         }}
 
-        .new-price {{
-            color: var(--green);
-            font-weight: 700;
-        }}
+.new-price {{
+    color: var(--text-main);  /* black/dark text */
+    font-weight: 700;
+}}
 
-        .percent-off {{
-            color: var(--text-muted);
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
-        }}
+.percent-off {{
+    color: var(--green);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}}
 
         .card-footer {{
             display: flex;
@@ -457,16 +693,16 @@ def build_page_html(deals):
             font-size: 11px;
         }}
 
-        .availability {{
-            color: var(--text-muted);
-        }}
+.availability.check {{
+    font-style: italic;
+    color: var(--text-muted);
+}}
 
         .streak {{
             color: var(--text-muted);
             font-style: italic;
         }}
 
-        /* Base button style */
         .view-button {{
             margin-top: 8px;
             display: block;
@@ -478,20 +714,18 @@ def build_page_html(deals):
             text-decoration: none;
         }}
 
-        /* Brand-true retailer buttons */
-
         .view-walmart {{
-            background-color: #0071CE; /* Walmart blue */
-            color: #F9C80E;            /* Walmart spark gold text */
+            background-color: #0071CE;
+            color: #F9C80E;
         }}
 
         .view-kroger {{
-            background-color: #003087; /* Kroger navy */
+            background-color: #003087;
             color: #ffffff;
         }}
 
         .view-target {{
-            background-color: #CC0000; /* Target red */
+            background-color: #CC0000;
             color: #ffffff;
         }}
 
@@ -506,36 +740,206 @@ def build_page_html(deals):
 
         @media (max-width: 640px) {{
             .page {{
-                margin-top: 16px;
+                padding-top: 8px;
             }}
         }}
     </style>
 </head>
 <body>
-    <main class="page">
-        <header class="page-header">
-            <h1 class="page-title">SnackBuddy Daily Deals</h1>
-            <p class="page-subtitle">
-                Verified snack deals from your favorite retailers. Tap a card to open the retailer&apos;s page for price checks and comps.
-            </p>
-            <div class="timestamp">
-                Last updated: {last_updated} (local time)
+    <!-- Backdrop + Nav Drawer for mobile menu -->
+    <div class="sb-nav-backdrop" id="sb-nav-backdrop"></div>
+    <nav class="sb-nav-drawer" id="sb-nav-drawer">
+        <div class="sb-nav-inner">
+            <div class="sb-nav-header">
+                <div class="sb-nav-title">SnackBuddy</div>
+                <button class="sb-nav-close" aria-label="Close menu">&times;</button>
             </div>
-        </header>
+            <a href="#deals-list" class="sb-nav-link">All deals</a>
+            <a href="#about" class="sb-nav-link">About SnackBuddy</a>
+            <a href="#how-it-works" class="sb-nav-link">How SnackBuddy works</a>
+            <a href="#subscribe" class="sb-nav-link">Get daily deal emails</a>
+            <div class="sb-nav-footer">
+                SnackBuddy helps you find the best healthy snack prices at your favorite retailers.
+            </div>
+        </div>
+    </nav>
 
-        <section class="controls-row">
-            <div class="pill-label">Sorted by: Retailer → Category → Best savings</div>
-            <div class="count-pill">Showing {total} deals</div>
+    <!-- ============================ -->
+    <!-- SECTION 1A: NAVBAR           -->
+    <!-- ============================ -->
+    <header class="sb-header">
+        <div class="sb-header-inner">
+            <div class="sb-header-left">
+                <div class="sb-logo"></div>
+                <span class="sb-header-title">SnackBuddy</span>
+            </div>
+            <button class="sb-menu-button" aria-label="Menu" aria-expanded="false">☰</button>
+        </div>
+    </header>
+
+    <main class="page">
+        <!-- ============================ -->
+        <!-- SECTION 1B: HERO BANNER      -->
+        <!-- ============================ -->
+        <section class="sb-hero">
+            <div class="sb-hero-bg">
+                <div class="sb-hero-pattern"></div>
+                <div class="sb-hero-content">
+                    <div class="sb-hero-kicker">
+                        SnackBuddy • Last updated: {last_updated} (local time)
+                    </div>
+                    <h1 class="sb-hero-title">Snack, Save, Repeat.</h1>
+                    <p class="sb-hero-subtitle">
+                        Today&apos;s best healthy snack deals — {total} found.
+                    </p>
+                    <a href="#deals-list" class="sb-hero-cta">
+                        Get notified about new snack deals →
+                    </a>
+                </div>
+            </div>
         </section>
 
-        <section class="card-grid">
+        <!-- =================================== -->
+        <!-- SECTION 1C: SORT + DEAL COUNT ROW   -->
+        <!-- =================================== -->
+<section class="sb-utility-row">
+    <div class="pill-label">Filters</div>
+
+    <div class="filter-controls">
+        
+        <!-- Retailer Filter -->
+        <select id="filter-retailer" class="sb-filter">
+            <option value="">All retailers</option>
+            <option value="walmart">Walmart</option>
+            <option value="kroger">Kroger</option>
+            <option value="target">Target</option>
+        </select>
+
+        <!-- Section Filter -->
+        <select id="filter-section" class="sb-filter">
+            <option value="">All sections</option>
+            <option value="food">Food</option>
+            <option value="drinks">Drinks</option>
+        </select>
+
+        <!-- Category Filter -->
+        <select id="filter-category" class="sb-filter">
+            <option value="">All categories</option>
+            <!-- JS will populate -->
+        </select>
+
+    </div>
+
+    <div id="deal-count" class="count-pill">
+        👀 Showing {total} deals
+    </div>
+</section>
+
+        <!-- ============================ -->
+        <!-- SECTION 2: DEAL CARD GRID    -->
+        <!-- ============================ -->
+        <section class="card-grid" id="deals-list">
             {cards_html}
         </section>
     </main>
+
+    <!-- Tiny JS for slide-out menu -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {{
+        const menuButton = document.querySelector(".sb-menu-button");
+        const drawer = document.getElementById("sb-nav-drawer");
+        const backdrop = document.getElementById("sb-nav-backdrop");
+        const closeButton = document.querySelector(".sb-nav-close");
+
+        if (!menuButton || !drawer || !backdrop) return;
+
+        function openNav() {{
+          drawer.classList.add("open");
+          backdrop.classList.add("open");
+          menuButton.setAttribute("aria-expanded", "true");
+        }}
+
+        function closeNav() {{
+          drawer.classList.remove("open");
+          backdrop.classList.remove("open");
+          menuButton.setAttribute("aria-expanded", "false");
+        }}
+
+        menuButton.addEventListener("click", function() {{
+          if (drawer.classList.contains("open")) {{
+            closeNav();
+          }} else {{
+            openNav();
+          }}
+        }});
+
+        backdrop.addEventListener("click", closeNav);
+        if (closeButton) {{
+          closeButton.addEventListener("click", closeNav);
+        }}
+      }});
+    </script>
+
+    <!-- JS for filters -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {{
+        const cards = Array.from(document.querySelectorAll(".card"));
+        const retailerFilter = document.getElementById("filter-retailer");
+        const sectionFilter = document.getElementById("filter-section");
+        const categoryFilter = document.getElementById("filter-category");
+        const countEl = document.getElementById("deal-count");
+
+        if (!cards.length || !retailerFilter || !sectionFilter || !categoryFilter || !countEl) {{
+          return;
+        }}
+
+        // Build dynamic category list from data-category attributes
+        const categories = Array.from(
+          new Set(
+            cards
+              .map(function (c) {{ return c.dataset.category || ""; }})
+              .filter(function (val) {{ return val; }})
+          )
+        ).sort();
+
+        categories.forEach(function (cat) {{
+          const opt = document.createElement("option");
+          opt.value = cat;
+          opt.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
+          categoryFilter.appendChild(opt);
+        }});
+
+        function applyFilters() {{
+          const r = retailerFilter.value;
+          const s = sectionFilter.value;
+          const c = categoryFilter.value;
+
+          let shown = 0;
+
+          cards.forEach(function (card) {{
+            const matchRetailer = !r || card.dataset.retailer === r;
+            const matchSection = !s || card.dataset.section === s;
+            const matchCategory = !c || card.dataset.category === c;
+
+            if (matchRetailer && matchSection && matchCategory) {{
+              card.style.display = "";
+              shown++;
+            }} else {{
+              card.style.display = "none";
+            }}
+          }});
+
+          countEl.textContent = "👀 Showing " + shown + " deals";
+        }}
+
+        retailerFilter.addEventListener("change", applyFilters);
+        sectionFilter.addEventListener("change", applyFilters);
+        categoryFilter.addEventListener("change", applyFilters);
+      }});
+    </script>
 </body>
 </html>
     """
-
 
 def main():
     deals = load_deals()
