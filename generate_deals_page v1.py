@@ -144,17 +144,11 @@ def build_card_html(deal):
     except Exception:
         pack_pill_html = ""
 
-    # Make sure pricing can be cast safely
-    try:
-        new_price_val = float(new_price) if new_price is not None else 0.0
-    except Exception:
-        new_price_val = 0.0
-
     old_price_html = ""
     if old_price is not None:
         try:
             old_price_val = float(old_price)
-            if old_price_val > new_price_val:
+            if old_price_val > float(new_price):
                 old_price_html = (
                     f"<span class='old-price'>${old_price_val:.2f}</span>"
                 )
@@ -174,12 +168,7 @@ def build_card_html(deal):
         badge_html = f"<div class='{badge_class}'>{badge_label}</div>"
 
     return f"""
-    <div class="card"
-         data-section="{section_attr}"
-         data-category="{category_attr}"
-         data-retailer="{retailer_attr}"
-         data-price="{new_price_val}"
-         data-percent="{float(percent_off) if percent_off is not None else 0.0}">
+    <div class="card" data-section="{section_attr}" data-category="{category_attr}" data-retailer="{retailer_attr}">
         <div class="card-image-wrap">
             <img src="{image_url}" alt="{name}" class="card-image"/>
             {pack_pill_html}
@@ -193,7 +182,7 @@ def build_card_html(deal):
             <div class="card-title">{name}</div>
             <div class="card-pricing">
                 {old_price_html}
-                <span class="new-price">${new_price_val:.2f}</span>
+                <span class="new-price">${new_price:.2f}</span>
                 <span class="percent-off">{percent_off:.0f}% OFF</span>
             </div>
             <div class="card-footer">
@@ -207,12 +196,11 @@ def build_card_html(deal):
     </div>
     """
 
-
 def build_page_html(deals):
     total = len(deals)
     last_updated = get_last_updated_text(deals)
 
-    # Sort: retailer → category → best savings (default order on page load)
+    # Sort: retailer → category → best savings
     def sort_key(d):
         return (
             (d.get("retailer") or "").lower(),
@@ -222,6 +210,7 @@ def build_page_html(deals):
         )
 
     deals_sorted = sorted(deals, key=sort_key)
+
     cards_html = "\n".join(build_card_html(d) for d in deals_sorted)
 
     return f"""<!DOCTYPE html>
@@ -293,13 +282,11 @@ def build_page_html(deals):
             gap: 8px;
         }}
 
-        /* Logo image (replaces placeholder box) */
         .sb-logo {{
             width: 32px;
             height: 32px;
             border-radius: 8px;
-            object-fit: contain;
-            display: block;
+            background-color: #e5f3ff; /* placeholder if no logo image yet */
         }}
 
         .sb-header-title {{
@@ -366,12 +353,6 @@ def build_page_html(deals):
             margin-bottom: 8px;
         }}
 
-        .sb-nav-header-left {{
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }}
-
         .sb-nav-title {{
             font-weight: 600;
             font-size: 18px;
@@ -400,7 +381,6 @@ def build_page_html(deals):
             margin-top: auto;
             font-size: 12px;
             color: var(--text-muted);
-            line-height: 1.35;
         }}
 
         /* ============================ */
@@ -442,7 +422,7 @@ def build_page_html(deals):
 
         .sb-hero-kicker {{
             font-size: 12px;
-            opacity: 0.92;
+            opacity: 0.9;
             margin-bottom: 4px;
         }}
 
@@ -480,7 +460,7 @@ def build_page_html(deals):
         }}
 
         /* =================================== */
-        /* SECTION 1C: FILTERS + COUNT ROW      */
+        /* SECTION 1C: SORT + COUNT UTIL ROW   */
         /* =================================== */
 
         .sb-utility-row {{
@@ -522,25 +502,25 @@ def build_page_html(deals):
             color: #ffffff;
             font-weight: 600;
         }}
+.filter-controls {{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}}
 
-        .filter-controls {{
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            align-items: center;
-        }}
-
-        .sb-filter {{
-            padding: 6px 10px;
-            border-radius: 12px;
-            border: 1px solid var(--border-subtle);
-            background-color: #ffffff;
-            font-size: 13px;
-            min-width: 140px;
-        }}
+.sb-filter {{
+    padding: 6px 10px;
+    border-radius: 12px;
+    border: 1px solid var(--border-subtle);
+    background-color: #ffffff;
+    font-size: 13px;
+    min-width: 120px;
+}}
 
         /* ============================ */
         /* SECTION 2: DEAL CARD GRID    */
+        /* (unchanged from before)     */
         /* ============================ */
 
         .card-grid {{
@@ -690,18 +670,18 @@ def build_page_html(deals):
             text-decoration: line-through;
         }}
 
-        .new-price {{
-            color: var(--text-main);
-            font-weight: 700;
-        }}
+.new-price {{
+    color: var(--text-main);  /* black/dark text */
+    font-weight: 700;
+}}
 
-        .percent-off {{
-            color: var(--green);
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
-        }}
+.percent-off {{
+    color: var(--green);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}}
 
         .card-footer {{
             display: flex;
@@ -713,10 +693,10 @@ def build_page_html(deals):
             font-size: 11px;
         }}
 
-        .availability.check {{
-            font-style: italic;
-            color: var(--text-muted);
-        }}
+.availability.check {{
+    font-style: italic;
+    color: var(--text-muted);
+}}
 
         .streak {{
             color: var(--text-muted);
@@ -758,76 +738,6 @@ def build_page_html(deals):
             filter: brightness(0.95);
         }}
 
-        /* ============================ */
-        /* SECTION 3: INFO SECTIONS     */
-        /* ============================ */
-
-        .sb-info {{
-            max-width: 1100px;
-            margin: 18px auto 0;
-        }}
-
-        .sb-info-card {{
-            background: #ffffff;
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-soft);
-            padding: 14px 14px;
-            margin-top: 14px;
-        }}
-
-        .sb-info-title {{
-            font-size: 16px;
-            font-weight: 800;
-            margin: 0 0 6px 0;
-        }}
-
-        .sb-info-text {{
-            margin: 0;
-            color: var(--text-main);
-            line-height: 1.55;
-            font-size: 14px;
-        }}
-
-        .sb-subscribe-row {{
-            margin-top: 10px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-        }}
-
-        .sb-email {{
-            flex: 1;
-            min-width: 220px;
-            padding: 10px 12px;
-            border-radius: 12px;
-            border: 1px solid var(--border-subtle);
-            font-size: 14px;
-        }}
-
-        .sb-subscribe-btn {{
-            padding: 10px 14px;
-            border-radius: 12px;
-            border: none;
-            background: var(--navy);
-            color: #ffffff;
-            font-weight: 800;
-            cursor: pointer;
-            font-size: 14px;
-        }}
-
-        .sb-subscribe-btn:hover {{
-            filter: brightness(1.03);
-        }}
-
-        .sb-note {{
-            margin-top: 10px;
-            font-size: 13px;
-            color: var(--text-muted);
-            line-height: 1.45;
-        }}
-
         @media (max-width: 640px) {{
             .page {{
                 padding-top: 8px;
@@ -841,10 +751,7 @@ def build_page_html(deals):
     <nav class="sb-nav-drawer" id="sb-nav-drawer">
         <div class="sb-nav-inner">
             <div class="sb-nav-header">
-                <div class="sb-nav-header-left">
-                    <img src="assets/logo-transparent.png" alt="SnackBuddy logo" class="sb-logo" />
-                    <span class="sb-nav-title">SnackBuddy</span>
-                </div>
+                <div class="sb-nav-title">SnackBuddy</div>
                 <button class="sb-nav-close" aria-label="Close menu">&times;</button>
             </div>
             <a href="#deals-list" class="sb-nav-link">All deals</a>
@@ -852,7 +759,7 @@ def build_page_html(deals):
             <a href="#how-it-works" class="sb-nav-link">How SnackBuddy works</a>
             <a href="#subscribe" class="sb-nav-link">Get daily deal emails</a>
             <div class="sb-nav-footer">
-                SnackBuddy helps you spot better-for-you snack deals at the retailers you already shop.
+                SnackBuddy helps you find the best healthy snack prices at your favorite retailers.
             </div>
         </div>
     </nav>
@@ -863,7 +770,7 @@ def build_page_html(deals):
     <header class="sb-header">
         <div class="sb-header-inner">
             <div class="sb-header-left">
-                <img src="assets/logo-transparent.png" alt="SnackBuddy logo" class="sb-logo" />
+                <div class="sb-logo"></div>
                 <span class="sb-header-title">SnackBuddy</span>
             </div>
             <button class="sb-menu-button" aria-label="Menu" aria-expanded="false">☰</button>
@@ -881,126 +788,58 @@ def build_page_html(deals):
                     <div class="sb-hero-kicker">
                         SnackBuddy • Last updated: {last_updated} (local time)
                     </div>
-                    <h1 class="sb-hero-title">Don&apos;t overpay for the snacks you already buy.</h1>
+                    <h1 class="sb-hero-title">Snack, Save, Repeat.</h1>
                     <p class="sb-hero-subtitle">
-                        SnackBuddy tracks price drops on better-for-you snacks and drinks—so you can stock up when it&apos;s worth it.
+                        Today&apos;s best healthy snack deals — {total} found.
                     </p>
                     <a href="#deals-list" class="sb-hero-cta">
-                        See today&apos;s deals →
+                        Get notified about new snack deals →
                     </a>
                 </div>
             </div>
         </section>
 
         <!-- =================================== -->
-        <!-- SECTION 1C: FILTERS + DEAL COUNT ROW -->
+        <!-- SECTION 1C: SORT + DEAL COUNT ROW   -->
         <!-- =================================== -->
-        <section class="sb-utility-row">
-            <div class="pill-label">Filters</div>
+<section class="sb-utility-row">
+    <div class="pill-label">Filters</div>
 
-            <div class="filter-controls">
-                <!-- Retailer Filter -->
-                <select id="filter-retailer" class="sb-filter">
-                    <option value="">All retailers</option>
-                    <option value="walmart">Walmart</option>
-                    <option value="kroger">Kroger</option>
-                    <option value="target">Target</option>
-                </select>
+    <div class="filter-controls">
+        
+        <!-- Retailer Filter -->
+        <select id="filter-retailer" class="sb-filter">
+            <option value="">All retailers</option>
+            <option value="walmart">Walmart</option>
+            <option value="kroger">Kroger</option>
+            <option value="target">Target</option>
+        </select>
 
-                <!-- Section Filter -->
-                <select id="filter-section" class="sb-filter">
-                    <option value="">All sections</option>
-                    <option value="food">Food</option>
-                    <option value="drinks">Drinks</option>
-                </select>
+        <!-- Section Filter -->
+        <select id="filter-section" class="sb-filter">
+            <option value="">All sections</option>
+            <option value="food">Food</option>
+            <option value="drinks">Drinks</option>
+        </select>
 
-                <!-- Category Filter -->
-                <select id="filter-category" class="sb-filter">
-                    <option value="">All categories</option>
-                    <!-- JS will populate -->
-                </select>
+        <!-- Category Filter -->
+        <select id="filter-category" class="sb-filter">
+            <option value="">All categories</option>
+            <!-- JS will populate -->
+        </select>
 
-                <!-- Sort -->
-                <select id="sort-deals" class="sb-filter">
-                    <option value="best">Sort: Best deals</option>
-                    <option value="price_asc">Sort: Price (low → high)</option>
-                    <option value="price_desc">Sort: Price (high → low)</option>
-                </select>
-            </div>
+    </div>
 
-            <div id="deal-count" class="count-pill">
-                👀 Showing {total} deals
-            </div>
-        </section>
+    <div id="deal-count" class="count-pill">
+        👀 Showing {total} deals
+    </div>
+</section>
 
         <!-- ============================ -->
         <!-- SECTION 2: DEAL CARD GRID    -->
         <!-- ============================ -->
         <section class="card-grid" id="deals-list">
             {cards_html}
-        </section>
-
-        <!-- ============================ -->
-        <!-- SECTION 3A: ABOUT            -->
-        <!-- ============================ -->
-        <section class="sb-info" id="about">
-            <div class="sb-info-card">
-                <h2 class="sb-info-title">About SnackBuddy</h2>
-                <p class="sb-info-text">
-                    SnackBuddy started after I became a dad, money got tighter, and I tried to get healthier at the same time.
-                </p>
-                <p class="sb-info-text" style="margin-top: 8px;">
-                    When you’re trying to eat better, snacks matter. They can either quietly wreck a calorie deficit or help you hit goals like
-                    <strong>protein</strong> and <strong>fiber</strong> without much effort. I found myself buying the same products over and over,
-                    and I started noticing something: one week they’d be on sale, the next week they wouldn’t. After a while, paying full price
-                    started to feel like I was overpaying for things I bought all the time.
-                </p>
-                <p class="sb-info-text" style="margin-top: 8px;">
-                    So I built SnackBuddy to do one simple thing:
-                    <strong>track the snacks and drinks people already buy and call out real price drops</strong> —
-                    so you can stock up at the right time or try something new when it’s cheaper.
-                </p>
-            </div>
-        </section>
-
-        <!-- ============================ -->
-        <!-- SECTION 3B: HOW IT WORKS     -->
-        <!-- ============================ -->
-        <section class="sb-info" id="how-it-works">
-            <div class="sb-info-card">
-                <h2 class="sb-info-title">How SnackBuddy works</h2>
-                <p class="sb-info-text">
-                    SnackBuddy tracks prices for a growing list of better-for-you snacks and drinks across major retailers.
-                </p>
-                <p class="sb-info-text" style="margin-top: 8px;">
-                    At its core, it’s pretty simple: we keep an eye on specific product pages and pay attention when prices move.
-                    When something drops, it shows up here so more people can take advantage of it — without having to constantly
-                    check themselves.
-                </p>
-                <p class="sb-info-text" style="margin-top: 8px;">
-                    Don’t see a product or retailer you want tracked yet? Let me know — the list is expanding over time.
-                </p>
-                <p class="sb-note">
-                    Note: Prices and availability can vary by location, especially for in-store items.
-                </p>
-            </div>
-        </section>
-
-            <div class="sb-info-card" id="subscribe">
-                <h2 class="sb-info-title">Get daily deal emails</h2>
-                <p class="sb-info-text">
-                    Want a quick daily digest of the best finds? Drop your email below.
-                </p>
-
-                <div class="sb-subscribe-row">
-                    <input class="sb-email" type="email" placeholder="you@example.com" />
-                    <button class="sb-subscribe-btn" type="button">Notify me</button>
-                </div>
-
-                <div class="sb-note">
-                    This signup box is a placeholder for now (no spam, ever). The goal is simple: fewer “full price” purchases for the stuff you already buy.
-                </div>
-            </div>
         </section>
     </main>
 
@@ -1038,28 +877,19 @@ def build_page_html(deals):
         if (closeButton) {{
           closeButton.addEventListener("click", closeNav);
         }}
-
-        // Close drawer when clicking a link
-        const navLinks = drawer.querySelectorAll("a.sb-nav-link");
-        navLinks.forEach(function(link) {{
-          link.addEventListener("click", closeNav);
-        }});
       }});
     </script>
 
-    <!-- JS for filters + sort -->
+    <!-- JS for filters -->
     <script>
       document.addEventListener("DOMContentLoaded", function () {{
-        const grid = document.getElementById("deals-list");
         const cards = Array.from(document.querySelectorAll(".card"));
-
         const retailerFilter = document.getElementById("filter-retailer");
         const sectionFilter = document.getElementById("filter-section");
         const categoryFilter = document.getElementById("filter-category");
-        const sortSelect = document.getElementById("sort-deals");
         const countEl = document.getElementById("deal-count");
 
-        if (!grid || !cards.length || !retailerFilter || !sectionFilter || !categoryFilter || !countEl) {{
+        if (!cards.length || !retailerFilter || !sectionFilter || !categoryFilter || !countEl) {{
           return;
         }}
 
@@ -1079,19 +909,12 @@ def build_page_html(deals):
           categoryFilter.appendChild(opt);
         }});
 
-        // Save original order so "best" can mean "default"
-        cards.forEach(function(card, idx) {{
-          card.dataset.originalIndex = String(idx);
-        }});
-
-        function applyFiltersAndSort() {{
+        function applyFilters() {{
           const r = retailerFilter.value;
           const s = sectionFilter.value;
           const c = categoryFilter.value;
-          const sortMode = sortSelect ? sortSelect.value : "best";
 
-          // 1) Filter
-          let shownCards = [];
+          let shown = 0;
 
           cards.forEach(function (card) {{
             const matchRetailer = !r || card.dataset.retailer === r;
@@ -1100,55 +923,23 @@ def build_page_html(deals):
 
             if (matchRetailer && matchSection && matchCategory) {{
               card.style.display = "";
-              shownCards.push(card);
+              shown++;
             }} else {{
               card.style.display = "none";
             }}
           }});
 
-          // 2) Sort visible cards
-          shownCards.sort(function(a, b) {{
-            const aPrice = parseFloat(a.dataset.price || "0");
-            const bPrice = parseFloat(b.dataset.price || "0");
-            const aPct = parseFloat(a.dataset.percent || "0");
-            const bPct = parseFloat(b.dataset.percent || "0");
-            const aIdx = parseInt(a.dataset.originalIndex || "0", 10);
-            const bIdx = parseInt(b.dataset.originalIndex || "0", 10);
-
-            if (sortMode === "price_asc") {{
-              if (aPrice !== bPrice) return aPrice - bPrice;
-              return bPct - aPct; // tie-breaker: higher % off first
-            }}
-            if (sortMode === "price_desc") {{
-              if (aPrice !== bPrice) return bPrice - aPrice;
-              return bPct - aPct;
-            }}
-
-            // "best" = default/original order
-            return aIdx - bIdx;
-          }});
-
-          // 3) Re-append visible cards in sorted order
-          shownCards.forEach(function(card) {{
-            grid.appendChild(card);
-          }});
-
-          countEl.textContent = "👀 Showing " + shownCards.length + " deals";
+          countEl.textContent = "👀 Showing " + shown + " deals";
         }}
 
-        retailerFilter.addEventListener("change", applyFiltersAndSort);
-        sectionFilter.addEventListener("change", applyFiltersAndSort);
-        categoryFilter.addEventListener("change", applyFiltersAndSort);
-        if (sortSelect) sortSelect.addEventListener("change", applyFiltersAndSort);
-
-        // Run once on load
-        applyFiltersAndSort();
+        retailerFilter.addEventListener("change", applyFilters);
+        sectionFilter.addEventListener("change", applyFilters);
+        categoryFilter.addEventListener("change", applyFilters);
       }});
     </script>
 </body>
 </html>
     """
-
 
 def main():
     deals = load_deals()
@@ -1160,6 +951,5 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 
 

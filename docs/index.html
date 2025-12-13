@@ -67,11 +67,13 @@
             gap: 8px;
         }
 
+        /* Logo image (replaces placeholder box) */
         .sb-logo {
             width: 32px;
             height: 32px;
             border-radius: 8px;
-            background-color: #e5f3ff; /* placeholder if no logo image yet */
+            object-fit: contain;
+            display: block;
         }
 
         .sb-header-title {
@@ -138,6 +140,12 @@
             margin-bottom: 8px;
         }
 
+        .sb-nav-header-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .sb-nav-title {
             font-weight: 600;
             font-size: 18px;
@@ -166,6 +174,7 @@
             margin-top: auto;
             font-size: 12px;
             color: var(--text-muted);
+            line-height: 1.35;
         }
 
         /* ============================ */
@@ -207,7 +216,7 @@
 
         .sb-hero-kicker {
             font-size: 12px;
-            opacity: 0.9;
+            opacity: 0.92;
             margin-bottom: 4px;
         }
 
@@ -245,7 +254,7 @@
         }
 
         /* =================================== */
-        /* SECTION 1C: SORT + COUNT UTIL ROW   */
+        /* SECTION 1C: FILTERS + COUNT ROW      */
         /* =================================== */
 
         .sb-utility-row {
@@ -287,25 +296,25 @@
             color: #ffffff;
             font-weight: 600;
         }
-.filter-controls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    align-items: center;
-}
 
-.sb-filter {
-    padding: 6px 10px;
-    border-radius: 12px;
-    border: 1px solid var(--border-subtle);
-    background-color: #ffffff;
-    font-size: 13px;
-    min-width: 120px;
-}
+        .filter-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .sb-filter {
+            padding: 6px 10px;
+            border-radius: 12px;
+            border: 1px solid var(--border-subtle);
+            background-color: #ffffff;
+            font-size: 13px;
+            min-width: 140px;
+        }
 
         /* ============================ */
         /* SECTION 2: DEAL CARD GRID    */
-        /* (unchanged from before)     */
         /* ============================ */
 
         .card-grid {
@@ -455,18 +464,18 @@
             text-decoration: line-through;
         }
 
-.new-price {
-    color: var(--text-main);  /* black/dark text */
-    font-weight: 700;
-}
+        .new-price {
+            color: var(--text-main);
+            font-weight: 700;
+        }
 
-.percent-off {
-    color: var(--green);
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-}
+        .percent-off {
+            color: var(--green);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
 
         .card-footer {
             display: flex;
@@ -478,10 +487,10 @@
             font-size: 11px;
         }
 
-.availability.check {
-    font-style: italic;
-    color: var(--text-muted);
-}
+        .availability.check {
+            font-style: italic;
+            color: var(--text-muted);
+        }
 
         .streak {
             color: var(--text-muted);
@@ -523,6 +532,76 @@
             filter: brightness(0.95);
         }
 
+        /* ============================ */
+        /* SECTION 3: INFO SECTIONS     */
+        /* ============================ */
+
+        .sb-info {
+            max-width: 1100px;
+            margin: 18px auto 0;
+        }
+
+        .sb-info-card {
+            background: #ffffff;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-soft);
+            padding: 14px 14px;
+            margin-top: 14px;
+        }
+
+        .sb-info-title {
+            font-size: 16px;
+            font-weight: 800;
+            margin: 0 0 6px 0;
+        }
+
+        .sb-info-text {
+            margin: 0;
+            color: var(--text-main);
+            line-height: 1.55;
+            font-size: 14px;
+        }
+
+        .sb-subscribe-row {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .sb-email {
+            flex: 1;
+            min-width: 220px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid var(--border-subtle);
+            font-size: 14px;
+        }
+
+        .sb-subscribe-btn {
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: none;
+            background: var(--navy);
+            color: #ffffff;
+            font-weight: 800;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .sb-subscribe-btn:hover {
+            filter: brightness(1.03);
+        }
+
+        .sb-note {
+            margin-top: 10px;
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.45;
+        }
+
         @media (max-width: 640px) {
             .page {
                 padding-top: 8px;
@@ -536,7 +615,10 @@
     <nav class="sb-nav-drawer" id="sb-nav-drawer">
         <div class="sb-nav-inner">
             <div class="sb-nav-header">
-                <div class="sb-nav-title">SnackBuddy</div>
+                <div class="sb-nav-header-left">
+                    <img src="assets/logo-transparent.png" alt="SnackBuddy logo" class="sb-logo" />
+                    <span class="sb-nav-title">SnackBuddy</span>
+                </div>
                 <button class="sb-nav-close" aria-label="Close menu">&times;</button>
             </div>
             <a href="#deals-list" class="sb-nav-link">All deals</a>
@@ -544,7 +626,7 @@
             <a href="#how-it-works" class="sb-nav-link">How SnackBuddy works</a>
             <a href="#subscribe" class="sb-nav-link">Get daily deal emails</a>
             <div class="sb-nav-footer">
-                SnackBuddy helps you find the best healthy snack prices at your favorite retailers.
+                SnackBuddy helps you spot better-for-you snack deals at the retailers you already shop.
             </div>
         </div>
     </nav>
@@ -555,7 +637,7 @@
     <header class="sb-header">
         <div class="sb-header-inner">
             <div class="sb-header-left">
-                <div class="sb-logo"></div>
+                <img src="assets/logo-transparent.png" alt="SnackBuddy logo" class="sb-logo" />
                 <span class="sb-header-title">SnackBuddy</span>
             </div>
             <button class="sb-menu-button" aria-label="Menu" aria-expanded="false">☰</button>
@@ -571,65 +653,75 @@
                 <div class="sb-hero-pattern"></div>
                 <div class="sb-hero-content">
                     <div class="sb-hero-kicker">
-                        SnackBuddy • Last updated: December 12, 2025 at 05:22 PM (local time)
+                        SnackBuddy • Last updated: December 13, 2025 at 05:11 PM (local time)
                     </div>
-                    <h1 class="sb-hero-title">Snack, Save, Repeat.</h1>
+                    <h1 class="sb-hero-title">Don&apos;t overpay for the snacks you already buy.</h1>
                     <p class="sb-hero-subtitle">
-                        Today&apos;s best healthy snack deals — 90 found.
+                        SnackBuddy tracks price drops on better-for-you snacks and drinks—so you can stock up when it&apos;s worth it.
                     </p>
                     <a href="#deals-list" class="sb-hero-cta">
-                        Get notified about new snack deals →
+                        See today&apos;s deals →
                     </a>
                 </div>
             </div>
         </section>
 
         <!-- =================================== -->
-        <!-- SECTION 1C: SORT + DEAL COUNT ROW   -->
+        <!-- SECTION 1C: FILTERS + DEAL COUNT ROW -->
         <!-- =================================== -->
-<section class="sb-utility-row">
-    <div class="pill-label">Filters</div>
+        <section class="sb-utility-row">
+            <div class="pill-label">Filters</div>
 
-    <div class="filter-controls">
-        
-        <!-- Retailer Filter -->
-        <select id="filter-retailer" class="sb-filter">
-            <option value="">All retailers</option>
-            <option value="walmart">Walmart</option>
-            <option value="kroger">Kroger</option>
-            <option value="target">Target</option>
-        </select>
+            <div class="filter-controls">
+                <!-- Retailer Filter -->
+                <select id="filter-retailer" class="sb-filter">
+                    <option value="">All retailers</option>
+                    <option value="walmart">Walmart</option>
+                    <option value="kroger">Kroger</option>
+                    <option value="target">Target</option>
+                </select>
 
-        <!-- Section Filter -->
-        <select id="filter-section" class="sb-filter">
-            <option value="">All sections</option>
-            <option value="food">Food</option>
-            <option value="drinks">Drinks</option>
-        </select>
+                <!-- Section Filter -->
+                <select id="filter-section" class="sb-filter">
+                    <option value="">All sections</option>
+                    <option value="food">Food</option>
+                    <option value="drinks">Drinks</option>
+                </select>
 
-        <!-- Category Filter -->
-        <select id="filter-category" class="sb-filter">
-            <option value="">All categories</option>
-            <!-- JS will populate -->
-        </select>
+                <!-- Category Filter -->
+                <select id="filter-category" class="sb-filter">
+                    <option value="">All categories</option>
+                    <!-- JS will populate -->
+                </select>
 
-    </div>
+                <!-- Sort -->
+                <select id="sort-deals" class="sb-filter">
+                    <option value="best">Sort: Best deals</option>
+                    <option value="price_asc">Sort: Price (low → high)</option>
+                    <option value="price_desc">Sort: Price (high → low)</option>
+                </select>
+            </div>
 
-    <div id="deal-count" class="count-pill">
-        👀 Showing 90 deals
-    </div>
-</section>
+            <div id="deal-count" class="count-pill">
+                👀 Showing 90 deals
+            </div>
+        </section>
 
         <!-- ============================ -->
         <!-- SECTION 2: DEAL CARD GRID    -->
         <!-- ============================ -->
         <section class="card-grid" id="deals-list">
             
-    <div class="card" data-section="food" data-category="bars" data-retailer="kroger">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="1.67"
+         data-percent="23.7">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0072225206971" alt="Clif Builders OREO-Flavored (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -653,11 +745,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="kroger">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="1.67"
+         data-percent="23.7">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0072225260144" alt="Clif Builders Chocolate Mint (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -681,11 +778,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="kroger">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="1.67"
+         data-percent="23.7">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0072225260141" alt="Clif Builders Chocolate Peanut Butter (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -709,11 +811,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="kroger">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="1.67"
+         data-percent="23.7">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0072225260145" alt="Clif Builders Vanilla Almond (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -737,11 +844,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="kroger">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="11.49"
+         data-percent="23.3">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0060265240065" alt="KIND Bar Cranberry Almond (12ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -765,11 +877,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="kroger">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="2.5"
+         data-percent="16.4">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0085005410860" alt="Barebells Protein Bar Birthday Cake (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -793,11 +910,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="kroger">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="2.5"
+         data-percent="16.4">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0085000042909" alt="Barebells Protein Bar Caramel Cashew (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -821,11 +943,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="kroger">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="2.5"
+         data-percent="16.4">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0085006495000" alt="Barebells Soft Bar Caramel Choco (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -849,11 +976,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="kroger">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="2.5"
+         data-percent="16.4">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0085000042926" alt="Barebells Protein Bar Chocolate Dough (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -877,11 +1009,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="kroger">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="2.5"
+         data-percent="16.4">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0085005410854" alt="Barebells Protein Bar Cookes &amp; Caramel (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -905,11 +1042,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="kroger">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="2.5"
+         data-percent="16.4">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0085000042911" alt="Barebells Protein Bar Cookies &amp; Cream (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -933,11 +1075,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="kroger">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="2.5"
+         data-percent="16.4">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0085000042941" alt="Barebells Protein Bar Creamy Crisp (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -961,11 +1108,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="kroger">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="2.5"
+         data-percent="16.4">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0085006495004" alt="Barebells Soft Bar Peanut Caramel (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -989,11 +1141,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="kroger">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="2.5"
+         data-percent="16.4">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0085000042908" alt="Barebells Protein Bar Salty Peanut (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -1017,11 +1174,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="kroger">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="8.49"
+         data-percent="15.0">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0064422573002" alt="Power Crunch Bar Chocolate Mint (5ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>5</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -1045,11 +1207,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="kroger">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="8.49"
+         data-percent="15.0">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0064422573082" alt="Power Crunch Bar Triple Chocolate (5ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>5</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -1073,11 +1240,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="kroger">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="8.49"
+         data-percent="15.0">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0064422573079" alt="Power Crunch Bar Peanut Butter (5ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>5</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -1101,11 +1273,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="kroger">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="8.49"
+         data-percent="15.0">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0064422573006" alt="Power Crunch Bar Peanut Butter Fudge (5ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>5</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -1129,11 +1306,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="kroger">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="2.5"
+         data-percent="13.5">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0084022930362" alt="Built Puff Brownie Batter (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -1157,11 +1339,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="kroger">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="2.5"
+         data-percent="13.5">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0084022930037" alt="Built Puff Coconut (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -1185,11 +1372,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="kroger">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="20.04"
+         data-percent="12.8">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0072225260045" alt="Clif Builders Vanilla Almond (12ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -1213,11 +1405,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="kroger">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="16.99"
+         data-percent="10.5">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0074982613885" alt="Pure Protein Bar Chocolate Deluxe (12ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -1241,11 +1438,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="kroger">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="16.99"
+         data-percent="10.5">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0074982613887" alt="Pure Protein Bar Chocolate Peanut Butter (12ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -1269,11 +1471,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="kroger">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="16.99"
+         data-percent="10.5">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0074982653910" alt="Pure Protein Bar Chocolate Peanut Caramel (12ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -1297,11 +1504,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="kroger">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="16.99"
+         data-percent="10.5">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0074982600039" alt="Pure Protein Bar Galactic Brownie (12ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -1325,7 +1537,12 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="kroger">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="9.99"
+         data-percent="9.1">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0084022930380" alt="Built Puff Brownie Batter (4ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
@@ -1353,7 +1570,12 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="kroger">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="9.99"
+         data-percent="9.1">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0084022930381" alt="Built Puff Coconut (4ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
@@ -1381,7 +1603,12 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="kroger">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0088939200031" alt="Celsius Energy Drink Orange (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
@@ -1409,7 +1636,12 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="kroger">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0088939200362" alt="Celsius Energy Drink Watermelon (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
@@ -1437,7 +1669,12 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="kroger">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0088939200032" alt="Celsius Energy Drink Wild Berry (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
@@ -1465,7 +1702,12 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="kroger">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0088939200130" alt="Celsius Energy Drink Raspberry Peach (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
@@ -1493,7 +1735,12 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="kroger">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0088939200174" alt="Celsius Energy Drink Playa Vibe (Pina Colada) (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
@@ -1521,7 +1768,12 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="kroger">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0088939201019" alt="Celsius Energy Drink Peach Vibe (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
@@ -1549,7 +1801,12 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="kroger">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0088939200090" alt="Celsius Energy Drink Oasis Vibe (Prickly Pear) (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
@@ -1577,7 +1834,12 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="kroger">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0088939200178" alt="Celsius Energy Drink Mango Lemonade (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
@@ -1605,7 +1867,12 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="kroger">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0088939201014" alt="Celsius Energy Drink Kiwi Guava (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
@@ -1633,7 +1900,12 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="kroger">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0088939200086" alt="Celsius Energy Drink Green Apple Cherry (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
@@ -1661,7 +1933,12 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="kroger">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0088939201017" alt="Celsius Energy Drink Fuji Apple Pear (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
@@ -1689,7 +1966,12 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="kroger">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0088939200059" alt="Celsius Energy Drink Fantasy Vibe (Mandarin Marshmallow) (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
@@ -1717,7 +1999,12 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="kroger">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0088939200134" alt="Celsius Energy Drink Astro Vibe (Blue Razz) (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
@@ -1745,7 +2032,12 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="kroger">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0088939202141" alt="Celsius Energy Drink Arctic Vibe (Frozen Berry) (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
@@ -1773,7 +2065,12 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="kroger">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0088939200172" alt="Celsius Energy Drink Retro Vibe (Sherbert Slush) (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
@@ -1801,7 +2098,12 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="kroger">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0088939200132" alt="Celsius Energy Drink Galaxy Vibe (Strawberry Watermelon) (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
@@ -1829,7 +2131,12 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="kroger">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0088939200120" alt="Celsius Energy Drink Cosmic Vibe (Fruit Punch) (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
@@ -1857,7 +2164,12 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="kroger">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0088939200139" alt="Celsius Energy Drink Blue Razz Lemonade (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
@@ -1885,7 +2197,12 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="kroger">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="11.99"
+         data-percent="7.7">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0081003051292" alt="Alani Nu Energy Drink Cherry Slush (6ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>6</span> <span class='pack-unit'>ct</span></div>
@@ -1913,7 +2230,12 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="kroger">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="11.99"
+         data-percent="7.7">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0081003051823" alt="Alani Nu Energy Drink Cherry Twist (6ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>6</span> <span class='pack-unit'>ct</span></div>
@@ -1941,11 +2263,16 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="rtd protein shake" data-retailer="kroger">
+    <div class="card"
+         data-section="drinks"
+         data-category="rtd protein shake"
+         data-retailer="kroger"
+         data-price="3.79"
+         data-percent="15.6">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0081162002195" alt="Core Power Protein Shake Chocolate (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -1969,11 +2296,16 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="rtd protein shake" data-retailer="kroger">
+    <div class="card"
+         data-section="drinks"
+         data-category="rtd protein shake"
+         data-retailer="kroger"
+         data-price="3.79"
+         data-percent="15.6">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0081162002196" alt="Core Power Protein Shake Vanilla (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -1997,7 +2329,12 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="rtd protein shake" data-retailer="kroger">
+    <div class="card"
+         data-section="drinks"
+         data-category="rtd protein shake"
+         data-retailer="kroger"
+         data-price="4.99"
+         data-percent="9.1">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0081162002063" alt="Core Power Elite Protein Shake Chocolate (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
@@ -2025,7 +2362,12 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="rtd protein shake" data-retailer="kroger">
+    <div class="card"
+         data-section="drinks"
+         data-category="rtd protein shake"
+         data-retailer="kroger"
+         data-price="4.99"
+         data-percent="9.1">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0081162002142" alt="Core Power Elite Protein Shake Strawberry (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
@@ -2053,7 +2395,12 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="rtd protein shake" data-retailer="kroger">
+    <div class="card"
+         data-section="drinks"
+         data-category="rtd protein shake"
+         data-retailer="kroger"
+         data-price="4.99"
+         data-percent="9.1">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0081162002065" alt="Core Power Elite Protein Shake Vanilla (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
@@ -2081,11 +2428,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="target">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="target"
+         data-price="21.49"
+         data-percent="18.9">
         <div class="card-image-wrap">
             <img src="https://target.scene7.com/is/image/Target/GUEST_9de4655b-9ceb-4efc-9455-674a2d31c486?wid=600&amp;hei=600&amp;qlt=80" alt="Quest Nutrition 15g Hero Protein Bar - Crispy Chocolate Caramel Pecan Chocolate Caramel Pecan (12ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -2109,11 +2461,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="target">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="target"
+         data-price="21.49"
+         data-percent="17.3">
         <div class="card-image-wrap">
             <img src="https://target.scene7.com/is/image/Target/GUEST_c393d251-0fc8-42e6-b88d-527213dac6fe?wid=600&amp;hei=600&amp;qlt=80" alt="Quest Nutrition Birthday Cake Bar Birthday Cake (12ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -2137,7 +2494,12 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="target">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="target"
+         data-price="11.99"
+         data-percent="7.7">
         <div class="card-image-wrap">
             <img src="https://target.scene7.com/is/image/Target/GUEST_4aa67e07-e839-4985-811e-96f32f345bb4?wid=1200&amp;hei=1200&amp;qlt=80" alt="Larabar Peanut Butter Chocolate Chip Protein Bar Peanut Butter Chocolate Chip (12ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
@@ -2165,7 +2527,12 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="target">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="target"
+         data-price="27.99"
+         data-percent="6.7">
         <div class="card-image-wrap">
             <img src="https://target.scene7.com/is/image/Target/GUEST_fa246207-5fe6-4bf7-81e0-0b6b1389a63b?wid=600&amp;hei=600&amp;qlt=80" alt="Barebells Nutrition Bars - Cookies &amp; Cream Cookies &amp; Cream (12ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
@@ -2193,7 +2560,12 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="target">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="target"
+         data-price="27.99"
+         data-percent="6.7">
         <div class="card-image-wrap">
             <img src="https://target.scene7.com/is/image/Target/GUEST_7a272a2a-21ee-4fa7-ba04-5fb7a3ab7f7e?wid=600&amp;hei=600&amp;qlt=80" alt="Barebells Nutrition Bars - Caramel Cashew Caramel Cashew (12ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
@@ -2221,7 +2593,12 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="target">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="target"
+         data-price="27.99"
+         data-percent="6.7">
         <div class="card-image-wrap">
             <img src="https://target.scene7.com/is/image/Target/GUEST_c0f0dca6-6fe3-4c3b-a83d-f2fd0804f766?wid=600&amp;hei=600&amp;qlt=80" alt="Barebells Nutrition Bars - White Chocolate - 12pk White Chocolate Almond (12ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
@@ -2249,7 +2626,12 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="target">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="target"
+         data-price="27.99"
+         data-percent="6.7">
         <div class="card-image-wrap">
             <img src="https://target.scene7.com/is/image/Target/GUEST_2b84ce93-6a84-46d9-9dc1-702862db604d?wid=600&amp;hei=600&amp;qlt=80" alt="Barebells Nutrition Bars - Chocolate Dough - 12pk Chocolate Dough (12ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
@@ -2277,7 +2659,12 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="target">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="target"
+         data-price="27.99"
+         data-percent="6.7">
         <div class="card-image-wrap">
             <img src="https://target.scene7.com/is/image/Target/GUEST_da236175-24bb-4fa3-9ce7-eb8cfc04e65e?wid=600&amp;hei=600&amp;qlt=80" alt="Barebells Nutrition Bars - Salty Peanut - 12pk Salty Peanut (12ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
@@ -2305,7 +2692,12 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="target">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="target"
+         data-price="21.49"
+         data-percent="6.5">
         <div class="card-image-wrap">
             <img src="https://target.scene7.com/is/image/Target/GUEST_bd132c61-19e1-45ff-9bf0-11ca2448ac64?wid=600&amp;hei=600&amp;qlt=80" alt="Quest Nutrition 18g Hero Protein Bar - Crispy Chocolate Peanut Butter Chocolate Peanut Butter (12ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
@@ -2333,7 +2725,12 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="target">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="target"
+         data-price="8.49"
+         data-percent="5.6">
         <div class="card-image-wrap">
             <img src="https://target.scene7.com/is/image/Target/GUEST_4ad59a04-1c37-4cd9-9a48-df32b53e88fd?wid=600&amp;hei=600&amp;qlt=80" alt="Built Bar Salted Caramel Puff Protein Bars - 17g Protein - 5.64oz/4ct Salted Caramel (4ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
@@ -2361,7 +2758,12 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="target">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="target"
+         data-price="8.49"
+         data-percent="5.6">
         <div class="card-image-wrap">
             <img src="https://target.scene7.com/is/image/Target/GUEST_51aa7e1f-330a-4c64-a957-c468023d36d7?wid=600&amp;hei=600&amp;qlt=80" alt="Built Puff Coconut Whey Protein Bars - 17g Protein - 4ct Coconut (4ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
@@ -2389,7 +2791,12 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="target">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="target"
+         data-price="8.49"
+         data-percent="5.6">
         <div class="card-image-wrap">
             <img src="https://target.scene7.com/is/image/Target/GUEST_a597dd8f-7188-42cd-9e4f-5113dfa8634b?wid=600&amp;hei=600&amp;qlt=80" alt="Built Bar Brownie Batter Puff Protein Bars - 17g Protein - 4ct Brownie Batter (4ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
@@ -2417,7 +2824,12 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="target">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="target"
+         data-price="8.49"
+         data-percent="5.6">
         <div class="card-image-wrap">
             <img src="https://target.scene7.com/is/image/Target/GUEST_3e68fe19-78a2-494f-8cd9-063b19ce2343?wid=600&amp;hei=600&amp;qlt=80" alt="Built Bar Cookie Dough Chunk Puff Protein Bars - 15g Protein - 6.2oz/4ct Cookie Dough (4ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
@@ -2445,7 +2857,12 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="target">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="target"
+         data-price="8.49"
+         data-percent="5.6">
         <div class="card-image-wrap">
             <img src="https://target.scene7.com/is/image/Target/GUEST_694abc90-ddc9-435d-a4c4-7081ad069110?wid=600&amp;hei=600&amp;qlt=80" alt="Built Bar Cookies &#x27;N Cream Puff Protein Bars - 17g Protein - 4ct Cookies &amp; Cream (4ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
@@ -2473,11 +2890,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="walmart">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="walmart"
+         data-price="7.11"
+         data-percent="19.9">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/asr/1047b5b8-e60d-4bb4-b866-53c56ed9c063.6a5e6902757a3606b7da616159a452f2.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Quest Hero Protein Bar Cookies &amp; Cream (4ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -2501,11 +2923,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="bars" data-retailer="walmart">
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="walmart"
+         data-price="7.11"
+         data-percent="19.9">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/Quest-Crispy-Hero-Protein-Bar-Birthday-Cake-Flavor-Low-Sugar-4-Count_1979f8c2-7c0c-4730-9e87-134ba4576451.5c7d50baac593be030f702c6e7b71557.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Quest Hero Protein Bar Birthday Cake (4ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -2529,39 +2956,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="chips &amp; crunchy" data-retailer="walmart">
-        <div class="card-image-wrap">
-            <img src="https://i5.walmartimages.com/seo/Quest-Tortilla-Style-Protein-Chips-Buffalo-Ranch-Flavor-Baked-4-Count_715d298d-65b8-458f-92c9-b3ed0b360098.f1de7e4b9738ce8462ec3f7a3f3039aa.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Quest Protein Chips Buffalo Ranch (4ct)" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
-        </div>
-        <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-walmart">Walmart</div>
-                <div class="meta-category">Chips &amp; Crunchy</div>
-            </div>
-            <div class="card-title">Quest Protein Chips Buffalo Ranch (4ct)</div>
-            <div class="card-pricing">
-                <span class='old-price'>$9.48</span>
-                <span class="new-price">$7.11</span>
-                <span class="percent-off">25% OFF</span>
-            </div>
-            <div class="card-footer">
-                <div class='availability online-only'>Online only</div>
-                
-            </div>
-            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Quest-Tortilla-Style-Protein-Chips-Buffalo-Ranch-Flavor-Baked-4-Count/14817163122" target="_blank" rel="noopener noreferrer">
-                View on Walmart.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card" data-section="food" data-category="chips &amp; crunchy" data-retailer="walmart">
+    <div class="card"
+         data-section="food"
+         data-category="chips &amp; crunchy"
+         data-retailer="walmart"
+         data-price="15.93"
+         data-percent="16.0">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/2-pack-Quest-Tortilla-Style-Protein-Chips-Chili-Lime-1-1oz-4-Count-Bags_e3557fff-120a-48d6-8e73-1df50bdc97d6.b5f0e51ebb0d37d142e006ff8809de4a.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Quest Protein Chips Chili Lime (8ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>8</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -2585,7 +2989,12 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="chips &amp; crunchy" data-retailer="walmart">
+    <div class="card"
+         data-section="food"
+         data-category="chips &amp; crunchy"
+         data-retailer="walmart"
+         data-price="2.52"
+         data-percent="9.4">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/Quest-Tortilla-Style-Protein-Chips-with-19g-of-Protein-Loaded-Taco-Flavor-1-1-Oz-Single_4d7f549d-8da7-4389-8401-30bfc1dc8c13.aa036a2b14ea29889753d2f183bcd6c8.png?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Quest Protein Chips Loaded Taco (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
@@ -2613,11 +3022,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="cookies &amp; sweets" data-retailer="walmart">
+    <div class="card"
+         data-section="food"
+         data-category="cookies &amp; sweets"
+         data-retailer="walmart"
+         data-price="6.97"
+         data-percent="12.4">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/Myprotein-Protein-Wafers-Vanilla-4pk_4aaa499c-da96-497f-9993-da8a28a04d8f.1bb086327680dfa13a1a66d1e7bbf6b2.png?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="MyProtein Wafer Vanilla (4ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -2641,11 +3055,16 @@
     </div>
     
 
-    <div class="card" data-section="food" data-category="cookies &amp; sweets" data-retailer="walmart">
+    <div class="card"
+         data-section="food"
+         data-category="cookies &amp; sweets"
+         data-retailer="walmart"
+         data-price="6.97"
+         data-percent="12.4">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/Myprotein-Protein-Wafers-Chocolate-4pk_10ec456c-5e25-47c8-8fac-c91c0010b8f5.e3d70a41e41fa1ae27acbabbf3757a72.png?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="MyProtein Wafer Chocolate (4ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -2669,11 +3088,49 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="walmart">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="walmart"
+         data-price="0.99"
+         data-percent="56.6">
+        <div class="card-image-wrap">
+            <img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Kiwi-Guava-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_7a16e405-8ab4-432e-8937-b44b1bcc0a48.95b110b5c867baed438ef5eaa8655e8c.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Celsius Energy Drink Kiwi Guava (1ct)" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-walmart">Walmart</div>
+                <div class="meta-category">Energy Drink</div>
+            </div>
+            <div class="card-title">Celsius Energy Drink Kiwi Guava (1ct)</div>
+            <div class="card-pricing">
+                <span class='old-price'>$2.28</span>
+                <span class="new-price">$0.99</span>
+                <span class="percent-off">57% OFF</span>
+            </div>
+            <div class="card-footer">
+                <div class='availability online-only'>Online only</div>
+                
+            </div>
+            <a class="view-button view-walmart" href="https://www.walmart.com/ip/CELSIUS-Sparkling-Kiwi-Guava-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/483179684" target="_blank" rel="noopener noreferrer">
+                View on Walmart.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="walmart"
+         data-price="19.98"
+         data-percent="33.4">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/Alani-Nu-Energy-Drink-Blue-Slush-12-fl-oz-Cans-12-Pack_754e57f0-e183-4f96-8eaa-0b492e22fe9a.92cd167891a563fbf56dd32bfe6cb099.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Alani Nu Energy Drink Blue Slush (12ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -2697,11 +3154,16 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="walmart">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="walmart"
+         data-price="1.97"
+         data-percent="13.6">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/CELSIUS-Fizz-Free-Peach-Mango-Green-Tea-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_303cf513-31a8-44ec-b80a-60173a9c1ee0.f87a68d91893d415b59d259221feb198.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Celsius Energy Drink Peach Mango Green Tea (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -2725,11 +3187,16 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="walmart">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="walmart"
+         data-price="1.97"
+         data-percent="13.6">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Peach-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_ac52ad45-8bf4-447b-9da9-ec2de92c8164.02835f7020362532703b19bebc374abe.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Celsius Energy Drink Peach Vibe (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -2753,11 +3220,16 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="walmart">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="walmart"
+         data-price="1.97"
+         data-percent="13.6">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Tropical-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_1e54aa77-3832-4d4c-908d-632a1e6e70a3.40b260dae09010a531138af9f7c060ce.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Celsius Energy Drink Tropical Vibe (Starfruit Pineapple) (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -2781,11 +3253,16 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="walmart">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="walmart"
+         data-price="1.97"
+         data-percent="13.6">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Playa-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_d754285a-9624-4006-a6bf-16930ab022a6.1c5e5fc0736781c57652168e4f6840b6.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Celsius Energy Drink Playa Vibe (Pina Colada) (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -2809,11 +3286,16 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="walmart">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="walmart"
+         data-price="1.97"
+         data-percent="13.6">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Watermelon-Essential-Energy-Drink-12-fl-oz-Single-Can_e451904f-0d3b-45b8-b6b9-0c62e765b7c5.f0fd519b0d4f938d3467cfba29da4298.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Celsius Energy Drink Watermelon (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -2837,11 +3319,16 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="walmart">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="walmart"
+         data-price="1.97"
+         data-percent="13.6">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Orange-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_d4c577c2-1e47-4c70-8421-57a2bb824fc1.edb36081e97fddc675fcb62f888cfe7a.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Celsius Energy Drink Orange (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -2865,11 +3352,16 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="walmart">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="walmart"
+         data-price="1.97"
+         data-percent="13.6">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Galaxy-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_7b435452-1a09-4b56-bb98-6e121dc10b0c.583fca215d1edfb7caba51a34a33406b.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Celsius Energy Drink Galaxy Vibe (Strawberry Watermelon) (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -2893,11 +3385,16 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="walmart">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="walmart"
+         data-price="1.97"
+         data-percent="13.6">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Spritz-Vibe-Functional-Energy-Drink-12-Fl-Oz-Single-Can_ac6ecb53-5ef1-4f65-a609-2f553e89bb5b.10cfa5f0c4c4eb5af7d35aa7a15ddbf5.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Celsius Energy Drink Spritz Vibe (Snowball Frost) (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -2921,11 +3418,16 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="walmart">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="walmart"
+         data-price="1.97"
+         data-percent="13.6">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Astro-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_5e15f793-7548-4bcb-b576-7bd4c6074b97.7ffad3734b80645176796a4795fa1691.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Celsius Energy Drink Astro Vibe (Blue Razz) (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -2949,11 +3451,16 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="walmart">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="walmart"
+         data-price="1.97"
+         data-percent="13.6">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Retro-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_9d9cebe1-ea85-4784-a469-82205bd26cfa.a8a07ea573e09ca20e3ae390e5724be2.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Celsius Energy Drink Retro Vibe (Sherbert Slush) (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -2977,11 +3484,16 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="walmart">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="walmart"
+         data-price="1.97"
+         data-percent="13.6">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Watermelon-Lemonade-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_b4966b7c-ad94-4261-bac0-5ebf5173e70a.21414bd9216d3af253d025e1435cbe47.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Celsius Energy Drink Watermelon Lemonade (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -3005,11 +3517,16 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="walmart">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="walmart"
+         data-price="1.97"
+         data-percent="13.6">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Cosmic-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_49e9cb1f-cdd1-4292-9911-c93dcd9467dd.423d38dbd6920fe533d4a2ee96a4cf47.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Celsius Energy Drink Cosmic Vibe (Fruit Punch) (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -3033,11 +3550,16 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="walmart">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="walmart"
+         data-price="1.97"
+         data-percent="13.6">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Kiwi-Strawberry-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_d761c725-c36a-4711-9ab7-7f4f8f6bea82.4ed9664b7dc390c65ee28aeddf260902.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Celsius Energy Drink Kiwi Strawberry (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -3061,11 +3583,16 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="energy drink" data-retailer="walmart">
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="walmart"
+         data-price="1.98"
+         data-percent="13.2">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Arctic-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_e3b42317-cdf6-4d9a-8f43-60f7ee275202.4022cec9e47ce0280d16633b71a4cd7b.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Celsius Energy Drink Arctic Vibe (Frozen Berry) (1ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -3075,11 +3602,11 @@
             <div class="card-title">Celsius Energy Drink Arctic Vibe (Frozen Berry) (1ct)</div>
             <div class="card-pricing">
                 <span class='old-price'>$2.28</span>
-                <span class="new-price">$1.97</span>
-                <span class="percent-off">14% OFF</span>
+                <span class="new-price">$1.98</span>
+                <span class="percent-off">13% OFF</span>
             </div>
             <div class="card-footer">
-                <div class='availability check'>Check store availability</div>
+                <div class='availability online-only'>Online only</div>
                 
             </div>
             <a class="view-button view-walmart" href="https://www.walmart.com/ip/CELSIUS-Sparkling-Arctic-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/273850672" target="_blank" rel="noopener noreferrer">
@@ -3089,11 +3616,16 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="rtd protein shake" data-retailer="walmart">
+    <div class="card"
+         data-section="drinks"
+         data-category="rtd protein shake"
+         data-retailer="walmart"
+         data-price="12.88"
+         data-percent="10.1">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/4-pack-Core-Power-Protein-Shake-with-26g-Protein-by-fairlife-Milk-Vanilla-14-fl-oz_79f5a0d2-1754-4cb7-8678-959b090ef4de.51fdf61ac90deefcd0b040c1d0ef4d1b.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Core Power Protein Shake Vanilla (4ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -3117,11 +3649,16 @@
     </div>
     
 
-    <div class="card" data-section="drinks" data-category="rtd protein shake" data-retailer="walmart">
+    <div class="card"
+         data-section="drinks"
+         data-category="rtd protein shake"
+         data-retailer="walmart"
+         data-price="12.88"
+         data-percent="10.1">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/4-pack-Core-Power-Protein-Shake-with-26g-Protein-by-fairlife-Milk-Strawberry-Banana-14-fl-oz_98538935-d1d5-4a75-b65f-b834289fcacf.ef7e645a98e0c0b87dc9cdf560226625.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Core Power Protein Shake Strawberry Banana (4ct)" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong'>🔥 Strong deal</div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -3144,6 +3681,69 @@
         </div>
     </div>
     
+        </section>
+
+        <!-- ============================ -->
+        <!-- SECTION 3A: ABOUT            -->
+        <!-- ============================ -->
+        <section class="sb-info" id="about">
+            <div class="sb-info-card">
+                <h2 class="sb-info-title">About SnackBuddy</h2>
+                <p class="sb-info-text">
+                    SnackBuddy started after I became a dad, money got tighter, and I tried to get healthier at the same time.
+                </p>
+                <p class="sb-info-text" style="margin-top: 8px;">
+                    When you’re trying to eat better, snacks matter. They can either quietly wreck a calorie deficit or help you hit goals like
+                    <strong>protein</strong> and <strong>fiber</strong> without much effort. I found myself buying the same products over and over,
+                    and I started noticing something: one week they’d be on sale, the next week they wouldn’t. After a while, paying full price
+                    started to feel like I was overpaying for things I bought all the time.
+                </p>
+                <p class="sb-info-text" style="margin-top: 8px;">
+                    So I built SnackBuddy to do one simple thing:
+                    <strong>track the snacks and drinks people already buy and call out real price drops</strong> —
+                    so you can stock up at the right time or try something new when it’s cheaper.
+                </p>
+            </div>
+        </section>
+
+        <!-- ============================ -->
+        <!-- SECTION 3B: HOW IT WORKS     -->
+        <!-- ============================ -->
+        <section class="sb-info" id="how-it-works">
+            <div class="sb-info-card">
+                <h2 class="sb-info-title">How SnackBuddy works</h2>
+                <p class="sb-info-text">
+                    SnackBuddy tracks prices for a growing list of better-for-you snacks and drinks across major retailers.
+                </p>
+                <p class="sb-info-text" style="margin-top: 8px;">
+                    At its core, it’s pretty simple: we keep an eye on specific product pages and pay attention when prices move.
+                    When something drops, it shows up here so more people can take advantage of it — without having to constantly
+                    check themselves.
+                </p>
+                <p class="sb-info-text" style="margin-top: 8px;">
+                    Don’t see a product or retailer you want tracked yet? Let me know — the list is expanding over time.
+                </p>
+                <p class="sb-note">
+                    Note: Prices and availability can vary by location, especially for in-store items.
+                </p>
+            </div>
+        </section>
+
+            <div class="sb-info-card" id="subscribe">
+                <h2 class="sb-info-title">Get daily deal emails</h2>
+                <p class="sb-info-text">
+                    Want a quick daily digest of the best finds? Drop your email below.
+                </p>
+
+                <div class="sb-subscribe-row">
+                    <input class="sb-email" type="email" placeholder="you@example.com" />
+                    <button class="sb-subscribe-btn" type="button">Notify me</button>
+                </div>
+
+                <div class="sb-note">
+                    This signup box is a placeholder for now (no spam, ever). The goal is simple: fewer “full price” purchases for the stuff you already buy.
+                </div>
+            </div>
         </section>
     </main>
 
@@ -3181,19 +3781,28 @@
         if (closeButton) {
           closeButton.addEventListener("click", closeNav);
         }
+
+        // Close drawer when clicking a link
+        const navLinks = drawer.querySelectorAll("a.sb-nav-link");
+        navLinks.forEach(function(link) {
+          link.addEventListener("click", closeNav);
+        });
       });
     </script>
 
-    <!-- JS for filters -->
+    <!-- JS for filters + sort -->
     <script>
       document.addEventListener("DOMContentLoaded", function () {
+        const grid = document.getElementById("deals-list");
         const cards = Array.from(document.querySelectorAll(".card"));
+
         const retailerFilter = document.getElementById("filter-retailer");
         const sectionFilter = document.getElementById("filter-section");
         const categoryFilter = document.getElementById("filter-category");
+        const sortSelect = document.getElementById("sort-deals");
         const countEl = document.getElementById("deal-count");
 
-        if (!cards.length || !retailerFilter || !sectionFilter || !categoryFilter || !countEl) {
+        if (!grid || !cards.length || !retailerFilter || !sectionFilter || !categoryFilter || !countEl) {
           return;
         }
 
@@ -3213,12 +3822,19 @@
           categoryFilter.appendChild(opt);
         });
 
-        function applyFilters() {
+        // Save original order so "best" can mean "default"
+        cards.forEach(function(card, idx) {
+          card.dataset.originalIndex = String(idx);
+        });
+
+        function applyFiltersAndSort() {
           const r = retailerFilter.value;
           const s = sectionFilter.value;
           const c = categoryFilter.value;
+          const sortMode = sortSelect ? sortSelect.value : "best";
 
-          let shown = 0;
+          // 1) Filter
+          let shownCards = [];
 
           cards.forEach(function (card) {
             const matchRetailer = !r || card.dataset.retailer === r;
@@ -3227,18 +3843,49 @@
 
             if (matchRetailer && matchSection && matchCategory) {
               card.style.display = "";
-              shown++;
+              shownCards.push(card);
             } else {
               card.style.display = "none";
             }
           });
 
-          countEl.textContent = "👀 Showing " + shown + " deals";
+          // 2) Sort visible cards
+          shownCards.sort(function(a, b) {
+            const aPrice = parseFloat(a.dataset.price || "0");
+            const bPrice = parseFloat(b.dataset.price || "0");
+            const aPct = parseFloat(a.dataset.percent || "0");
+            const bPct = parseFloat(b.dataset.percent || "0");
+            const aIdx = parseInt(a.dataset.originalIndex || "0", 10);
+            const bIdx = parseInt(b.dataset.originalIndex || "0", 10);
+
+            if (sortMode === "price_asc") {
+              if (aPrice !== bPrice) return aPrice - bPrice;
+              return bPct - aPct; // tie-breaker: higher % off first
+            }
+            if (sortMode === "price_desc") {
+              if (aPrice !== bPrice) return bPrice - aPrice;
+              return bPct - aPct;
+            }
+
+            // "best" = default/original order
+            return aIdx - bIdx;
+          });
+
+          // 3) Re-append visible cards in sorted order
+          shownCards.forEach(function(card) {
+            grid.appendChild(card);
+          });
+
+          countEl.textContent = "👀 Showing " + shownCards.length + " deals";
         }
 
-        retailerFilter.addEventListener("change", applyFilters);
-        sectionFilter.addEventListener("change", applyFilters);
-        categoryFilter.addEventListener("change", applyFilters);
+        retailerFilter.addEventListener("change", applyFiltersAndSort);
+        sectionFilter.addEventListener("change", applyFiltersAndSort);
+        categoryFilter.addEventListener("change", applyFiltersAndSort);
+        if (sortSelect) sortSelect.addEventListener("change", applyFiltersAndSort);
+
+        // Run once on load
+        applyFiltersAndSort();
       });
     </script>
 </body>
