@@ -821,6 +821,20 @@ def build_page_html(deals):
             filter: brightness(1.03);
         }}
 
+.sb-subscribe-btn{{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}}
+
+.sb-subscribe-alt{{
+  font-size: 13px;
+  color: var(--text-muted);
+  text-decoration: underline;
+  font-weight: 600;
+}}
+
         .sb-note {{
             margin-top: 10px;
             font-size: 13px;
@@ -989,17 +1003,27 @@ def build_page_html(deals):
             <div class="sb-info-card" id="subscribe">
                 <h2 class="sb-info-title">Get daily deal emails</h2>
                 <p class="sb-info-text">
-                    Want a quick daily digest of the best finds? Drop your email below.
+                    Want a quick digest of the best finds? Drop your email below.
                 </p>
 
                 <div class="sb-subscribe-row">
-                    <input class="sb-email" type="email" placeholder="you@example.com" />
-                    <button class="sb-subscribe-btn" type="button">Notify me</button>
-                </div>
+    <a class="sb-subscribe-btn"
+       href="https://forms.gle/YatCfNYrLdALVq1N8"
+       target="_blank"
+       rel="noopener noreferrer">
+        Get daily deal emails
+    </a>
 
-                <div class="sb-note">
-                    This signup box is a placeholder for now (no spam, ever). The goal is simple: fewer “full price” purchases for the stuff you already buy.
-                </div>
+    <a class="sb-subscribe-alt"
+       href="mailto:savewithsnackbuddy@gmail.com?subject=SnackBuddy%20Daily%20Deals">
+        Or email us: savewithsnackbuddy@gmail.com
+    </a>
+</div>
+
+<div class="sb-note">
+    You’ll get a quick daily digest when the best deals are worth grabbing. No spam—ever.
+</div>
+
             </div>
         </section>
     </main>
