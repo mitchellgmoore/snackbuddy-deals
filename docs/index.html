@@ -314,6 +314,97 @@
         }
 
         /* ============================ */
+        /* ACTIVE FILTERS INDICATOR     */
+        /* ============================ */
+
+        .sb-active-filters {
+            max-width: 1100px;
+            margin: 0 auto 12px;
+            padding: 0 16px;
+            display: none; /* JS will show when filters are active */
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .sb-active-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        .sb-active-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .sb-chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .sb-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: var(--radius-pill);
+            background: #ffffff;
+            border: 1px solid var(--border-subtle);
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-main);
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+        }
+
+        .sb-chip small {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--text-muted);
+        }
+
+        .sb-chip button {
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 14px;
+            line-height: 1;
+            padding: 0;
+            color: var(--text-muted);
+        }
+
+        .sb-chip button:hover {
+            color: var(--text-main);
+        }
+
+        .sb-clear-all {
+            border: 1px solid var(--border-subtle);
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .sb-clear-all:hover {
+            filter: brightness(0.98);
+        }
+
+        @media (max-width: 640px) {
+            .sb-active-filters {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+            .sb-clear-all {
+                width: 100%;
+            }
+        }
+
+        /* ============================ */
         /* SECTION 2: DEAL CARD GRID    */
         /* ============================ */
 
@@ -688,7 +779,7 @@
 
             <div class="filter-controls">
                 <!-- Retailer Filter -->
-                <select id="filter-retailer" class="sb-filter">
+                <select id="filter-retailer" class="sb-filter" multiple>
                     <option value="">All retailers</option>
                     <option value="walmart">Walmart</option>
                     <option value="kroger">Kroger</option>
@@ -696,14 +787,14 @@
                 </select>
 
                 <!-- Section Filter -->
-                <select id="filter-section" class="sb-filter">
+                <select id="filter-section" class="sb-filter" multiple>
                     <option value="">All sections</option>
                     <option value="food">Food</option>
                     <option value="drinks">Drinks</option>
                 </select>
 
                 <!-- Category Filter -->
-                <select id="filter-category" class="sb-filter">
+                <select id="filter-category" class="sb-filter" multiple>
                     <option value="">All categories</option>
                     <!-- JS will populate -->
                 </select>
@@ -719,6 +810,20 @@
             <div id="deal-count" class="count-pill">
                 👀 Showing 87 deals
             </div>
+        </section>
+
+        <!-- ============================ -->
+        <!-- ACTIVE FILTERS INDICATOR     -->
+        <!-- ============================ -->
+        <section class="sb-active-filters" id="active-filters" aria-live="polite">
+            <div class="sb-active-left">
+                <span class="sb-active-label">Active:</span>
+                <div class="sb-chip-row" id="active-filter-chips"></div>
+            </div>
+
+            <button class="sb-clear-all" id="clear-all-filters" type="button">
+                Clear all
+            </button>
         </section>
 
         <!-- ============================ -->
@@ -3673,146 +3778,195 @@
     </main>
 
     <!-- Tiny JS for slide-out menu -->
-    <script>
-      document.addEventListener("DOMContentLoaded", function() {
-        const menuButton = document.querySelector(".sb-menu-button");
-        const drawer = document.getElementById("sb-nav-drawer");
-        const backdrop = document.getElementById("sb-nav-backdrop");
-        const closeButton = document.querySelector(".sb-nav-close");
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const grid = document.getElementById("deals-list");
+    const cards = Array.from(document.querySelectorAll(".card"));
 
-        if (!menuButton || !drawer || !backdrop) return;
+    const retailerFilter = document.getElementById("filter-retailer");
+    const sectionFilter  = document.getElementById("filter-section");
+    const categoryFilter = document.getElementById("filter-category");
+    const sortSelect     = document.getElementById("sort-deals");
+    const countEl        = document.getElementById("deal-count");
 
-        function openNav() {
-          drawer.classList.add("open");
-          backdrop.classList.add("open");
-          menuButton.setAttribute("aria-expanded", "true");
-        }
+    const chipsWrap     = document.getElementById("active-filter-chips");
+    const clearAllBtn   = document.getElementById("clear-all-filters");
+    const activeSection = document.getElementById("active-filters");
 
-        function closeNav() {
-          drawer.classList.remove("open");
-          backdrop.classList.remove("open");
-          menuButton.setAttribute("aria-expanded", "false");
-        }
+    if (!grid || !cards.length || !retailerFilter || !sectionFilter || !categoryFilter || !countEl || !chipsWrap || !clearAllBtn || !activeSection) {
+      return;
+    }
 
-        menuButton.addEventListener("click", function() {
-          if (drawer.classList.contains("open")) {
-            closeNav();
-          } else {
-            openNav();
-          }
-        });
+    function selectedValues(selectEl) {
+      return Array.from(selectEl.selectedOptions).map(function (o) {
+        return o.value;
+      }).filter(Boolean);
+    }
 
-        backdrop.addEventListener("click", closeNav);
-        if (closeButton) {
-          closeButton.addEventListener("click", closeNav);
-        }
+    function clearMulti(selectEl) {
+      Array.from(selectEl.options).forEach(function (o) {
+        o.selected = false;
+      });
+      const allOpt = selectEl.querySelector('option[value=""]');
+      if (allOpt) {
+        allOpt.selected = true;
+      }
+    }
 
-        // Close drawer when clicking a link
-        const navLinks = drawer.querySelectorAll("a.sb-nav-link");
-        navLinks.forEach(function(link) {
-          link.addEventListener("click", closeNav);
+    /* Build dynamic category list */
+    const categories = Array.from(
+      new Set(
+        cards
+          .map(function (c) { return c.dataset.category || ""; })
+          .filter(function (val) { return val; })
+      )
+    ).sort();
+
+    categories.forEach(function (cat) {
+      const opt = document.createElement("option");
+      opt.value = cat;
+      opt.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
+      categoryFilter.appendChild(opt);
+    });
+
+    /* Preserve original order */
+    cards.forEach(function (card, idx) {
+      card.dataset.originalIndex = String(idx);
+    });
+
+    function titleize(val) {
+      if (!val) return "";
+      return val.charAt(0).toUpperCase() + val.slice(1);
+    }
+
+    function renderChips() {
+      const r = selectedValues(retailerFilter);
+      const s = selectedValues(sectionFilter);
+      const c = selectedValues(categoryFilter);
+      const sortMode = sortSelect ? sortSelect.value : "best";
+
+      chipsWrap.innerHTML = "";
+
+      function addChip(label, value, onClear) {
+        const chip = document.createElement("div");
+        chip.className = "sb-chip";
+
+        chip.innerHTML =
+          "<small>" + label + ":</small> " +
+          value +
+          ' <button type="button" aria-label="Clear ' + label + '">×</button>';
+
+        chip.querySelector("button").addEventListener("click", onClear);
+        chipsWrap.appendChild(chip);
+      }
+
+      r.forEach(function (val) {
+        addChip("Retailer", titleize(val), function () {
+          Array.from(retailerFilter.options).forEach(function (o) {
+            if (o.value === val) o.selected = false;
+          });
+          applyFiltersAndSort();
         });
       });
-    </script>
 
-    <!-- JS for filters + sort -->
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const grid = document.getElementById("deals-list");
-        const cards = Array.from(document.querySelectorAll(".card"));
-
-        const retailerFilter = document.getElementById("filter-retailer");
-        const sectionFilter = document.getElementById("filter-section");
-        const categoryFilter = document.getElementById("filter-category");
-        const sortSelect = document.getElementById("sort-deals");
-        const countEl = document.getElementById("deal-count");
-
-        if (!grid || !cards.length || !retailerFilter || !sectionFilter || !categoryFilter || !countEl) {
-          return;
-        }
-
-        // Build dynamic category list from data-category attributes
-        const categories = Array.from(
-          new Set(
-            cards
-              .map(function (c) { return c.dataset.category || ""; })
-              .filter(function (val) { return val; })
-          )
-        ).sort();
-
-        categories.forEach(function (cat) {
-          const opt = document.createElement("option");
-          opt.value = cat;
-          opt.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
-          categoryFilter.appendChild(opt);
+      s.forEach(function (val) {
+        addChip("Section", titleize(val), function () {
+          Array.from(sectionFilter.options).forEach(function (o) {
+            if (o.value === val) o.selected = false;
+          });
+          applyFiltersAndSort();
         });
-
-        // Save original order so "best" can mean "default"
-        cards.forEach(function(card, idx) {
-          card.dataset.originalIndex = String(idx);
-        });
-
-        function applyFiltersAndSort() {
-          const r = retailerFilter.value;
-          const s = sectionFilter.value;
-          const c = categoryFilter.value;
-          const sortMode = sortSelect ? sortSelect.value : "best";
-
-          // 1) Filter
-          let shownCards = [];
-
-          cards.forEach(function (card) {
-            const matchRetailer = !r || card.dataset.retailer === r;
-            const matchSection = !s || card.dataset.section === s;
-            const matchCategory = !c || card.dataset.category === c;
-
-            if (matchRetailer && matchSection && matchCategory) {
-              card.style.display = "";
-              shownCards.push(card);
-            } else {
-              card.style.display = "none";
-            }
-          });
-
-          // 2) Sort visible cards
-          shownCards.sort(function(a, b) {
-            const aPrice = parseFloat(a.dataset.price || "0");
-            const bPrice = parseFloat(b.dataset.price || "0");
-            const aPct = parseFloat(a.dataset.percent || "0");
-            const bPct = parseFloat(b.dataset.percent || "0");
-            const aIdx = parseInt(a.dataset.originalIndex || "0", 10);
-            const bIdx = parseInt(b.dataset.originalIndex || "0", 10);
-
-            if (sortMode === "price_asc") {
-              if (aPrice !== bPrice) return aPrice - bPrice;
-              return bPct - aPct; // tie-breaker: higher % off first
-            }
-            if (sortMode === "price_desc") {
-              if (aPrice !== bPrice) return bPrice - aPrice;
-              return bPct - aPct;
-            }
-
-            // "best" = default/original order
-            return aIdx - bIdx;
-          });
-
-          // 3) Re-append visible cards in sorted order
-          shownCards.forEach(function(card) {
-            grid.appendChild(card);
-          });
-
-          countEl.textContent = "👀 Showing " + shownCards.length + " deals";
-        }
-
-        retailerFilter.addEventListener("change", applyFiltersAndSort);
-        sectionFilter.addEventListener("change", applyFiltersAndSort);
-        categoryFilter.addEventListener("change", applyFiltersAndSort);
-        if (sortSelect) sortSelect.addEventListener("change", applyFiltersAndSort);
-
-        // Run once on load
-        applyFiltersAndSort();
       });
-    </script>
+
+      c.forEach(function (val) {
+        addChip("Category", titleize(val), function () {
+          Array.from(categoryFilter.options).forEach(function (o) {
+            if (o.value === val) o.selected = false;
+          });
+          applyFiltersAndSort();
+        });
+      });
+
+      if (sortMode && sortMode !== "best") {
+        const sortLabel =
+          sortMode === "price_asc" ? "Price (low → high)" :
+          sortMode === "price_desc" ? "Price (high → low)" :
+          titleize(sortMode);
+
+        addChip("Sort", sortLabel, function () {
+          sortSelect.value = "best";
+          applyFiltersAndSort();
+        });
+      }
+
+      activeSection.style.display = chipsWrap.children.length ? "flex" : "none";
+    }
+
+    clearAllBtn.addEventListener("click", function () {
+      clearMulti(retailerFilter);
+      clearMulti(sectionFilter);
+      clearMulti(categoryFilter);
+      if (sortSelect) sortSelect.value = "best";
+      applyFiltersAndSort();
+    });
+
+    function applyFiltersAndSort() {
+      const r = selectedValues(retailerFilter);
+      const s = selectedValues(sectionFilter);
+      const c = selectedValues(categoryFilter);
+      const sortMode = sortSelect ? sortSelect.value : "best";
+
+      let shownCards = [];
+
+      cards.forEach(function (card) {
+        const matchRetailer = r.length === 0 || r.includes(card.dataset.retailer);
+        const matchSection  = s.length === 0 || s.includes(card.dataset.section);
+        const matchCategory = c.length === 0 || c.includes(card.dataset.category);
+
+        if (matchRetailer && matchSection && matchCategory) {
+          card.style.display = "";
+          shownCards.push(card);
+        } else {
+          card.style.display = "none";
+        }
+      });
+
+      shownCards.sort(function (a, b) {
+        const aPrice = parseFloat(a.dataset.price || "0");
+        const bPrice = parseFloat(b.dataset.price || "0");
+        const aPct   = parseFloat(a.dataset.percent || "0");
+        const bPct   = parseFloat(b.dataset.percent || "0");
+        const aIdx   = parseInt(a.dataset.originalIndex || "0", 10);
+        const bIdx   = parseInt(b.dataset.originalIndex || "0", 10);
+
+        if (sortMode === "price_asc") {
+          if (aPrice !== bPrice) return aPrice - bPrice;
+          return bPct - aPct;
+        }
+        if (sortMode === "price_desc") {
+          if (aPrice !== bPrice) return bPrice - aPrice;
+          return bPct - aPct;
+        }
+
+        return aIdx - bIdx;
+      });
+
+      shownCards.forEach(function (card) {
+        grid.appendChild(card);
+      });
+
+      countEl.textContent = "👀 Showing " + shownCards.length + " deals";
+      renderChips();
+    }
+
+    retailerFilter.addEventListener("change", applyFiltersAndSort);
+    sectionFilter.addEventListener("change", applyFiltersAndSort);
+    categoryFilter.addEventListener("change", applyFiltersAndSort);
+    if (sortSelect) sortSelect.addEventListener("change", applyFiltersAndSort);
+
+    applyFiltersAndSort();
+  });
+</script>
 </body>
 </html>
     
