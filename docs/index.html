@@ -177,6 +177,183 @@
             line-height: 1.35;
         }
 
+/* ============================ */
+/* FILTER DRAWER (LEFT)         */
+/* ============================ */
+
+.sb-filter-open{
+  border: 1px solid var(--border-subtle);
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sb-filter-icon{
+  font-size: 16px;
+  line-height: 1;
+}
+
+.sb-filter-open:hover{
+  filter: brightness(0.98);
+}
+
+.sb-filter-open:active{
+  transform: translateY(1px);
+}
+
+.sb-filter-open:hover{ filter: brightness(0.98); }
+
+.sb-filter-count{
+  font-weight: 900;
+  color: var(--text-muted);
+}
+
+.sb-filter-backdrop{
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease-out;
+  z-index: 39;
+}
+
+.sb-filter-backdrop.open{
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sb-filter-drawer{
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: min(340px, 92vw);
+  background: #ffffff;
+  box-shadow: 8px 0 20px rgba(15,23,42,0.25);
+  transform: translateX(-105%);
+  transition: transform 0.2s ease-out;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+}
+
+.sb-filter-drawer.open{
+  transform: translateX(0%);
+}
+
+.sb-filter-inner{
+  padding: 16px 16px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 12px;
+}
+
+.sb-filter-header{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sb-filter-title{
+  font-weight: 900;
+  font-size: 18px;
+}
+
+.sb-filter-close{
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.sb-filter-groups{
+  overflow: auto;
+  padding-right: 6px;
+}
+
+.sb-filter-group{
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 10px 10px;
+  margin-bottom: 10px;
+}
+
+.sb-filter-group-header{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+}
+
+.sb-filter-group-title{
+  font-weight: 900;
+  font-size: 13px;
+}
+
+.sb-filter-group-meta{
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 800;
+}
+
+.sb-filter-options{
+  margin-top: 10px;
+  display: none;
+}
+
+.sb-filter-group.open .sb-filter-options{
+  display: grid;
+  gap: 8px;
+}
+
+.sb-check{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.sb-check input{
+  width: 16px;
+  height: 16px;
+}
+
+.sb-filter-footer{
+  margin-top: auto;
+  display: flex;
+  gap: 10px;
+}
+
+.sb-filter-clear{
+  flex: 1;
+  border: 1px solid var(--border-subtle);
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.sb-filter-apply{
+  flex: 1;
+  border: none;
+  background: var(--navy);
+  color: #ffffff;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
         /* ============================ */
         /* SECTION 1B: HERO BANNER      */
         /* ============================ */
@@ -735,6 +912,29 @@
             </div>
         </div>
     </nav>
+    <div class="sb-nav-backdrop" id="sb-nav-backdrop"></div>
+    <nav class="sb-nav-drawer" id="sb-nav-drawer"> ... </nav>
+<!-- Filters Drawer Backdrop + Drawer -->
+<div class="sb-filter-backdrop" id="sb-filter-backdrop"></div>
+
+<aside class="sb-filter-drawer" id="sb-filter-drawer" aria-label="Filters">
+  <div class="sb-filter-inner">
+    <div class="sb-filter-header">
+      <div class="sb-filter-title">Filters</div>
+      <button class="sb-filter-close" id="sb-filter-close" aria-label="Close filters">&times;</button>
+    </div>
+
+    <div class="sb-filter-groups" id="sb-filter-groups">
+      <!-- JS injects groups + checkboxes -->
+    </div>
+
+    <div class="sb-filter-footer">
+      <button class="sb-filter-clear" id="sb-filter-clear" type="button">Clear</button>
+      <button class="sb-filter-apply" id="sb-filter-apply" type="button">Apply</button>
+    </div>
+  </div>
+</aside>
+
 
     <!-- ============================ -->
     <!-- SECTION 1A: NAVBAR           -->
@@ -771,46 +971,29 @@
             </div>
         </section>
 
-        <!-- =================================== -->
-        <!-- SECTION 1C: FILTERS + DEAL COUNT ROW -->
-        <!-- =================================== -->
-        <section class="sb-utility-row">
-            <div class="pill-label">Filters</div>
+<!-- =================================== -->
+<!-- SECTION 1C: FILTERS + DEAL COUNT ROW -->
+<!-- =================================== -->
+<section class="sb-utility-row">
+  <div class="filter-controls">
+<button class="sb-filter-open" id="sb-filter-open" type="button" aria-label="Open filters">
+  <span class="sb-filter-icon">🎛️</span>
+  Filters
+  <span class="sb-filter-count" id="sb-filter-count">(0)</span>
+</button>
 
-            <div class="filter-controls">
-                <!-- Retailer Filter -->
-                <select id="filter-retailer" class="sb-filter" multiple>
-                    <option value="">All retailers</option>
-                    <option value="walmart">Walmart</option>
-                    <option value="kroger">Kroger</option>
-                    <option value="target">Target</option>
-                </select>
+    <!-- Sort stays -->
+    <select id="sort-deals" class="sb-filter">
+      <option value="best">Sort: Best deals</option>
+      <option value="price_asc">Sort: Price (low → high)</option>
+      <option value="price_desc">Sort: Price (high → low)</option>
+    </select>
+  </div>
 
-                <!-- Section Filter -->
-                <select id="filter-section" class="sb-filter" multiple>
-                    <option value="">All sections</option>
-                    <option value="food">Food</option>
-                    <option value="drinks">Drinks</option>
-                </select>
-
-                <!-- Category Filter -->
-                <select id="filter-category" class="sb-filter" multiple>
-                    <option value="">All categories</option>
-                    <!-- JS will populate -->
-                </select>
-
-                <!-- Sort -->
-                <select id="sort-deals" class="sb-filter">
-                    <option value="best">Sort: Best deals</option>
-                    <option value="price_asc">Sort: Price (low → high)</option>
-                    <option value="price_desc">Sort: Price (high → low)</option>
-                </select>
-            </div>
-
-            <div id="deal-count" class="count-pill">
-                👀 Showing 87 deals
-            </div>
-        </section>
+  <div id="deal-count" class="count-pill">
+    👀 Showing 87 deals
+  </div>
+</section>
 
         <!-- ============================ -->
         <!-- ACTIVE FILTERS INDICATOR     -->
@@ -3779,193 +3962,288 @@
 
     <!-- Tiny JS for slide-out menu -->
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const grid = document.getElementById("deals-list");
-    const cards = Array.from(document.querySelectorAll(".card"));
+document.addEventListener("DOMContentLoaded", function () {
+  const grid = document.getElementById("deals-list");
+  const cards = Array.from(document.querySelectorAll(".card"));
 
-    const retailerFilter = document.getElementById("filter-retailer");
-    const sectionFilter  = document.getElementById("filter-section");
-    const categoryFilter = document.getElementById("filter-category");
-    const sortSelect     = document.getElementById("sort-deals");
-    const countEl        = document.getElementById("deal-count");
+  const sortSelect = document.getElementById("sort-deals");
+  const countEl = document.getElementById("deal-count");
 
-    const chipsWrap     = document.getElementById("active-filter-chips");
-    const clearAllBtn   = document.getElementById("clear-all-filters");
-    const activeSection = document.getElementById("active-filters");
+  const chipsWrap = document.getElementById("active-filter-chips");
+  const clearAllBtn = document.getElementById("clear-all-filters");
+  const activeSection = document.getElementById("active-filters");
 
-    if (!grid || !cards.length || !retailerFilter || !sectionFilter || !categoryFilter || !countEl || !chipsWrap || !clearAllBtn || !activeSection) {
-      return;
-    }
+  const openBtn = document.getElementById("sb-filter-open");
+  const drawer = document.getElementById("sb-filter-drawer");
+  const backdrop = document.getElementById("sb-filter-backdrop");
+  const closeBtn = document.getElementById("sb-filter-close");
+  const applyBtn = document.getElementById("sb-filter-apply");
+  const clearBtn = document.getElementById("sb-filter-clear");
+  const groupsWrap = document.getElementById("sb-filter-groups");
+  const filterCountEl = document.getElementById("sb-filter-count");
 
-    function selectedValues(selectEl) {
-      return Array.from(selectEl.selectedOptions).map(function (o) {
-        return o.value;
-      }).filter(Boolean);
-    }
+  if (!grid || !cards.length || !sortSelect || !countEl || !openBtn || !drawer || !backdrop || !groupsWrap || !applyBtn || !clearBtn || !filterCountEl) {
+    return;
+  }
 
-    function clearMulti(selectEl) {
-      Array.from(selectEl.options).forEach(function (o) {
-        o.selected = false;
-      });
-      const allOpt = selectEl.querySelector('option[value=""]');
-      if (allOpt) {
-        allOpt.selected = true;
-      }
-    }
-
-    /* Build dynamic category list */
-    const categories = Array.from(
-      new Set(
-        cards
-          .map(function (c) { return c.dataset.category || ""; })
-          .filter(function (val) { return val; })
-      )
-    ).sort();
-
-    categories.forEach(function (cat) {
-      const opt = document.createElement("option");
-      opt.value = cat;
-      opt.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
-      categoryFilter.appendChild(opt);
-    });
-
-    /* Preserve original order */
-    cards.forEach(function (card, idx) {
-      card.dataset.originalIndex = String(idx);
-    });
-
-    function titleize(val) {
-      if (!val) return "";
-      return val.charAt(0).toUpperCase() + val.slice(1);
-    }
-
-    function renderChips() {
-      const r = selectedValues(retailerFilter);
-      const s = selectedValues(sectionFilter);
-      const c = selectedValues(categoryFilter);
-      const sortMode = sortSelect ? sortSelect.value : "best";
-
-      chipsWrap.innerHTML = "";
-
-      function addChip(label, value, onClear) {
-        const chip = document.createElement("div");
-        chip.className = "sb-chip";
-
-        chip.innerHTML =
-          "<small>" + label + ":</small> " +
-          value +
-          ' <button type="button" aria-label="Clear ' + label + '">×</button>';
-
-        chip.querySelector("button").addEventListener("click", onClear);
-        chipsWrap.appendChild(chip);
-      }
-
-      r.forEach(function (val) {
-        addChip("Retailer", titleize(val), function () {
-          Array.from(retailerFilter.options).forEach(function (o) {
-            if (o.value === val) o.selected = false;
-          });
-          applyFiltersAndSort();
-        });
-      });
-
-      s.forEach(function (val) {
-        addChip("Section", titleize(val), function () {
-          Array.from(sectionFilter.options).forEach(function (o) {
-            if (o.value === val) o.selected = false;
-          });
-          applyFiltersAndSort();
-        });
-      });
-
-      c.forEach(function (val) {
-        addChip("Category", titleize(val), function () {
-          Array.from(categoryFilter.options).forEach(function (o) {
-            if (o.value === val) o.selected = false;
-          });
-          applyFiltersAndSort();
-        });
-      });
-
-      if (sortMode && sortMode !== "best") {
-        const sortLabel =
-          sortMode === "price_asc" ? "Price (low → high)" :
-          sortMode === "price_desc" ? "Price (high → low)" :
-          titleize(sortMode);
-
-        addChip("Sort", sortLabel, function () {
-          sortSelect.value = "best";
-          applyFiltersAndSort();
-        });
-      }
-
-      activeSection.style.display = chipsWrap.children.length ? "flex" : "none";
-    }
-
-    clearAllBtn.addEventListener("click", function () {
-      clearMulti(retailerFilter);
-      clearMulti(sectionFilter);
-      clearMulti(categoryFilter);
-      if (sortSelect) sortSelect.value = "best";
-      applyFiltersAndSort();
-    });
-
-    function applyFiltersAndSort() {
-      const r = selectedValues(retailerFilter);
-      const s = selectedValues(sectionFilter);
-      const c = selectedValues(categoryFilter);
-      const sortMode = sortSelect ? sortSelect.value : "best";
-
-      let shownCards = [];
-
-      cards.forEach(function (card) {
-        const matchRetailer = r.length === 0 || r.includes(card.dataset.retailer);
-        const matchSection  = s.length === 0 || s.includes(card.dataset.section);
-        const matchCategory = c.length === 0 || c.includes(card.dataset.category);
-
-        if (matchRetailer && matchSection && matchCategory) {
-          card.style.display = "";
-          shownCards.push(card);
-        } else {
-          card.style.display = "none";
-        }
-      });
-
-      shownCards.sort(function (a, b) {
-        const aPrice = parseFloat(a.dataset.price || "0");
-        const bPrice = parseFloat(b.dataset.price || "0");
-        const aPct   = parseFloat(a.dataset.percent || "0");
-        const bPct   = parseFloat(b.dataset.percent || "0");
-        const aIdx   = parseInt(a.dataset.originalIndex || "0", 10);
-        const bIdx   = parseInt(b.dataset.originalIndex || "0", 10);
-
-        if (sortMode === "price_asc") {
-          if (aPrice !== bPrice) return aPrice - bPrice;
-          return bPct - aPct;
-        }
-        if (sortMode === "price_desc") {
-          if (aPrice !== bPrice) return bPrice - aPrice;
-          return bPct - aPct;
-        }
-
-        return aIdx - bIdx;
-      });
-
-      shownCards.forEach(function (card) {
-        grid.appendChild(card);
-      });
-
-      countEl.textContent = "👀 Showing " + shownCards.length + " deals";
-      renderChips();
-    }
-
-    retailerFilter.addEventListener("change", applyFiltersAndSort);
-    sectionFilter.addEventListener("change", applyFiltersAndSort);
-    categoryFilter.addEventListener("change", applyFiltersAndSort);
-    if (sortSelect) sortSelect.addEventListener("change", applyFiltersAndSort);
-
-    applyFiltersAndSort();
+  // Preserve original order
+  cards.forEach(function(card, idx) {
+    card.dataset.originalIndex = String(idx);
   });
+
+  function uniq(values) {
+    return Array.from(new Set(values.filter(Boolean))).sort();
+  }
+
+  const retailers = uniq(cards.map(function(c) { return c.dataset.retailer; }));
+  const sections  = uniq(cards.map(function(c) { return c.dataset.section; }));
+  const categories = uniq(cards.map(function(c) { return c.dataset.category; }));
+
+  const selected = {
+    retailer: new Set(),
+    section: new Set(),
+    category: new Set(),
+  };
+
+  function titleize(s) {
+    if (!s) return "";
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+
+  function openDrawer() {
+    drawer.classList.add("open");
+    backdrop.classList.add("open");
+  }
+
+  function closeDrawer() {
+    drawer.classList.remove("open");
+    backdrop.classList.remove("open");
+  }
+
+  openBtn.addEventListener("click", openDrawer);
+  backdrop.addEventListener("click", closeDrawer);
+  if (closeBtn) closeBtn.addEventListener("click", closeDrawer);
+
+  function updateFilterCount() {
+    const total = selected.retailer.size + selected.section.size + selected.category.size;
+    filterCountEl.textContent = "(" + total + ")";
+  }
+
+  function buildGroup(key, title, options) {
+    const group = document.createElement("div");
+    group.className = "sb-filter-group open";
+
+    const header = document.createElement("div");
+    header.className = "sb-filter-group-header";
+
+    const left = document.createElement("div");
+    left.className = "sb-filter-group-title";
+    left.textContent = title;
+
+    const meta = document.createElement("div");
+    meta.className = "sb-filter-group-meta";
+    meta.textContent = "Any";
+
+    header.appendChild(left);
+    header.appendChild(meta);
+
+    const body = document.createElement("div");
+    body.className = "sb-filter-options";
+
+    function updateMeta() {
+      const n = selected[key].size;
+      meta.textContent = n === 0 ? "Any" : (n + " selected");
+    }
+
+    options.forEach(function(optVal) {
+      const label = document.createElement("label");
+      label.className = "sb-check";
+
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.value = optVal;
+
+      cb.addEventListener("change", function() {
+        if (cb.checked) selected[key].add(optVal);
+        else selected[key].delete(optVal);
+        updateMeta();
+        updateFilterCount();
+      });
+
+      const span = document.createElement("span");
+      span.textContent = titleize(optVal);
+
+      label.appendChild(cb);
+      label.appendChild(span);
+      body.appendChild(label);
+    });
+
+    header.addEventListener("click", function(e) {
+      if (e.target && e.target.tagName === "INPUT") return;
+      group.classList.toggle("open");
+    });
+
+    updateMeta();
+
+    group.appendChild(header);
+    group.appendChild(body);
+
+    group._key = key;
+    group._updateMeta = updateMeta;
+    return group;
+  }
+
+  // Render groups
+  groupsWrap.innerHTML = "";
+  const groupEls = [
+    buildGroup("retailer", "Retailer", retailers),
+    buildGroup("section", "Section", sections),
+    buildGroup("category", "Category", categories),
+  ];
+  groupEls.forEach(function(g) { groupsWrap.appendChild(g); });
+
+  function syncCheckboxes(key) {
+    const group = groupEls.find(function(g) { return g._key === key; });
+    if (!group) return;
+    const inputs = group.querySelectorAll('input[type="checkbox"]');
+    inputs.forEach(function(cb) {
+      cb.checked = selected[key].has(cb.value);
+    });
+    if (group._updateMeta) group._updateMeta();
+  }
+
+  function renderChips() {
+    if (!chipsWrap || !activeSection || !clearAllBtn) return;
+
+    chipsWrap.innerHTML = "";
+
+    function addChip(label, value, onClear) {
+      const chip = document.createElement("div");
+      chip.className = "sb-chip";
+      chip.innerHTML =
+        "<small>" + label + ":</small> " + value +
+        ' <button type="button" aria-label="Clear ' + label + '">×</button>';
+      chip.querySelector("button").addEventListener("click", onClear);
+      chipsWrap.appendChild(chip);
+    }
+
+    selected.retailer.forEach(function(v) {
+      addChip("Retailer", titleize(v), function() {
+        selected.retailer.delete(v);
+        syncCheckboxes("retailer");
+        updateFilterCount();
+        applyFiltersAndSort();
+      });
+    });
+
+    selected.section.forEach(function(v) {
+      addChip("Section", titleize(v), function() {
+        selected.section.delete(v);
+        syncCheckboxes("section");
+        updateFilterCount();
+        applyFiltersAndSort();
+      });
+    });
+
+    selected.category.forEach(function(v) {
+      addChip("Category", titleize(v), function() {
+        selected.category.delete(v);
+        syncCheckboxes("category");
+        updateFilterCount();
+        applyFiltersAndSort();
+      });
+    });
+
+    activeSection.style.display = chipsWrap.children.length ? "flex" : "none";
+  }
+
+  function applyFiltersAndSort() {
+    const sortMode = sortSelect.value;
+
+    const selR = selected.retailer;
+    const selS = selected.section;
+    const selC = selected.category;
+
+    let shown = [];
+
+    cards.forEach(function(card) {
+      const r = card.dataset.retailer;
+      const s = card.dataset.section;
+      const c = card.dataset.category;
+
+      const matchR = selR.size === 0 || selR.has(r);
+      const matchS = selS.size === 0 || selS.has(s);
+      const matchC = selC.size === 0 || selC.has(c);
+
+      if (matchR && matchS && matchC) {
+        card.style.display = "";
+        shown.push(card);
+      } else {
+        card.style.display = "none";
+      }
+    });
+
+    shown.sort(function(a, b) {
+      const aPrice = parseFloat(a.dataset.price || "0");
+      const bPrice = parseFloat(b.dataset.price || "0");
+      const aPct = parseFloat(a.dataset.percent || "0");
+      const bPct = parseFloat(b.dataset.percent || "0");
+      const aIdx = parseInt(a.dataset.originalIndex || "0", 10);
+      const bIdx = parseInt(b.dataset.originalIndex || "0", 10);
+
+      if (sortMode === "price_asc") {
+        if (aPrice !== bPrice) return aPrice - bPrice;
+        return bPct - aPct;
+      }
+      if (sortMode === "price_desc") {
+        if (aPrice !== bPrice) return bPrice - aPrice;
+        return bPct - aPct;
+      }
+      return aIdx - bIdx;
+    });
+
+    shown.forEach(function(card) {
+      grid.appendChild(card);
+    });
+
+    countEl.textContent = "👀 Showing " + shown.length + " deals";
+    renderChips();
+  }
+
+  function clearAll() {
+    selected.retailer.clear();
+    selected.section.clear();
+    selected.category.clear();
+
+    groupEls.forEach(function(g) {
+      const inputs = g.querySelectorAll('input[type="checkbox"]');
+      inputs.forEach(function(cb) { cb.checked = false; });
+      if (g._updateMeta) g._updateMeta();
+    });
+
+    updateFilterCount();
+    applyFiltersAndSort();
+  }
+
+  // Drawer buttons
+  applyBtn.addEventListener("click", function() {
+    applyFiltersAndSort();
+    closeDrawer();
+  });
+
+  clearBtn.addEventListener("click", clearAll);
+
+  // Existing chip-row Clear all
+  if (clearAllBtn) {
+    clearAllBtn.addEventListener("click", clearAll);
+  }
+
+  sortSelect.addEventListener("change", applyFiltersAndSort);
+
+  // Initial
+  updateFilterCount();
+  applyFiltersAndSort();
+});
 </script>
 </body>
 </html>
