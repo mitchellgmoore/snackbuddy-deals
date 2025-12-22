@@ -588,6 +588,32 @@ def build_page_html(deals):
   cursor: pointer;
 }}
 
+.sb-filter-actions{{
+  margin-top: auto;
+  display: flex;
+  gap: 10px;
+}}
+
+.sb-filter-action{{
+  flex: 1;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-weight: 800;
+  cursor: pointer;
+  border: 1px solid var(--border-subtle);
+}}
+
+.sb-filter-action.primary{{
+  background: var(--navy);
+  color: #fff;
+  border-color: var(--navy);
+}}
+
+.sb-filter-action.secondary{{
+  background: #fff;
+  color: var(--text-main);
+}}
+
         /* ============================ */
         /* SECTION 1B: HERO BANNER      */
         /* ============================ */
@@ -814,6 +840,84 @@ def build_page_html(deals):
                 width: 100%;
             }}
         }}
+
+/* ============================ */
+/* FILTER DRAWER (LEFT)         */
+/* ============================ */
+
+.sb-filter-open{{
+  border: 1px solid var(--border-subtle);
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}}
+
+.sb-filter-mascot{{
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  display: inline-block;
+}}
+
+.sb-filter-drawer{{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  height: 100vh;
+  background: #ffffff;
+  transform: translateX(-100%);
+  transition: transform 0.22s ease-out;
+  z-index: 40;
+}}
+
+.sb-filter-drawer.open{{
+  transform: translateX(0);
+}}
+
+.sb-filter-inner{{
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}}
+
+.sb-filter-header{{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}}
+
+.sb-filter-title{{
+  font-weight: 800;
+  font-size: 16px;
+}}
+
+/* ============================ */
+/* SEPARATE BACKDROP FOR FILTER */
+/* ============================ */
+
+.sb-filter-backdrop{{
+  position: fixed;
+  inset: 0;
+  background: rgba(15,23,42,0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease-out;
+  z-index: 39;
+}}
+
+.sb-filter-backdrop.open{{
+  opacity: 1;
+  pointer-events: auto;
+}}
+
 
         /* ============================ */
         /* SECTION 2: DEAL CARD GRID    */
@@ -1125,29 +1229,55 @@ def build_page_html(deals):
         }}
     </style>
 </head>
-<body>
-    <!-- Backdrop + Nav Drawer for mobile menu -->
-    <div class="sb-nav-backdrop" id="sb-nav-backdrop"></div>
-    <nav class="sb-nav-drawer" id="sb-nav-drawer">
-        <div class="sb-nav-inner">
-            <div class="sb-nav-header">
-                <div class="sb-nav-header-left">
-                    <img src="assets/logo-transparent.png" alt="SnackBuddy logo" class="sb-logo" />
-                    <span class="sb-nav-title">SnackBuddy</span>
-                </div>
-                <button class="sb-nav-close" aria-label="Close menu">&times;</button>
-            </div>
-            <a href="#deals-list" class="sb-nav-link">All deals</a>
-            <a href="#about" class="sb-nav-link">About SnackBuddy</a>
-            <a href="#how-it-works" class="sb-nav-link">How SnackBuddy works</a>
-            <a href="#subscribe" class="sb-nav-link">Get daily deal emails</a>
-            <div class="sb-nav-footer">
-                SnackBuddy helps you spot better-for-you snack deals at the retailers you already shop.
-            </div>
-        </div>
-    </nav>
-    <div class="sb-nav-backdrop" id="sb-nav-backdrop"></div>
-    <nav class="sb-nav-drawer" id="sb-nav-drawer"> ... </nav>
+<!-- NAV backdrop (right drawer) -->
+<div class="sb-nav-backdrop" id="sb-nav-backdrop"></div>
+
+<!-- FILTER backdrop (left drawer) -->
+<div class="sb-filter-backdrop" id="sb-filter-backdrop"></div>
+
+<!-- NAV DRAWER (RIGHT) -->
+<nav class="sb-nav-drawer" id="sb-nav-drawer">
+  <div class="sb-nav-inner">
+    <div class="sb-nav-header">
+      <div class="sb-nav-header-left">
+        <img src="assets/logo-transparent.png" alt="SnackBuddy logo" class="sb-logo" />
+        <span class="sb-nav-title">SnackBuddy</span>
+      </div>
+      <button class="sb-nav-close" aria-label="Close menu">&times;</button>
+    </div>
+
+    <a href="#deals-list" class="sb-nav-link">All deals</a>
+    <a href="#about" class="sb-nav-link">About SnackBuddy</a>
+    <a href="#how-it-works" class="sb-nav-link">How SnackBuddy works</a>
+    <a href="#subscribe" class="sb-nav-link">Get daily deal emails</a>
+
+    <div class="sb-nav-footer">
+      SnackBuddy helps you spot better-for-you snack deals.
+    </div>
+  </div>
+</nav>
+
+<!-- FILTER backdrop (left drawer) -->
+<div class="sb-filter-backdrop" id="sb-filter-backdrop"></div>
+
+<!-- FILTER DRAWER (LEFT) -->
+<aside class="sb-filter-drawer" id="sb-filter-drawer">
+  <div class="sb-filter-inner">
+    <div class="sb-filter-header">
+      <span class="sb-filter-title">Filters</span>
+      <button id="sb-filter-close" aria-label="Close filters">&times;</button>
+    </div>
+
+    <!-- JS will render the filter groups (Retailer / Section / Category) into here -->
+    <div id="sb-filter-groups"></div>
+
+    <div class="sb-filter-actions">
+      <button id="sb-filter-clear" type="button" class="sb-filter-action secondary">Clear</button>
+      <button id="sb-filter-apply" type="button" class="sb-filter-action primary">Apply</button>
+    </div>
+  </div>
+</aside>
+
 <!-- Filters Drawer Backdrop + Drawer -->
 <div class="sb-filter-backdrop" id="sb-filter-backdrop"></div>
 
@@ -1210,10 +1340,13 @@ def build_page_html(deals):
 <!-- =================================== -->
 <section class="sb-utility-row">
   <div class="filter-controls">
-<button class="sb-filter-open" id="sb-filter-open" type="button" aria-label="Open filters">
-  <span class="sb-filter-icon">🎛️</span>
-  Filters
-  <span class="sb-filter-count" id="sb-filter-count">(0)</span>
+<button class="sb-filter-open" id="sb-filter-open" type="button">
+  <img
+    src="assets/icons/raccoon-detective.png"
+    alt=""
+    class="sb-filter-mascot"
+  />
+  Filters <span id="sb-filter-count">(0)</span>
 </button>
 
     <!-- Sort stays -->
@@ -1337,6 +1470,46 @@ document.addEventListener("DOMContentLoaded", function () {{
   const clearAllBtn = document.getElementById("clear-all-filters");
   const activeSection = document.getElementById("active-filters");
 
+  /* ============================
+     NAV DRAWER (RIGHT)
+     ============================ */
+  const navBtn = document.querySelector(".sb-menu-button");
+  const navDrawer = document.getElementById("sb-nav-drawer");
+  const navBackdrop = document.getElementById("sb-nav-backdrop");
+  const navClose = document.querySelector(".sb-nav-close");
+
+  function openNav() {{
+    if (!navDrawer || !navBackdrop || !navBtn) return;
+    navDrawer.classList.add("open");
+    navBackdrop.classList.add("open");
+    navBtn.setAttribute("aria-expanded", "true");
+  }}
+
+  function closeNav() {{
+    if (!navDrawer || !navBackdrop || !navBtn) return;
+    navDrawer.classList.remove("open");
+    navBackdrop.classList.remove("open");
+    navBtn.setAttribute("aria-expanded", "false");
+  }}
+
+  navBtn?.addEventListener("click", function() {{
+    if (navDrawer?.classList.contains("open")) closeNav();
+    else openNav();
+  }});
+  navBackdrop?.addEventListener("click", closeNav);
+  navClose?.addEventListener("click", closeNav);
+
+  /* close nav when clicking nav links */
+  if (navDrawer) {{
+    const navLinks = navDrawer.querySelectorAll("a.sb-nav-link");
+    navLinks.forEach(function(link) {{
+      link.addEventListener("click", closeNav);
+    }});
+  }}
+
+  /* ============================
+     FILTER DRAWER (LEFT)
+     ============================ */
   const openBtn = document.getElementById("sb-filter-open");
   const drawer = document.getElementById("sb-filter-drawer");
   const backdrop = document.getElementById("sb-filter-backdrop");
@@ -1346,7 +1519,24 @@ document.addEventListener("DOMContentLoaded", function () {{
   const groupsWrap = document.getElementById("sb-filter-groups");
   const filterCountEl = document.getElementById("sb-filter-count");
 
-  if (!grid || !cards.length || !sortSelect || !countEl || !openBtn || !drawer || !backdrop || !groupsWrap || !applyBtn || !clearBtn || !filterCountEl) {{
+  function openDrawer() {{
+    drawer?.classList.add("open");
+    backdrop?.classList.add("open");
+  }}
+
+  function closeDrawer() {{
+    drawer?.classList.remove("open");
+    backdrop?.classList.remove("open");
+  }}
+
+  openBtn?.addEventListener("click", openDrawer);
+  backdrop?.addEventListener("click", closeDrawer);
+  closeBtn?.addEventListener("click", closeDrawer);
+
+  /* ============================
+     FILTER SYSTEM (checkbox sets)
+     ============================ */
+  if (!grid || !cards.length || !sortSelect || !countEl || !groupsWrap || !applyBtn || !clearBtn || !filterCountEl) {{
     return;
   }}
 
@@ -1373,20 +1563,6 @@ document.addEventListener("DOMContentLoaded", function () {{
     if (!s) return "";
     return s.charAt(0).toUpperCase() + s.slice(1);
   }}
-
-  function openDrawer() {{
-    drawer.classList.add("open");
-    backdrop.classList.add("open");
-  }}
-
-  function closeDrawer() {{
-    drawer.classList.remove("open");
-    backdrop.classList.remove("open");
-  }}
-
-  openBtn.addEventListener("click", openDrawer);
-  backdrop.addEventListener("click", closeDrawer);
-  if (closeBtn) closeBtn.addEventListener("click", closeDrawer);
 
   function updateFilterCount() {{
     const total = selected.retailer.size + selected.section.size + selected.category.size;
@@ -1598,9 +1774,7 @@ document.addEventListener("DOMContentLoaded", function () {{
   clearBtn.addEventListener("click", clearAll);
 
   // Existing chip-row Clear all
-  if (clearAllBtn) {{
-    clearAllBtn.addEventListener("click", clearAll);
-  }}
+  clearAllBtn?.addEventListener("click", clearAll);
 
   sortSelect.addEventListener("change", applyFiltersAndSort);
 
@@ -1609,6 +1783,7 @@ document.addEventListener("DOMContentLoaded", function () {{
   applyFiltersAndSort();
 }});
 </script>
+
 </body>
 </html>
     """

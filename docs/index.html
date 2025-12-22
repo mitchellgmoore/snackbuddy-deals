@@ -354,6 +354,32 @@
   cursor: pointer;
 }
 
+.sb-filter-actions{
+  margin-top: auto;
+  display: flex;
+  gap: 10px;
+}
+
+.sb-filter-action{
+  flex: 1;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-weight: 800;
+  cursor: pointer;
+  border: 1px solid var(--border-subtle);
+}
+
+.sb-filter-action.primary{
+  background: var(--navy);
+  color: #fff;
+  border-color: var(--navy);
+}
+
+.sb-filter-action.secondary{
+  background: #fff;
+  color: var(--text-main);
+}
+
         /* ============================ */
         /* SECTION 1B: HERO BANNER      */
         /* ============================ */
@@ -580,6 +606,84 @@
                 width: 100%;
             }
         }
+
+/* ============================ */
+/* FILTER DRAWER (LEFT)         */
+/* ============================ */
+
+.sb-filter-open{
+  border: 1px solid var(--border-subtle);
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sb-filter-mascot{
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  display: inline-block;
+}
+
+.sb-filter-drawer{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  height: 100vh;
+  background: #ffffff;
+  transform: translateX(-100%);
+  transition: transform 0.22s ease-out;
+  z-index: 40;
+}
+
+.sb-filter-drawer.open{
+  transform: translateX(0);
+}
+
+.sb-filter-inner{
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sb-filter-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sb-filter-title{
+  font-weight: 800;
+  font-size: 16px;
+}
+
+/* ============================ */
+/* SEPARATE BACKDROP FOR FILTER */
+/* ============================ */
+
+.sb-filter-backdrop{
+  position: fixed;
+  inset: 0;
+  background: rgba(15,23,42,0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease-out;
+  z-index: 39;
+}
+
+.sb-filter-backdrop.open{
+  opacity: 1;
+  pointer-events: auto;
+}
+
 
         /* ============================ */
         /* SECTION 2: DEAL CARD GRID    */
@@ -891,29 +995,55 @@
         }
     </style>
 </head>
-<body>
-    <!-- Backdrop + Nav Drawer for mobile menu -->
-    <div class="sb-nav-backdrop" id="sb-nav-backdrop"></div>
-    <nav class="sb-nav-drawer" id="sb-nav-drawer">
-        <div class="sb-nav-inner">
-            <div class="sb-nav-header">
-                <div class="sb-nav-header-left">
-                    <img src="assets/logo-transparent.png" alt="SnackBuddy logo" class="sb-logo" />
-                    <span class="sb-nav-title">SnackBuddy</span>
-                </div>
-                <button class="sb-nav-close" aria-label="Close menu">&times;</button>
-            </div>
-            <a href="#deals-list" class="sb-nav-link">All deals</a>
-            <a href="#about" class="sb-nav-link">About SnackBuddy</a>
-            <a href="#how-it-works" class="sb-nav-link">How SnackBuddy works</a>
-            <a href="#subscribe" class="sb-nav-link">Get daily deal emails</a>
-            <div class="sb-nav-footer">
-                SnackBuddy helps you spot better-for-you snack deals at the retailers you already shop.
-            </div>
-        </div>
-    </nav>
-    <div class="sb-nav-backdrop" id="sb-nav-backdrop"></div>
-    <nav class="sb-nav-drawer" id="sb-nav-drawer"> ... </nav>
+<!-- NAV backdrop (right drawer) -->
+<div class="sb-nav-backdrop" id="sb-nav-backdrop"></div>
+
+<!-- FILTER backdrop (left drawer) -->
+<div class="sb-filter-backdrop" id="sb-filter-backdrop"></div>
+
+<!-- NAV DRAWER (RIGHT) -->
+<nav class="sb-nav-drawer" id="sb-nav-drawer">
+  <div class="sb-nav-inner">
+    <div class="sb-nav-header">
+      <div class="sb-nav-header-left">
+        <img src="assets/logo-transparent.png" alt="SnackBuddy logo" class="sb-logo" />
+        <span class="sb-nav-title">SnackBuddy</span>
+      </div>
+      <button class="sb-nav-close" aria-label="Close menu">&times;</button>
+    </div>
+
+    <a href="#deals-list" class="sb-nav-link">All deals</a>
+    <a href="#about" class="sb-nav-link">About SnackBuddy</a>
+    <a href="#how-it-works" class="sb-nav-link">How SnackBuddy works</a>
+    <a href="#subscribe" class="sb-nav-link">Get daily deal emails</a>
+
+    <div class="sb-nav-footer">
+      SnackBuddy helps you spot better-for-you snack deals.
+    </div>
+  </div>
+</nav>
+
+<!-- FILTER backdrop (left drawer) -->
+<div class="sb-filter-backdrop" id="sb-filter-backdrop"></div>
+
+<!-- FILTER DRAWER (LEFT) -->
+<aside class="sb-filter-drawer" id="sb-filter-drawer">
+  <div class="sb-filter-inner">
+    <div class="sb-filter-header">
+      <span class="sb-filter-title">Filters</span>
+      <button id="sb-filter-close" aria-label="Close filters">&times;</button>
+    </div>
+
+    <!-- JS will render the filter groups (Retailer / Section / Category) into here -->
+    <div id="sb-filter-groups"></div>
+
+    <div class="sb-filter-actions">
+      <button id="sb-filter-clear" type="button" class="sb-filter-action secondary">Clear</button>
+      <button id="sb-filter-apply" type="button" class="sb-filter-action primary">Apply</button>
+    </div>
+  </div>
+</aside>
+
 <!-- Filters Drawer Backdrop + Drawer -->
 <div class="sb-filter-backdrop" id="sb-filter-backdrop"></div>
 
@@ -958,7 +1088,7 @@
                 <div class="sb-hero-pattern"></div>
                 <div class="sb-hero-content">
                     <div class="sb-hero-kicker">
-                        SnackBuddy • Last updated: December 20, 2025 at 05:51 PM (local time)
+                        SnackBuddy • Last updated: December 22, 2025 at 06:38 AM (local time)
                     </div>
                     <h1 class="sb-hero-title">Don&apos;t overpay for the snacks you already buy.</h1>
                     <p class="sb-hero-subtitle">
@@ -976,10 +1106,13 @@
 <!-- =================================== -->
 <section class="sb-utility-row">
   <div class="filter-controls">
-<button class="sb-filter-open" id="sb-filter-open" type="button" aria-label="Open filters">
-  <span class="sb-filter-icon">🎛️</span>
-  Filters
-  <span class="sb-filter-count" id="sb-filter-count">(0)</span>
+<button class="sb-filter-open" id="sb-filter-open" type="button">
+  <img
+    src="assets/icons/raccoon-detective.png"
+    alt=""
+    class="sb-filter-mascot"
+  />
+  Filters <span id="sb-filter-count">(0)</span>
 </button>
 
     <!-- Sort stays -->
@@ -991,7 +1124,7 @@
   </div>
 
   <div id="deal-count" class="count-pill">
-    👀 Showing 69 deals
+    👀 Showing 87 deals
   </div>
 </section>
 
@@ -1612,6 +1745,138 @@
          data-section="food"
          data-category="bars"
          data-retailer="kroger"
+         data-price="8.49"
+         data-percent="15.0">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0064422573002" alt="Power Crunch Bar Chocolate Mint (5ct)" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>5</span> <span class='pack-unit'>bars</span></div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">Bars</div>
+            </div>
+            <div class="card-title">Power Crunch Bar Chocolate Mint (5ct)</div>
+            <div class="card-pricing">
+                <span class='old-price'>$9.99</span>
+                <span class="new-price">$8.49</span>
+                <span class="percent-off">15% OFF</span>
+            </div>
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/power-crunch-chocolate-mint-whey-protein-energy-bars/0064422573002" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="8.49"
+         data-percent="15.0">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0064422573082" alt="Power Crunch Bar Triple Chocolate (5ct)" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>5</span> <span class='pack-unit'>bars</span></div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">Bars</div>
+            </div>
+            <div class="card-title">Power Crunch Bar Triple Chocolate (5ct)</div>
+            <div class="card-pricing">
+                <span class='old-price'>$9.99</span>
+                <span class="new-price">$8.49</span>
+                <span class="percent-off">15% OFF</span>
+            </div>
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/power-crunch-triple-chocolate-whey-protein-energy-bars/0064422573082" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="8.49"
+         data-percent="15.0">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0064422573079" alt="Power Crunch Bar Peanut Butter (5ct)" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>5</span> <span class='pack-unit'>bars</span></div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">Bars</div>
+            </div>
+            <div class="card-title">Power Crunch Bar Peanut Butter (5ct)</div>
+            <div class="card-pricing">
+                <span class='old-price'>$9.99</span>
+                <span class="new-price">$8.49</span>
+                <span class="percent-off">15% OFF</span>
+            </div>
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/power-crunch-peanut-butter-creme-protein-energy-bars/0064422573079" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="8.49"
+         data-percent="15.0">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0064422573006" alt="Power Crunch Bar Peanut Butter Fudge (5ct)" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>5</span> <span class='pack-unit'>bars</span></div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">Bars</div>
+            </div>
+            <div class="card-title">Power Crunch Bar Peanut Butter Fudge (5ct)</div>
+            <div class="card-pricing">
+                <span class='old-price'>$9.99</span>
+                <span class="new-price">$8.49</span>
+                <span class="percent-off">15% OFF</span>
+            </div>
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/power-crunch-peanut-butter-fudge-protein-energy-bars/0064422573006" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
          data-price="2.5"
          data-percent="13.5">
         <div class="card-image-wrap">
@@ -1932,6 +2197,633 @@
                 
             </div>
             <a class="view-button view-kroger" href="https://www.kroger.com/p/built-puff-snack-bar-coconut-17g-protein-collagen-140-calories/0084022930381" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0088939200031" alt="Celsius Energy Drink Orange (1ct)" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-regular'>Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">Energy Drink</div>
+            </div>
+            <div class="card-title">Celsius Energy Drink Orange (1ct)</div>
+            <div class="card-pricing">
+                <span class='old-price'>$2.49</span>
+                <span class="new-price">$2.25</span>
+                <span class="percent-off">10% OFF</span>
+            </div>
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/celsius-sparkling-orange-energy-drink-can/0088939200031" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0088939200362" alt="Celsius Energy Drink Watermelon (1ct)" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-regular'>Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">Energy Drink</div>
+            </div>
+            <div class="card-title">Celsius Energy Drink Watermelon (1ct)</div>
+            <div class="card-pricing">
+                <span class='old-price'>$2.49</span>
+                <span class="new-price">$2.25</span>
+                <span class="percent-off">10% OFF</span>
+            </div>
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/celsius-sparkling-watermelon-energy-drink-can/0088939200362" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0088939200032" alt="Celsius Energy Drink Wild Berry (1ct)" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-regular'>Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">Energy Drink</div>
+            </div>
+            <div class="card-title">Celsius Energy Drink Wild Berry (1ct)</div>
+            <div class="card-pricing">
+                <span class='old-price'>$2.49</span>
+                <span class="new-price">$2.25</span>
+                <span class="percent-off">10% OFF</span>
+            </div>
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/celsius-sparkling-wild-berry-energy-drink-can/0088939200032" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0088939200130" alt="Celsius Energy Drink Raspberry Peach (1ct)" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-regular'>Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">Energy Drink</div>
+            </div>
+            <div class="card-title">Celsius Energy Drink Raspberry Peach (1ct)</div>
+            <div class="card-pricing">
+                <span class='old-price'>$2.49</span>
+                <span class="new-price">$2.25</span>
+                <span class="percent-off">10% OFF</span>
+            </div>
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/celsius-sparkling-raspberry-peach-energy-drink-can/0088939200130" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0088939200174" alt="Celsius Energy Drink Playa Vibe (Pina Colada) (1ct)" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-regular'>Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">Energy Drink</div>
+            </div>
+            <div class="card-title">Celsius Energy Drink Playa Vibe (Pina Colada) (1ct)</div>
+            <div class="card-pricing">
+                <span class='old-price'>$2.49</span>
+                <span class="new-price">$2.25</span>
+                <span class="percent-off">10% OFF</span>
+            </div>
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/celsius-sparkling-playa-vibe-energy-drink-can/0088939200174" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0088939201019" alt="Celsius Energy Drink Peach Vibe (1ct)" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-regular'>Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">Energy Drink</div>
+            </div>
+            <div class="card-title">Celsius Energy Drink Peach Vibe (1ct)</div>
+            <div class="card-pricing">
+                <span class='old-price'>$2.49</span>
+                <span class="new-price">$2.25</span>
+                <span class="percent-off">10% OFF</span>
+            </div>
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/celsius-sparkling-peach-vibe-energy-drink-can/0088939201019" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0088939200090" alt="Celsius Energy Drink Oasis Vibe (Prickly Pear) (1ct)" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-regular'>Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">Energy Drink</div>
+            </div>
+            <div class="card-title">Celsius Energy Drink Oasis Vibe (Prickly Pear) (1ct)</div>
+            <div class="card-pricing">
+                <span class='old-price'>$2.49</span>
+                <span class="new-price">$2.25</span>
+                <span class="percent-off">10% OFF</span>
+            </div>
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/celsius-sparkling-oasis-vibe-energy-drink-can/0088939200090" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0088939200178" alt="Celsius Energy Drink Mango Lemonade (1ct)" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-regular'>Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">Energy Drink</div>
+            </div>
+            <div class="card-title">Celsius Energy Drink Mango Lemonade (1ct)</div>
+            <div class="card-pricing">
+                <span class='old-price'>$2.49</span>
+                <span class="new-price">$2.25</span>
+                <span class="percent-off">10% OFF</span>
+            </div>
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/celsius-sparkling-mango-lemonade-energy-drink-can/0088939200178" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0088939201014" alt="Celsius Energy Drink Kiwi Guava (1ct)" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-regular'>Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">Energy Drink</div>
+            </div>
+            <div class="card-title">Celsius Energy Drink Kiwi Guava (1ct)</div>
+            <div class="card-pricing">
+                <span class='old-price'>$2.49</span>
+                <span class="new-price">$2.25</span>
+                <span class="percent-off">10% OFF</span>
+            </div>
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/celsius-sparkling-kiwi-guava-energy-drink-can/0088939201014" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0088939200086" alt="Celsius Energy Drink Green Apple Cherry (1ct)" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-regular'>Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">Energy Drink</div>
+            </div>
+            <div class="card-title">Celsius Energy Drink Green Apple Cherry (1ct)</div>
+            <div class="card-pricing">
+                <span class='old-price'>$2.49</span>
+                <span class="new-price">$2.25</span>
+                <span class="percent-off">10% OFF</span>
+            </div>
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/celsius-sparkling-green-apple-cherry-energy-drink-can/0088939200086" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0088939201017" alt="Celsius Energy Drink Fuji Apple Pear (1ct)" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-regular'>Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">Energy Drink</div>
+            </div>
+            <div class="card-title">Celsius Energy Drink Fuji Apple Pear (1ct)</div>
+            <div class="card-pricing">
+                <span class='old-price'>$2.49</span>
+                <span class="new-price">$2.25</span>
+                <span class="percent-off">10% OFF</span>
+            </div>
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/celsius-sparkling-fuji-apple-pear-energy-drink-can/0088939201017" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0088939200059" alt="Celsius Energy Drink Fantasy Vibe (Mandarin Marshmallow) (1ct)" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-regular'>Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">Energy Drink</div>
+            </div>
+            <div class="card-title">Celsius Energy Drink Fantasy Vibe (Mandarin Marshmallow) (1ct)</div>
+            <div class="card-pricing">
+                <span class='old-price'>$2.49</span>
+                <span class="new-price">$2.25</span>
+                <span class="percent-off">10% OFF</span>
+            </div>
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/celsius-sparkling-fantasy-vibe-energy-drink-can/0088939200059" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0088939200134" alt="Celsius Energy Drink Astro Vibe (Blue Razz) (1ct)" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-regular'>Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">Energy Drink</div>
+            </div>
+            <div class="card-title">Celsius Energy Drink Astro Vibe (Blue Razz) (1ct)</div>
+            <div class="card-pricing">
+                <span class='old-price'>$2.49</span>
+                <span class="new-price">$2.25</span>
+                <span class="percent-off">10% OFF</span>
+            </div>
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/celsius-sparkling-astro-vibe-energy-drink-can/0088939200134" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0088939202141" alt="Celsius Energy Drink Arctic Vibe (Frozen Berry) (1ct)" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-regular'>Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">Energy Drink</div>
+            </div>
+            <div class="card-title">Celsius Energy Drink Arctic Vibe (Frozen Berry) (1ct)</div>
+            <div class="card-pricing">
+                <span class='old-price'>$2.49</span>
+                <span class="new-price">$2.25</span>
+                <span class="percent-off">10% OFF</span>
+            </div>
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/celsius-sparkling-arctic-vibe-energy-drink-can/0088939202141" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0088939200172" alt="Celsius Energy Drink Retro Vibe (Sherbert Slush) (1ct)" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-regular'>Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">Energy Drink</div>
+            </div>
+            <div class="card-title">Celsius Energy Drink Retro Vibe (Sherbert Slush) (1ct)</div>
+            <div class="card-pricing">
+                <span class='old-price'>$2.49</span>
+                <span class="new-price">$2.25</span>
+                <span class="percent-off">10% OFF</span>
+            </div>
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/celsius-sparkling-retro-vibe-energy-drink-can/0088939200172" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0088939200132" alt="Celsius Energy Drink Galaxy Vibe (Strawberry Watermelon) (1ct)" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-regular'>Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">Energy Drink</div>
+            </div>
+            <div class="card-title">Celsius Energy Drink Galaxy Vibe (Strawberry Watermelon) (1ct)</div>
+            <div class="card-pricing">
+                <span class='old-price'>$2.49</span>
+                <span class="new-price">$2.25</span>
+                <span class="percent-off">10% OFF</span>
+            </div>
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/celsius-sparkling-galaxy-vibe-energy-drink-can/0088939200132" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0088939200120" alt="Celsius Energy Drink Cosmic Vibe (Fruit Punch) (1ct)" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-regular'>Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">Energy Drink</div>
+            </div>
+            <div class="card-title">Celsius Energy Drink Cosmic Vibe (Fruit Punch) (1ct)</div>
+            <div class="card-pricing">
+                <span class='old-price'>$2.49</span>
+                <span class="new-price">$2.25</span>
+                <span class="percent-off">10% OFF</span>
+            </div>
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/celsius-sparkling-cosmic-vibe-energy-drink-can/0088939200120" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0088939200139" alt="Celsius Energy Drink Blue Razz Lemonade (1ct)" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-regular'>Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">Energy Drink</div>
+            </div>
+            <div class="card-title">Celsius Energy Drink Blue Razz Lemonade (1ct)</div>
+            <div class="card-pricing">
+                <span class='old-price'>$2.49</span>
+                <span class="new-price">$2.25</span>
+                <span class="percent-off">10% OFF</span>
+            </div>
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/celsius-fizz-free-blue-razz-lemonade-energy-drink-can/0088939200139" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="food"
+         data-category="meat snack"
+         data-retailer="kroger"
+         data-price="7.99"
+         data-percent="15.8">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0085658400487" alt="Chomps Chomplings Meat Sticks Original Turkey (6ct)" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>6</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">Meat Snack</div>
+            </div>
+            <div class="card-title">Chomps Chomplings Meat Sticks Original Turkey (6ct)</div>
+            <div class="card-pricing">
+                <span class='old-price'>$9.49</span>
+                <span class="new-price">$7.99</span>
+                <span class="percent-off">16% OFF</span>
+            </div>
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/chomplings-original-turkey-mini-meat-sticks-6-count/0085658400487" target="_blank" rel="noopener noreferrer">
                 View on Kroger.com
             </a>
         </div>
@@ -2370,171 +3262,6 @@
     <div class="card"
          data-section="food"
          data-category="bars"
-         data-retailer="target"
-         data-price="8.49"
-         data-percent="5.6">
-        <div class="card-image-wrap">
-            <img src="https://target.scene7.com/is/image/Target/GUEST_4ad59a04-1c37-4cd9-9a48-df32b53e88fd?wid=600&amp;hei=600&amp;qlt=80" alt="Built Bar Salted Caramel Puff Protein Bars - 17g Protein - 5.64oz/4ct Salted Caramel (4ct)" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-regular'>Deal</div>
-        </div>
-        <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-target">Target</div>
-                <div class="meta-category">Bars</div>
-            </div>
-            <div class="card-title">Built Bar Salted Caramel Puff Protein Bars - 17g Protein - 5.64oz/4ct Salted Caramel (4ct)</div>
-            <div class="card-pricing">
-                <span class='old-price'>$8.99</span>
-                <span class="new-price">$8.49</span>
-                <span class="percent-off">6% OFF</span>
-            </div>
-            <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
-                
-            </div>
-            <a class="view-button view-target" href="https://www.target.com/p/built-bar-salted-caramel-puff-snack-bars-5-64oz-4ct/-/A-94285884" target="_blank" rel="noopener noreferrer">
-                View on Target.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card"
-         data-section="food"
-         data-category="bars"
-         data-retailer="target"
-         data-price="8.49"
-         data-percent="5.6">
-        <div class="card-image-wrap">
-            <img src="https://target.scene7.com/is/image/Target/GUEST_51aa7e1f-330a-4c64-a957-c468023d36d7?wid=600&amp;hei=600&amp;qlt=80" alt="Built Puff Coconut Whey Protein Bars - 17g Protein - 4ct Coconut (4ct)" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-regular'>Deal</div>
-        </div>
-        <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-target">Target</div>
-                <div class="meta-category">Bars</div>
-            </div>
-            <div class="card-title">Built Puff Coconut Whey Protein Bars - 17g Protein - 4ct Coconut (4ct)</div>
-            <div class="card-pricing">
-                <span class='old-price'>$8.99</span>
-                <span class="new-price">$8.49</span>
-                <span class="percent-off">6% OFF</span>
-            </div>
-            <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
-                
-            </div>
-            <a class="view-button view-target" href="https://www.target.com/p/built-bar-coconut-puff-snack-bars-5-64oz-4ct/-/A-94291350" target="_blank" rel="noopener noreferrer">
-                View on Target.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card"
-         data-section="food"
-         data-category="bars"
-         data-retailer="target"
-         data-price="8.49"
-         data-percent="5.6">
-        <div class="card-image-wrap">
-            <img src="https://target.scene7.com/is/image/Target/GUEST_a597dd8f-7188-42cd-9e4f-5113dfa8634b?wid=600&amp;hei=600&amp;qlt=80" alt="Built Bar Brownie Batter Puff Protein Bars - 17g Protein - 4ct Brownie Batter (4ct)" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-regular'>Deal</div>
-        </div>
-        <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-target">Target</div>
-                <div class="meta-category">Bars</div>
-            </div>
-            <div class="card-title">Built Bar Brownie Batter Puff Protein Bars - 17g Protein - 4ct Brownie Batter (4ct)</div>
-            <div class="card-pricing">
-                <span class='old-price'>$8.99</span>
-                <span class="new-price">$8.49</span>
-                <span class="percent-off">6% OFF</span>
-            </div>
-            <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
-                
-            </div>
-            <a class="view-button view-target" href="https://www.target.com/p/built-bar-brownie-batter-puff-snack-bars-5-64oz-4ct/-/A-94291331" target="_blank" rel="noopener noreferrer">
-                View on Target.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card"
-         data-section="food"
-         data-category="bars"
-         data-retailer="target"
-         data-price="8.49"
-         data-percent="5.6">
-        <div class="card-image-wrap">
-            <img src="https://target.scene7.com/is/image/Target/GUEST_3e68fe19-78a2-494f-8cd9-063b19ce2343?wid=600&amp;hei=600&amp;qlt=80" alt="Built Bar Cookie Dough Chunk Puff Protein Bars - 15g Protein - 6.2oz/4ct Cookie Dough (4ct)" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-regular'>Deal</div>
-        </div>
-        <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-target">Target</div>
-                <div class="meta-category">Bars</div>
-            </div>
-            <div class="card-title">Built Bar Cookie Dough Chunk Puff Protein Bars - 15g Protein - 6.2oz/4ct Cookie Dough (4ct)</div>
-            <div class="card-pricing">
-                <span class='old-price'>$8.99</span>
-                <span class="new-price">$8.49</span>
-                <span class="percent-off">6% OFF</span>
-            </div>
-            <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
-                
-            </div>
-            <a class="view-button view-target" href="https://www.target.com/p/built-bar-cookie-dough-chunk-puff-protein-bars-15g-protein-6-2oz-4ct/-/A-94286241" target="_blank" rel="noopener noreferrer">
-                View on Target.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card"
-         data-section="food"
-         data-category="bars"
-         data-retailer="target"
-         data-price="8.49"
-         data-percent="5.6">
-        <div class="card-image-wrap">
-            <img src="https://target.scene7.com/is/image/Target/GUEST_694abc90-ddc9-435d-a4c4-7081ad069110?wid=600&amp;hei=600&amp;qlt=80" alt="Built Bar Cookies &#x27;N Cream Puff Protein Bars - 17g Protein - 4ct Cookies &amp; Cream (4ct)" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-regular'>Deal</div>
-        </div>
-        <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-target">Target</div>
-                <div class="meta-category">Bars</div>
-            </div>
-            <div class="card-title">Built Bar Cookies &#x27;N Cream Puff Protein Bars - 17g Protein - 4ct Cookies &amp; Cream (4ct)</div>
-            <div class="card-pricing">
-                <span class='old-price'>$8.99</span>
-                <span class="new-price">$8.49</span>
-                <span class="percent-off">6% OFF</span>
-            </div>
-            <div class="card-footer">
-                <div class='availability online-only'>Online only</div>
-                
-            </div>
-            <a class="view-button view-target" href="https://www.target.com/p/built-bar-cookies-39-n-cream-puff-protein-bars-17g-protein-4ct/-/A-94286242" target="_blank" rel="noopener noreferrer">
-                View on Target.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card"
-         data-section="food"
-         data-category="bars"
          data-retailer="walmart"
          data-price="7.11"
          data-percent="19.9">
@@ -2724,39 +3451,6 @@
                 
             </div>
             <a class="view-button view-walmart" href="https://www.walmart.com/ip/Myprotein-Protein-Wafers-Vanilla-4pk/15351112799" target="_blank" rel="noopener noreferrer">
-                View on Walmart.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card"
-         data-section="drinks"
-         data-category="energy drink"
-         data-retailer="walmart"
-         data-price="0.99"
-         data-percent="56.6">
-        <div class="card-image-wrap">
-            <img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Kiwi-Guava-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_7a16e405-8ab4-432e-8937-b44b1bcc0a48.95b110b5c867baed438ef5eaa8655e8c.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Celsius Energy Drink Kiwi Guava (1ct)" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong'>🔥 Strong Deal</div>
-        </div>
-        <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-walmart">Walmart</div>
-                <div class="meta-category">Energy Drink</div>
-            </div>
-            <div class="card-title">Celsius Energy Drink Kiwi Guava (1ct)</div>
-            <div class="card-pricing">
-                <span class='old-price'>$2.28</span>
-                <span class="new-price">$0.99</span>
-                <span class="percent-off">57% OFF</span>
-            </div>
-            <div class="card-footer">
-                <div class='availability online-only'>Online only</div>
-                
-            </div>
-            <a class="view-button view-walmart" href="https://www.walmart.com/ip/CELSIUS-Sparkling-Kiwi-Guava-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/483179684" target="_blank" rel="noopener noreferrer">
                 View on Walmart.com
             </a>
         </div>
@@ -3227,6 +3921,39 @@
 
     <div class="card"
          data-section="drinks"
+         data-category="energy drink"
+         data-retailer="walmart"
+         data-price="1.98"
+         data-percent="13.2">
+        <div class="card-image-wrap">
+            <img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Kiwi-Guava-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_7a16e405-8ab4-432e-8937-b44b1bcc0a48.95b110b5c867baed438ef5eaa8655e8c.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Celsius Energy Drink Kiwi Guava (1ct)" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-strong'>🔥 Strong Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-walmart">Walmart</div>
+                <div class="meta-category">Energy Drink</div>
+            </div>
+            <div class="card-title">Celsius Energy Drink Kiwi Guava (1ct)</div>
+            <div class="card-pricing">
+                <span class='old-price'>$2.28</span>
+                <span class="new-price">$1.98</span>
+                <span class="percent-off">13% OFF</span>
+            </div>
+            <div class="card-footer">
+                <div class='availability online-only'>Online only</div>
+                
+            </div>
+            <a class="view-button view-walmart" href="https://www.walmart.com/ip/CELSIUS-Sparkling-Kiwi-Guava-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/483179684" target="_blank" rel="noopener noreferrer">
+                View on Walmart.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="drinks"
          data-category="rtd protein shake"
          data-retailer="walmart"
          data-price="12.88"
@@ -3379,6 +4106,46 @@ document.addEventListener("DOMContentLoaded", function () {
   const clearAllBtn = document.getElementById("clear-all-filters");
   const activeSection = document.getElementById("active-filters");
 
+  /* ============================
+     NAV DRAWER (RIGHT)
+     ============================ */
+  const navBtn = document.querySelector(".sb-menu-button");
+  const navDrawer = document.getElementById("sb-nav-drawer");
+  const navBackdrop = document.getElementById("sb-nav-backdrop");
+  const navClose = document.querySelector(".sb-nav-close");
+
+  function openNav() {
+    if (!navDrawer || !navBackdrop || !navBtn) return;
+    navDrawer.classList.add("open");
+    navBackdrop.classList.add("open");
+    navBtn.setAttribute("aria-expanded", "true");
+  }
+
+  function closeNav() {
+    if (!navDrawer || !navBackdrop || !navBtn) return;
+    navDrawer.classList.remove("open");
+    navBackdrop.classList.remove("open");
+    navBtn.setAttribute("aria-expanded", "false");
+  }
+
+  navBtn?.addEventListener("click", function() {
+    if (navDrawer?.classList.contains("open")) closeNav();
+    else openNav();
+  });
+  navBackdrop?.addEventListener("click", closeNav);
+  navClose?.addEventListener("click", closeNav);
+
+  /* close nav when clicking nav links */
+  if (navDrawer) {
+    const navLinks = navDrawer.querySelectorAll("a.sb-nav-link");
+    navLinks.forEach(function(link) {
+      link.addEventListener("click", closeNav);
+    });
+  }
+
+  /* ============================
+     FILTER DRAWER (LEFT)
+     ============================ */
   const openBtn = document.getElementById("sb-filter-open");
   const drawer = document.getElementById("sb-filter-drawer");
   const backdrop = document.getElementById("sb-filter-backdrop");
@@ -3388,7 +4155,24 @@ document.addEventListener("DOMContentLoaded", function () {
   const groupsWrap = document.getElementById("sb-filter-groups");
   const filterCountEl = document.getElementById("sb-filter-count");
 
-  if (!grid || !cards.length || !sortSelect || !countEl || !openBtn || !drawer || !backdrop || !groupsWrap || !applyBtn || !clearBtn || !filterCountEl) {
+  function openDrawer() {
+    drawer?.classList.add("open");
+    backdrop?.classList.add("open");
+  }
+
+  function closeDrawer() {
+    drawer?.classList.remove("open");
+    backdrop?.classList.remove("open");
+  }
+
+  openBtn?.addEventListener("click", openDrawer);
+  backdrop?.addEventListener("click", closeDrawer);
+  closeBtn?.addEventListener("click", closeDrawer);
+
+  /* ============================
+     FILTER SYSTEM (checkbox sets)
+     ============================ */
+  if (!grid || !cards.length || !sortSelect || !countEl || !groupsWrap || !applyBtn || !clearBtn || !filterCountEl) {
     return;
   }
 
@@ -3415,20 +4199,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!s) return "";
     return s.charAt(0).toUpperCase() + s.slice(1);
   }
-
-  function openDrawer() {
-    drawer.classList.add("open");
-    backdrop.classList.add("open");
-  }
-
-  function closeDrawer() {
-    drawer.classList.remove("open");
-    backdrop.classList.remove("open");
-  }
-
-  openBtn.addEventListener("click", openDrawer);
-  backdrop.addEventListener("click", closeDrawer);
-  if (closeBtn) closeBtn.addEventListener("click", closeDrawer);
 
   function updateFilterCount() {
     const total = selected.retailer.size + selected.section.size + selected.category.size;
@@ -3640,9 +4410,7 @@ document.addEventListener("DOMContentLoaded", function () {
   clearBtn.addEventListener("click", clearAll);
 
   // Existing chip-row Clear all
-  if (clearAllBtn) {
-    clearAllBtn.addEventListener("click", clearAll);
-  }
+  clearAllBtn?.addEventListener("click", clearAll);
 
   sortSelect.addEventListener("change", applyFiltersAndSort);
 
@@ -3651,6 +4419,7 @@ document.addEventListener("DOMContentLoaded", function () {
   applyFiltersAndSort();
 });
 </script>
+
 </body>
 </html>
     
