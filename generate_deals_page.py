@@ -74,19 +74,227 @@ def normalise_availability(raw):
     return "Check store availability", "availability check"
 
 
+def _norm_str(val) -> str:
+    """Normalize string values for grouping."""
+    return (val or "").strip()
+
+
+def _norm_float_key(val):
+    """Normalize numeric values for grouping keys (so 1.9 and 1.90 group together)."""
+    try:
+        if val is None:
+            return None
+        return round(float(val), 4)
+    except Exception:
+        return None
+
+
+def extract_flavor_from_product_name(product_name: str) -> str:
+    """
+    Extract flavor from product name.
+    Example: "Quest Protein Chips Chili Lime (8ct)" -> "Chili Lime"
+    Example: "ALOHA Protein Bar Peanut Butter Chocolate (1ct)" -> "Peanut Butter Chocolate"
+    
+    Strategy: Remove pack size, then try to identify common product type words
+    and extract everything after them as the flavor.
+    """
+    if not product_name:
+        return ""
+    
+    import re
+    # Remove pack size in parentheses at the end
+    name_part = re.sub(r'\s*\([^)]+\)\s*$', '', product_name).strip()
+    
+    # Common product type keywords that typically come before flavor
+    product_types = [
+        "protein bar", "protein chips", "energy drink", "bar", "chips",
+        "cookies", "crackers", "drink", "beverage", "snack"
+    ]
+    
+    # Try to find product type and extract flavor after it
+    name_lower = name_part.lower()
+    for ptype in sorted(product_types, key=len, reverse=True):  # Try longer matches first
+        if ptype in name_lower:
+            idx = name_lower.find(ptype)
+            # Get everything after the product type
+            flavor_part = name_part[idx + len(ptype):].strip()
+            if flavor_part:
+                return flavor_part
+    
+    # If no product type found, assume the last 2-3 words are the flavor
+    # (after removing brand which is typically first word)
+    words = name_part.split()
+    if len(words) >= 3:
+        # Skip first word (brand) and take the rest
+        return " ".join(words[1:])
+    
+    return name_part
+
+
+def extract_brand_from_product_name(product_name: str) -> str:
+    """
+    Extract brand from product name (usually first word or two).
+    Example: "Quest Protein Chips Chili Lime (8ct)" -> "Quest"
+    Example: "ALOHA Protein Bar Peanut Butter Chocolate (1ct)" -> "ALOHA"
+    """
+    if not product_name:
+        return ""
+    parts = product_name.split()
+    if len(parts) >= 1:
+        return parts[0]
+    return ""
+
+
+def extract_base_product_name(product_name: str) -> str:
+    """
+    Extract base product name without flavor and pack size.
+    Example: "Quest Protein Chips Chili Lime (8ct)" -> "Quest Protein Chips"
+    Example: "ALOHA Protein Bar Peanut Butter Chocolate (1ct)" -> "ALOHA Protein Bar"
+    """
+    if not product_name:
+        return ""
+    
+    import re
+    # Remove pack size in parentheses
+    name_part = re.sub(r'\s*\([^)]+\)\s*$', '', product_name).strip()
+    
+    # Common product type keywords
+    product_types = [
+        "protein bar", "protein chips", "energy drink", "bar", "chips",
+        "cookies", "crackers", "drink", "beverage", "snack"
+    ]
+    
+    # Try to find product type and extract base name up to that point
+    name_lower = name_part.lower()
+    for ptype in sorted(product_types, key=len, reverse=True):
+        if ptype in name_lower:
+            idx = name_lower.find(ptype)
+            # Get everything up to and including the product type
+            base_part = name_part[:idx + len(ptype)].strip()
+            if base_part:
+                return base_part
+    
+    # Fallback: return first 2-3 words (brand + product type)
+    words = name_part.split()
+    if len(words) >= 2:
+        return " ".join(words[:2])
+    return name_part
+
+
+def group_deals(rows: list[dict]) -> list[dict]:
+    """
+    Group individual SKU rows into "deal families" so that each card represents:
+      - same retailer
+      - same section (Food / Drinks)
+      - same brand (extracted from product_name)
+      - same base product_name (without flavor)
+      - same pack_size (pack_count + pack_unit)
+      - same price / baseline (old_price)
+
+    Flavors that share this key are stacked into one group. Each flavor stores
+    its name and retailer_url for clickable links.
+
+    Returns grouped deals with flavor_data containing {name, url} pairs.
+    """
+    groups: dict[tuple, dict] = {}
+
+    for row in rows:
+        retailer = _norm_str(row.get("retailer"))
+        section = _norm_str(row.get("section"))
+        product_name = _norm_str(row.get("product_name"))
+        # Use brand from JSON if available, otherwise extract from product_name
+        brand = _norm_str(row.get("brand")) or extract_brand_from_product_name(product_name)
+        pack_count = row.get("pack_count")
+        pack_unit = _norm_str(row.get("pack_unit"))
+        pack_size = f"{pack_count}{pack_unit}" if pack_count and pack_unit else ""
+        
+        # Use old_price as baseline, new_price as price
+        price_raw = row.get("new_price")
+        baseline_raw = row.get("old_price")
+        
+        price_key = _norm_float_key(price_raw)
+        baseline_key = _norm_float_key(baseline_raw)
+        
+        # Use product_name directly (it's now the base name without flavor from CSV)
+        base_product = product_name
+        
+        key = (
+            retailer.lower(),
+            section.lower(),
+            brand.lower(),
+            base_product.lower(),
+            pack_size.lower(),
+            price_key,
+            baseline_key,
+        )
+
+        if key not in groups:
+            # Start a new group using a shallow copy of the row
+            g = dict(row)
+            g["flavor_data"] = []  # List of {name, url} dicts
+            g["group_size"] = 0
+            groups[key] = g
+
+        g = groups[key]
+
+        # Get flavor from JSON if available, otherwise try to extract from product_name
+        flavor_name = _norm_str(row.get("flavor")) or extract_flavor_from_product_name(product_name)
+        retailer_url = _norm_str(row.get("retailer_url") or row.get("canonical_url") or "")
+        
+        # Check if this flavor already exists in the group (shouldn't happen, but handle it)
+        existing_flavor = next((f for f in g["flavor_data"] if f["name"].lower() == flavor_name.lower()), None)
+        if not existing_flavor and flavor_name and retailer_url:
+            g["flavor_data"].append({
+                "name": flavor_name,
+                "url": retailer_url
+            })
+            g["group_size"] = len(g["flavor_data"])
+
+    # Finalize flavor_sample / flavor_extra_count for display
+    for g in groups.values():
+        flavors = g.get("flavor_data") or []
+        if flavors:
+            # Sort flavors for consistent display
+            flavors.sort(key=lambda x: x["name"].lower())
+            sample = flavors[:2]
+            extra = max(0, len(flavors) - len(sample))
+        else:
+            sample = []
+            extra = 0
+        g["flavor_sample"] = sample
+        g["flavor_extra_count"] = extra
+        g["flavor_extra_data"] = flavors[2:] if len(flavors) > 2 else []
+
+    return list(groups.values())
+
+
 def get_badge(deal):
     """
-    Decide badge label & class from deal_strength.
-    deal_strength examples: '🔥 strong', '🟡 mild', '', etc.
+    Decide badge label & class from percent_off.
+    Tier system:
+    - ≥25% → 💎 Diamond Deal (badge-elite)
+    - 20–24.99% → 🔥 Fire Deal (badge-strong)
+    - 10–19.99% → 💪 Strong Deal (badge-protein)
+    - 0–9.99% → 🏷️ On Sale (badge-everyday)
     """
-    strength = (deal.get("deal_strength") or "").strip().lower()
+    try:
+        percent_off = float(deal.get("percent_off", 0.0))
+    except Exception:
+        percent_off = 0.0
 
-    if "strong" in strength or "🔥" in strength:
-        # Strong deals everywhere: 🔥 Strong deal
-        return "🔥 Strong Deal", "badge badge-strong"
-    if "mild" in strength or "🟡" in strength:
-        return "Deal", "badge badge-regular"
-    # No badge
+    # Check for Diamond Deal tier (≥25%)
+    if percent_off >= 25.0:
+        return "💎 Diamond Deal", "badge badge-elite"
+    # Check for Fire Deal tier (20–24.99%)
+    if percent_off >= 20.0:
+        return "🔥 Fire Deal", "badge badge-strong"
+    # Check for Strong Deal tier (10–19.99%)
+    if percent_off >= 10.0:
+        return "💪 Strong Deal", "badge badge-protein"
+    # Check for On Sale tier (0–9.99%)
+    if percent_off >= 0.0:
+        return "🏷️ On Sale", "badge badge-everyday"
+    # No badge for negative percentages
     return "", ""
 
 
@@ -105,7 +313,9 @@ def format_streak(deal):
 
 
 def build_card_html(deal):
-    name = html.escape(deal.get("product_name", ""))
+    # Use product_name directly from the deal (from CSV, not combined)
+    product_name = deal.get("product_name", "")
+    name = html.escape(product_name)
     retailer = html.escape(deal.get("retailer", ""))
     category = html.escape(deal.get("category", ""))
     old_price = deal.get("old_price")
@@ -113,6 +323,11 @@ def build_card_html(deal):
     percent_off = float(deal.get("percent_off", 0.0))
     image_url = html.escape(deal.get("image_url", ""))
     retailer_url = html.escape(deal.get("retailer_url", "#"))
+    
+    # Get flavor data if this is a grouped deal
+    flavor_sample = deal.get("flavor_sample", [])
+    flavor_extra_count = deal.get("flavor_extra_count", 0)
+    flavor_extra_data = deal.get("flavor_extra_data", [])
 
     # Normalized values for filters (used in data-* attributes)
     section_raw = (deal.get("section") or "").strip().lower()
@@ -181,6 +396,40 @@ def build_card_html(deal):
     if badge_label and badge_class:
         badge_html = f"<div class='{badge_class}'>{badge_label}</div>"
 
+    # Build flavor display HTML
+    flavor_html = ""
+    if flavor_sample or flavor_extra_count > 0:
+        # Build flavor sample display
+        flavor_names = [html.escape(f.get("name", "")) for f in flavor_sample if f.get("name")]
+        flavor_display = ", ".join(flavor_names)
+        
+        # Generate unique ID for this card's flavor expand section
+        import hashlib
+        card_id = hashlib.md5(f"{retailer}{name}{new_price_val}".encode()).hexdigest()[:8]
+        
+        if flavor_extra_count > 0:
+            # Has extra flavors - make expandable
+            flavor_html = f"""
+            <div class="flavor-info">
+                <span class="flavor-label">Available in: </span>
+                <span class="flavor-sample">{flavor_display}</span>
+                <button class="flavor-expand-link" data-card-id="{card_id}" aria-expanded="false" aria-controls="flavors-{card_id}">
+                    + {flavor_extra_count} more flavor{'s' if flavor_extra_count > 1 else ''}
+                </button>
+                <div class="flavor-list-expanded" id="flavors-{card_id}" style="display: none;">
+                    {''.join([f'<a href="{html.escape(f.get("url", "#"))}" target="_blank" rel="noopener noreferrer" class="flavor-link">{html.escape(f.get("name", ""))}</a>' for f in flavor_extra_data])}
+                </div>
+            </div>
+            """
+        else:
+            # Just the sample flavors, no expansion needed
+            flavor_html = f"""
+            <div class="flavor-info">
+                <span class="flavor-label">Available in: </span>
+                <span class="flavor-sample">{flavor_display}</span>
+            </div>
+            """
+
     return f"""
     <div class="card"
          data-section="{section_attr}"
@@ -204,6 +453,7 @@ def build_card_html(deal):
                 <span class="new-price">${new_price_val:.2f}</span>
                 <span class="percent-off">{percent_off:.0f}% OFF</span>
             </div>
+            {flavor_html}
             <div class="card-footer">
                 {availability_html}
                 {streak_html}
@@ -217,7 +467,9 @@ def build_card_html(deal):
 
 
 def build_page_html(deals):
-    total = len(deals)
+    # Group deals into deal families
+    grouped_deals = group_deals(deals)
+    total = len(grouped_deals)
     last_updated = get_last_updated_text(deals)
 
     # Sort: retailer → category → best savings (default order on page load)
@@ -229,7 +481,7 @@ def build_page_html(deals):
             float(d.get("new_price") or 0.0),
         )
 
-    deals_sorted = sorted(deals, key=sort_key)
+    deals_sorted = sorted(grouped_deals, key=sort_key)
     cards_html = "\n".join(build_card_html(d) for d in deals_sorted)
 
     return f"""<!DOCTYPE html>
@@ -1006,6 +1258,24 @@ def build_page_html(deals):
             border: 1px solid #facc15;
         }}
 
+        .badge-elite {{
+            background-color: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }}
+
+        .badge-protein {{
+            background-color: #fefce8;
+            color: #854d0e;
+            border: 1px solid #facc15;
+        }}
+
+        .badge-everyday {{
+            background-color: #f5e6d3;
+            color: #7c3a00;
+            border: 1px solid #d4a574;
+        }}
+
         .card-content {{
             padding: 4px 6px 0 6px;
             display: flex;
@@ -1056,6 +1326,7 @@ def build_page_html(deals):
             font-weight: 600;
             line-height: 1.25;
             min-height: 34px;
+            margin-bottom: 0;
         }}
 
         .card-pricing {{
@@ -1063,6 +1334,8 @@ def build_page_html(deals):
             align-items: baseline;
             gap: 6px;
             font-size: 13px;
+            margin-top: 0;
+            margin-bottom: 0;
         }}
 
         .old-price {{
@@ -1136,6 +1409,61 @@ def build_page_html(deals):
 
         .view-button:hover {{
             filter: brightness(0.95);
+        }}
+
+        /* ============================ */
+        /* FLAVOR EXPANDABLE LIST       */
+        /* ============================ */
+
+        .flavor-info {{
+            font-size: 12px;
+            color: var(--text-main);
+            margin-top: 0;
+            margin-bottom: 0;
+            line-height: 1.4;
+        }}
+
+        .flavor-label {{
+            color: var(--text-muted);
+        }}
+
+        .flavor-sample {{
+            color: var(--text-main);
+        }}
+
+        .flavor-expand-link {{
+            background: none;
+            border: none;
+            color: var(--blue);
+            cursor: pointer;
+            font-size: 12px;
+            padding: 0;
+            margin-left: 4px;
+            text-decoration: underline;
+            font-weight: 600;
+        }}
+
+        .flavor-expand-link:hover {{
+            color: #1e40af;
+        }}
+
+        .flavor-list-expanded {{
+            margin-top: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }}
+
+        .flavor-link {{
+            color: var(--blue);
+            text-decoration: none;
+            font-size: 12px;
+            padding: 2px 0;
+        }}
+
+        .flavor-link:hover {{
+            color: #1e40af;
+            text-decoration: underline;
         }}
 
         /* ============================ */
@@ -1781,6 +2109,35 @@ document.addEventListener("DOMContentLoaded", function () {{
   // Initial
   updateFilterCount();
   applyFiltersAndSort();
+
+  /* ============================
+     FLAVOR EXPAND/COLLAPSE
+     ============================ */
+  const flavorExpandLinks = document.querySelectorAll(".flavor-expand-link");
+  flavorExpandLinks.forEach(function(link) {{
+    link.addEventListener("click", function() {{
+      const cardId = this.getAttribute("data-card-id");
+      const expandedList = document.getElementById("flavors-" + cardId);
+      if (!expandedList) return;
+
+      const isExpanded = this.getAttribute("aria-expanded") === "true";
+      
+      if (isExpanded) {{
+        // Collapse
+        expandedList.style.display = "none";
+        this.setAttribute("aria-expanded", "false");
+        const extraCount = this.textContent.match(/\\d+/);
+        if (extraCount) {{
+          this.textContent = "+ " + extraCount[0] + " more flavor" + (parseInt(extraCount[0]) > 1 ? "s" : "");
+        }}
+      }} else {{
+        // Expand
+        expandedList.style.display = "flex";
+        this.setAttribute("aria-expanded", "true");
+        this.textContent = "Show less";
+      }}
+    }});
+  }});
 }});
 </script>
 

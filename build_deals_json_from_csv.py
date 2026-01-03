@@ -143,12 +143,15 @@ def main():
 
         percent_off = get_percent_off(row)
 
-        product_name = build_product_name(row)
+        # Use original product_name from CSV (not combined with flavor)
+        # This allows grouping logic to work properly and display flavors separately
+        product_name = row.get("product_name", "")
 
         availability = row.get("availability_norm", "")
         # Let the page generator normalise this; just pass through raw value
 
         # Deal strength from enrichment (e.g. '🔥 strong', '🟡 mild')
+        # Note: We now use percent_off directly for badge determination, but keep this for reference
         deal_strength = row.get("deal_strength", "")
 
         # Optional streak days
@@ -159,6 +162,9 @@ def main():
 
         deal = {
             "product_name": product_name,
+            # Also include brand and flavor separately for grouping logic
+            "brand": row.get("brand", ""),
+            "flavor": row.get("flavor", ""),
             "retailer": row.get("retailer", ""),
             # Top-level grouping: Food / Drinks
             "section": row.get("section", ""),
