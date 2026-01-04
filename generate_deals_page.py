@@ -181,6 +181,21 @@ def extract_base_product_name(product_name: str) -> str:
     return name_part
 
 
+def remove_pack_size_from_name(product_name: str) -> str:
+    """
+    Remove pack size indicators like (1ct), (8ct), etc. from product name.
+    Example: "Quest Protein Chips (8ct)" -> "Quest Protein Chips"
+    Example: "ALOHA Protein Bar (1ct)" -> "ALOHA Protein Bar"
+    """
+    if not product_name:
+        return ""
+    
+    import re
+    # Remove pack size in parentheses at the end (e.g., (1ct), (8ct), (12 pack), etc.)
+    cleaned = re.sub(r'\s*\([^)]*(?:ct|pack|count|pk)[^)]*\)\s*$', '', product_name, flags=re.IGNORECASE).strip()
+    return cleaned
+
+
 def group_deals(rows: list[dict]) -> list[dict]:
     """
     Group individual SKU rows into "deal families" so that each card represents:
@@ -314,8 +329,10 @@ def format_streak(deal):
 
 def build_card_html(deal):
     # Use product_name directly from the deal (from CSV, not combined)
+    # Remove pack size indicators since we have a pack pill overlay
     product_name = deal.get("product_name", "")
-    name = html.escape(product_name)
+    product_name_cleaned = remove_pack_size_from_name(product_name)
+    name = html.escape(product_name_cleaned)
     retailer = html.escape(deal.get("retailer", ""))
     category = html.escape(deal.get("category", ""))
     old_price = deal.get("old_price")
@@ -447,12 +464,12 @@ def build_card_html(deal):
                 <div class="{pill_class}">{retailer}</div>
                 <div class="meta-category">{category}</div>
             </div>
-            <div class="card-title">{name}</div>
             <div class="card-pricing">
                 {old_price_html}
                 <span class="new-price">${new_price_val:.2f}</span>
                 <span class="percent-off">{percent_off:.0f}% OFF</span>
             </div>
+            <div class="card-title">{name}</div>
             {flavor_html}
             <div class="card-footer">
                 {availability_html}
@@ -1574,10 +1591,10 @@ def build_page_html(deals):
       <button class="sb-nav-close" aria-label="Close menu">&times;</button>
     </div>
 
-    <a href="#deals-list" class="sb-nav-link">All deals</a>
+    <a href="#deals-list" class="sb-nav-link">All Deals</a>
     <a href="#about" class="sb-nav-link">About SnackBuddy</a>
-    <a href="#how-it-works" class="sb-nav-link">How SnackBuddy works</a>
-    <a href="#subscribe" class="sb-nav-link">Get daily deal emails</a>
+    <a href="#how-it-works" class="sb-nav-link">How SnackBuddy Works</a>
+    <a href="#subscribe" class="sb-nav-link">Get Daily Deal Emails</a>
 
     <div class="sb-nav-footer">
       SnackBuddy helps you spot better-for-you snack deals.
@@ -1679,7 +1696,7 @@ def build_page_html(deals):
 
     <!-- Sort stays -->
     <select id="sort-deals" class="sb-filter">
-      <option value="best">Sort: Best deals</option>
+      <option value="best">Sort: Best Deals</option>
       <option value="price_asc">Sort: Price (low → high)</option>
       <option value="price_desc">Sort: Price (high → low)</option>
     </select>
@@ -1739,7 +1756,7 @@ def build_page_html(deals):
         <!-- ============================ -->
         <section class="sb-info" id="how-it-works">
             <div class="sb-info-card">
-                <h2 class="sb-info-title">How SnackBuddy works</h2>
+                <h2 class="sb-info-title">How SnackBuddy Works</h2>
                 <p class="sb-info-text">
                     SnackBuddy tracks prices for a growing list of better-for-you snacks and drinks across major retailers.
                 </p>
@@ -1758,7 +1775,7 @@ def build_page_html(deals):
         </section>
 
             <div class="sb-info-card" id="subscribe">
-                <h2 class="sb-info-title">Get daily deal emails</h2>
+                <h2 class="sb-info-title">Get Daily Deal Emails</h2>
                 <p class="sb-info-text">
                     Want a quick digest of the best finds? Drop your email below.
                 </p>
@@ -1768,7 +1785,7 @@ def build_page_html(deals):
        href="https://forms.gle/YatCfNYrLdALVq1N8"
        target="_blank"
        rel="noopener noreferrer">
-        Get daily deal emails
+        Get Daily Deal Emails
     </a>
 
     <a class="sb-subscribe-alt"
