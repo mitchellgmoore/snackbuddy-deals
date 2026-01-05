@@ -416,9 +416,14 @@ def build_card_html(deal):
     # Build flavor display HTML
     flavor_html = ""
     if flavor_sample or flavor_extra_count > 0:
-        # Build flavor sample display
-        flavor_names = [html.escape(f.get("name", "")) for f in flavor_sample if f.get("name")]
-        flavor_display = ", ".join(flavor_names)
+        # Build flavor sample display with links
+        flavor_links = []
+        for f in flavor_sample:
+            flavor_name = f.get("name", "")
+            flavor_url = f.get("url", "#")
+            if flavor_name:
+                flavor_links.append(f'<a href="{html.escape(flavor_url)}" target="_blank" rel="noopener noreferrer" class="flavor-link">{html.escape(flavor_name)}</a>')
+        flavor_display = ", ".join(flavor_links)
         
         # Generate unique ID for this card's flavor expand section
         import hashlib
@@ -1343,7 +1348,7 @@ def build_page_html(deals):
             font-weight: 600;
             line-height: 1.25;
             min-height: 34px;
-            margin-bottom: 0;
+            margin-bottom: -6px;
         }}
 
         .card-pricing {{
@@ -1906,7 +1911,32 @@ document.addEventListener("DOMContentLoaded", function () {{
 
   function titleize(s) {{
     if (!s) return "";
-    return s.charAt(0).toUpperCase() + s.slice(1);
+    // Handle special cases for proper title case
+    const specialCases = {{
+      "rtd": "RTD",
+      "protein": "Protein",
+      "drink": "Drink",
+      "shake": "Shake",
+      "snack": "Snack",
+      "crunchy": "Crunchy",
+      "sweets": "Sweets",
+      "chips": "Chips",
+      "cookies": "Cookies",
+      "meat": "Meat",
+      "energy": "Energy"
+    }};
+    
+    // Split by spaces, &, and - while preserving delimiters
+    const parts = s.split(/([\s&\-])/);
+    return parts.map(function(part) {{
+      // Keep whitespace and delimiters as-is
+      if (part.match(/^[\s&\-]$/)) return part;
+      const lower = part.toLowerCase();
+      // Check special cases first
+      if (specialCases[lower]) return specialCases[lower];
+      // Default: capitalize first letter, lowercase rest
+      return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+    }}).join("");
   }}
 
   function updateFilterCount() {{
