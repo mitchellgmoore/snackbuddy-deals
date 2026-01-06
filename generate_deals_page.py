@@ -341,6 +341,10 @@ def build_card_html(deal):
     image_url = html.escape(deal.get("image_url", ""))
     retailer_url = html.escape(deal.get("retailer_url", "#"))
     
+    # Get the number of flavors/deals in this group (default to 1 if no flavor_data)
+    flavor_data = deal.get("flavor_data", [])
+    deal_count = len(flavor_data) if flavor_data else 1
+    
     # Get flavor data if this is a grouped deal
     flavor_sample = deal.get("flavor_sample", [])
     flavor_extra_count = deal.get("flavor_extra_count", 0)
@@ -458,7 +462,8 @@ def build_card_html(deal):
          data-category="{category_attr}"
          data-retailer="{retailer_attr}"
          data-price="{new_price_val}"
-         data-percent="{float(percent_off) if percent_off is not None else 0.0}">
+         data-percent="{float(percent_off) if percent_off is not None else 0.0}"
+         data-deal-count="{deal_count}">
         <div class="card-image-wrap">
             <img src="{image_url}" alt="{name}" class="card-image"/>
             {pack_pill_html}
@@ -491,7 +496,11 @@ def build_card_html(deal):
 def build_page_html(deals):
     # Group deals into deal families
     grouped_deals = group_deals(deals)
-    total = len(grouped_deals)
+    # Calculate total number of individual deals (flavors) across all groups
+    total_deals = sum(
+        len(g.get("flavor_data", [])) if g.get("flavor_data") else 1
+        for g in grouped_deals
+    )
     last_updated = get_last_updated_text(deals)
 
     # Sort: retailer → category → best savings (default order on page load)
@@ -1299,10 +1308,11 @@ def build_page_html(deals):
         }}
 
         .card-content {{
-            padding: 4px 6px 0 6px;
+            padding: 4px 6px 12px 6px;
             display: flex;
             flex-direction: column;
             gap: 6px;
+            flex: 1;
         }}
 
         .card-meta-row {{
@@ -1348,7 +1358,7 @@ def build_page_html(deals):
             font-weight: 600;
             line-height: 1.25;
             min-height: 34px;
-            margin-bottom: -6px;
+            margin-bottom: -20px;
         }}
 
         .card-pricing {{
@@ -1373,7 +1383,7 @@ def build_page_html(deals):
         .percent-off {{
             color: var(--green);
             font-size: 11px;
-            font-weight: 600;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.03em;
         }}
@@ -1399,7 +1409,7 @@ def build_page_html(deals):
         }}
 
         .view-button {{
-            margin-top: 8px;
+            margin-top: auto;
             display: block;
             text-align: center;
             padding: 7px 10px;
@@ -1708,7 +1718,7 @@ def build_page_html(deals):
   </div>
 
   <div id="deal-count" class="count-pill">
-    👀 Showing {total} deals
+    👀 Showing {total_deals} deals
   </div>
 </section>
 
@@ -1927,10 +1937,10 @@ document.addEventListener("DOMContentLoaded", function () {{
     }};
     
     // Split by spaces, &, and - while preserving delimiters
-    const parts = s.split(/([\s&\-])/);
+    const parts = s.split(/([\\s&\\-])/);
     return parts.map(function(part) {{
       // Keep whitespace and delimiters as-is
-      if (part.match(/^[\s&\-]$/)) return part;
+      if (part.match(/^[\\s&\\-]$/)) return part;
       const lower = part.toLowerCase();
       // Check special cases first
       if (specialCases[lower]) return specialCases[lower];
@@ -2121,7 +2131,14 @@ document.addEventListener("DOMContentLoaded", function () {{
       grid.appendChild(card);
     }});
 
-    countEl.textContent = "👀 Showing " + shown.length + " deals";
+    // Sum up the total number of deals (flavors) from visible cards
+    let totalDeals = 0;
+    shown.forEach(function(card) {{
+      const count = parseInt(card.dataset.dealCount || "1", 10);
+      totalDeals += count;
+    }});
+
+    countEl.textContent = "👀 Showing " + totalDeals + " deals";
     renderChips();
   }}
 

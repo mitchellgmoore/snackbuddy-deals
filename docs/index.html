@@ -791,10 +791,11 @@
         }
 
         .card-content {
-            padding: 4px 6px 0 6px;
+            padding: 4px 6px 12px 6px;
             display: flex;
             flex-direction: column;
             gap: 6px;
+            flex: 1;
         }
 
         .card-meta-row {
@@ -840,7 +841,7 @@
             font-weight: 600;
             line-height: 1.25;
             min-height: 34px;
-            margin-bottom: -6px;
+            margin-bottom: -20px;
         }
 
         .card-pricing {
@@ -865,7 +866,7 @@
         .percent-off {
             color: var(--green);
             font-size: 11px;
-            font-weight: 600;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.03em;
         }
@@ -891,7 +892,7 @@
         }
 
         .view-button {
-            margin-top: 8px;
+            margin-top: auto;
             display: block;
             text-align: center;
             padding: 7px 10px;
@@ -1164,7 +1165,7 @@
                 <div class="sb-hero-pattern"></div>
                 <div class="sb-hero-content">
                     <div class="sb-hero-kicker">
-                        SnackBuddy • Last updated: January 05, 2026 at 06:41 PM (local time)
+                        SnackBuddy • Last updated: January 06, 2026 at 03:48 PM (local time)
                     </div>
                     <h1 class="sb-hero-title">Don&apos;t overpay for the snacks you already buy.</h1>
                     <p class="sb-hero-subtitle">
@@ -1200,7 +1201,7 @@
   </div>
 
   <div id="deal-count" class="count-pill">
-    👀 Showing 38 deals
+    👀 Showing 141 deals
   </div>
 </section>
 
@@ -1228,7 +1229,8 @@
          data-category="bars"
          data-retailer="kroger"
          data-price="2.0"
-         data-percent="28.3">
+         data-percent="28.3"
+         data-deal-count="4">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0084209610083" alt="ALOHA Protein Bar" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
@@ -1273,7 +1275,8 @@
          data-category="bars"
          data-retailer="kroger"
          data-price="1.67"
-         data-percent="23.7">
+         data-percent="23.7"
+         data-deal-count="5">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0072225206971" alt="Clif Builders" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
@@ -1318,7 +1321,8 @@
          data-category="bars"
          data-retailer="kroger"
          data-price="8.99"
-         data-percent="21.8">
+         data-percent="21.8"
+         data-deal-count="5">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0085803000841" alt="RXBAR" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>5</span> <span class='pack-unit'>bars</span></div>
@@ -1363,7 +1367,8 @@
          data-category="bars"
          data-retailer="kroger"
          data-price="2.5"
-         data-percent="16.4">
+         data-percent="16.4"
+         data-deal-count="7">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0085005410860" alt="Barebells Protein Bar" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
@@ -1408,7 +1413,8 @@
          data-category="bars"
          data-retailer="kroger"
          data-price="2.5"
-         data-percent="16.4">
+         data-percent="16.4"
+         data-deal-count="2">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0085006495000" alt="Barebells Soft Bar" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
@@ -1447,7 +1453,8 @@
          data-category="bars"
          data-retailer="kroger"
          data-price="8.49"
-         data-percent="15.0">
+         data-percent="15.0"
+         data-deal-count="2">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0064422573002" alt="Power Crunch Bar" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>5</span> <span class='pack-unit'>bars</span></div>
@@ -1467,13 +1474,7 @@
             
             <div class="flavor-info">
                 <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.kroger.com/p/power-crunch-chocolate-mint-whey-protein-energy-bars/0064422573002" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Mint</a>, <a href="https://www.kroger.com/p/power-crunch-peanut-butter-creme-protein-energy-bars/0064422573079" target="_blank" rel="noopener noreferrer" class="flavor-link">Peanut Butter</a></span>
-                <button class="flavor-expand-link" data-card-id="da856415" aria-expanded="false" aria-controls="flavors-da856415">
-                    + 2 more flavors
-                </button>
-                <div class="flavor-list-expanded" id="flavors-da856415" style="display: none;">
-                    <a href="https://www.kroger.com/p/power-crunch-peanut-butter-fudge-protein-energy-bars/0064422573006" target="_blank" rel="noopener noreferrer" class="flavor-link">Peanut Butter Fudge</a><a href="https://www.kroger.com/p/power-crunch-triple-chocolate-whey-protein-energy-bars/0064422573082" target="_blank" rel="noopener noreferrer" class="flavor-link">Triple Chocolate</a>
-                </div>
+                <span class="flavor-sample"><a href="https://www.kroger.com/p/power-crunch-chocolate-mint-whey-protein-energy-bars/0064422573002" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Mint</a>, <a href="https://www.kroger.com/p/power-crunch-triple-chocolate-whey-protein-energy-bars/0064422573082" target="_blank" rel="noopener noreferrer" class="flavor-link">Triple Chocolate</a></span>
             </div>
             
             <div class="card-footer">
@@ -1492,7 +1493,8 @@
          data-category="bars"
          data-retailer="kroger"
          data-price="2.5"
-         data-percent="13.5">
+         data-percent="13.5"
+         data-deal-count="2">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0084022930362" alt="Built Puff" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
@@ -1531,7 +1533,8 @@
          data-category="bars"
          data-retailer="kroger"
          data-price="9.99"
-         data-percent="13.1">
+         data-percent="13.1"
+         data-deal-count="1">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0085803000844" alt="RXBAR" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>5</span> <span class='pack-unit'>bars</span></div>
@@ -1570,7 +1573,8 @@
          data-category="bars"
          data-retailer="kroger"
          data-price="20.04"
-         data-percent="12.8">
+         data-percent="12.8"
+         data-deal-count="1">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0072225260045" alt="Clif Builders" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
@@ -1609,7 +1613,8 @@
          data-category="bars"
          data-retailer="kroger"
          data-price="16.99"
-         data-percent="10.5">
+         data-percent="10.5"
+         data-deal-count="4">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0074982613885" alt="Pure Protein Bar" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
@@ -1654,7 +1659,8 @@
          data-category="bars"
          data-retailer="kroger"
          data-price="9.99"
-         data-percent="9.1">
+         data-percent="9.1"
+         data-deal-count="2">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0084022930380" alt="Built Puff" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
@@ -1693,7 +1699,8 @@
          data-category="bars"
          data-retailer="kroger"
          data-price="3.0"
-         data-percent="8.8">
+         data-percent="8.8"
+         data-deal-count="3">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0085006430300" alt="David Protein Bar" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
@@ -1738,7 +1745,8 @@
          data-category="energy drink"
          data-retailer="kroger"
          data-price="2.25"
-         data-percent="19.4">
+         data-percent="19.4"
+         data-deal-count="6">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0081003051225" alt="Alani Nu Energy Drink" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
@@ -1783,7 +1791,8 @@
          data-category="energy drink"
          data-retailer="kroger"
          data-price="2.25"
-         data-percent="9.6">
+         data-percent="9.6"
+         data-deal-count="18">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0088939200031" alt="Celsius Energy Drink" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
@@ -1828,7 +1837,8 @@
          data-category="meat snack"
          data-retailer="kroger"
          data-price="7.99"
-         data-percent="15.8">
+         data-percent="15.8"
+         data-deal-count="1">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0085658400487" alt="Chomplings Meat Sticks" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>6</span> <span class='pack-unit'>ct</span></div>
@@ -1867,7 +1877,8 @@
          data-category="rtd protein shake"
          data-retailer="kroger"
          data-price="3.79"
-         data-percent="15.6">
+         data-percent="15.6"
+         data-deal-count="2">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0081162002195" alt="Core Power Protein Shake" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
@@ -1906,7 +1917,8 @@
          data-category="rtd protein shake"
          data-retailer="kroger"
          data-price="4.99"
-         data-percent="9.1">
+         data-percent="9.1"
+         data-deal-count="3">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0081162002063" alt="Core Power Elite Protein Shake" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
@@ -1951,7 +1963,8 @@
          data-category="bars"
          data-retailer="target"
          data-price="21.49"
-         data-percent="18.9">
+         data-percent="18.9"
+         data-deal-count="1">
         <div class="card-image-wrap">
             <img src="https://target.scene7.com/is/image/Target/GUEST_9de4655b-9ceb-4efc-9455-674a2d31c486?wid=600&amp;hei=600&amp;qlt=80" alt="Quest Hero Protein Bar" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
@@ -1990,7 +2003,8 @@
          data-category="bars"
          data-retailer="target"
          data-price="21.49"
-         data-percent="17.3">
+         data-percent="17.3"
+         data-deal-count="1">
         <div class="card-image-wrap">
             <img src="https://target.scene7.com/is/image/Target/GUEST_c393d251-0fc8-42e6-b88d-527213dac6fe?wid=600&amp;hei=600&amp;qlt=80" alt="Quest Hero Protein Bar" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
@@ -2029,7 +2043,8 @@
          data-category="bars"
          data-retailer="target"
          data-price="21.49"
-         data-percent="14.0">
+         data-percent="14.0"
+         data-deal-count="1">
         <div class="card-image-wrap">
             <img src="https://target.scene7.com/is/image/Target/GUEST_58445e53-7b0c-4d2f-900f-bbffe7d38cf6?wid=600&amp;hei=600&amp;qlt=80" alt="ONE Protein Bar" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
@@ -2068,7 +2083,8 @@
          data-category="bars"
          data-retailer="target"
          data-price="11.49"
-         data-percent="9.5">
+         data-percent="9.5"
+         data-deal-count="4">
         <div class="card-image-wrap">
             <img src="https://target.scene7.com/is/image/Target/GUEST_1aaa85a1-6011-46b1-9030-d58518342f35?wid=1200&amp;hei=1200&amp;qlt=80" alt="Clif Bar" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>10</span> <span class='pack-unit'>bars</span></div>
@@ -2113,7 +2129,8 @@
          data-category="bars"
          data-retailer="target"
          data-price="27.99"
-         data-percent="6.7">
+         data-percent="6.7"
+         data-deal-count="5">
         <div class="card-image-wrap">
             <img src="https://target.scene7.com/is/image/Target/GUEST_fa246207-5fe6-4bf7-81e0-0b6b1389a63b?wid=600&amp;hei=600&amp;qlt=80" alt="Barebells Protein Bar" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
@@ -2158,7 +2175,8 @@
          data-category="bars"
          data-retailer="target"
          data-price="21.49"
-         data-percent="6.5">
+         data-percent="6.5"
+         data-deal-count="1">
         <div class="card-image-wrap">
             <img src="https://target.scene7.com/is/image/Target/GUEST_bd132c61-19e1-45ff-9bf0-11ca2448ac64?wid=600&amp;hei=600&amp;qlt=80" alt="Quest Hero Protein Bar" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
@@ -2197,7 +2215,8 @@
          data-category="meat snack"
          data-retailer="target"
          data-price="16.99"
-         data-percent="8.1">
+         data-percent="8.1"
+         data-deal-count="6">
         <div class="card-image-wrap">
             <img src="https://target.scene7.com/is/image/Target/GUEST_901cb0e0-c0d8-435b-8e21-45a9f2ff2666?wid=1200&amp;hei=1200&amp;qlt=80" alt="Chomps Meat Sticks" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>8</span> <span class='pack-unit'>ct</span></div>
@@ -2242,7 +2261,8 @@
          data-category="meat snack"
          data-retailer="target"
          data-price="16.99"
-         data-percent="8.1">
+         data-percent="8.1"
+         data-deal-count="2">
         <div class="card-image-wrap">
             <img src="https://target.scene7.com/is/image/Target/GUEST_35828b52-a483-4ce5-892e-31714f74a72e?wid=1200&amp;hei=1200&amp;qlt=80" alt="Chomplings Meat Sticks" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>14</span> <span class='pack-unit'>ct</span></div>
@@ -2281,7 +2301,8 @@
          data-category="bars"
          data-retailer="walmart"
          data-price="4.97"
-         data-percent="14.6">
+         data-percent="14.6"
+         data-deal-count="8">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/Pure-Protein-Bars-Galactic-Brownie-20g-Protein-Gluten-Free-1-76-oz-4-Ct_5b3bd5d8-05b0-40ef-94f4-94a8496a01af.43f3666a9bb8e3c9e9369793ce1f67ab.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Pure Protein Bar" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
@@ -2326,7 +2347,8 @@
          data-category="chips &amp; crunchy"
          data-retailer="walmart"
          data-price="14.25"
-         data-percent="24.8">
+         data-percent="24.8"
+         data-deal-count="1">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/2-pack-Quest-Tortilla-Style-Protein-Chips-Chili-Lime-1-1oz-4-Count-Bags_e3557fff-120a-48d6-8e73-1df50bdc97d6.b5f0e51ebb0d37d142e006ff8809de4a.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Quest Protein Chips" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>8</span> <span class='pack-unit'>ct</span></div>
@@ -2365,7 +2387,8 @@
          data-category="chips &amp; crunchy"
          data-retailer="walmart"
          data-price="8.48"
-         data-percent="10.6">
+         data-percent="10.6"
+         data-deal-count="1">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/Quest-Tortilla-Style-Protein-Chips-Salsa-Verde-Flavored-Baked-1-1oz-4-Count_2b165e24-20b3-41b4-b685-688f06b96955.5b55e495888ed224e20e188bd50f2466.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Quest Protein Chips" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
@@ -2404,7 +2427,8 @@
          data-category="chips &amp; crunchy"
          data-retailer="walmart"
          data-price="8.48"
-         data-percent="10.5">
+         data-percent="10.5"
+         data-deal-count="6">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/Quest-Tortilla-Style-Protein-Chips-Ranch-Baked-Gluten-Free-4-Count_9a517d18-858d-45e9-8082-2e3442bb3c39.d2eb16c148e8eb440d7a59cbbe8c72e9.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Quest Protein Chips" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
@@ -2449,7 +2473,8 @@
          data-category="chips &amp; crunchy"
          data-retailer="walmart"
          data-price="16.96"
-         data-percent="10.5">
+         data-percent="10.5"
+         data-deal-count="2">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/2-pack-Quest-Nutrition-Tortilla-Style-Protein-Chips-Low-Carb-High-Protein-Loaded-Taco-4-5-oz-4-Ct_72824d02-7898-4792-809c-b1a691fd7869.50c7cd66bd03e168e3bcf2ec558876cf.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Quest Protein Chips" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>8</span> <span class='pack-unit'>ct</span></div>
@@ -2487,8 +2512,49 @@
          data-section="food"
          data-category="cookies &amp; sweets"
          data-retailer="walmart"
+         data-price="20.99"
+         data-percent="19.2"
+         data-deal-count="2">
+        <div class="card-image-wrap">
+            <img src="https://i5.walmartimages.com/seo/Myprotein-Crispy-Protein-Wafers-Chocolate-High-Protein-Snacks-15g-10-Pack_b4ed8578-4523-41bd-bc9e-7a15578140a6.3b02ac8e9055e6f4ed292e23172b1532.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="MyProtein Wafer" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>10</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-protein'>💪 Strong Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-walmart">Walmart</div>
+                <div class="meta-category">Cookies &amp; Sweets</div>
+            </div>
+            <div class="card-pricing">
+                <span class='old-price'>$25.99</span>
+                <span class="new-price">$20.99</span>
+                <span class="percent-off">19% OFF</span>
+            </div>
+            <div class="card-title">MyProtein Wafer</div>
+            
+            <div class="flavor-info">
+                <span class="flavor-label">Available in: </span>
+                <span class="flavor-sample"><a href="https://www.walmart.com/ip/Myprotein-Protein-Wafers-Vanilla-4pk/1582074407" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate</a>, <a href="https://www.walmart.com/ip/Myprotein-Protein-Wafers-Vanilla-4pk/1077226335" target="_blank" rel="noopener noreferrer" class="flavor-link">Vanilla</a></span>
+            </div>
+            
+            <div class="card-footer">
+                <div class='availability online-only'>Online only</div>
+                
+            </div>
+            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Myprotein-Protein-Wafers-Vanilla-4pk/1582074407" target="_blank" rel="noopener noreferrer">
+                View on Walmart.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="food"
+         data-category="cookies &amp; sweets"
+         data-retailer="walmart"
          data-price="6.97"
-         data-percent="12.4">
+         data-percent="12.4"
+         data-deal-count="2">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/Myprotein-Protein-Wafers-Vanilla-4pk_4aaa499c-da96-497f-9993-da8a28a04d8f.1bb086327680dfa13a1a66d1e7bbf6b2.png?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="MyProtein Wafer" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
@@ -2527,7 +2593,8 @@
          data-category="cookies &amp; sweets"
          data-retailer="walmart"
          data-price="8.87"
-         data-percent="10.1">
+         data-percent="10.1"
+         data-deal-count="6">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/Legendary-Foods-Protein-Pastry-Strawberry-4-Pack-Protein-Snack-Keto-Friendly-Gluten-Free_5dc0cb53-f63c-4ab6-bfb3-00345f532253.1a03759adca65e79129de32894a5b115.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Legendary Protein Pastry" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
@@ -2572,7 +2639,8 @@
          data-category="cookies &amp; sweets"
          data-retailer="walmart"
          data-price="8.87"
-         data-percent="10.1">
+         data-percent="10.1"
+         data-deal-count="2">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/Legendary-Foods-Protein-Sweet-Roll-Chocolate-4-Pack-Protein-Snack-Gluten-Free-Keto-Friendly_5dfa6bf8-5546-46a0-af02-03fc5416b28e.36cf9f2149a56394a0a0534c469cb640.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Legendary Sweet Roll" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
@@ -2611,7 +2679,8 @@
          data-category="cookies &amp; sweets"
          data-retailer="walmart"
          data-price="8.87"
-         data-percent="10.1">
+         data-percent="10.1"
+         data-deal-count="2">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/Legendary-Foods-Protein-Donuts-Vanilla-Glazed-9-2oz-4ct_e33e8701-09a0-4fd8-8a1a-b1f2a334c50f.1d33a701a7c2d8a024e0f6b9ef16a647.jpeg?odnHeight=573&amp;odnWidth=573&amp;odnBg=FFFFFF" alt="Legendary Donuts" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
@@ -2649,12 +2718,13 @@
          data-section="drinks"
          data-category="energy drink"
          data-retailer="walmart"
-         data-price="1.99"
-         data-percent="19.8">
+         data-price="1.95"
+         data-percent="21.4"
+         data-deal-count="1">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/Alani-Nu-Energy-Drink-Sherbet-Swirl-12oz_581b21c5-e62b-4638-99a3-fa66ba9b0e9e.b6014adef7afb346055e3fcdd9d99936.png?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Alani Nu Energy Drink" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
+            <div class='badge badge-strong'>🔥 Fire Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -2663,8 +2733,8 @@
             </div>
             <div class="card-pricing">
                 <span class='old-price'>$2.48</span>
-                <span class="new-price">$1.99</span>
-                <span class="percent-off">20% OFF</span>
+                <span class="new-price">$1.95</span>
+                <span class="percent-off">21% OFF</span>
             </div>
             <div class="card-title">Alani Nu Energy Drink</div>
             
@@ -2689,7 +2759,8 @@
          data-category="energy drink"
          data-retailer="walmart"
          data-price="1.97"
-         data-percent="13.6">
+         data-percent="13.6"
+         data-deal-count="13">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/CELSIUS-Fizz-Free-Peach-Mango-Green-Tea-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_303cf513-31a8-44ec-b80a-60173a9c1ee0.f87a68d91893d415b59d259221feb198.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Celsius Energy Drink" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
@@ -2734,7 +2805,8 @@
          data-category="meat snack"
          data-retailer="walmart"
          data-price="16.44"
-         data-percent="10.0">
+         data-percent="10.0"
+         data-deal-count="4">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/Chomps-Grass-Fed-and-Finished-Original-Beef-Jerky-Meat-Snack_e006fe89-36ff-4cab-8e7d-3b1bf2d32f4d.04dd875d304afaf9301d132ff981670c.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Chomps Meat Sticks" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>8</span> <span class='pack-unit'>ct</span></div>
@@ -2779,7 +2851,8 @@
          data-category="rtd protein shake"
          data-retailer="walmart"
          data-price="12.88"
-         data-percent="10.1">
+         data-percent="10.1"
+         data-deal-count="2">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/4-pack-Core-Power-Protein-Shake-with-26g-Protein-by-fairlife-Milk-Vanilla-14-fl-oz_79f5a0d2-1754-4cb7-8678-959b090ef4de.51fdf61ac90deefcd0b040c1d0ef4d1b.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Core Power Protein Shake" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
@@ -3202,7 +3275,14 @@ document.addEventListener("DOMContentLoaded", function () {
       grid.appendChild(card);
     });
 
-    countEl.textContent = "👀 Showing " + shown.length + " deals";
+    // Sum up the total number of deals (flavors) from visible cards
+    let totalDeals = 0;
+    shown.forEach(function(card) {
+      const count = parseInt(card.dataset.dealCount || "1", 10);
+      totalDeals += count;
+    });
+
+    countEl.textContent = "👀 Showing " + totalDeals + " deals";
     renderChips();
   }
 
