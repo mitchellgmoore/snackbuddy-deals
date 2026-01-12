@@ -283,6 +283,27 @@ def group_deals(rows: list[dict]) -> list[dict]:
     return list(groups.values())
 
 
+def get_tier_name(percent_off):
+    """
+    Get tier name from percent_off for filtering.
+    Returns: "diamond", "fire", "strong", or "sale"
+    """
+    try:
+        pct = float(percent_off)
+    except Exception:
+        pct = 0.0
+    
+    if pct >= 25.0:
+        return "diamond"
+    if pct >= 20.0:
+        return "fire"
+    if pct >= 10.0:
+        return "strong"
+    if pct >= 0.0:
+        return "sale"
+    return "sale"  # fallback
+
+
 def get_badge(deal):
     """
     Decide badge label & class from percent_off.
@@ -369,6 +390,9 @@ def build_card_html(deal):
 
     # Badge
     badge_label, badge_class = get_badge(deal)
+    
+    # Tier for filtering
+    tier_name = get_tier_name(percent_off)
 
     # Streak
     streak_text = format_streak(deal)
@@ -463,7 +487,8 @@ def build_card_html(deal):
          data-retailer="{retailer_attr}"
          data-price="{new_price_val}"
          data-percent="{float(percent_off) if percent_off is not None else 0.0}"
-         data-deal-count="{deal_count}">
+         data-deal-count="{deal_count}"
+         data-tier="{tier_name}">
         <div class="card-image-wrap">
             <img src="{image_url}" alt="{name}" class="card-image"/>
             {pack_pill_html}
@@ -503,12 +528,21 @@ def build_page_html(deals):
     )
     last_updated = get_last_updated_text(deals)
 
-    # Sort: retailer → category → best savings (default order on page load)
+    # Sort: tier (diamond first, then fire, then strong, then sale) → best savings → price
     def sort_key(d):
+        percent = float(d.get("percent_off") or 0.0)
+        # Tier priority: diamond (4) > fire (3) > strong (2) > sale (1)
+        if percent >= 25.0:
+            tier_priority = 4
+        elif percent >= 20.0:
+            tier_priority = 3
+        elif percent >= 10.0:
+            tier_priority = 2
+        else:
+            tier_priority = 1
         return (
-            (d.get("retailer") or "").lower(),
-            (d.get("category") or "").lower(),
-            -float(d.get("percent_off") or 0.0),
+            -tier_priority,  # Higher tier first
+            -percent,  # Then by percent off (best deals first)
             float(d.get("new_price") or 0.0),
         )
 
@@ -971,6 +1005,101 @@ def build_page_html(deals):
 
         .sb-hero-cta:hover {{
             filter: brightness(1.02);
+        }}
+
+        .sb-hero-todays {{
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 4px;
+        }}
+
+        /* =================================== */
+        /* TIER FILTER PILLS                   */
+        /* =================================== */
+
+        .sb-tier-filters {{
+            max-width: 1100px;
+            margin: 16px auto 12px;
+            padding: 0 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }}
+
+        .sb-tier-filters-row {{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            width: 100%;
+        }}
+
+        .sb-tier-filters-remaining {{
+            width: 100%;
+            margin-top: 8px;
+            display: none; /* Hidden by default, shown via JS when needed */
+            justify-content: flex-start;
+            flex-basis: 100%; /* Force to new line on mobile */
+        }}
+
+        @media (min-width: 640px) {{
+            .sb-tier-filters-remaining {{
+                width: auto;
+                margin-top: 0;
+                margin-left: auto;
+                flex-basis: auto;
+            }}
+        }}
+
+        .sb-tier-pill {{
+            padding: 8px 14px;
+            border-radius: var(--radius-pill);
+            border: 2px solid var(--border-subtle);
+            background-color: #ffffff;
+            color: var(--text-main);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+        }}
+
+        .sb-tier-pill:hover {{
+            border-color: var(--text-muted);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08);
+        }}
+
+        .sb-tier-pill[aria-pressed="true"] {{
+            background-color: var(--navy);
+            color: #ffffff;
+            border-color: var(--navy);
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
+        }}
+
+        .sb-tier-pill[aria-pressed="true"]:hover {{
+            filter: brightness(1.05);
+        }}
+
+        .sb-tier-pill.sb-show-remaining {{
+            background-color: var(--bg);
+            border-color: var(--text-muted);
+            color: var(--text-main);
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }}
+
+        .sb-tier-pill.sb-show-remaining:hover {{
+            background-color: #e5e7eb;
+            border-color: var(--text-main);
+        }}
+
+        #remaining-count {{
+            font-weight: 700;
+            color: var(--blue);
         }}
 
         /* =================================== */
@@ -1688,15 +1817,40 @@ def build_page_html(deals):
                     <p class="sb-hero-subtitle">
                         SnackBuddy tracks price drops on better-for-you snacks and drinks—so you can stock up when it&apos;s worth it.
                     </p>
-                    <a href="#deals-list" class="sb-hero-cta">
-                        See today&apos;s deals →
-                    </a>
+                    <div class="sb-hero-todays">
+                        Today&apos;s
+                    </div>
                 </div>
             </div>
         </section>
 
 <!-- =================================== -->
-<!-- SECTION 1C: FILTERS + DEAL COUNT ROW -->
+<!-- SECTION 1C: TIER FILTER PILLS       -->
+<!-- =================================== -->
+<section class="sb-tier-filters" id="tier-filters">
+    <div class="sb-tier-filters-row">
+        <button class="sb-tier-pill" data-tier="diamond" aria-pressed="true">
+            💎 Diamond Deal
+        </button>
+        <button class="sb-tier-pill" data-tier="fire" aria-pressed="true">
+            🔥 Fire Deal
+        </button>
+        <button class="sb-tier-pill" data-tier="strong" aria-pressed="false">
+            💪 Strong Deal
+        </button>
+        <button class="sb-tier-pill" data-tier="sale" aria-pressed="false">
+            🏷️ On Sale
+        </button>
+    </div>
+    <div class="sb-tier-filters-remaining">
+        <button class="sb-tier-pill sb-show-remaining" id="show-remaining-pill" aria-pressed="false" style="display: none;">
+            Show Remaining <span id="remaining-count">0</span> Deals
+        </button>
+    </div>
+</section>
+
+<!-- =================================== -->
+<!-- SECTION 1D: FILTERS + DEAL COUNT ROW -->
 <!-- =================================== -->
 <section class="sb-utility-row">
   <div class="filter-controls">
@@ -1919,6 +2073,66 @@ document.addEventListener("DOMContentLoaded", function () {{
     category: new Set(),
   }};
 
+  /* ============================
+     TIER FILTER PILLS
+     ============================ */
+  const tierPills = document.querySelectorAll(".sb-tier-pill:not(.sb-show-remaining)");
+  const selectedTiers = new Set(["diamond", "fire"]); // Default: Diamond and Fire deals
+  
+  // Initialize tier pills to show Diamond and Fire as active
+  tierPills.forEach(function(pill) {{
+    const tier = pill.getAttribute("data-tier");
+    if (selectedTiers.has(tier)) {{
+      pill.setAttribute("aria-pressed", "true");
+    }} else {{
+      pill.setAttribute("aria-pressed", "false");
+    }}
+  }});
+  
+  // Handle tier pill clicks
+  tierPills.forEach(function(pill) {{
+    // Skip the "Show Remaining" pill - it has different behavior
+    if (pill.classList.contains("sb-show-remaining")) return;
+    
+    pill.addEventListener("click", function() {{
+      const tier = this.getAttribute("data-tier");
+      const isPressed = this.getAttribute("aria-pressed") === "true";
+      
+      if (isPressed) {{
+        selectedTiers.delete(tier);
+        this.setAttribute("aria-pressed", "false");
+      }} else {{
+        selectedTiers.add(tier);
+        this.setAttribute("aria-pressed", "true");
+      }}
+      
+      applyFiltersAndSort();
+    }});
+  }});
+  
+  // Handle "Show Remaining" pill click
+  const showRemainingPill = document.getElementById("show-remaining-pill");
+  const remainingContainer = document.querySelector(".sb-tier-filters-remaining");
+  if (showRemainingPill) {{
+    showRemainingPill.addEventListener("click", function() {{
+      // Enable Strong and Sale tiers
+      selectedTiers.add("strong");
+      selectedTiers.add("sale");
+      
+      // Update pill states
+      const strongPill = document.querySelector('.sb-tier-pill[data-tier="strong"]');
+      const salePill = document.querySelector('.sb-tier-pill[data-tier="sale"]');
+      if (strongPill) strongPill.setAttribute("aria-pressed", "true");
+      if (salePill) salePill.setAttribute("aria-pressed", "true");
+      
+      // Hide the "Show Remaining" pill and its container
+      if (remainingContainer) remainingContainer.style.display = "none";
+      this.style.display = "none";
+      
+      applyFiltersAndSort();
+    }});
+  }}
+
   function titleize(s) {{
     if (!s) return "";
     // Handle special cases for proper title case
@@ -2090,21 +2304,35 @@ document.addEventListener("DOMContentLoaded", function () {{
     const selC = selected.category;
 
     let shown = [];
+    let totalDeals = 0;
+    let hiddenDeals = 0; // Count of deals hidden due to tier filter only
 
     cards.forEach(function(card) {{
       const r = card.dataset.retailer;
       const s = card.dataset.section;
       const c = card.dataset.category;
+      const tier = card.dataset.tier || "";
 
+      // Check tier filter (default: diamond and fire only)
+      const matchTier = selectedTiers.size === 0 || selectedTiers.has(tier);
+      
       const matchR = selR.size === 0 || selR.has(r);
       const matchS = selS.size === 0 || selS.has(s);
       const matchC = selC.size === 0 || selC.has(c);
 
-      if (matchR && matchS && matchC) {{
+      // Check if this card would be shown if tier filter wasn't applied
+      const wouldShowIfTierMatch = matchR && matchS && matchC;
+
+      if (matchTier && wouldShowIfTierMatch) {{
         card.style.display = "";
         shown.push(card);
+        totalDeals += parseInt(card.dataset.dealCount || "1", 10);
       }} else {{
         card.style.display = "none";
+        // Count hidden deals that are only hidden due to tier filter (not other filters)
+        if (wouldShowIfTierMatch && !matchTier) {{
+          hiddenDeals += parseInt(card.dataset.dealCount || "1", 10);
+        }}
       }}
     }});
 
@@ -2113,8 +2341,19 @@ document.addEventListener("DOMContentLoaded", function () {{
       const bPrice = parseFloat(b.dataset.price || "0");
       const aPct = parseFloat(a.dataset.percent || "0");
       const bPct = parseFloat(b.dataset.percent || "0");
-      const aIdx = parseInt(a.dataset.originalIndex || "0", 10);
-      const bIdx = parseInt(b.dataset.originalIndex || "0", 10);
+      const aTier = a.dataset.tier || "sale";
+      const bTier = b.dataset.tier || "sale";
+      
+      // Tier priority: diamond (4) > fire (3) > strong (2) > sale (1)
+      function getTierPriority(tier) {{
+        if (tier === "diamond") return 4;
+        if (tier === "fire") return 3;
+        if (tier === "strong") return 2;
+        return 1;
+      }}
+      
+      const aTierPriority = getTierPriority(aTier);
+      const bTierPriority = getTierPriority(bTier);
 
       if (sortMode === "price_asc") {{
         if (aPrice !== bPrice) return aPrice - bPrice;
@@ -2124,21 +2363,42 @@ document.addEventListener("DOMContentLoaded", function () {{
         if (aPrice !== bPrice) return bPrice - aPrice;
         return bPct - aPct;
       }}
-      return aIdx - bIdx;
+      // Default sort: tier priority first, then percent off, then price
+      if (aTierPriority !== bTierPriority) {{
+        return bTierPriority - aTierPriority;
+      }}
+      if (aPct !== bPct) {{
+        return bPct - aPct;
+      }}
+      return aPrice - bPrice;
     }});
 
     shown.forEach(function(card) {{
       grid.appendChild(card);
     }});
 
-    // Sum up the total number of deals (flavors) from visible cards
-    let totalDeals = 0;
-    shown.forEach(function(card) {{
-      const count = parseInt(card.dataset.dealCount || "1", 10);
-      totalDeals += count;
-    }});
-
+    // totalDeals is already calculated in the forEach loop above
     countEl.textContent = "👀 Showing " + totalDeals + " deals";
+    
+    // Show/hide "Show Remaining" pill
+    const showRemainingPill = document.getElementById("show-remaining-pill");
+    const remainingCountEl = document.getElementById("remaining-count");
+    const remainingContainer = document.querySelector(".sb-tier-filters-remaining");
+    
+    // Show the pill only if Diamond and Fire are selected AND there are hidden deals
+    const hasDiamond = selectedTiers.has("diamond");
+    const hasFire = selectedTiers.has("fire");
+    const onlyDiamondAndFire = selectedTiers.size === 2 && hasDiamond && hasFire;
+    
+    if (onlyDiamondAndFire && hiddenDeals > 0 && showRemainingPill && remainingCountEl && remainingContainer) {{
+      showRemainingPill.style.display = "inline-flex";
+      remainingContainer.style.display = "flex";
+      remainingCountEl.textContent = hiddenDeals;
+    }} else if (showRemainingPill && remainingContainer) {{
+      showRemainingPill.style.display = "none";
+      remainingContainer.style.display = "none";
+    }}
+    
     renderChips();
   }}
 

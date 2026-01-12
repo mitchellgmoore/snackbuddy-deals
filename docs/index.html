@@ -456,6 +456,101 @@
             filter: brightness(1.02);
         }
 
+        .sb-hero-todays {
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        /* =================================== */
+        /* TIER FILTER PILLS                   */
+        /* =================================== */
+
+        .sb-tier-filters {
+            max-width: 1100px;
+            margin: 16px auto 12px;
+            padding: 0 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .sb-tier-filters-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            width: 100%;
+        }
+
+        .sb-tier-filters-remaining {
+            width: 100%;
+            margin-top: 8px;
+            display: none; /* Hidden by default, shown via JS when needed */
+            justify-content: flex-start;
+            flex-basis: 100%; /* Force to new line on mobile */
+        }
+
+        @media (min-width: 640px) {
+            .sb-tier-filters-remaining {
+                width: auto;
+                margin-top: 0;
+                margin-left: auto;
+                flex-basis: auto;
+            }
+        }
+
+        .sb-tier-pill {
+            padding: 8px 14px;
+            border-radius: var(--radius-pill);
+            border: 2px solid var(--border-subtle);
+            background-color: #ffffff;
+            color: var(--text-main);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+        }
+
+        .sb-tier-pill:hover {
+            border-color: var(--text-muted);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08);
+        }
+
+        .sb-tier-pill[aria-pressed="true"] {
+            background-color: var(--navy);
+            color: #ffffff;
+            border-color: var(--navy);
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
+        }
+
+        .sb-tier-pill[aria-pressed="true"]:hover {
+            filter: brightness(1.05);
+        }
+
+        .sb-tier-pill.sb-show-remaining {
+            background-color: var(--bg);
+            border-color: var(--text-muted);
+            color: var(--text-main);
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .sb-tier-pill.sb-show-remaining:hover {
+            background-color: #e5e7eb;
+            border-color: var(--text-main);
+        }
+
+        #remaining-count {
+            font-weight: 700;
+            color: var(--blue);
+        }
+
         /* =================================== */
         /* SECTION 1C: FILTERS + COUNT ROW      */
         /* =================================== */
@@ -1165,21 +1260,46 @@
                 <div class="sb-hero-pattern"></div>
                 <div class="sb-hero-content">
                     <div class="sb-hero-kicker">
-                        SnackBuddy • Last updated: January 07, 2026 at 03:30 PM (local time)
+                        SnackBuddy • Last updated: January 12, 2026 at 07:17 PM (local time)
                     </div>
                     <h1 class="sb-hero-title">Don&apos;t overpay for the snacks you already buy.</h1>
                     <p class="sb-hero-subtitle">
                         SnackBuddy tracks price drops on better-for-you snacks and drinks—so you can stock up when it&apos;s worth it.
                     </p>
-                    <a href="#deals-list" class="sb-hero-cta">
-                        See today&apos;s deals →
-                    </a>
+                    <div class="sb-hero-todays">
+                        Today&apos;s
+                    </div>
                 </div>
             </div>
         </section>
 
 <!-- =================================== -->
-<!-- SECTION 1C: FILTERS + DEAL COUNT ROW -->
+<!-- SECTION 1C: TIER FILTER PILLS       -->
+<!-- =================================== -->
+<section class="sb-tier-filters" id="tier-filters">
+    <div class="sb-tier-filters-row">
+        <button class="sb-tier-pill" data-tier="diamond" aria-pressed="true">
+            💎 Diamond Deal
+        </button>
+        <button class="sb-tier-pill" data-tier="fire" aria-pressed="true">
+            🔥 Fire Deal
+        </button>
+        <button class="sb-tier-pill" data-tier="strong" aria-pressed="false">
+            💪 Strong Deal
+        </button>
+        <button class="sb-tier-pill" data-tier="sale" aria-pressed="false">
+            🏷️ On Sale
+        </button>
+    </div>
+    <div class="sb-tier-filters-remaining">
+        <button class="sb-tier-pill sb-show-remaining" id="show-remaining-pill" aria-pressed="false" style="display: none;">
+            Show Remaining <span id="remaining-count">0</span> Deals
+        </button>
+    </div>
+</section>
+
+<!-- =================================== -->
+<!-- SECTION 1D: FILTERS + DEAL COUNT ROW -->
 <!-- =================================== -->
 <section class="sb-utility-row">
   <div class="filter-controls">
@@ -1201,7 +1321,7 @@
   </div>
 
   <div id="deal-count" class="count-pill">
-    👀 Showing 149 deals
+    👀 Showing 114 deals
   </div>
 </section>
 
@@ -1228,9 +1348,92 @@
          data-section="food"
          data-category="bars"
          data-retailer="kroger"
+         data-price="9.99"
+         data-percent="33.4"
+         data-deal-count="1"
+         data-tier="diamond">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0060265240065" alt="KIND Bar" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
+            <div class='badge badge-elite'>💎 Diamond Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">Bars</div>
+            </div>
+            <div class="card-pricing">
+                <span class='old-price'>$14.99</span>
+                <span class="new-price">$9.99</span>
+                <span class="percent-off">33% OFF</span>
+            </div>
+            <div class="card-title">KIND Bar</div>
+            
+            <div class="flavor-info">
+                <span class="flavor-label">Available in: </span>
+                <span class="flavor-sample"><a href="https://www.kroger.com/p/kind-cranberry-almond-fruit-and-nut-bars/0060265240065" target="_blank" rel="noopener noreferrer" class="flavor-link">Cranberry Almond</a></span>
+            </div>
+            
+            <div class="card-footer">
+                <div class='availability check'>Check store availability</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/kind-cranberry-almond-fruit-and-nut-bars/0060265240065" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="walmart"
+         data-price="19.98"
+         data-percent="33.4"
+         data-deal-count="1"
+         data-tier="diamond">
+        <div class="card-image-wrap">
+            <img src="https://i5.walmartimages.com/seo/Alani-Nu-Energy-Drink-Blue-Slush-12-fl-oz-Cans-12-Pack_754e57f0-e183-4f96-8eaa-0b492e22fe9a.92cd167891a563fbf56dd32bfe6cb099.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Alani Nu Energy Drink" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-elite'>💎 Diamond Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-walmart">Walmart</div>
+                <div class="meta-category">Energy Drink</div>
+            </div>
+            <div class="card-pricing">
+                <span class='old-price'>$29.99</span>
+                <span class="new-price">$19.98</span>
+                <span class="percent-off">33% OFF</span>
+            </div>
+            <div class="card-title">Alani Nu Energy Drink</div>
+            
+            <div class="flavor-info">
+                <span class="flavor-label">Available in: </span>
+                <span class="flavor-sample"><a href="https://www.walmart.com/ip/Alani-Nu-Sugar-Free-Energy-Variety-Pack-Cherry-Twist-Orange-Kiss-Pink-Slush-12oz-12-pack-12-cans/2518026893" target="_blank" rel="noopener noreferrer" class="flavor-link">Blue Slush</a></span>
+            </div>
+            
+            <div class="card-footer">
+                <div class='availability online-only'>Online only</div>
+                
+            </div>
+            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Alani-Nu-Sugar-Free-Energy-Variety-Pack-Cherry-Twist-Orange-Kiss-Pink-Slush-12oz-12-pack-12-cans/2518026893" target="_blank" rel="noopener noreferrer">
+                View on Walmart.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
          data-price="1.5"
          data-percent="31.5"
-         data-deal-count="4">
+         data-deal-count="4"
+         data-tier="diamond">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0072225206971" alt="Clif Builders" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
@@ -1276,7 +1479,8 @@
          data-retailer="kroger"
          data-price="2.0"
          data-percent="28.3"
-         data-deal-count="4">
+         data-deal-count="4"
+         data-tier="diamond">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0084209610083" alt="ALOHA Protein Bar" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
@@ -1318,38 +1522,80 @@
 
     <div class="card"
          data-section="food"
-         data-category="bars"
-         data-retailer="kroger"
-         data-price="11.49"
-         data-percent="23.3"
-         data-deal-count="1">
+         data-category="chips &amp; crunchy"
+         data-retailer="walmart"
+         data-price="14.25"
+         data-percent="24.8"
+         data-deal-count="1"
+         data-tier="fire">
         <div class="card-image-wrap">
-            <img src="https://www.kroger.com/product/images/xlarge/front/0060265240065" alt="KIND Bar" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
+            <img src="https://i5.walmartimages.com/seo/2-pack-Quest-Tortilla-Style-Protein-Chips-Chili-Lime-1-1oz-4-Count-Bags_e3557fff-120a-48d6-8e73-1df50bdc97d6.b5f0e51ebb0d37d142e006ff8809de4a.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Quest Protein Chips" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>8</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-strong'>🔥 Fire Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-walmart">Walmart</div>
+                <div class="meta-category">Chips &amp; Crunchy</div>
+            </div>
+            <div class="card-pricing">
+                <span class='old-price'>$18.96</span>
+                <span class="new-price">$14.25</span>
+                <span class="percent-off">25% OFF</span>
+            </div>
+            <div class="card-title">Quest Protein Chips</div>
+            
+            <div class="flavor-info">
+                <span class="flavor-label">Available in: </span>
+                <span class="flavor-sample"><a href="https://www.walmart.com/ip/Quest-Tortilla-Style-Protein-Chips-with-20g-of-Protein-Chili-Lime-Flavor-1-1-Oz-Single/15559513009" target="_blank" rel="noopener noreferrer" class="flavor-link">Chili Lime</a></span>
+            </div>
+            
+            <div class="card-footer">
+                <div class='availability both'>In-store & online</div>
+                
+            </div>
+            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Quest-Tortilla-Style-Protein-Chips-with-20g-of-Protein-Chili-Lime-Flavor-1-1-Oz-Single/15559513009" target="_blank" rel="noopener noreferrer">
+                View on Walmart.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="9.99"
+         data-percent="23.1"
+         data-deal-count="2"
+         data-tier="fire">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0081003051292" alt="Alani Nu Energy Drink" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>6</span> <span class='pack-unit'>ct</span></div>
             <div class='badge badge-strong'>🔥 Fire Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
                 <div class="retailer-pill retailer-kroger">Kroger</div>
-                <div class="meta-category">Bars</div>
+                <div class="meta-category">Energy Drink</div>
             </div>
             <div class="card-pricing">
-                <span class='old-price'>$14.99</span>
-                <span class="new-price">$11.49</span>
+                <span class='old-price'>$12.99</span>
+                <span class="new-price">$9.99</span>
                 <span class="percent-off">23% OFF</span>
             </div>
-            <div class="card-title">KIND Bar</div>
+            <div class="card-title">Alani Nu Energy Drink</div>
             
             <div class="flavor-info">
                 <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.kroger.com/p/kind-cranberry-almond-fruit-and-nut-bars/0060265240065" target="_blank" rel="noopener noreferrer" class="flavor-link">Cranberry Almond</a></span>
+                <span class="flavor-sample"><a href="https://www.kroger.com/p/alani-nu-cherry-slush-sugar-free-energy-drink-cans/0081003051292" target="_blank" rel="noopener noreferrer" class="flavor-link">Cherry Slush</a>, <a href="https://www.kroger.com/p/alani-nu-cherry-twist-sugar-free-energy-drink-cans/0081003051823" target="_blank" rel="noopener noreferrer" class="flavor-link">Cherry Twist</a></span>
             </div>
             
             <div class="card-footer">
-                <div class='availability check'>Check store availability</div>
+                <div class='availability both'>In-store & online</div>
                 
             </div>
-            <a class="view-button view-kroger" href="https://www.kroger.com/p/kind-cranberry-almond-fruit-and-nut-bars/0060265240065" target="_blank" rel="noopener noreferrer">
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/alani-nu-cherry-slush-sugar-free-energy-drink-cans/0081003051292" target="_blank" rel="noopener noreferrer">
                 View on Kroger.com
             </a>
         </div>
@@ -1362,7 +1608,8 @@
          data-retailer="kroger"
          data-price="18.0"
          data-percent="21.7"
-         data-deal-count="1">
+         data-deal-count="1"
+         data-tier="fire">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0072225260045" alt="Clif Builders" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
@@ -1397,12 +1644,54 @@
     
 
     <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="walmart"
+         data-price="1.95"
+         data-percent="21.4"
+         data-deal-count="1"
+         data-tier="fire">
+        <div class="card-image-wrap">
+            <img src="https://i5.walmartimages.com/seo/Alani-Nu-Energy-Drink-Sherbet-Swirl-12oz_581b21c5-e62b-4638-99a3-fa66ba9b0e9e.b6014adef7afb346055e3fcdd9d99936.png?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Alani Nu Energy Drink" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-strong'>🔥 Fire Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-walmart">Walmart</div>
+                <div class="meta-category">Energy Drink</div>
+            </div>
+            <div class="card-pricing">
+                <span class='old-price'>$2.48</span>
+                <span class="new-price">$1.95</span>
+                <span class="percent-off">21% OFF</span>
+            </div>
+            <div class="card-title">Alani Nu Energy Drink</div>
+            
+            <div class="flavor-info">
+                <span class="flavor-label">Available in: </span>
+                <span class="flavor-sample"><a href="https://www.walmart.com/ip/Alani-Nu-Energy-Drink-Sherbet-Swirl-12oz/14927820797" target="_blank" rel="noopener noreferrer" class="flavor-link">Sherbert Swirl</a></span>
+            </div>
+            
+            <div class="card-footer">
+                <div class='availability online-only'>Online only</div>
+                
+            </div>
+            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Alani-Nu-Energy-Drink-Sherbet-Swirl-12oz/14927820797" target="_blank" rel="noopener noreferrer">
+                View on Walmart.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
          data-section="food"
          data-category="bars"
          data-retailer="kroger"
          data-price="7.99"
          data-percent="20.0"
-         data-deal-count="4">
+         data-deal-count="4"
+         data-tier="fire">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0064422573002" alt="Power Crunch Bar" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>5</span> <span class='pack-unit'>bars</span></div>
@@ -1443,12 +1732,183 @@
     
 
     <div class="card"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="19.4"
+         data-deal-count="6"
+         data-tier="strong">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0081003051225" alt="Alani Nu Energy Drink" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-protein'>💪 Strong Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">Energy Drink</div>
+            </div>
+            <div class="card-pricing">
+                <span class='old-price'>$2.79</span>
+                <span class="new-price">$2.25</span>
+                <span class="percent-off">19% OFF</span>
+            </div>
+            <div class="card-title">Alani Nu Energy Drink</div>
+            
+            <div class="flavor-info">
+                <span class="flavor-label">Available in: </span>
+                <span class="flavor-sample"><a href="https://www.kroger.com/p/alani-nu-breezeberry-sugar-free-energy-drink/0081003051105" target="_blank" rel="noopener noreferrer" class="flavor-link">Breezeberry</a>, <a href="https://www.kroger.com/p/alani-nu-cherry-slush-sugar-free-energy-drink-can/0081003051225" target="_blank" rel="noopener noreferrer" class="flavor-link">Cherry Slush</a></span>
+                <button class="flavor-expand-link" data-card-id="bf4d4c8d" aria-expanded="false" aria-controls="flavors-bf4d4c8d">
+                    + 4 more flavors
+                </button>
+                <div class="flavor-list-expanded" id="flavors-bf4d4c8d" style="display: none;">
+                    <a href="https://www.kroger.com/p/alani-nu-cosmic-stardust-sugar-free-energy-drink-can/0081003051002" target="_blank" rel="noopener noreferrer" class="flavor-link">Cosmic Stardust</a><a href="https://www.kroger.com/p/alani-nu-hawaiian-shaved-ice-sugar-free-energy-drink-can/0085064500838" target="_blank" rel="noopener noreferrer" class="flavor-link">Hawaiian Shaved Ice</a><a href="https://www.kroger.com/p/alani-nu-juicy-peach-sugar-free-energy-drink-can/0081003051382" target="_blank" rel="noopener noreferrer" class="flavor-link">Juicy Peach</a><a href="https://www.kroger.com/p/alani-nu-orange-kiss-sugar-free-energy-drink-can/0085064500836" target="_blank" rel="noopener noreferrer" class="flavor-link">Orange Kiss</a>
+                </div>
+            </div>
+            
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/alani-nu-cherry-slush-sugar-free-energy-drink-can/0081003051225" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="food"
+         data-category="cookies &amp; sweets"
+         data-retailer="walmart"
+         data-price="20.99"
+         data-percent="19.2"
+         data-deal-count="2"
+         data-tier="strong">
+        <div class="card-image-wrap">
+            <img src="https://i5.walmartimages.com/seo/Myprotein-Crispy-Protein-Wafers-Chocolate-High-Protein-Snacks-15g-10-Pack_b4ed8578-4523-41bd-bc9e-7a15578140a6.3b02ac8e9055e6f4ed292e23172b1532.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="MyProtein Wafer" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>10</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-protein'>💪 Strong Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-walmart">Walmart</div>
+                <div class="meta-category">Cookies &amp; Sweets</div>
+            </div>
+            <div class="card-pricing">
+                <span class='old-price'>$25.99</span>
+                <span class="new-price">$20.99</span>
+                <span class="percent-off">19% OFF</span>
+            </div>
+            <div class="card-title">MyProtein Wafer</div>
+            
+            <div class="flavor-info">
+                <span class="flavor-label">Available in: </span>
+                <span class="flavor-sample"><a href="https://www.walmart.com/ip/Myprotein-Protein-Wafers-Vanilla-4pk/1582074407" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate</a>, <a href="https://www.walmart.com/ip/Myprotein-Protein-Wafers-Vanilla-4pk/1077226335" target="_blank" rel="noopener noreferrer" class="flavor-link">Vanilla</a></span>
+            </div>
+            
+            <div class="card-footer">
+                <div class='availability online-only'>Online only</div>
+                
+            </div>
+            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Myprotein-Protein-Wafers-Vanilla-4pk/1582074407" target="_blank" rel="noopener noreferrer">
+                View on Walmart.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="food"
+         data-category="chips &amp; crunchy"
+         data-retailer="kroger"
+         data-price="7.29"
+         data-percent="18.9"
+         data-deal-count="2"
+         data-tier="strong">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0088884901206" alt="Quest Crackers" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-protein'>💪 Strong Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">Chips &amp; Crunchy</div>
+            </div>
+            <div class="card-pricing">
+                <span class='old-price'>$8.99</span>
+                <span class="new-price">$7.29</span>
+                <span class="percent-off">19% OFF</span>
+            </div>
+            <div class="card-title">Quest Crackers</div>
+            
+            <div class="flavor-info">
+                <span class="flavor-label">Available in: </span>
+                <span class="flavor-sample"><a href="https://www.kroger.com/p/quest-nutrition-protein-cheddar-blast-cheese-crackers/0088884901206" target="_blank" rel="noopener noreferrer" class="flavor-link">Cheddar</a>, <a href="https://www.kroger.com/p/quest-nutrition-spicy-cheddar-protein-cheese-crackers/0088884901400" target="_blank" rel="noopener noreferrer" class="flavor-link">Spicy Cheddar</a></span>
+            </div>
+            
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/quest-nutrition-protein-cheddar-blast-cheese-crackers/0088884901206" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="target"
+         data-price="21.49"
+         data-percent="18.9"
+         data-deal-count="1"
+         data-tier="strong">
+        <div class="card-image-wrap">
+            <img src="https://target.scene7.com/is/image/Target/GUEST_9de4655b-9ceb-4efc-9455-674a2d31c486?wid=600&amp;hei=600&amp;qlt=80" alt="Quest Hero Protein Bar" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
+            <div class='badge badge-protein'>💪 Strong Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-target">Target</div>
+                <div class="meta-category">Bars</div>
+            </div>
+            <div class="card-pricing">
+                <span class='old-price'>$26.49</span>
+                <span class="new-price">$21.49</span>
+                <span class="percent-off">19% OFF</span>
+            </div>
+            <div class="card-title">Quest Hero Protein Bar</div>
+            
+            <div class="flavor-info">
+                <span class="flavor-label">Available in: </span>
+                <span class="flavor-sample"><a href="https://www.target.com/p/quest-nutrition-15g-hero-protein-bar-crispy-chocolate-caramel-pecan/-/A-89846538" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Caramel Pecan</a></span>
+            </div>
+            
+            <div class="card-footer">
+                <div class='availability online-only'>Online only</div>
+                
+            </div>
+            <a class="view-button view-target" href="https://www.target.com/p/quest-nutrition-15g-hero-protein-bar-crispy-chocolate-caramel-pecan/-/A-89846538" target="_blank" rel="noopener noreferrer">
+                View on Target.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
          data-section="food"
          data-category="bars"
          data-retailer="kroger"
          data-price="8.99"
          data-percent="18.2"
-         data-deal-count="6">
+         data-deal-count="5"
+         data-tier="strong">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0088884900386" alt="Quest Protein Bar" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
@@ -1468,12 +1928,12 @@
             
             <div class="flavor-info">
                 <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.kroger.com/p/quest-birthday-cake-protein-bars/0088884900668" target="_blank" rel="noopener noreferrer" class="flavor-link">Birthday Cake</a>, <a href="https://www.kroger.com/p/quest-chocolate-chip-cookie-dough-protein-bars/0088884900385" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Chip Cookie Dough</a></span>
+                <span class="flavor-sample"><a href="https://www.kroger.com/p/quest-birthday-cake-protein-bars/0088884900668" target="_blank" rel="noopener noreferrer" class="flavor-link">Birthday Cake</a>, <a href="https://www.kroger.com/p/quest-cookies-cream-protein-bars/0088884900386" target="_blank" rel="noopener noreferrer" class="flavor-link">Cookies &amp; Cream</a></span>
                 <button class="flavor-expand-link" data-card-id="5c67afcb" aria-expanded="false" aria-controls="flavors-5c67afcb">
-                    + 4 more flavors
+                    + 3 more flavors
                 </button>
                 <div class="flavor-list-expanded" id="flavors-5c67afcb" style="display: none;">
-                    <a href="https://www.kroger.com/p/quest-cookies-cream-protein-bars/0088884900386" target="_blank" rel="noopener noreferrer" class="flavor-link">Cookies &amp; Cream</a><a href="https://www.kroger.com/p/quest-double-chocolate-chunk-protein-bars/0088884900391" target="_blank" rel="noopener noreferrer" class="flavor-link">Double Chocolate Chunk</a><a href="https://www.kroger.com/p/quest-oatmeal-chocolate-chip-protein-bars/0088884900517" target="_blank" rel="noopener noreferrer" class="flavor-link">Oatmeal Chocolate Chip</a><a href="https://www.kroger.com/p/quest-s-mores-protein-bars/0088884900389" target="_blank" rel="noopener noreferrer" class="flavor-link">S&#x27;mores</a>
+                    <a href="https://www.kroger.com/p/quest-double-chocolate-chunk-protein-bars/0088884900391" target="_blank" rel="noopener noreferrer" class="flavor-link">Double Chocolate Chunk</a><a href="https://www.kroger.com/p/quest-oatmeal-chocolate-chip-protein-bars/0088884900517" target="_blank" rel="noopener noreferrer" class="flavor-link">Oatmeal Chocolate Chip</a><a href="https://www.kroger.com/p/quest-s-mores-protein-bars/0088884900389" target="_blank" rel="noopener noreferrer" class="flavor-link">S&#x27;mores</a>
                 </div>
             </div>
             
@@ -1494,7 +1954,8 @@
          data-retailer="kroger"
          data-price="8.99"
          data-percent="18.2"
-         data-deal-count="4">
+         data-deal-count="4"
+         data-tier="strong">
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0088884901160" alt="Quest Hero Protein Bar" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
@@ -1537,606 +1998,11 @@
     <div class="card"
          data-section="food"
          data-category="bars"
-         data-retailer="kroger"
-         data-price="8.99"
-         data-percent="18.2"
-         data-deal-count="2">
-        <div class="card-image-wrap">
-            <img src="https://www.kroger.com/product/images/xlarge/front/0088884901581" alt="Quest Overload" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
-        </div>
-        <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-kroger">Kroger</div>
-                <div class="meta-category">Bars</div>
-            </div>
-            <div class="card-pricing">
-                <span class='old-price'>$10.99</span>
-                <span class="new-price">$8.99</span>
-                <span class="percent-off">18% OFF</span>
-            </div>
-            <div class="card-title">Quest Overload</div>
-            
-            <div class="flavor-info">
-                <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.kroger.com/p/quest-overload-chocolate-explosion-protein-bar/0088884901578" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Explosion</a>, <a href="https://www.kroger.com/p/quest-overload-sundae-funday-protein-bar/0088884901581" target="_blank" rel="noopener noreferrer" class="flavor-link">Sundae Funday</a></span>
-            </div>
-            
-            <div class="card-footer">
-                <div class='availability in-store'>In-store</div>
-                
-            </div>
-            <a class="view-button view-kroger" href="https://www.kroger.com/p/quest-overload-sundae-funday-protein-bar/0088884901581" target="_blank" rel="noopener noreferrer">
-                View on Kroger.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card"
-         data-section="food"
-         data-category="bars"
-         data-retailer="kroger"
-         data-price="9.99"
-         data-percent="9.1"
-         data-deal-count="7">
-        <div class="card-image-wrap">
-            <img src="https://www.kroger.com/product/images/xlarge/front/0085005410880" alt="Barebells Protein Bar" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-everyday'>🏷️ On Sale</div>
-        </div>
-        <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-kroger">Kroger</div>
-                <div class="meta-category">Bars</div>
-            </div>
-            <div class="card-pricing">
-                <span class='old-price'>$10.99</span>
-                <span class="new-price">$9.99</span>
-                <span class="percent-off">9% OFF</span>
-            </div>
-            <div class="card-title">Barebells Protein Bar</div>
-            
-            <div class="flavor-info">
-                <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.kroger.com/p/barebells-birthday-cake-protein-bar/0085005410879" target="_blank" rel="noopener noreferrer" class="flavor-link">Birthday Cake</a>, <a href="https://www.kroger.com/p/barebells-caramel-cashew-protein-bars/0085000042961" target="_blank" rel="noopener noreferrer" class="flavor-link">Caramel Cashew</a></span>
-                <button class="flavor-expand-link" data-card-id="d025a044" aria-expanded="false" aria-controls="flavors-d025a044">
-                    + 5 more flavors
-                </button>
-                <div class="flavor-list-expanded" id="flavors-d025a044" style="display: none;">
-                    <a href="https://www.kroger.com/p/barebells-chocolate-dough-protein-bars/0085000042962" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Dough</a><a href="https://www.kroger.com/p/barebells-cookies-caramel-protein-bars/0085005410880" target="_blank" rel="noopener noreferrer" class="flavor-link">Cookes &amp; Caramel</a><a href="https://www.kroger.com/p/barebells-cookies-cream-protein-bars/0085000042959" target="_blank" rel="noopener noreferrer" class="flavor-link">Cookies &amp; Cream</a><a href="https://www.kroger.com/p/barebells-creamy-crisp-protein-bars/0085005410848" target="_blank" rel="noopener noreferrer" class="flavor-link">Creamy Crisp</a><a href="https://www.kroger.com/p/barebells-salty-peanut-protein-bar/0085000042960" target="_blank" rel="noopener noreferrer" class="flavor-link">Salty Peanut</a>
-                </div>
-            </div>
-            
-            <div class="card-footer">
-                <div class='availability in-store'>In-store</div>
-                
-            </div>
-            <a class="view-button view-kroger" href="https://www.kroger.com/p/barebells-cookies-caramel-protein-bars/0085005410880" target="_blank" rel="noopener noreferrer">
-                View on Kroger.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card"
-         data-section="food"
-         data-category="bars"
-         data-retailer="kroger"
-         data-price="9.99"
-         data-percent="9.1"
-         data-deal-count="2">
-        <div class="card-image-wrap">
-            <img src="https://www.kroger.com/product/images/xlarge/front/0084022930380" alt="Built Puff" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-everyday'>🏷️ On Sale</div>
-        </div>
-        <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-kroger">Kroger</div>
-                <div class="meta-category">Bars</div>
-            </div>
-            <div class="card-pricing">
-                <span class='old-price'>$10.99</span>
-                <span class="new-price">$9.99</span>
-                <span class="percent-off">9% OFF</span>
-            </div>
-            <div class="card-title">Built Puff</div>
-            
-            <div class="flavor-info">
-                <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.kroger.com/p/built-puff-snack-bars-brownie-batter-17g-protein-140-calorie-4-count-box-1-41-oz-bars/0084022930380" target="_blank" rel="noopener noreferrer" class="flavor-link">Brownie Batter</a>, <a href="https://www.kroger.com/p/built-puff-snack-bar-coconut-17g-protein-collagen-140-calories/0084022930381" target="_blank" rel="noopener noreferrer" class="flavor-link">Coconut</a></span>
-            </div>
-            
-            <div class="card-footer">
-                <div class='availability in-store'>In-store</div>
-                
-            </div>
-            <a class="view-button view-kroger" href="https://www.kroger.com/p/built-puff-snack-bars-brownie-batter-17g-protein-140-calorie-4-count-box-1-41-oz-bars/0084022930380" target="_blank" rel="noopener noreferrer">
-                View on Kroger.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card"
-         data-section="food"
-         data-category="bars"
-         data-retailer="kroger"
-         data-price="3.0"
-         data-percent="8.8"
-         data-deal-count="3">
-        <div class="card-image-wrap">
-            <img src="https://www.kroger.com/product/images/xlarge/front/0085006430300" alt="David Protein Bar" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
-            <div class='badge badge-everyday'>🏷️ On Sale</div>
-        </div>
-        <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-kroger">Kroger</div>
-                <div class="meta-category">Bars</div>
-            </div>
-            <div class="card-pricing">
-                <span class='old-price'>$3.29</span>
-                <span class="new-price">$3.00</span>
-                <span class="percent-off">9% OFF</span>
-            </div>
-            <div class="card-title">David Protein Bar</div>
-            
-            <div class="flavor-info">
-                <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.kroger.com/p/david-chocolate-chip-cookie-dough-protein-bar/0085006430300" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Chip Cookie Dough</a>, <a href="https://www.kroger.com/p/david-fudge-brownie-flavored-protein-bar/0085006430303" target="_blank" rel="noopener noreferrer" class="flavor-link">Fudge Brownie</a></span>
-                <button class="flavor-expand-link" data-card-id="68a86b97" aria-expanded="false" aria-controls="flavors-68a86b97">
-                    + 1 more flavor
-                </button>
-                <div class="flavor-list-expanded" id="flavors-68a86b97" style="display: none;">
-                    <a href="https://www.kroger.com/p/david-peanut-butter-chocolate-chunk-protein-bar/0085006430315" target="_blank" rel="noopener noreferrer" class="flavor-link">Peanut Butter Chocolate Chunk</a>
-                </div>
-            </div>
-            
-            <div class="card-footer">
-                <div class='availability in-store'>In-store</div>
-                
-            </div>
-            <a class="view-button view-kroger" href="https://www.kroger.com/p/david-chocolate-chip-cookie-dough-protein-bar/0085006430300" target="_blank" rel="noopener noreferrer">
-                View on Kroger.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card"
-         data-section="food"
-         data-category="chips &amp; crunchy"
-         data-retailer="kroger"
-         data-price="7.29"
-         data-percent="18.9"
-         data-deal-count="2">
-        <div class="card-image-wrap">
-            <img src="https://www.kroger.com/product/images/xlarge/front/0088884901206" alt="Quest Crackers" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
-        </div>
-        <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-kroger">Kroger</div>
-                <div class="meta-category">Chips &amp; Crunchy</div>
-            </div>
-            <div class="card-pricing">
-                <span class='old-price'>$8.99</span>
-                <span class="new-price">$7.29</span>
-                <span class="percent-off">19% OFF</span>
-            </div>
-            <div class="card-title">Quest Crackers</div>
-            
-            <div class="flavor-info">
-                <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.kroger.com/p/quest-nutrition-protein-cheddar-blast-cheese-crackers/0088884901206" target="_blank" rel="noopener noreferrer" class="flavor-link">Cheddar</a>, <a href="https://www.kroger.com/p/quest-nutrition-spicy-cheddar-protein-cheese-crackers/0088884901400" target="_blank" rel="noopener noreferrer" class="flavor-link">Spicy Cheddar</a></span>
-            </div>
-            
-            <div class="card-footer">
-                <div class='availability in-store'>In-store</div>
-                
-            </div>
-            <a class="view-button view-kroger" href="https://www.kroger.com/p/quest-nutrition-protein-cheddar-blast-cheese-crackers/0088884901206" target="_blank" rel="noopener noreferrer">
-                View on Kroger.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card"
-         data-section="food"
-         data-category="chips &amp; crunchy"
-         data-retailer="kroger"
-         data-price="8.99"
-         data-percent="14.3"
-         data-deal-count="4">
-        <div class="card-image-wrap">
-            <img src="https://www.kroger.com/product/images/xlarge/front/0088884901096" alt="Quest Protein Chips" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
-        </div>
-        <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-kroger">Kroger</div>
-                <div class="meta-category">Chips &amp; Crunchy</div>
-            </div>
-            <div class="card-pricing">
-                <span class='old-price'>$10.49</span>
-                <span class="new-price">$8.99</span>
-                <span class="percent-off">14% OFF</span>
-            </div>
-            <div class="card-title">Quest Protein Chips</div>
-            
-            <div class="flavor-info">
-                <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.kroger.com/p/quest-tortilla-style-chili-lime-protein-chips/0088884901053" target="_blank" rel="noopener noreferrer" class="flavor-link">Chili Lime</a>, <a href="https://www.kroger.com/p/quest-tortilla-style-loaded-taco-protein-chips/0088884901096" target="_blank" rel="noopener noreferrer" class="flavor-link">Loaded Taco</a></span>
-                <button class="flavor-expand-link" data-card-id="dfabb61c" aria-expanded="false" aria-controls="flavors-dfabb61c">
-                    + 2 more flavors
-                </button>
-                <div class="flavor-list-expanded" id="flavors-dfabb61c" style="display: none;">
-                    <a href="https://www.kroger.com/p/quest-tortilla-style-ranch-protein-chips/0088884901102" target="_blank" rel="noopener noreferrer" class="flavor-link">Ranch</a><a href="https://www.kroger.com/p/quest-tortilla-spicy-sweet-chili-protein-chips/0088884901175" target="_blank" rel="noopener noreferrer" class="flavor-link">Spicy Sweet Chili</a>
-                </div>
-            </div>
-            
-            <div class="card-footer">
-                <div class='availability in-store'>In-store</div>
-                
-            </div>
-            <a class="view-button view-kroger" href="https://www.kroger.com/p/quest-tortilla-style-loaded-taco-protein-chips/0088884901096" target="_blank" rel="noopener noreferrer">
-                View on Kroger.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card"
-         data-section="food"
-         data-category="cookies &amp; sweets"
-         data-retailer="kroger"
-         data-price="8.99"
-         data-percent="18.2"
-         data-deal-count="1">
-        <div class="card-image-wrap">
-            <img src="https://www.kroger.com/product/images/xlarge/front/0088884901131" alt="Quest Peanut Butter Cups" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
-        </div>
-        <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-kroger">Kroger</div>
-                <div class="meta-category">Cookies &amp; Sweets</div>
-            </div>
-            <div class="card-pricing">
-                <span class='old-price'>$10.99</span>
-                <span class="new-price">$8.99</span>
-                <span class="percent-off">18% OFF</span>
-            </div>
-            <div class="card-title">Quest Peanut Butter Cups</div>
-            
-            <div class="flavor-info">
-                <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.kroger.com/p/quest-protein-low-sugar-peanut-butter-cups/0088884901131" target="_blank" rel="noopener noreferrer" class="flavor-link">Peanut Butter Cups</a></span>
-            </div>
-            
-            <div class="card-footer">
-                <div class='availability in-store'>In-store</div>
-                
-            </div>
-            <a class="view-button view-kroger" href="https://www.kroger.com/p/quest-protein-low-sugar-peanut-butter-cups/0088884901131" target="_blank" rel="noopener noreferrer">
-                View on Kroger.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card"
-         data-section="food"
-         data-category="cookies &amp; sweets"
-         data-retailer="kroger"
-         data-price="8.99"
-         data-percent="14.3"
-         data-deal-count="1">
-        <div class="card-image-wrap">
-            <img src="https://www.kroger.com/product/images/xlarge/front/0088884900600" alt="Quest Protein Cookies" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
-        </div>
-        <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-kroger">Kroger</div>
-                <div class="meta-category">Cookies &amp; Sweets</div>
-            </div>
-            <div class="card-pricing">
-                <span class='old-price'>$10.49</span>
-                <span class="new-price">$8.99</span>
-                <span class="percent-off">14% OFF</span>
-            </div>
-            <div class="card-title">Quest Protein Cookies</div>
-            
-            <div class="flavor-info">
-                <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.kroger.com/p/quest-nutrition-chocolate-chip-protein-cookies/0088884900600" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Chip</a></span>
-            </div>
-            
-            <div class="card-footer">
-                <div class='availability in-store'>In-store</div>
-                
-            </div>
-            <a class="view-button view-kroger" href="https://www.kroger.com/p/quest-nutrition-chocolate-chip-protein-cookies/0088884900600" target="_blank" rel="noopener noreferrer">
-                View on Kroger.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card"
-         data-section="drinks"
-         data-category="energy drink"
-         data-retailer="kroger"
-         data-price="9.99"
-         data-percent="23.1"
-         data-deal-count="2">
-        <div class="card-image-wrap">
-            <img src="https://www.kroger.com/product/images/xlarge/front/0081003051292" alt="Alani Nu Energy Drink" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>6</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong'>🔥 Fire Deal</div>
-        </div>
-        <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-kroger">Kroger</div>
-                <div class="meta-category">Energy Drink</div>
-            </div>
-            <div class="card-pricing">
-                <span class='old-price'>$12.99</span>
-                <span class="new-price">$9.99</span>
-                <span class="percent-off">23% OFF</span>
-            </div>
-            <div class="card-title">Alani Nu Energy Drink</div>
-            
-            <div class="flavor-info">
-                <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.kroger.com/p/alani-nu-cherry-slush-sugar-free-energy-drink-cans/0081003051292" target="_blank" rel="noopener noreferrer" class="flavor-link">Cherry Slush</a>, <a href="https://www.kroger.com/p/alani-nu-cherry-twist-sugar-free-energy-drink-cans/0081003051823" target="_blank" rel="noopener noreferrer" class="flavor-link">Cherry Twist</a></span>
-            </div>
-            
-            <div class="card-footer">
-                <div class='availability in-store'>In-store</div>
-                
-            </div>
-            <a class="view-button view-kroger" href="https://www.kroger.com/p/alani-nu-cherry-slush-sugar-free-energy-drink-cans/0081003051292" target="_blank" rel="noopener noreferrer">
-                View on Kroger.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card"
-         data-section="drinks"
-         data-category="energy drink"
-         data-retailer="kroger"
-         data-price="2.25"
-         data-percent="19.4"
-         data-deal-count="6">
-        <div class="card-image-wrap">
-            <img src="https://www.kroger.com/product/images/xlarge/front/0081003051225" alt="Alani Nu Energy Drink" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
-        </div>
-        <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-kroger">Kroger</div>
-                <div class="meta-category">Energy Drink</div>
-            </div>
-            <div class="card-pricing">
-                <span class='old-price'>$2.79</span>
-                <span class="new-price">$2.25</span>
-                <span class="percent-off">19% OFF</span>
-            </div>
-            <div class="card-title">Alani Nu Energy Drink</div>
-            
-            <div class="flavor-info">
-                <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.kroger.com/p/alani-nu-breezeberry-sugar-free-energy-drink/0081003051105" target="_blank" rel="noopener noreferrer" class="flavor-link">Breezeberry</a>, <a href="https://www.kroger.com/p/alani-nu-cherry-slush-sugar-free-energy-drink-can/0081003051225" target="_blank" rel="noopener noreferrer" class="flavor-link">Cherry Slush</a></span>
-                <button class="flavor-expand-link" data-card-id="bf4d4c8d" aria-expanded="false" aria-controls="flavors-bf4d4c8d">
-                    + 4 more flavors
-                </button>
-                <div class="flavor-list-expanded" id="flavors-bf4d4c8d" style="display: none;">
-                    <a href="https://www.kroger.com/p/alani-nu-cosmic-stardust-sugar-free-energy-drink-can/0081003051002" target="_blank" rel="noopener noreferrer" class="flavor-link">Cosmic Stardust</a><a href="https://www.kroger.com/p/alani-nu-hawaiian-shaved-ice-sugar-free-energy-drink-can/0085064500838" target="_blank" rel="noopener noreferrer" class="flavor-link">Hawaiian Shaved Ice</a><a href="https://www.kroger.com/p/alani-nu-juicy-peach-sugar-free-energy-drink-can/0081003051382" target="_blank" rel="noopener noreferrer" class="flavor-link">Juicy Peach</a><a href="https://www.kroger.com/p/alani-nu-orange-kiss-sugar-free-energy-drink-can/0085064500836" target="_blank" rel="noopener noreferrer" class="flavor-link">Orange Kiss</a>
-                </div>
-            </div>
-            
-            <div class="card-footer">
-                <div class='availability in-store'>In-store</div>
-                
-            </div>
-            <a class="view-button view-kroger" href="https://www.kroger.com/p/alani-nu-cherry-slush-sugar-free-energy-drink-can/0081003051225" target="_blank" rel="noopener noreferrer">
-                View on Kroger.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card"
-         data-section="drinks"
-         data-category="energy drink"
-         data-retailer="kroger"
-         data-price="2.25"
-         data-percent="9.6"
-         data-deal-count="18">
-        <div class="card-image-wrap">
-            <img src="https://www.kroger.com/product/images/xlarge/front/0088939200031" alt="Celsius Energy Drink" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-everyday'>🏷️ On Sale</div>
-        </div>
-        <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-kroger">Kroger</div>
-                <div class="meta-category">Energy Drink</div>
-            </div>
-            <div class="card-pricing">
-                <span class='old-price'>$2.49</span>
-                <span class="new-price">$2.25</span>
-                <span class="percent-off">10% OFF</span>
-            </div>
-            <div class="card-title">Celsius Energy Drink</div>
-            
-            <div class="flavor-info">
-                <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.kroger.com/p/celsius-sparkling-arctic-vibe-energy-drink-can/0088939202141" target="_blank" rel="noopener noreferrer" class="flavor-link">Arctic Vibe (Frozen Berry)</a>, <a href="https://www.kroger.com/p/celsius-sparkling-astro-vibe-energy-drink-can/0088939200134" target="_blank" rel="noopener noreferrer" class="flavor-link">Astro Vibe (Blue Razz)</a></span>
-                <button class="flavor-expand-link" data-card-id="105350fe" aria-expanded="false" aria-controls="flavors-105350fe">
-                    + 16 more flavors
-                </button>
-                <div class="flavor-list-expanded" id="flavors-105350fe" style="display: none;">
-                    <a href="https://www.kroger.com/p/celsius-fizz-free-blue-razz-lemonade-energy-drink-can/0088939200139" target="_blank" rel="noopener noreferrer" class="flavor-link">Blue Razz Lemonade</a><a href="https://www.kroger.com/p/celsius-sparkling-cosmic-vibe-energy-drink-can/0088939200120" target="_blank" rel="noopener noreferrer" class="flavor-link">Cosmic Vibe (Fruit Punch)</a><a href="https://www.kroger.com/p/celsius-sparkling-fantasy-vibe-energy-drink-can/0088939200059" target="_blank" rel="noopener noreferrer" class="flavor-link">Fantasy Vibe (Mandarin Marshmallow)</a><a href="https://www.kroger.com/p/celsius-sparkling-fuji-apple-pear-energy-drink-can/0088939201017" target="_blank" rel="noopener noreferrer" class="flavor-link">Fuji Apple Pear</a><a href="https://www.kroger.com/p/celsius-sparkling-galaxy-vibe-energy-drink-can/0088939200132" target="_blank" rel="noopener noreferrer" class="flavor-link">Galaxy Vibe (Strawberry Watermelon)</a><a href="https://www.kroger.com/p/celsius-sparkling-green-apple-cherry-energy-drink-can/0088939200086" target="_blank" rel="noopener noreferrer" class="flavor-link">Green Apple Cherry</a><a href="https://www.kroger.com/p/celsius-sparkling-kiwi-guava-energy-drink-can/0088939201014" target="_blank" rel="noopener noreferrer" class="flavor-link">Kiwi Guava</a><a href="https://www.kroger.com/p/celsius-sparkling-mango-lemonade-energy-drink-can/0088939200178" target="_blank" rel="noopener noreferrer" class="flavor-link">Mango Lemonade</a><a href="https://www.kroger.com/p/celsius-sparkling-oasis-vibe-energy-drink-can/0088939200090" target="_blank" rel="noopener noreferrer" class="flavor-link">Oasis Vibe (Prickly Pear)</a><a href="https://www.kroger.com/p/celsius-sparkling-orange-energy-drink-can/0088939200031" target="_blank" rel="noopener noreferrer" class="flavor-link">Orange</a><a href="https://www.kroger.com/p/celsius-sparkling-peach-vibe-energy-drink-can/0088939201019" target="_blank" rel="noopener noreferrer" class="flavor-link">Peach Vibe</a><a href="https://www.kroger.com/p/celsius-sparkling-playa-vibe-energy-drink-can/0088939200174" target="_blank" rel="noopener noreferrer" class="flavor-link">Playa Vibe (Pina Colada)</a><a href="https://www.kroger.com/p/celsius-sparkling-raspberry-peach-energy-drink-can/0088939200130" target="_blank" rel="noopener noreferrer" class="flavor-link">Raspberry Peach</a><a href="https://www.kroger.com/p/celsius-sparkling-retro-vibe-energy-drink-can/0088939200172" target="_blank" rel="noopener noreferrer" class="flavor-link">Retro Vibe (Sherbert Slush)</a><a href="https://www.kroger.com/p/celsius-sparkling-watermelon-energy-drink-can/0088939200362" target="_blank" rel="noopener noreferrer" class="flavor-link">Watermelon</a><a href="https://www.kroger.com/p/celsius-sparkling-wild-berry-energy-drink-can/0088939200032" target="_blank" rel="noopener noreferrer" class="flavor-link">Wild Berry</a>
-                </div>
-            </div>
-            
-            <div class="card-footer">
-                <div class='availability in-store'>In-store</div>
-                
-            </div>
-            <a class="view-button view-kroger" href="https://www.kroger.com/p/celsius-sparkling-orange-energy-drink-can/0088939200031" target="_blank" rel="noopener noreferrer">
-                View on Kroger.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card"
-         data-section="drinks"
-         data-category="rtd protein shake"
-         data-retailer="kroger"
-         data-price="3.79"
-         data-percent="15.6"
-         data-deal-count="2">
-        <div class="card-image-wrap">
-            <img src="https://www.kroger.com/product/images/xlarge/front/0081162002195" alt="Core Power Protein Shake" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
-        </div>
-        <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-kroger">Kroger</div>
-                <div class="meta-category">RTD Protein Shake</div>
-            </div>
-            <div class="card-pricing">
-                <span class='old-price'>$4.49</span>
-                <span class="new-price">$3.79</span>
-                <span class="percent-off">16% OFF</span>
-            </div>
-            <div class="card-title">Core Power Protein Shake</div>
-            
-            <div class="flavor-info">
-                <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.kroger.com/p/core-power-chocolate-protein-shake/0081162002195" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate</a>, <a href="https://www.kroger.com/p/core-power-vanilla-protein-shake/0081162002196" target="_blank" rel="noopener noreferrer" class="flavor-link">Vanilla</a></span>
-            </div>
-            
-            <div class="card-footer">
-                <div class='availability in-store'>In-store</div>
-                
-            </div>
-            <a class="view-button view-kroger" href="https://www.kroger.com/p/core-power-chocolate-protein-shake/0081162002195" target="_blank" rel="noopener noreferrer">
-                View on Kroger.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card"
-         data-section="drinks"
-         data-category="rtd protein shake"
-         data-retailer="kroger"
-         data-price="4.99"
-         data-percent="9.1"
-         data-deal-count="3">
-        <div class="card-image-wrap">
-            <img src="https://www.kroger.com/product/images/xlarge/front/0081162002063" alt="Core Power Elite Protein Shake" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-everyday'>🏷️ On Sale</div>
-        </div>
-        <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-kroger">Kroger</div>
-                <div class="meta-category">RTD Protein Shake</div>
-            </div>
-            <div class="card-pricing">
-                <span class='old-price'>$5.49</span>
-                <span class="new-price">$4.99</span>
-                <span class="percent-off">9% OFF</span>
-            </div>
-            <div class="card-title">Core Power Elite Protein Shake</div>
-            
-            <div class="flavor-info">
-                <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.kroger.com/p/core-power-elite-chocolate-high-protein-shake/0081162002063" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate</a>, <a href="https://www.kroger.com/p/core-power-elite-strawberry-high-protein-shake/0081162002142" target="_blank" rel="noopener noreferrer" class="flavor-link">Strawberry</a></span>
-                <button class="flavor-expand-link" data-card-id="1d192dcd" aria-expanded="false" aria-controls="flavors-1d192dcd">
-                    + 1 more flavor
-                </button>
-                <div class="flavor-list-expanded" id="flavors-1d192dcd" style="display: none;">
-                    <a href="https://www.kroger.com/p/core-power-elite-vanilla-high-protein-shake/0081162002065" target="_blank" rel="noopener noreferrer" class="flavor-link">Vanilla</a>
-                </div>
-            </div>
-            
-            <div class="card-footer">
-                <div class='availability in-store'>In-store</div>
-                
-            </div>
-            <a class="view-button view-kroger" href="https://www.kroger.com/p/core-power-elite-chocolate-high-protein-shake/0081162002063" target="_blank" rel="noopener noreferrer">
-                View on Kroger.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card"
-         data-section="food"
-         data-category="bars"
-         data-retailer="target"
-         data-price="21.49"
-         data-percent="18.9"
-         data-deal-count="1">
-        <div class="card-image-wrap">
-            <img src="https://target.scene7.com/is/image/Target/GUEST_9de4655b-9ceb-4efc-9455-674a2d31c486?wid=600&amp;hei=600&amp;qlt=80" alt="Quest Hero Protein Bar" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
-        </div>
-        <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-target">Target</div>
-                <div class="meta-category">Bars</div>
-            </div>
-            <div class="card-pricing">
-                <span class='old-price'>$26.49</span>
-                <span class="new-price">$21.49</span>
-                <span class="percent-off">19% OFF</span>
-            </div>
-            <div class="card-title">Quest Hero Protein Bar</div>
-            
-            <div class="flavor-info">
-                <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.target.com/p/quest-nutrition-15g-hero-protein-bar-crispy-chocolate-caramel-pecan/-/A-89846538" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Caramel Pecan</a></span>
-            </div>
-            
-            <div class="card-footer">
-                <div class='availability online-only'>Online only</div>
-                
-            </div>
-            <a class="view-button view-target" href="https://www.target.com/p/quest-nutrition-15g-hero-protein-bar-crispy-chocolate-caramel-pecan/-/A-89846538" target="_blank" rel="noopener noreferrer">
-                View on Target.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card"
-         data-section="food"
-         data-category="bars"
          data-retailer="target"
          data-price="21.49"
          data-percent="17.3"
-         data-deal-count="1">
+         data-deal-count="1"
+         data-tier="strong">
         <div class="card-image-wrap">
             <img src="https://target.scene7.com/is/image/Target/GUEST_c393d251-0fc8-42e6-b88d-527213dac6fe?wid=600&amp;hei=600&amp;qlt=80" alt="Quest Hero Protein Bar" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
@@ -2171,258 +2037,41 @@
     
 
     <div class="card"
-         data-section="food"
-         data-category="bars"
-         data-retailer="target"
-         data-price="21.49"
-         data-percent="14.0"
-         data-deal-count="1">
+         data-section="drinks"
+         data-category="rtd protein shake"
+         data-retailer="kroger"
+         data-price="3.79"
+         data-percent="15.6"
+         data-deal-count="2"
+         data-tier="strong">
         <div class="card-image-wrap">
-            <img src="https://target.scene7.com/is/image/Target/GUEST_58445e53-7b0c-4d2f-900f-bbffe7d38cf6?wid=600&amp;hei=600&amp;qlt=80" alt="ONE Protein Bar" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
+            <img src="https://www.kroger.com/product/images/xlarge/front/0081162002195" alt="Core Power Protein Shake" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
             <div class='badge badge-protein'>💪 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
-                <div class="retailer-pill retailer-target">Target</div>
-                <div class="meta-category">Bars</div>
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">RTD Protein Shake</div>
             </div>
             <div class="card-pricing">
-                <span class='old-price'>$24.99</span>
-                <span class="new-price">$21.49</span>
-                <span class="percent-off">14% OFF</span>
+                <span class='old-price'>$4.49</span>
+                <span class="new-price">$3.79</span>
+                <span class="percent-off">16% OFF</span>
             </div>
-            <div class="card-title">ONE Protein Bar</div>
+            <div class="card-title">Core Power Protein Shake</div>
             
             <div class="flavor-info">
                 <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.target.com/p/one-bar-protein-bar-blueberry-cobbler/-/A-80354236" target="_blank" rel="noopener noreferrer" class="flavor-link">Blueberry Cobbler</a></span>
+                <span class="flavor-sample"><a href="https://www.kroger.com/p/core-power-chocolate-protein-shake/0081162002195" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate</a>, <a href="https://www.kroger.com/p/core-power-vanilla-protein-shake/0081162002196" target="_blank" rel="noopener noreferrer" class="flavor-link">Vanilla</a></span>
             </div>
             
             <div class="card-footer">
-                <div class='availability check'>Check store availability</div>
+                <div class='availability in-store'>In-store</div>
                 
             </div>
-            <a class="view-button view-target" href="https://www.target.com/p/one-bar-protein-bar-blueberry-cobbler/-/A-80354236" target="_blank" rel="noopener noreferrer">
-                View on Target.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card"
-         data-section="food"
-         data-category="bars"
-         data-retailer="target"
-         data-price="11.49"
-         data-percent="9.5"
-         data-deal-count="4">
-        <div class="card-image-wrap">
-            <img src="https://target.scene7.com/is/image/Target/GUEST_1aaa85a1-6011-46b1-9030-d58518342f35?wid=1200&amp;hei=1200&amp;qlt=80" alt="Clif Bar" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>10</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-everyday'>🏷️ On Sale</div>
-        </div>
-        <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-target">Target</div>
-                <div class="meta-category">Bars</div>
-            </div>
-            <div class="card-pricing">
-                <span class='old-price'>$12.69</span>
-                <span class="new-price">$11.49</span>
-                <span class="percent-off">10% OFF</span>
-            </div>
-            <div class="card-title">Clif Bar</div>
-            
-            <div class="flavor-info">
-                <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.target.com/p/clif-bar-chocolate-chip-energy-bars/-/A-90610471" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Chip</a>, <a href="https://www.target.com/p/clif-bar-crunchy-peanut-butter-energy-bars/-/A-90611823" target="_blank" rel="noopener noreferrer" class="flavor-link">Crunchy Peanut Butter</a></span>
-                <button class="flavor-expand-link" data-card-id="249f53c8" aria-expanded="false" aria-controls="flavors-249f53c8">
-                    + 2 more flavors
-                </button>
-                <div class="flavor-list-expanded" id="flavors-249f53c8" style="display: none;">
-                    <a href="https://www.target.com/p/clif-bar-peanut-butter-banana-with-dark-chocolate/-/A-82888379" target="_blank" rel="noopener noreferrer" class="flavor-link">Peanut Butter Banana Dark Chocolate</a><a href="https://www.target.com/p/clif-bar-white-chocolate-macadamia-nut-energy-bars/-/A-90611012" target="_blank" rel="noopener noreferrer" class="flavor-link">White Chocolate Macadamia Nut</a>
-                </div>
-            </div>
-            
-            <div class="card-footer">
-                <div class='availability online-only'>Online only</div>
-                
-            </div>
-            <a class="view-button view-target" href="https://www.target.com/p/clif-bar-chocolate-chip-energy-bars/-/A-90610471" target="_blank" rel="noopener noreferrer">
-                View on Target.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card"
-         data-section="food"
-         data-category="bars"
-         data-retailer="target"
-         data-price="27.99"
-         data-percent="6.7"
-         data-deal-count="5">
-        <div class="card-image-wrap">
-            <img src="https://target.scene7.com/is/image/Target/GUEST_fa246207-5fe6-4bf7-81e0-0b6b1389a63b?wid=600&amp;hei=600&amp;qlt=80" alt="Barebells Protein Bar" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-everyday'>🏷️ On Sale</div>
-        </div>
-        <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-target">Target</div>
-                <div class="meta-category">Bars</div>
-            </div>
-            <div class="card-pricing">
-                <span class='old-price'>$29.99</span>
-                <span class="new-price">$27.99</span>
-                <span class="percent-off">7% OFF</span>
-            </div>
-            <div class="card-title">Barebells Protein Bar</div>
-            
-            <div class="flavor-info">
-                <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.target.com/p/barebells-nutrition-bars-caramel-cashew/-/A-83942844" target="_blank" rel="noopener noreferrer" class="flavor-link">Caramel Cashew</a>, <a href="https://www.target.com/p/barebells-nutrition-bars-salty-peanut-7-76oz-4pk/-/A-83942845" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Dough</a></span>
-                <button class="flavor-expand-link" data-card-id="691cc75a" aria-expanded="false" aria-controls="flavors-691cc75a">
-                    + 3 more flavors
-                </button>
-                <div class="flavor-list-expanded" id="flavors-691cc75a" style="display: none;">
-                    <a href="https://www.target.com/p/barebells-nutrition-bars-cookies-cream/-/A-83942841" target="_blank" rel="noopener noreferrer" class="flavor-link">Cookies &amp; Cream</a><a href="https://www.target.com/p/barebells-nutrition-bars-salty-peanut-7-76oz-4pk/-/A-83942843" target="_blank" rel="noopener noreferrer" class="flavor-link">Salty Peanut</a><a href="https://www.target.com/p/barebells-nutrition-bars-salty-peanut-7-76oz-4pk/-/A-83942842" target="_blank" rel="noopener noreferrer" class="flavor-link">White Chocolate Almond</a>
-                </div>
-            </div>
-            
-            <div class="card-footer">
-                <div class='availability online-only'>Online only</div>
-                
-            </div>
-            <a class="view-button view-target" href="https://www.target.com/p/barebells-nutrition-bars-cookies-cream/-/A-83942841" target="_blank" rel="noopener noreferrer">
-                View on Target.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card"
-         data-section="food"
-         data-category="bars"
-         data-retailer="target"
-         data-price="21.49"
-         data-percent="6.5"
-         data-deal-count="1">
-        <div class="card-image-wrap">
-            <img src="https://target.scene7.com/is/image/Target/GUEST_bd132c61-19e1-45ff-9bf0-11ca2448ac64?wid=600&amp;hei=600&amp;qlt=80" alt="Quest Hero Protein Bar" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-everyday'>🏷️ On Sale</div>
-        </div>
-        <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-target">Target</div>
-                <div class="meta-category">Bars</div>
-            </div>
-            <div class="card-pricing">
-                <span class='old-price'>$22.99</span>
-                <span class="new-price">$21.49</span>
-                <span class="percent-off">6% OFF</span>
-            </div>
-            <div class="card-title">Quest Hero Protein Bar</div>
-            
-            <div class="flavor-info">
-                <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.target.com/p/quest-nutrition-18g-hero-protein-bar-crispy-chocolate-peanut-butter/-/A-89846528" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Peanut Butter</a></span>
-            </div>
-            
-            <div class="card-footer">
-                <div class='availability online-only'>Online only</div>
-                
-            </div>
-            <a class="view-button view-target" href="https://www.target.com/p/quest-nutrition-18g-hero-protein-bar-crispy-chocolate-peanut-butter/-/A-89846528" target="_blank" rel="noopener noreferrer">
-                View on Target.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card"
-         data-section="food"
-         data-category="meat snack"
-         data-retailer="target"
-         data-price="16.99"
-         data-percent="8.1"
-         data-deal-count="6">
-        <div class="card-image-wrap">
-            <img src="https://target.scene7.com/is/image/Target/GUEST_901cb0e0-c0d8-435b-8e21-45a9f2ff2666?wid=1200&amp;hei=1200&amp;qlt=80" alt="Chomps Meat Sticks" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>8</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-everyday'>🏷️ On Sale</div>
-        </div>
-        <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-target">Target</div>
-                <div class="meta-category">Meat Snack</div>
-            </div>
-            <div class="card-pricing">
-                <span class='old-price'>$18.49</span>
-                <span class="new-price">$16.99</span>
-                <span class="percent-off">8% OFF</span>
-            </div>
-            <div class="card-title">Chomps Meat Sticks</div>
-            
-            <div class="flavor-info">
-                <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.target.com/p/chomps-jalapeno-beef-8ct-9-2oz/-/A-87802843#lnk=sametab" target="_blank" rel="noopener noreferrer" class="flavor-link">Jalapeno Beef</a>, <a href="https://www.target.com/p/chomps-original-beef-8ct-9-2oz/-/A-87802842#lnk=sametab" target="_blank" rel="noopener noreferrer" class="flavor-link">Original Beef</a></span>
-                <button class="flavor-expand-link" data-card-id="7d761f32" aria-expanded="false" aria-controls="flavors-7d761f32">
-                    + 4 more flavors
-                </button>
-                <div class="flavor-list-expanded" id="flavors-7d761f32" style="display: none;">
-                    <a href="https://www.target.com/p/chomps-original-turkey-sticks-8ct-9-2oz/-/A-90142217#lnk=sametab" target="_blank" rel="noopener noreferrer" class="flavor-link">Original Turkey</a><a href="https://www.target.com/p/chomps-sea-salt-beef-sticks-8ct-9-2oz/-/A-90142216#lnk=sametab" target="_blank" rel="noopener noreferrer" class="flavor-link">Sea Salt</a><a href="https://www.target.com/p/chomps-snack-sticks-smoky-bbq-beef-sticks-9-2oz-8ct/-/A-93922915#lnk=sametab" target="_blank" rel="noopener noreferrer" class="flavor-link">Smoky BBQ</a><a href="https://www.target.com/p/chomps-snack-sticks-taco-beef-sticks-9-2oz-8ct/-/A-93612504#lnk=sametab" target="_blank" rel="noopener noreferrer" class="flavor-link">Taco</a>
-                </div>
-            </div>
-            
-            <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
-                
-            </div>
-            <a class="view-button view-target" href="https://www.target.com/p/chomps-original-beef-8ct-9-2oz/-/A-87802842#lnk=sametab" target="_blank" rel="noopener noreferrer">
-                View on Target.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card"
-         data-section="food"
-         data-category="meat snack"
-         data-retailer="target"
-         data-price="16.99"
-         data-percent="8.1"
-         data-deal-count="2">
-        <div class="card-image-wrap">
-            <img src="https://target.scene7.com/is/image/Target/GUEST_35828b52-a483-4ce5-892e-31714f74a72e?wid=1200&amp;hei=1200&amp;qlt=80" alt="Chomplings Meat Sticks" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>14</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-everyday'>🏷️ On Sale</div>
-        </div>
-        <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-target">Target</div>
-                <div class="meta-category">Meat Snack</div>
-            </div>
-            <div class="card-pricing">
-                <span class='old-price'>$18.49</span>
-                <span class="new-price">$16.99</span>
-                <span class="percent-off">8% OFF</span>
-            </div>
-            <div class="card-title">Chomplings Meat Sticks</div>
-            
-            <div class="flavor-info">
-                <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.target.com/p/chomplings-original-beef-mini-sticks-7oz-14ct/-/A-92993812#lnk=sametab" target="_blank" rel="noopener noreferrer" class="flavor-link">Original Beef</a>, <a href="https://www.target.com/p/chomps-snack-sticks-chomplings-sea-salt-beef-mini-sticks-7oz-14ct/-/A-93974616#lnk=sametab" target="_blank" rel="noopener noreferrer" class="flavor-link">Sea Salt</a></span>
-            </div>
-            
-            <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
-                
-            </div>
-            <a class="view-button view-target" href="https://www.target.com/p/chomplings-original-beef-mini-sticks-7oz-14ct/-/A-92993812#lnk=sametab" target="_blank" rel="noopener noreferrer">
-                View on Target.com
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/core-power-chocolate-protein-shake/0081162002195" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
             </a>
         </div>
     </div>
@@ -2434,7 +2083,8 @@
          data-retailer="walmart"
          data-price="4.97"
          data-percent="14.6"
-         data-deal-count="8">
+         data-deal-count="8"
+         data-tier="strong">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/Pure-Protein-Bars-Galactic-Brownie-20g-Protein-Gluten-Free-1-76-oz-4-Ct_5b3bd5d8-05b0-40ef-94f4-94a8496a01af.43f3666a9bb8e3c9e9369793ce1f67ab.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Pure Protein Bar" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
@@ -2477,37 +2127,126 @@
     <div class="card"
          data-section="food"
          data-category="chips &amp; crunchy"
-         data-retailer="walmart"
-         data-price="14.25"
-         data-percent="24.8"
-         data-deal-count="1">
+         data-retailer="kroger"
+         data-price="8.99"
+         data-percent="14.3"
+         data-deal-count="4"
+         data-tier="strong">
         <div class="card-image-wrap">
-            <img src="https://i5.walmartimages.com/seo/2-pack-Quest-Tortilla-Style-Protein-Chips-Chili-Lime-1-1oz-4-Count-Bags_e3557fff-120a-48d6-8e73-1df50bdc97d6.b5f0e51ebb0d37d142e006ff8809de4a.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Quest Protein Chips" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>8</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong'>🔥 Fire Deal</div>
+            <img src="https://www.kroger.com/product/images/xlarge/front/0088884901096" alt="Quest Protein Chips" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-protein'>💪 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
-                <div class="retailer-pill retailer-walmart">Walmart</div>
+                <div class="retailer-pill retailer-kroger">Kroger</div>
                 <div class="meta-category">Chips &amp; Crunchy</div>
             </div>
             <div class="card-pricing">
-                <span class='old-price'>$18.96</span>
-                <span class="new-price">$14.25</span>
-                <span class="percent-off">25% OFF</span>
+                <span class='old-price'>$10.49</span>
+                <span class="new-price">$8.99</span>
+                <span class="percent-off">14% OFF</span>
             </div>
             <div class="card-title">Quest Protein Chips</div>
             
             <div class="flavor-info">
                 <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.walmart.com/ip/Quest-Tortilla-Style-Protein-Chips-with-20g-of-Protein-Chili-Lime-Flavor-1-1-Oz-Single/15559513009" target="_blank" rel="noopener noreferrer" class="flavor-link">Chili Lime</a></span>
+                <span class="flavor-sample"><a href="https://www.kroger.com/p/quest-tortilla-style-chili-lime-protein-chips/0088884901053" target="_blank" rel="noopener noreferrer" class="flavor-link">Chili Lime</a>, <a href="https://www.kroger.com/p/quest-tortilla-style-loaded-taco-protein-chips/0088884901096" target="_blank" rel="noopener noreferrer" class="flavor-link">Loaded Taco</a></span>
+                <button class="flavor-expand-link" data-card-id="dfabb61c" aria-expanded="false" aria-controls="flavors-dfabb61c">
+                    + 2 more flavors
+                </button>
+                <div class="flavor-list-expanded" id="flavors-dfabb61c" style="display: none;">
+                    <a href="https://www.kroger.com/p/quest-tortilla-style-ranch-protein-chips/0088884901102" target="_blank" rel="noopener noreferrer" class="flavor-link">Ranch</a><a href="https://www.kroger.com/p/quest-tortilla-spicy-sweet-chili-protein-chips/0088884901175" target="_blank" rel="noopener noreferrer" class="flavor-link">Spicy Sweet Chili</a>
+                </div>
+            </div>
+            
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/quest-tortilla-style-loaded-taco-protein-chips/0088884901096" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="target"
+         data-price="21.49"
+         data-percent="14.0"
+         data-deal-count="1"
+         data-tier="strong">
+        <div class="card-image-wrap">
+            <img src="https://target.scene7.com/is/image/Target/GUEST_58445e53-7b0c-4d2f-900f-bbffe7d38cf6?wid=600&amp;hei=600&amp;qlt=80" alt="ONE Protein Bar" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
+            <div class='badge badge-protein'>💪 Strong Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-target">Target</div>
+                <div class="meta-category">Bars</div>
+            </div>
+            <div class="card-pricing">
+                <span class='old-price'>$24.99</span>
+                <span class="new-price">$21.49</span>
+                <span class="percent-off">14% OFF</span>
+            </div>
+            <div class="card-title">ONE Protein Bar</div>
+            
+            <div class="flavor-info">
+                <span class="flavor-label">Available in: </span>
+                <span class="flavor-sample"><a href="https://www.target.com/p/one-bar-protein-bar-blueberry-cobbler/-/A-80354236" target="_blank" rel="noopener noreferrer" class="flavor-link">Blueberry Cobbler</a></span>
+            </div>
+            
+            <div class="card-footer">
+                <div class='availability check'>Check store availability</div>
+                
+            </div>
+            <a class="view-button view-target" href="https://www.target.com/p/one-bar-protein-bar-blueberry-cobbler/-/A-80354236" target="_blank" rel="noopener noreferrer">
+                View on Target.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="food"
+         data-category="cookies &amp; sweets"
+         data-retailer="walmart"
+         data-price="6.97"
+         data-percent="12.4"
+         data-deal-count="2"
+         data-tier="strong">
+        <div class="card-image-wrap">
+            <img src="https://i5.walmartimages.com/seo/Myprotein-Protein-Wafers-Vanilla-4pk_4aaa499c-da96-497f-9993-da8a28a04d8f.1bb086327680dfa13a1a66d1e7bbf6b2.png?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="MyProtein Wafer" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-protein'>💪 Strong Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-walmart">Walmart</div>
+                <div class="meta-category">Cookies &amp; Sweets</div>
+            </div>
+            <div class="card-pricing">
+                <span class='old-price'>$7.96</span>
+                <span class="new-price">$6.97</span>
+                <span class="percent-off">12% OFF</span>
+            </div>
+            <div class="card-title">MyProtein Wafer</div>
+            
+            <div class="flavor-info">
+                <span class="flavor-label">Available in: </span>
+                <span class="flavor-sample"><a href="https://www.walmart.com/ip/Myprotein-Protein-Wafers-Vanilla-4pk/15351112799" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate</a>, <a href="https://www.walmart.com/ip/Myprotein-Protein-Wafers-Vanilla-4pk/15319150574" target="_blank" rel="noopener noreferrer" class="flavor-link">Vanilla</a></span>
             </div>
             
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
             </div>
-            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Quest-Tortilla-Style-Protein-Chips-with-20g-of-Protein-Chili-Lime-Flavor-1-1-Oz-Single/15559513009" target="_blank" rel="noopener noreferrer">
+            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Myprotein-Protein-Wafers-Vanilla-4pk/15319150574" target="_blank" rel="noopener noreferrer">
                 View on Walmart.com
             </a>
         </div>
@@ -2520,7 +2259,8 @@
          data-retailer="walmart"
          data-price="8.48"
          data-percent="10.6"
-         data-deal-count="1">
+         data-deal-count="1"
+         data-tier="strong">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/Quest-Tortilla-Style-Protein-Chips-Salsa-Verde-Flavored-Baked-1-1oz-4-Count_2b165e24-20b3-41b4-b685-688f06b96955.5b55e495888ed224e20e188bd50f2466.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Quest Protein Chips" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
@@ -2560,7 +2300,8 @@
          data-retailer="walmart"
          data-price="8.48"
          data-percent="10.5"
-         data-deal-count="6">
+         data-deal-count="6"
+         data-tier="strong">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/Quest-Tortilla-Style-Protein-Chips-Ranch-Baked-Gluten-Free-4-Count_9a517d18-858d-45e9-8082-2e3442bb3c39.d2eb16c148e8eb440d7a59cbbe8c72e9.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Quest Protein Chips" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
@@ -2606,7 +2347,8 @@
          data-retailer="walmart"
          data-price="16.96"
          data-percent="10.5"
-         data-deal-count="2">
+         data-deal-count="2"
+         data-tier="strong">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/2-pack-Quest-Nutrition-Tortilla-Style-Protein-Chips-Low-Carb-High-Protein-Loaded-Taco-4-5-oz-4-Ct_72824d02-7898-4792-809c-b1a691fd7869.50c7cd66bd03e168e3bcf2ec558876cf.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Quest Protein Chips" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>8</span> <span class='pack-unit'>ct</span></div>
@@ -2644,89 +2386,10 @@
          data-section="food"
          data-category="cookies &amp; sweets"
          data-retailer="walmart"
-         data-price="20.99"
-         data-percent="19.2"
-         data-deal-count="2">
-        <div class="card-image-wrap">
-            <img src="https://i5.walmartimages.com/seo/Myprotein-Crispy-Protein-Wafers-Chocolate-High-Protein-Snacks-15g-10-Pack_b4ed8578-4523-41bd-bc9e-7a15578140a6.3b02ac8e9055e6f4ed292e23172b1532.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="MyProtein Wafer" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>10</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
-        </div>
-        <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-walmart">Walmart</div>
-                <div class="meta-category">Cookies &amp; Sweets</div>
-            </div>
-            <div class="card-pricing">
-                <span class='old-price'>$25.99</span>
-                <span class="new-price">$20.99</span>
-                <span class="percent-off">19% OFF</span>
-            </div>
-            <div class="card-title">MyProtein Wafer</div>
-            
-            <div class="flavor-info">
-                <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.walmart.com/ip/Myprotein-Protein-Wafers-Vanilla-4pk/1582074407" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate</a>, <a href="https://www.walmart.com/ip/Myprotein-Protein-Wafers-Vanilla-4pk/1077226335" target="_blank" rel="noopener noreferrer" class="flavor-link">Vanilla</a></span>
-            </div>
-            
-            <div class="card-footer">
-                <div class='availability online-only'>Online only</div>
-                
-            </div>
-            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Myprotein-Protein-Wafers-Vanilla-4pk/1582074407" target="_blank" rel="noopener noreferrer">
-                View on Walmart.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card"
-         data-section="food"
-         data-category="cookies &amp; sweets"
-         data-retailer="walmart"
-         data-price="6.97"
-         data-percent="12.4"
-         data-deal-count="2">
-        <div class="card-image-wrap">
-            <img src="https://i5.walmartimages.com/seo/Myprotein-Protein-Wafers-Vanilla-4pk_4aaa499c-da96-497f-9993-da8a28a04d8f.1bb086327680dfa13a1a66d1e7bbf6b2.png?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="MyProtein Wafer" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
-        </div>
-        <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-walmart">Walmart</div>
-                <div class="meta-category">Cookies &amp; Sweets</div>
-            </div>
-            <div class="card-pricing">
-                <span class='old-price'>$7.96</span>
-                <span class="new-price">$6.97</span>
-                <span class="percent-off">12% OFF</span>
-            </div>
-            <div class="card-title">MyProtein Wafer</div>
-            
-            <div class="flavor-info">
-                <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.walmart.com/ip/Myprotein-Protein-Wafers-Vanilla-4pk/15351112799" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate</a>, <a href="https://www.walmart.com/ip/Myprotein-Protein-Wafers-Vanilla-4pk/15319150574" target="_blank" rel="noopener noreferrer" class="flavor-link">Vanilla</a></span>
-            </div>
-            
-            <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
-                
-            </div>
-            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Myprotein-Protein-Wafers-Vanilla-4pk/15319150574" target="_blank" rel="noopener noreferrer">
-                View on Walmart.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card"
-         data-section="food"
-         data-category="cookies &amp; sweets"
-         data-retailer="walmart"
          data-price="8.87"
          data-percent="10.1"
-         data-deal-count="6">
+         data-deal-count="6"
+         data-tier="strong">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/Legendary-Foods-Protein-Pastry-Strawberry-4-Pack-Protein-Snack-Keto-Friendly-Gluten-Free_5dc0cb53-f63c-4ab6-bfb3-00345f532253.1a03759adca65e79129de32894a5b115.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Legendary Protein Pastry" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
@@ -2772,7 +2435,8 @@
          data-retailer="walmart"
          data-price="8.87"
          data-percent="10.1"
-         data-deal-count="2">
+         data-deal-count="2"
+         data-tier="strong">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/Legendary-Foods-Protein-Sweet-Roll-Chocolate-4-Pack-Protein-Snack-Gluten-Free-Keto-Friendly_5dfa6bf8-5546-46a0-af02-03fc5416b28e.36cf9f2149a56394a0a0534c469cb640.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Legendary Sweet Roll" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
@@ -2812,7 +2476,8 @@
          data-retailer="walmart"
          data-price="8.87"
          data-percent="10.1"
-         data-deal-count="2">
+         data-deal-count="2"
+         data-tier="strong">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/Legendary-Foods-Protein-Donuts-Vanilla-Glazed-9-2oz-4ct_e33e8701-09a0-4fd8-8a1a-b1f2a334c50f.1d33a701a7c2d8a024e0f6b9ef16a647.jpeg?odnHeight=573&amp;odnWidth=573&amp;odnBg=FFFFFF" alt="Legendary Donuts" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
@@ -2848,44 +2513,80 @@
 
     <div class="card"
          data-section="drinks"
-         data-category="energy drink"
+         data-category="rtd protein shake"
          data-retailer="walmart"
-         data-price="1.97"
-         data-percent="13.6"
-         data-deal-count="13">
+         data-price="12.88"
+         data-percent="10.1"
+         data-deal-count="2"
+         data-tier="strong">
         <div class="card-image-wrap">
-            <img src="https://i5.walmartimages.com/seo/CELSIUS-Fizz-Free-Peach-Mango-Green-Tea-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_303cf513-31a8-44ec-b80a-60173a9c1ee0.f87a68d91893d415b59d259221feb198.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Celsius Energy Drink" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
+            <img src="https://i5.walmartimages.com/seo/4-pack-Core-Power-Protein-Shake-with-26g-Protein-by-fairlife-Milk-Vanilla-14-fl-oz_79f5a0d2-1754-4cb7-8678-959b090ef4de.51fdf61ac90deefcd0b040c1d0ef4d1b.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Core Power Protein Shake" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
             <div class='badge badge-protein'>💪 Strong Deal</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
                 <div class="retailer-pill retailer-walmart">Walmart</div>
-                <div class="meta-category">Energy Drink</div>
+                <div class="meta-category">RTD Protein Shake</div>
             </div>
             <div class="card-pricing">
-                <span class='old-price'>$2.28</span>
-                <span class="new-price">$1.97</span>
-                <span class="percent-off">14% OFF</span>
+                <span class='old-price'>$14.32</span>
+                <span class="new-price">$12.88</span>
+                <span class="percent-off">10% OFF</span>
             </div>
-            <div class="card-title">Celsius Energy Drink</div>
+            <div class="card-title">Core Power Protein Shake</div>
             
             <div class="flavor-info">
                 <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Arctic-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/273850672" target="_blank" rel="noopener noreferrer" class="flavor-link">Arctic Vibe (Frozen Berry)</a>, <a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Astro-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/5023829778" target="_blank" rel="noopener noreferrer" class="flavor-link">Astro Vibe (Blue Razz)</a></span>
-                <button class="flavor-expand-link" data-card-id="0f3df232" aria-expanded="false" aria-controls="flavors-0f3df232">
-                    + 11 more flavors
-                </button>
-                <div class="flavor-list-expanded" id="flavors-0f3df232" style="display: none;">
-                    <a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Cosmic-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/1699265356" target="_blank" rel="noopener noreferrer" class="flavor-link">Cosmic Vibe (Fruit Punch)</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Kiwi-Strawberry-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/5957535724" target="_blank" rel="noopener noreferrer" class="flavor-link">Kiwi Strawberry</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Orange-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/108931301" target="_blank" rel="noopener noreferrer" class="flavor-link">Orange</a><a href="https://www.walmart.com/ip/CELSIUS-Fizz-Free-Peach-Mango-Green-Tea-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/175103532" target="_blank" rel="noopener noreferrer" class="flavor-link">Peach Mango Green Tea</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Peach-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/768004808" target="_blank" rel="noopener noreferrer" class="flavor-link">Peach Vibe</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Playa-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/11166912078" target="_blank" rel="noopener noreferrer" class="flavor-link">Playa Vibe (Pina Colada)</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Retro-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/11148014826" target="_blank" rel="noopener noreferrer" class="flavor-link">Retro Vibe (Sherbert Slush)</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Spritz-Vibe-Functional-Energy-Drink-12-Fl-Oz-Single-Can/16860371680" target="_blank" rel="noopener noreferrer" class="flavor-link">Spritz Vibe (Snowball Frost)</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Tropical-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/225465367" target="_blank" rel="noopener noreferrer" class="flavor-link">Tropical Vibe (Starfruit Pineapple)</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Watermelon-Essential-Energy-Drink-12-fl-oz-Single-Can/974614417" target="_blank" rel="noopener noreferrer" class="flavor-link">Watermelon</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Watermelon-Lemonade-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/8864669016" target="_blank" rel="noopener noreferrer" class="flavor-link">Watermelon Lemonade</a>
-                </div>
+                <span class="flavor-sample"><a href="https://www.walmart.com/ip/4-pack-Core-Power-Protein-Shake-with-26g-Protein-by-fairlife-Milk-Strawberry-Banana-14-fl-oz/16944117498" target="_blank" rel="noopener noreferrer" class="flavor-link">Strawberry Banana</a>, <a href="https://www.walmart.com/ip/Core-Power-Protein-Shake-with-26g-Protein-by-fairlife-Milk-Vanilla-14-fl-oz/5262660866" target="_blank" rel="noopener noreferrer" class="flavor-link">Vanilla</a></span>
             </div>
             
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
             </div>
-            <a class="view-button view-walmart" href="https://www.walmart.com/ip/CELSIUS-Fizz-Free-Peach-Mango-Green-Tea-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/175103532" target="_blank" rel="noopener noreferrer">
+            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Core-Power-Protein-Shake-with-26g-Protein-by-fairlife-Milk-Vanilla-14-fl-oz/5262660866" target="_blank" rel="noopener noreferrer">
+                View on Walmart.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="walmart"
+         data-price="7.99"
+         data-percent="10.0"
+         data-deal-count="1"
+         data-tier="strong">
+        <div class="card-image-wrap">
+            <img src="https://i5.walmartimages.com/seo/Quest-Crispy-Hero-Protein-Bar-Birthday-Cake-Flavor-Low-Sugar-4-Count_1979f8c2-7c0c-4730-9e87-134ba4576451.5c7d50baac593be030f702c6e7b71557.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Quest Hero Protein Bar" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
+            <div class='badge badge-protein'>💪 Strong Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-walmart">Walmart</div>
+                <div class="meta-category">Bars</div>
+            </div>
+            <div class="card-pricing">
+                <span class='old-price'>$8.88</span>
+                <span class="new-price">$7.99</span>
+                <span class="percent-off">10% OFF</span>
+            </div>
+            <div class="card-title">Quest Hero Protein Bar</div>
+            
+            <div class="flavor-info">
+                <span class="flavor-label">Available in: </span>
+                <span class="flavor-sample"><a href="https://www.walmart.com/ip/Quest-Crispy-Hero-Protein-Bar-Birthday-Cake-Flavor-Low-Sugar-4-Count/5727669028" target="_blank" rel="noopener noreferrer" class="flavor-link">Birthday Cake</a></span>
+            </div>
+            
+            <div class="card-footer">
+                <div class='availability both'>In-store & online</div>
+                
+            </div>
+            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Quest-Crispy-Hero-Protein-Bar-Birthday-Cake-Flavor-Low-Sugar-4-Count/5727669028" target="_blank" rel="noopener noreferrer">
                 View on Walmart.com
             </a>
         </div>
@@ -2898,7 +2599,8 @@
          data-retailer="walmart"
          data-price="16.44"
          data-percent="10.0"
-         data-deal-count="4">
+         data-deal-count="4"
+         data-tier="strong">
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/Chomps-Grass-Fed-and-Finished-Original-Beef-Jerky-Meat-Snack_e006fe89-36ff-4cab-8e7d-3b1bf2d32f4d.04dd875d304afaf9301d132ff981670c.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Chomps Meat Sticks" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>8</span> <span class='pack-unit'>ct</span></div>
@@ -2940,39 +2642,310 @@
 
     <div class="card"
          data-section="drinks"
-         data-category="rtd protein shake"
-         data-retailer="walmart"
-         data-price="12.88"
-         data-percent="10.1"
-         data-deal-count="2">
+         data-category="energy drink"
+         data-retailer="kroger"
+         data-price="2.25"
+         data-percent="9.6"
+         data-deal-count="15"
+         data-tier="sale">
         <div class="card-image-wrap">
-            <img src="https://i5.walmartimages.com/seo/4-pack-Core-Power-Protein-Shake-with-26g-Protein-by-fairlife-Milk-Vanilla-14-fl-oz_79f5a0d2-1754-4cb7-8678-959b090ef4de.51fdf61ac90deefcd0b040c1d0ef4d1b.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Core Power Protein Shake" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
+            <img src="https://www.kroger.com/product/images/xlarge/front/0088939200031" alt="Celsius Energy Drink" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-everyday'>🏷️ On Sale</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
-                <div class="retailer-pill retailer-walmart">Walmart</div>
-                <div class="meta-category">RTD Protein Shake</div>
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">Energy Drink</div>
             </div>
             <div class="card-pricing">
-                <span class='old-price'>$14.32</span>
-                <span class="new-price">$12.88</span>
+                <span class='old-price'>$2.49</span>
+                <span class="new-price">$2.25</span>
                 <span class="percent-off">10% OFF</span>
             </div>
-            <div class="card-title">Core Power Protein Shake</div>
+            <div class="card-title">Celsius Energy Drink</div>
             
             <div class="flavor-info">
                 <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.walmart.com/ip/4-pack-Core-Power-Protein-Shake-with-26g-Protein-by-fairlife-Milk-Strawberry-Banana-14-fl-oz/16944117498" target="_blank" rel="noopener noreferrer" class="flavor-link">Strawberry Banana</a>, <a href="https://www.walmart.com/ip/Core-Power-Protein-Shake-with-26g-Protein-by-fairlife-Milk-Vanilla-14-fl-oz/5262660866" target="_blank" rel="noopener noreferrer" class="flavor-link">Vanilla</a></span>
+                <span class="flavor-sample"><a href="https://www.kroger.com/p/celsius-sparkling-arctic-vibe-energy-drink-can/0088939202141" target="_blank" rel="noopener noreferrer" class="flavor-link">Arctic Vibe (Frozen Berry)</a>, <a href="https://www.kroger.com/p/celsius-sparkling-astro-vibe-energy-drink-can/0088939200134" target="_blank" rel="noopener noreferrer" class="flavor-link">Astro Vibe (Blue Razz)</a></span>
+                <button class="flavor-expand-link" data-card-id="105350fe" aria-expanded="false" aria-controls="flavors-105350fe">
+                    + 13 more flavors
+                </button>
+                <div class="flavor-list-expanded" id="flavors-105350fe" style="display: none;">
+                    <a href="https://www.kroger.com/p/celsius-sparkling-cosmic-vibe-energy-drink-can/0088939200120" target="_blank" rel="noopener noreferrer" class="flavor-link">Cosmic Vibe (Fruit Punch)</a><a href="https://www.kroger.com/p/celsius-sparkling-fantasy-vibe-energy-drink-can/0088939200059" target="_blank" rel="noopener noreferrer" class="flavor-link">Fantasy Vibe (Mandarin Marshmallow)</a><a href="https://www.kroger.com/p/celsius-sparkling-galaxy-vibe-energy-drink-can/0088939200132" target="_blank" rel="noopener noreferrer" class="flavor-link">Galaxy Vibe (Strawberry Watermelon)</a><a href="https://www.kroger.com/p/celsius-sparkling-green-apple-cherry-energy-drink-can/0088939200086" target="_blank" rel="noopener noreferrer" class="flavor-link">Green Apple Cherry</a><a href="https://www.kroger.com/p/celsius-sparkling-kiwi-guava-energy-drink-can/0088939201014" target="_blank" rel="noopener noreferrer" class="flavor-link">Kiwi Guava</a><a href="https://www.kroger.com/p/celsius-sparkling-mango-lemonade-energy-drink-can/0088939200178" target="_blank" rel="noopener noreferrer" class="flavor-link">Mango Lemonade</a><a href="https://www.kroger.com/p/celsius-sparkling-orange-energy-drink-can/0088939200031" target="_blank" rel="noopener noreferrer" class="flavor-link">Orange</a><a href="https://www.kroger.com/p/celsius-sparkling-peach-vibe-energy-drink-can/0088939201019" target="_blank" rel="noopener noreferrer" class="flavor-link">Peach Vibe</a><a href="https://www.kroger.com/p/celsius-sparkling-playa-vibe-energy-drink-can/0088939200174" target="_blank" rel="noopener noreferrer" class="flavor-link">Playa Vibe (Pina Colada)</a><a href="https://www.kroger.com/p/celsius-sparkling-raspberry-peach-energy-drink-can/0088939200130" target="_blank" rel="noopener noreferrer" class="flavor-link">Raspberry Peach</a><a href="https://www.kroger.com/p/celsius-sparkling-retro-vibe-energy-drink-can/0088939200172" target="_blank" rel="noopener noreferrer" class="flavor-link">Retro Vibe (Sherbert Slush)</a><a href="https://www.kroger.com/p/celsius-sparkling-watermelon-energy-drink-can/0088939200362" target="_blank" rel="noopener noreferrer" class="flavor-link">Watermelon</a><a href="https://www.kroger.com/p/celsius-sparkling-wild-berry-energy-drink-can/0088939200032" target="_blank" rel="noopener noreferrer" class="flavor-link">Wild Berry</a>
+                </div>
             </div>
             
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
+                <div class='availability in-store'>In-store</div>
                 
             </div>
-            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Core-Power-Protein-Shake-with-26g-Protein-by-fairlife-Milk-Vanilla-14-fl-oz/5262660866" target="_blank" rel="noopener noreferrer">
-                View on Walmart.com
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/celsius-sparkling-orange-energy-drink-can/0088939200031" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="drinks"
+         data-category="rtd protein shake"
+         data-retailer="kroger"
+         data-price="4.99"
+         data-percent="9.1"
+         data-deal-count="3"
+         data-tier="sale">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0081162002063" alt="Core Power Elite Protein Shake" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-everyday'>🏷️ On Sale</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">RTD Protein Shake</div>
+            </div>
+            <div class="card-pricing">
+                <span class='old-price'>$5.49</span>
+                <span class="new-price">$4.99</span>
+                <span class="percent-off">9% OFF</span>
+            </div>
+            <div class="card-title">Core Power Elite Protein Shake</div>
+            
+            <div class="flavor-info">
+                <span class="flavor-label">Available in: </span>
+                <span class="flavor-sample"><a href="https://www.kroger.com/p/core-power-elite-chocolate-high-protein-shake/0081162002063" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate</a>, <a href="https://www.kroger.com/p/core-power-elite-strawberry-high-protein-shake/0081162002142" target="_blank" rel="noopener noreferrer" class="flavor-link">Strawberry</a></span>
+                <button class="flavor-expand-link" data-card-id="1d192dcd" aria-expanded="false" aria-controls="flavors-1d192dcd">
+                    + 1 more flavor
+                </button>
+                <div class="flavor-list-expanded" id="flavors-1d192dcd" style="display: none;">
+                    <a href="https://www.kroger.com/p/core-power-elite-vanilla-high-protein-shake/0081162002065" target="_blank" rel="noopener noreferrer" class="flavor-link">Vanilla</a>
+                </div>
+            </div>
+            
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/core-power-elite-chocolate-high-protein-shake/0081162002063" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="9.99"
+         data-percent="9.1"
+         data-deal-count="2"
+         data-tier="sale">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0085005410880" alt="Barebells Protein Bar" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
+            <div class='badge badge-everyday'>🏷️ On Sale</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">Bars</div>
+            </div>
+            <div class="card-pricing">
+                <span class='old-price'>$10.99</span>
+                <span class="new-price">$9.99</span>
+                <span class="percent-off">9% OFF</span>
+            </div>
+            <div class="card-title">Barebells Protein Bar</div>
+            
+            <div class="flavor-info">
+                <span class="flavor-label">Available in: </span>
+                <span class="flavor-sample"><a href="https://www.kroger.com/p/barebells-birthday-cake-protein-bar/0085005410879" target="_blank" rel="noopener noreferrer" class="flavor-link">Birthday Cake</a>, <a href="https://www.kroger.com/p/barebells-cookies-caramel-protein-bars/0085005410880" target="_blank" rel="noopener noreferrer" class="flavor-link">Cookes &amp; Caramel</a></span>
+            </div>
+            
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/barebells-cookies-caramel-protein-bars/0085005410880" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="9.99"
+         data-percent="9.1"
+         data-deal-count="2"
+         data-tier="sale">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0084022930380" alt="Built Puff" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
+            <div class='badge badge-everyday'>🏷️ On Sale</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">Bars</div>
+            </div>
+            <div class="card-pricing">
+                <span class='old-price'>$10.99</span>
+                <span class="new-price">$9.99</span>
+                <span class="percent-off">9% OFF</span>
+            </div>
+            <div class="card-title">Built Puff</div>
+            
+            <div class="flavor-info">
+                <span class="flavor-label">Available in: </span>
+                <span class="flavor-sample"><a href="https://www.kroger.com/p/built-puff-snack-bars-brownie-batter-17g-protein-140-calorie-4-count-box-1-41-oz-bars/0084022930380" target="_blank" rel="noopener noreferrer" class="flavor-link">Brownie Batter</a>, <a href="https://www.kroger.com/p/built-puff-snack-bar-coconut-17g-protein-collagen-140-calories/0084022930381" target="_blank" rel="noopener noreferrer" class="flavor-link">Coconut</a></span>
+            </div>
+            
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/built-puff-snack-bars-brownie-batter-17g-protein-140-calorie-4-count-box-1-41-oz-bars/0084022930380" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-price="3.0"
+         data-percent="8.8"
+         data-deal-count="3"
+         data-tier="sale">
+        <div class="card-image-wrap">
+            <img src="https://www.kroger.com/product/images/xlarge/front/0085006430300" alt="David Protein Bar" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
+            <div class='badge badge-everyday'>🏷️ On Sale</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-kroger">Kroger</div>
+                <div class="meta-category">Bars</div>
+            </div>
+            <div class="card-pricing">
+                <span class='old-price'>$3.29</span>
+                <span class="new-price">$3.00</span>
+                <span class="percent-off">9% OFF</span>
+            </div>
+            <div class="card-title">David Protein Bar</div>
+            
+            <div class="flavor-info">
+                <span class="flavor-label">Available in: </span>
+                <span class="flavor-sample"><a href="https://www.kroger.com/p/david-chocolate-chip-cookie-dough-protein-bar/0085006430300" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Chip Cookie Dough</a>, <a href="https://www.kroger.com/p/david-fudge-brownie-flavored-protein-bar/0085006430303" target="_blank" rel="noopener noreferrer" class="flavor-link">Fudge Brownie</a></span>
+                <button class="flavor-expand-link" data-card-id="68a86b97" aria-expanded="false" aria-controls="flavors-68a86b97">
+                    + 1 more flavor
+                </button>
+                <div class="flavor-list-expanded" id="flavors-68a86b97" style="display: none;">
+                    <a href="https://www.kroger.com/p/david-peanut-butter-chocolate-chunk-protein-bar/0085006430315" target="_blank" rel="noopener noreferrer" class="flavor-link">Peanut Butter Chocolate Chunk</a>
+                </div>
+            </div>
+            
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/david-chocolate-chip-cookie-dough-protein-bar/0085006430300" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="target"
+         data-price="27.99"
+         data-percent="6.7"
+         data-deal-count="5"
+         data-tier="sale">
+        <div class="card-image-wrap">
+            <img src="https://target.scene7.com/is/image/Target/GUEST_fa246207-5fe6-4bf7-81e0-0b6b1389a63b?wid=600&amp;hei=600&amp;qlt=80" alt="Barebells Protein Bar" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
+            <div class='badge badge-everyday'>🏷️ On Sale</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-target">Target</div>
+                <div class="meta-category">Bars</div>
+            </div>
+            <div class="card-pricing">
+                <span class='old-price'>$29.99</span>
+                <span class="new-price">$27.99</span>
+                <span class="percent-off">7% OFF</span>
+            </div>
+            <div class="card-title">Barebells Protein Bar</div>
+            
+            <div class="flavor-info">
+                <span class="flavor-label">Available in: </span>
+                <span class="flavor-sample"><a href="https://www.target.com/p/barebells-nutrition-bars-caramel-cashew/-/A-83942844" target="_blank" rel="noopener noreferrer" class="flavor-link">Caramel Cashew</a>, <a href="https://www.target.com/p/barebells-nutrition-bars-salty-peanut-7-76oz-4pk/-/A-83942845" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Dough</a></span>
+                <button class="flavor-expand-link" data-card-id="691cc75a" aria-expanded="false" aria-controls="flavors-691cc75a">
+                    + 3 more flavors
+                </button>
+                <div class="flavor-list-expanded" id="flavors-691cc75a" style="display: none;">
+                    <a href="https://www.target.com/p/barebells-nutrition-bars-cookies-cream/-/A-83942841" target="_blank" rel="noopener noreferrer" class="flavor-link">Cookies &amp; Cream</a><a href="https://www.target.com/p/barebells-nutrition-bars-salty-peanut-7-76oz-4pk/-/A-83942843" target="_blank" rel="noopener noreferrer" class="flavor-link">Salty Peanut</a><a href="https://www.target.com/p/barebells-nutrition-bars-salty-peanut-7-76oz-4pk/-/A-83942842" target="_blank" rel="noopener noreferrer" class="flavor-link">White Chocolate Almond</a>
+                </div>
+            </div>
+            
+            <div class="card-footer">
+                <div class='availability online-only'>Online only</div>
+                
+            </div>
+            <a class="view-button view-target" href="https://www.target.com/p/barebells-nutrition-bars-cookies-cream/-/A-83942841" target="_blank" rel="noopener noreferrer">
+                View on Target.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card"
+         data-section="food"
+         data-category="bars"
+         data-retailer="target"
+         data-price="21.49"
+         data-percent="6.5"
+         data-deal-count="1"
+         data-tier="sale">
+        <div class="card-image-wrap">
+            <img src="https://target.scene7.com/is/image/Target/GUEST_bd132c61-19e1-45ff-9bf0-11ca2448ac64?wid=600&amp;hei=600&amp;qlt=80" alt="Quest Hero Protein Bar" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
+            <div class='badge badge-everyday'>🏷️ On Sale</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-target">Target</div>
+                <div class="meta-category">Bars</div>
+            </div>
+            <div class="card-pricing">
+                <span class='old-price'>$22.99</span>
+                <span class="new-price">$21.49</span>
+                <span class="percent-off">6% OFF</span>
+            </div>
+            <div class="card-title">Quest Hero Protein Bar</div>
+            
+            <div class="flavor-info">
+                <span class="flavor-label">Available in: </span>
+                <span class="flavor-sample"><a href="https://www.target.com/p/quest-nutrition-18g-hero-protein-bar-crispy-chocolate-peanut-butter/-/A-89846528" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Peanut Butter</a></span>
+            </div>
+            
+            <div class="card-footer">
+                <div class='availability online-only'>Online only</div>
+                
+            </div>
+            <a class="view-button view-target" href="https://www.target.com/p/quest-nutrition-18g-hero-protein-bar-crispy-chocolate-peanut-butter/-/A-89846528" target="_blank" rel="noopener noreferrer">
+                View on Target.com
             </a>
         </div>
     </div>
@@ -3155,6 +3128,66 @@ document.addEventListener("DOMContentLoaded", function () {
     category: new Set(),
   };
 
+  /* ============================
+     TIER FILTER PILLS
+     ============================ */
+  const tierPills = document.querySelectorAll(".sb-tier-pill:not(.sb-show-remaining)");
+  const selectedTiers = new Set(["diamond", "fire"]); // Default: Diamond and Fire deals
+  
+  // Initialize tier pills to show Diamond and Fire as active
+  tierPills.forEach(function(pill) {
+    const tier = pill.getAttribute("data-tier");
+    if (selectedTiers.has(tier)) {
+      pill.setAttribute("aria-pressed", "true");
+    } else {
+      pill.setAttribute("aria-pressed", "false");
+    }
+  });
+  
+  // Handle tier pill clicks
+  tierPills.forEach(function(pill) {
+    // Skip the "Show Remaining" pill - it has different behavior
+    if (pill.classList.contains("sb-show-remaining")) return;
+    
+    pill.addEventListener("click", function() {
+      const tier = this.getAttribute("data-tier");
+      const isPressed = this.getAttribute("aria-pressed") === "true";
+      
+      if (isPressed) {
+        selectedTiers.delete(tier);
+        this.setAttribute("aria-pressed", "false");
+      } else {
+        selectedTiers.add(tier);
+        this.setAttribute("aria-pressed", "true");
+      }
+      
+      applyFiltersAndSort();
+    });
+  });
+  
+  // Handle "Show Remaining" pill click
+  const showRemainingPill = document.getElementById("show-remaining-pill");
+  const remainingContainer = document.querySelector(".sb-tier-filters-remaining");
+  if (showRemainingPill) {
+    showRemainingPill.addEventListener("click", function() {
+      // Enable Strong and Sale tiers
+      selectedTiers.add("strong");
+      selectedTiers.add("sale");
+      
+      // Update pill states
+      const strongPill = document.querySelector('.sb-tier-pill[data-tier="strong"]');
+      const salePill = document.querySelector('.sb-tier-pill[data-tier="sale"]');
+      if (strongPill) strongPill.setAttribute("aria-pressed", "true");
+      if (salePill) salePill.setAttribute("aria-pressed", "true");
+      
+      // Hide the "Show Remaining" pill and its container
+      if (remainingContainer) remainingContainer.style.display = "none";
+      this.style.display = "none";
+      
+      applyFiltersAndSort();
+    });
+  }
+
   function titleize(s) {
     if (!s) return "";
     // Handle special cases for proper title case
@@ -3326,21 +3359,35 @@ document.addEventListener("DOMContentLoaded", function () {
     const selC = selected.category;
 
     let shown = [];
+    let totalDeals = 0;
+    let hiddenDeals = 0; // Count of deals hidden due to tier filter only
 
     cards.forEach(function(card) {
       const r = card.dataset.retailer;
       const s = card.dataset.section;
       const c = card.dataset.category;
+      const tier = card.dataset.tier || "";
 
+      // Check tier filter (default: diamond and fire only)
+      const matchTier = selectedTiers.size === 0 || selectedTiers.has(tier);
+      
       const matchR = selR.size === 0 || selR.has(r);
       const matchS = selS.size === 0 || selS.has(s);
       const matchC = selC.size === 0 || selC.has(c);
 
-      if (matchR && matchS && matchC) {
+      // Check if this card would be shown if tier filter wasn't applied
+      const wouldShowIfTierMatch = matchR && matchS && matchC;
+
+      if (matchTier && wouldShowIfTierMatch) {
         card.style.display = "";
         shown.push(card);
+        totalDeals += parseInt(card.dataset.dealCount || "1", 10);
       } else {
         card.style.display = "none";
+        // Count hidden deals that are only hidden due to tier filter (not other filters)
+        if (wouldShowIfTierMatch && !matchTier) {
+          hiddenDeals += parseInt(card.dataset.dealCount || "1", 10);
+        }
       }
     });
 
@@ -3349,8 +3396,19 @@ document.addEventListener("DOMContentLoaded", function () {
       const bPrice = parseFloat(b.dataset.price || "0");
       const aPct = parseFloat(a.dataset.percent || "0");
       const bPct = parseFloat(b.dataset.percent || "0");
-      const aIdx = parseInt(a.dataset.originalIndex || "0", 10);
-      const bIdx = parseInt(b.dataset.originalIndex || "0", 10);
+      const aTier = a.dataset.tier || "sale";
+      const bTier = b.dataset.tier || "sale";
+      
+      // Tier priority: diamond (4) > fire (3) > strong (2) > sale (1)
+      function getTierPriority(tier) {
+        if (tier === "diamond") return 4;
+        if (tier === "fire") return 3;
+        if (tier === "strong") return 2;
+        return 1;
+      }
+      
+      const aTierPriority = getTierPriority(aTier);
+      const bTierPriority = getTierPriority(bTier);
 
       if (sortMode === "price_asc") {
         if (aPrice !== bPrice) return aPrice - bPrice;
@@ -3360,21 +3418,42 @@ document.addEventListener("DOMContentLoaded", function () {
         if (aPrice !== bPrice) return bPrice - aPrice;
         return bPct - aPct;
       }
-      return aIdx - bIdx;
+      // Default sort: tier priority first, then percent off, then price
+      if (aTierPriority !== bTierPriority) {
+        return bTierPriority - aTierPriority;
+      }
+      if (aPct !== bPct) {
+        return bPct - aPct;
+      }
+      return aPrice - bPrice;
     });
 
     shown.forEach(function(card) {
       grid.appendChild(card);
     });
 
-    // Sum up the total number of deals (flavors) from visible cards
-    let totalDeals = 0;
-    shown.forEach(function(card) {
-      const count = parseInt(card.dataset.dealCount || "1", 10);
-      totalDeals += count;
-    });
-
+    // totalDeals is already calculated in the forEach loop above
     countEl.textContent = "👀 Showing " + totalDeals + " deals";
+    
+    // Show/hide "Show Remaining" pill
+    const showRemainingPill = document.getElementById("show-remaining-pill");
+    const remainingCountEl = document.getElementById("remaining-count");
+    const remainingContainer = document.querySelector(".sb-tier-filters-remaining");
+    
+    // Show the pill only if Diamond and Fire are selected AND there are hidden deals
+    const hasDiamond = selectedTiers.has("diamond");
+    const hasFire = selectedTiers.has("fire");
+    const onlyDiamondAndFire = selectedTiers.size === 2 && hasDiamond && hasFire;
+    
+    if (onlyDiamondAndFire && hiddenDeals > 0 && showRemainingPill && remainingCountEl && remainingContainer) {
+      showRemainingPill.style.display = "inline-flex";
+      remainingContainer.style.display = "flex";
+      remainingCountEl.textContent = hiddenDeals;
+    } else if (showRemainingPill && remainingContainer) {
+      showRemainingPill.style.display = "none";
+      remainingContainer.style.display = "none";
+    }
+    
     renderChips();
   }
 
