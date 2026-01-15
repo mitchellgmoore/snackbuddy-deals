@@ -125,6 +125,11 @@ def main():
     deals = []
 
     for _, row in df.iterrows():
+        # Skip items with "unknown" availability - they're likely out of stock or not currently serviced
+        availability = row.get("availability_norm", "")
+        if isinstance(availability, str) and availability.strip().lower() == "unknown":
+            continue
+            
         price = row.get("price")
         try:
             new_price = float(price)
