@@ -393,6 +393,7 @@ def build_card_html(deal):
     
     # Tier for filtering
     tier_name = get_tier_name(percent_off)
+    tier_class = f"card-tier-{tier_name}"
 
     # Streak
     streak_text = format_streak(deal)
@@ -481,7 +482,7 @@ def build_card_html(deal):
             """
 
     return f"""
-    <div class="card"
+    <div class="card {tier_class}"
          data-section="{section_attr}"
          data-category="{category_attr}"
          data-retailer="{retailer_attr}"
@@ -943,34 +944,45 @@ def build_page_html(deals):
             max-width: 1100px;
             margin: 0 auto;
             border-radius: 18px;
-            padding: 16px 18px;
+            padding: 18px 18px 14px;
             position: relative;
             overflow: hidden;
-            background: linear-gradient(135deg, #0ea5e9, #10b981); /* blue → green */
-            color: #ffffff;
-            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.25);
+            background: #ffffff;
+            color: #111827;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+            border: 1px solid #e5e7eb;
         }}
 
-        /* subtle pattern using CSS only */
+        /* wallpaper brand texture */
         .sb-hero-pattern {{
             position: absolute;
             inset: 0;
-            opacity: 0.12;
-            background-image:
-                radial-gradient(circle at 0 0, rgba(255,255,255,0.4) 1px, transparent 1px),
-                radial-gradient(circle at 20px 20px, rgba(255,255,255,0.2) 1px, transparent 1px);
-            background-size: 40px 40px;
+            opacity: 0.16;
+            background-image: url("assets/hero-wallpaper.png");
+            background-repeat: repeat;
+            background-size: 360px auto;
+            background-position: top left;
+            filter: brightness(1.18) contrast(0.85);
+            pointer-events: none;
+        }}
+
+        /* soft white wash so text stays high-contrast */
+        .sb-hero-bg::after {{
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.44);
             pointer-events: none;
         }}
 
         .sb-hero-content {{
             position: relative;
-            z-index: 1;
+            z-index: 2;
         }}
 
         .sb-hero-kicker {{
             font-size: 12px;
-            opacity: 0.92;
+            color: #374151;
             margin-bottom: 4px;
         }}
 
@@ -989,7 +1001,7 @@ def build_page_html(deals):
         .sb-hero-subtitle {{
             font-size: 14px;
             margin: 4px 0 10px;
-            opacity: 0.95;
+            color: #374151;
         }}
 
         .sb-hero-cta {{
@@ -1007,20 +1019,13 @@ def build_page_html(deals):
             filter: brightness(1.02);
         }}
 
-        .sb-hero-todays {{
-            font-size: 16px;
-            font-weight: 600;
-            margin-top: 4px;
-        }}
-
         /* =================================== */
         /* TIER FILTER PILLS                   */
         /* =================================== */
 
         .sb-tier-filters {{
-            max-width: 1100px;
-            margin: 16px auto 12px;
-            padding: 0 16px;
+            margin: 8px 0 0;
+            padding: 0;
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
@@ -1055,11 +1060,11 @@ def build_page_html(deals):
         .sb-tier-pill {{
             padding: 8px 14px;
             border-radius: var(--radius-pill);
-            border: 2px solid var(--border-subtle);
-            background-color: #ffffff;
-            color: var(--text-main);
+            border: 2px solid #cbd5e1;
+            background-color: rgba(255, 255, 255, 0.86);
+            color: #111827;
             font-size: 13px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.15s ease;
             box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
@@ -1072,10 +1077,10 @@ def build_page_html(deals):
         }}
 
         .sb-tier-pill[aria-pressed="true"] {{
-            background-color: var(--navy);
+            background-color: #111827;
             color: #ffffff;
-            border-color: var(--navy);
-            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
+            border-color: #111827;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.18);
         }}
 
         .sb-tier-pill[aria-pressed="true"]:hover {{
@@ -1353,6 +1358,26 @@ def build_page_html(deals):
             flex-direction: column;
         }}
 
+        .card-tier-diamond {{
+            background-color: #eff6ff;
+            border-color: #93c5fd;
+        }}
+
+        .card-tier-fire {{
+            background-color: #fff7ed;
+            border-color: #fed7aa;
+        }}
+
+        .card-tier-strong {{
+            background-color: #fefce8;
+            border-color: #fde68a;
+        }}
+
+        .card-tier-sale {{
+            background-color: #f5e6d3;
+            border-color: #d4a574;
+        }}
+
         .card-image-wrap {{
             position: relative;
             padding: 8px;
@@ -1404,12 +1429,14 @@ def build_page_html(deals):
             display: inline-flex;
             align-items: center;
             gap: 4px;
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
         }}
 
         .badge-strong {{
-            background-color: #fff7ed;
             color: var(--orange);
-            border: 1px solid #fed7aa;
+            border-color: #fdba74;
         }}
 
         .badge-regular {{
@@ -1419,21 +1446,18 @@ def build_page_html(deals):
         }}
 
         .badge-elite {{
-            background-color: #eff6ff;
             color: #1e40af;
-            border: 1px solid #93c5fd;
+            border-color: #93c5fd;
         }}
 
         .badge-protein {{
-            background-color: #fefce8;
             color: #854d0e;
-            border: 1px solid #facc15;
+            border-color: #facc15;
         }}
 
         .badge-everyday {{
-            background-color: #f5e6d3;
             color: #7c3a00;
-            border: 1px solid #d4a574;
+            border-color: #d4a574;
         }}
 
         .card-content {{
@@ -1817,37 +1841,30 @@ def build_page_html(deals):
                     <p class="sb-hero-subtitle">
                         SnackBuddy tracks price drops on better-for-you snacks and drinks—so you can stock up when it&apos;s worth it.
                     </p>
-                    <div class="sb-hero-todays">
-                        Today&apos;s
-                    </div>
+                    <section class="sb-tier-filters" id="tier-filters">
+                        <div class="sb-tier-filters-row">
+                            <button class="sb-tier-pill" data-tier="diamond" aria-pressed="true">
+                                💎 >25%
+                            </button>
+                            <button class="sb-tier-pill" data-tier="fire" aria-pressed="true">
+                                🔥 20-24%
+                            </button>
+                            <button class="sb-tier-pill" data-tier="strong" aria-pressed="false">
+                                💪 10-19%
+                            </button>
+                            <button class="sb-tier-pill" data-tier="sale" aria-pressed="false">
+                                🏷️ 0-9%
+                            </button>
+                        </div>
+                        <div class="sb-tier-filters-remaining">
+                            <button class="sb-tier-pill sb-show-remaining" id="show-remaining-pill" aria-pressed="false" style="display: none;">
+                                Show Remaining <span id="remaining-count">0</span> Deals
+                            </button>
+                        </div>
+                    </section>
                 </div>
             </div>
         </section>
-
-<!-- =================================== -->
-<!-- SECTION 1C: TIER FILTER PILLS       -->
-<!-- =================================== -->
-<section class="sb-tier-filters" id="tier-filters">
-    <div class="sb-tier-filters-row">
-        <button class="sb-tier-pill" data-tier="diamond" aria-pressed="true">
-            💎 Diamond Deal
-        </button>
-        <button class="sb-tier-pill" data-tier="fire" aria-pressed="true">
-            🔥 Fire Deal
-        </button>
-        <button class="sb-tier-pill" data-tier="strong" aria-pressed="false">
-            💪 Strong Deal
-        </button>
-        <button class="sb-tier-pill" data-tier="sale" aria-pressed="false">
-            🏷️ On Sale
-        </button>
-    </div>
-    <div class="sb-tier-filters-remaining">
-        <button class="sb-tier-pill sb-show-remaining" id="show-remaining-pill" aria-pressed="false" style="display: none;">
-            Show Remaining <span id="remaining-count">0</span> Deals
-        </button>
-    </div>
-</section>
 
 <!-- =================================== -->
 <!-- SECTION 1D: FILTERS + DEAL COUNT ROW -->
