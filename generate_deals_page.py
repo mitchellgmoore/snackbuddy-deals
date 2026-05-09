@@ -733,33 +733,64 @@ def build_page_html(deals):
 /* FILTER DRAWER (LEFT)         */
 /* ============================ */
 
-.sb-filter-open{{
-  border: 1px solid var(--border-subtle);
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 8px 12px;
-  font-size: 13px;
-  font-weight: 800;
-  cursor: pointer;
-  display: inline-flex;
+/* Mobile: fixed left tab opens filter drawer; desktop: floating panel (does not narrow the grid) */
+.sb-filter-edge-tab{{
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 38;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 8px;
-}}
-
-.sb-filter-icon{{
-  font-size: 16px;
+  gap: 4px;
+  padding: 10px 8px 10px 6px;
+  margin: 0;
+  border: 1px solid var(--border-subtle);
+  border-left: none;
+  border-radius: 0 14px 14px 0;
+  background: #ffffff;
+  box-shadow: 4px 2px 14px rgba(15, 23, 42, 0.12);
+  cursor: pointer;
+  font: inherit;
   line-height: 1;
 }}
 
-.sb-filter-open:hover{{
+.sb-filter-edge-tab:hover{{
   filter: brightness(0.98);
 }}
 
-.sb-filter-open:active{{
-  transform: translateY(1px);
+.sb-filter-edge-tab:active{{
+  transform: translateY(-50%) translateX(1px);
 }}
 
-.sb-filter-open:hover{{ filter: brightness(0.98); }}
+.sb-filter-edge-icons{{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}}
+
+.sb-filter-mascot{{
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  display: block;
+}}
+
+.sb-filter-funnel{{
+  width: 16px;
+  height: 16px;
+  color: var(--navy);
+  flex-shrink: 0;
+}}
+
+.sb-filter-edge-count{{
+  font-size: 11px;
+  font-weight: 900;
+  color: var(--text-muted);
+  letter-spacing: -0.02em;
+}}
 
 .sb-filter-count{{
   font-weight: 900;
@@ -781,6 +812,22 @@ def build_page_html(deals):
   pointer-events: auto;
 }}
 
+.sb-deals-shell{{
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 16px;
+}}
+
+@media (max-width: 991px) {{
+  .sb-deals-shell {{
+    padding-left: 52px;
+  }}
+}}
+
+.sb-deals-main{{
+  min-width: 0;
+}}
+
 .sb-filter-drawer{{
   position: fixed;
   top: 0;
@@ -798,6 +845,44 @@ def build_page_html(deals):
 
 .sb-filter-drawer.open{{
   transform: translateX(0%);
+}}
+
+@media (min-width: 992px) {{
+  .sb-filter-edge-tab {{
+    display: none;
+  }}
+  .sb-filter-backdrop {{
+    display: none !important;
+  }}
+  /* Full-width deals column (4-across grid); filters float over the viewport, not in layout flow */
+  .sb-filter-drawer {{
+    position: fixed;
+    top: 50%;
+    left: max(16px, calc((100vw - min(1100px, 100vw - 32px)) / 2 - 292px));
+    transform: translateY(-50%);
+    width: 280px;
+    height: auto;
+    max-height: calc(100vh - 80px);
+    z-index: 35;
+    box-shadow: 0 8px 28px rgba(15, 23, 42, 0.18);
+    border-radius: 16px;
+    border: 1px solid var(--border-subtle);
+    background: #ffffff;
+  }}
+  .sb-filter-drawer.open {{
+    transform: translateY(-50%);
+  }}
+  .sb-filter-close {{
+    display: none;
+  }}
+  .sb-filter-inner {{
+    height: auto;
+    max-height: calc(100vh - 96px);
+  }}
+  .sb-filter-groups {{
+    max-height: calc(100vh - 220px);
+    overflow-y: auto;
+  }}
 }}
 
 .sb-filter-inner{{
@@ -1258,84 +1343,6 @@ def build_page_html(deals):
             }}
         }}
 
-/* ============================ */
-/* FILTER DRAWER (LEFT)         */
-/* ============================ */
-
-.sb-filter-open{{
-  border: 1px solid var(--border-subtle);
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 8px 12px;
-  font-size: 13px;
-  font-weight: 800;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}}
-
-.sb-filter-mascot{{
-  width: 18px;
-  height: 18px;
-  object-fit: contain;
-  display: inline-block;
-}}
-
-.sb-filter-drawer{{
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 280px;
-  height: 100vh;
-  background: #ffffff;
-  transform: translateX(-100%);
-  transition: transform 0.22s ease-out;
-  z-index: 40;
-}}
-
-.sb-filter-drawer.open{{
-  transform: translateX(0);
-}}
-
-.sb-filter-inner{{
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}}
-
-.sb-filter-header{{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}}
-
-.sb-filter-title{{
-  font-weight: 800;
-  font-size: 16px;
-}}
-
-/* ============================ */
-/* SEPARATE BACKDROP FOR FILTER */
-/* ============================ */
-
-.sb-filter-backdrop{{
-  position: fixed;
-  inset: 0;
-  background: rgba(15,23,42,0.35);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.18s ease-out;
-  z-index: 39;
-}}
-
-.sb-filter-backdrop.open{{
-  opacity: 1;
-  pointer-events: auto;
-}}
-
-
         /* ============================ */
         /* SECTION 2: DEAL CARD GRID    */
         /* ============================ */
@@ -1745,9 +1752,6 @@ def build_page_html(deals):
 <!-- NAV backdrop (right drawer) -->
 <div class="sb-nav-backdrop" id="sb-nav-backdrop"></div>
 
-<!-- FILTER backdrop (left drawer) -->
-<div class="sb-filter-backdrop" id="sb-filter-backdrop"></div>
-
 <!-- NAV DRAWER (RIGHT) -->
 <nav class="sb-nav-drawer" id="sb-nav-drawer">
   <div class="sb-nav-inner">
@@ -1770,48 +1774,6 @@ def build_page_html(deals):
   </div>
 </nav>
 
-<!-- FILTER backdrop (left drawer) -->
-<div class="sb-filter-backdrop" id="sb-filter-backdrop"></div>
-
-<!-- FILTER DRAWER (LEFT) -->
-<aside class="sb-filter-drawer" id="sb-filter-drawer">
-  <div class="sb-filter-inner">
-    <div class="sb-filter-header">
-      <span class="sb-filter-title">Filters</span>
-      <button id="sb-filter-close" aria-label="Close filters">&times;</button>
-    </div>
-
-    <!-- JS will render the filter groups (Retailer / Section / Category) into here -->
-    <div id="sb-filter-groups"></div>
-
-    <div class="sb-filter-actions">
-      <button id="sb-filter-clear" type="button" class="sb-filter-action secondary">Clear</button>
-      <button id="sb-filter-apply" type="button" class="sb-filter-action primary">Apply</button>
-    </div>
-  </div>
-</aside>
-
-<!-- Filters Drawer Backdrop + Drawer -->
-<div class="sb-filter-backdrop" id="sb-filter-backdrop"></div>
-
-<aside class="sb-filter-drawer" id="sb-filter-drawer" aria-label="Filters">
-  <div class="sb-filter-inner">
-    <div class="sb-filter-header">
-      <div class="sb-filter-title">Filters</div>
-      <button class="sb-filter-close" id="sb-filter-close" aria-label="Close filters">&times;</button>
-    </div>
-
-    <div class="sb-filter-groups" id="sb-filter-groups">
-      <!-- JS injects groups + checkboxes -->
-    </div>
-
-    <div class="sb-filter-footer">
-      <button class="sb-filter-clear" id="sb-filter-clear" type="button">Clear</button>
-      <button class="sb-filter-apply" id="sb-filter-apply" type="button">Apply</button>
-    </div>
-  </div>
-</aside>
-
 
     <!-- ============================ -->
     <!-- SECTION 1A: NAVBAR           -->
@@ -1827,6 +1789,15 @@ def build_page_html(deals):
     </header>
 
     <main class="page">
+        <button type="button" class="sb-filter-edge-tab" id="sb-filter-open" aria-label="Open filters" aria-expanded="false">
+            <span class="sb-filter-edge-icons" aria-hidden="true">
+                <img src="assets/icons/raccoon-detective.png" alt="" class="sb-filter-mascot" />
+                <svg class="sb-filter-funnel" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">
+                    <path fill="currentColor" d="M22 3H2l7 9.46V20a2 2 0 001.11 1.79L12 23v-9.54L22 3z"/>
+                </svg>
+            </span>
+            <span class="sb-filter-edge-count" id="sb-filter-count">(0)</span>
+        </button>
         <!-- ============================ -->
         <!-- SECTION 1B: HERO BANNER      -->
         <!-- ============================ -->
@@ -1839,7 +1810,7 @@ def build_page_html(deals):
                     </div>
                     <h1 class="sb-hero-title">Don&apos;t overpay for the snacks you already buy.</h1>
                     <p class="sb-hero-subtitle">
-                        SnackBuddy tracks price drops on better-for-you snacks and drinks—so you can stock up when it&apos;s worth it.
+                        Deal Tiers
                     </p>
                     <section class="sb-tier-filters" id="tier-filters">
                         <div class="sb-tier-filters-row">
@@ -1866,21 +1837,33 @@ def build_page_html(deals):
             </div>
         </section>
 
+        <div class="sb-deals-shell">
+        <div class="sb-filter-backdrop" id="sb-filter-backdrop"></div>
+        <aside class="sb-filter-drawer" id="sb-filter-drawer" aria-label="Deal filters">
+            <div class="sb-filter-inner">
+                <div class="sb-filter-header">
+                    <div class="sb-filter-title">Filters</div>
+                    <button class="sb-filter-close" id="sb-filter-close" type="button" aria-label="Close filters">&times;</button>
+                </div>
+
+                <div class="sb-filter-groups" id="sb-filter-groups">
+                    <!-- JS injects groups + checkboxes -->
+                </div>
+
+                <div class="sb-filter-footer">
+                    <button class="sb-filter-clear" id="sb-filter-clear" type="button">Clear</button>
+                    <button class="sb-filter-apply" id="sb-filter-apply" type="button">Apply</button>
+                </div>
+            </div>
+        </aside>
+
+        <div class="sb-deals-main">
+
 <!-- =================================== -->
 <!-- SECTION 1D: FILTERS + DEAL COUNT ROW -->
 <!-- =================================== -->
 <section class="sb-utility-row">
   <div class="filter-controls">
-<button class="sb-filter-open" id="sb-filter-open" type="button">
-  <img
-    src="assets/icons/raccoon-detective.png"
-    alt=""
-    class="sb-filter-mascot"
-  />
-  Filters <span id="sb-filter-count">(0)</span>
-</button>
-
-    <!-- Sort stays -->
     <select id="sort-deals" class="sb-filter">
       <option value="best">Sort: Best Deals</option>
       <option value="price_asc">Sort: Price (low → high)</option>
@@ -1913,6 +1896,9 @@ def build_page_html(deals):
         <section class="card-grid" id="deals-list">
             {cards_html}
         </section>
+
+        </div>
+        </div>
 
         <!-- ============================ -->
         <!-- SECTION 3A: ABOUT            -->
@@ -2039,7 +2025,7 @@ document.addEventListener("DOMContentLoaded", function () {{
   }}
 
   /* ============================
-     FILTER DRAWER (LEFT)
+     FILTER PANEL — mobile slide-over; desktop fixed float (see CSS)
      ============================ */
   const openBtn = document.getElementById("sb-filter-open");
   const drawer = document.getElementById("sb-filter-drawer");
@@ -2049,20 +2035,46 @@ document.addEventListener("DOMContentLoaded", function () {{
   const clearBtn = document.getElementById("sb-filter-clear");
   const groupsWrap = document.getElementById("sb-filter-groups");
   const filterCountEl = document.getElementById("sb-filter-count");
+  const mqFilterDesktop = window.matchMedia("(min-width: 992px)");
+
+  function setFilterOpenAria(isOpen) {{
+    if (!openBtn) return;
+    openBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  }}
 
   function openDrawer() {{
+    if (mqFilterDesktop.matches) return;
     drawer?.classList.add("open");
     backdrop?.classList.add("open");
+    setFilterOpenAria(true);
   }}
 
   function closeDrawer() {{
     drawer?.classList.remove("open");
     backdrop?.classList.remove("open");
+    setFilterOpenAria(false);
   }}
 
-  openBtn?.addEventListener("click", openDrawer);
+  function syncFilterLayout() {{
+    if (mqFilterDesktop.matches) {{
+      closeDrawer();
+    }}
+  }}
+
+  openBtn?.addEventListener("click", function () {{
+    if (mqFilterDesktop.matches) return;
+    if (drawer?.classList.contains("open")) closeDrawer();
+    else openDrawer();
+  }});
   backdrop?.addEventListener("click", closeDrawer);
   closeBtn?.addEventListener("click", closeDrawer);
+  mqFilterDesktop.addEventListener("change", syncFilterLayout);
+  window.addEventListener("resize", syncFilterLayout);
+  syncFilterLayout();
+
+  document.addEventListener("keydown", function (ev) {{
+    if (ev.key === "Escape") closeDrawer();
+  }});
 
   /* ============================
      FILTER SYSTEM (checkbox sets)
