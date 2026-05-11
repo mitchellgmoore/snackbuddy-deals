@@ -1355,6 +1355,13 @@ def build_page_html(deals):
             gap: 14px;
         }}
 
+        @media (max-width: 640px) {{
+            .card-grid {{
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px;
+            }}
+        }}
+
         .card {{
             background-color: var(--card-bg);
             border-radius: var(--radius-lg);
@@ -1542,10 +1549,11 @@ def build_page_html(deals):
 
         .percent-off {{
             color: var(--green);
-            font-size: 11px;
+            font-size: 22px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.03em;
+            line-height: 1;
         }}
 
         .card-footer {{
@@ -1810,7 +1818,7 @@ def build_page_html(deals):
                     </div>
                     <h1 class="sb-hero-title">Don&apos;t overpay for the snacks you already buy.</h1>
                     <p class="sb-hero-subtitle">
-                        Deal Tiers
+                        Discount Tier (% off):
                     </p>
                     <section class="sb-tier-filters" id="tier-filters">
                         <div class="sb-tier-filters-row">

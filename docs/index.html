@@ -803,6 +803,13 @@
             gap: 14px;
         }
 
+        @media (max-width: 640px) {
+            .card-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px;
+            }
+        }
+
         .card {
             background-color: var(--card-bg);
             border-radius: var(--radius-lg);
@@ -990,10 +997,11 @@
 
         .percent-off {
             color: var(--green);
-            font-size: 11px;
+            font-size: 22px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.03em;
+            line-height: 1;
         }
 
         .card-footer {
@@ -1254,11 +1262,11 @@
                 <div class="sb-hero-pattern"></div>
                 <div class="sb-hero-content">
                     <div class="sb-hero-kicker">
-                        SnackBuddy • Last updated: May 09, 2026 at 07:48 PM (local time)
+                        SnackBuddy • Last updated: May 11, 2026 at 07:43 PM (local time)
                     </div>
                     <h1 class="sb-hero-title">Don&apos;t overpay for the snacks you already buy.</h1>
                     <p class="sb-hero-subtitle">
-                        Deal Tiers
+                        Discount Tier (% off):
                     </p>
                     <section class="sb-tier-filters" id="tier-filters">
                         <div class="sb-tier-filters-row">
@@ -1320,7 +1328,7 @@
   </div>
 
   <div id="deal-count" class="count-pill">
-    👀 Showing 108 deals
+    👀 Showing 110 deals
   </div>
 </section>
 
@@ -1343,6 +1351,88 @@
         <!-- ============================ -->
         <section class="card-grid" id="deals-list">
             
+    <div class="card card-tier-diamond"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="walmart"
+         data-price="2.0"
+         data-percent="69.1"
+         data-deal-count="1"
+         data-tier="diamond">
+        <div class="card-image-wrap">
+            <img src="https://i5.walmartimages.com/asr/53b9f4d2-3ad3-4dff-90a9-7725dea842d8.8bc3d3f6cfea0cebf987ee2f6702ca23.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Ghost Energy Drink" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-elite'>💎 Diamond Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-walmart">Walmart</div>
+                <div class="meta-category">Energy Drink</div>
+            </div>
+            <div class="card-pricing">
+                <span class='old-price'>$6.47</span>
+                <span class="new-price">$2.00</span>
+                <span class="percent-off">69% OFF</span>
+            </div>
+            <div class="card-title">Ghost Energy Drink</div>
+            
+            <div class="flavor-info">
+                <span class="flavor-label">Available in: </span>
+                <span class="flavor-sample"><a href="https://www.walmart.com/ip/GHOST-Energy-Original-Energy-Drink-Zero-Sugars-8-4-fl-oz-4-Pack-Cans/12890804230?fulfillmentIntent=In-store&amp;filters=%5B%7B%22intent%22%3A%22fulfillmentIntent%22%2C%22values%22%3A%5B%22In-store%22%5D%7D%5D&amp;classType=VARIANT&amp;from=/search" target="_blank" rel="noopener noreferrer" class="flavor-link">Original</a></span>
+            </div>
+            
+            <div class="card-footer">
+                <div class='availability check'>Check store availability</div>
+                
+            </div>
+            <a class="view-button view-walmart" href="https://www.walmart.com/ip/GHOST-Energy-Original-Energy-Drink-Zero-Sugars-8-4-fl-oz-4-Pack-Cans/12890804230?fulfillmentIntent=In-store&amp;filters=%5B%7B%22intent%22%3A%22fulfillmentIntent%22%2C%22values%22%3A%5B%22In-store%22%5D%7D%5D&amp;classType=VARIANT&amp;from=/search" target="_blank" rel="noopener noreferrer">
+                View on Walmart.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card card-tier-diamond"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="walmart"
+         data-price="1.0"
+         data-percent="56.1"
+         data-deal-count="1"
+         data-tier="diamond">
+        <div class="card-image-wrap">
+            <img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Galaxy-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_7b435452-1a09-4b56-bb98-6e121dc10b0c.583fca215d1edfb7caba51a34a33406b.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Celsius Energy Drink" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-elite'>💎 Diamond Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-walmart">Walmart</div>
+                <div class="meta-category">Energy Drink</div>
+            </div>
+            <div class="card-pricing">
+                <span class='old-price'>$2.28</span>
+                <span class="new-price">$1.00</span>
+                <span class="percent-off">56% OFF</span>
+            </div>
+            <div class="card-title">Celsius Energy Drink</div>
+            
+            <div class="flavor-info">
+                <span class="flavor-label">Available in: </span>
+                <span class="flavor-sample"><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Galaxy-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/5020183718" target="_blank" rel="noopener noreferrer" class="flavor-link">Galaxy Vibe (Strawberry Watermelon)</a></span>
+            </div>
+            
+            <div class="card-footer">
+                <div class='availability check'>Check store availability</div>
+                
+            </div>
+            <a class="view-button view-walmart" href="https://www.walmart.com/ip/CELSIUS-Sparkling-Galaxy-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/5020183718" target="_blank" rel="noopener noreferrer">
+                View on Walmart.com
+            </a>
+        </div>
+    </div>
+    
+
     <div class="card card-tier-diamond"
          data-section="drinks"
          data-category="energy drink"
@@ -1473,6 +1563,47 @@
             </div>
             <a class="view-button view-kroger" href="https://www.kroger.com/p/power-crunch-chocolate-mint-whey-protein-energy-bars/0064422573002" target="_blank" rel="noopener noreferrer">
                 View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card card-tier-strong"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="walmart"
+         data-price="1.99"
+         data-percent="19.8"
+         data-deal-count="1"
+         data-tier="strong">
+        <div class="card-image-wrap">
+            <img src="https://i5.walmartimages.com/seo/GHOST-ENERGY-Zero-Sugars-Energy-Drink-Cherry-Limeade-16-fl-oz-Can_416f40b1-67e4-49bc-9dd6-cb8c3709e03b.54ec986610be83934d712a2a23cb6282.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Ghost Energy Drink" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-protein'>💪 Strong Deal</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-walmart">Walmart</div>
+                <div class="meta-category">Energy Drink</div>
+            </div>
+            <div class="card-pricing">
+                <span class='old-price'>$2.48</span>
+                <span class="new-price">$1.99</span>
+                <span class="percent-off">20% OFF</span>
+            </div>
+            <div class="card-title">Ghost Energy Drink</div>
+            
+            <div class="flavor-info">
+                <span class="flavor-label">Available in: </span>
+                <span class="flavor-sample"><a href="https://www.walmart.com/ip/GHOST-ENERGY-Zero-Sugars-Energy-Drink-Cherry-Limeade-16-fl-oz-Can/2400726919" target="_blank" rel="noopener noreferrer" class="flavor-link">Cherry Limeade</a></span>
+            </div>
+            
+            <div class="card-footer">
+                <div class='availability online-only'>Online only</div>
+                
+            </div>
+            <a class="view-button view-walmart" href="https://www.walmart.com/ip/GHOST-ENERGY-Zero-Sugars-Energy-Drink-Cherry-Limeade-16-fl-oz-Can/2400726919" target="_blank" rel="noopener noreferrer">
+                View on Walmart.com
             </a>
         </div>
     </div>
@@ -1736,10 +1867,10 @@
          data-retailer="walmart"
          data-price="1.97"
          data-percent="13.6"
-         data-deal-count="12"
+         data-deal-count="11"
          data-tier="strong">
         <div class="card-image-wrap">
-            <img src="https://i5.walmartimages.com/seo/CELSIUS-Fizz-Free-Peach-Mango-Green-Tea-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_303cf513-31a8-44ec-b80a-60173a9c1ee0.f87a68d91893d415b59d259221feb198.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Celsius Energy Drink" class="card-image"/>
+            <img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Peach-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_ac52ad45-8bf4-447b-9da9-ec2de92c8164.02835f7020362532703b19bebc374abe.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Celsius Energy Drink" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
             <div class='badge badge-protein'>💪 Strong Deal</div>
         </div>
@@ -1759,10 +1890,10 @@
                 <span class="flavor-label">Available in: </span>
                 <span class="flavor-sample"><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Arctic-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/273850672" target="_blank" rel="noopener noreferrer" class="flavor-link">Arctic Vibe (Frozen Berry)</a>, <a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Cosmic-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/1699265356" target="_blank" rel="noopener noreferrer" class="flavor-link">Cosmic Vibe (Fruit Punch)</a></span>
                 <button class="flavor-expand-link" data-card-id="0f3df232" aria-expanded="false" aria-controls="flavors-0f3df232">
-                    + 10 more flavors
+                    + 9 more flavors
                 </button>
                 <div class="flavor-list-expanded" id="flavors-0f3df232" style="display: none;">
-                    <a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Kiwi-Guava-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/483179684" target="_blank" rel="noopener noreferrer" class="flavor-link">Kiwi Guava</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Kiwi-Strawberry-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/5957535724" target="_blank" rel="noopener noreferrer" class="flavor-link">Kiwi Strawberry</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Orange-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/108931301" target="_blank" rel="noopener noreferrer" class="flavor-link">Orange</a><a href="https://www.walmart.com/ip/CELSIUS-Fizz-Free-Peach-Mango-Green-Tea-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/175103532" target="_blank" rel="noopener noreferrer" class="flavor-link">Peach Mango Green Tea</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Peach-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/768004808" target="_blank" rel="noopener noreferrer" class="flavor-link">Peach Vibe</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Playa-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/11166912078" target="_blank" rel="noopener noreferrer" class="flavor-link">Playa Vibe (Pina Colada)</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Retro-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/11148014826" target="_blank" rel="noopener noreferrer" class="flavor-link">Retro Vibe (Sherbert Slush)</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Tropical-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/225465367" target="_blank" rel="noopener noreferrer" class="flavor-link">Tropical Vibe (Starfruit Pineapple)</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Watermelon-Essential-Energy-Drink-12-fl-oz-Single-Can/974614417" target="_blank" rel="noopener noreferrer" class="flavor-link">Watermelon</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Watermelon-Lemonade-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/8864669016" target="_blank" rel="noopener noreferrer" class="flavor-link">Watermelon Lemonade</a>
+                    <a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Kiwi-Guava-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/483179684" target="_blank" rel="noopener noreferrer" class="flavor-link">Kiwi Guava</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Kiwi-Strawberry-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/5957535724" target="_blank" rel="noopener noreferrer" class="flavor-link">Kiwi Strawberry</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Orange-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/108931301" target="_blank" rel="noopener noreferrer" class="flavor-link">Orange</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Peach-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/768004808" target="_blank" rel="noopener noreferrer" class="flavor-link">Peach Vibe</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Playa-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/11166912078" target="_blank" rel="noopener noreferrer" class="flavor-link">Playa Vibe (Pina Colada)</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Retro-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/11148014826" target="_blank" rel="noopener noreferrer" class="flavor-link">Retro Vibe (Sherbert Slush)</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Tropical-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/225465367" target="_blank" rel="noopener noreferrer" class="flavor-link">Tropical Vibe (Starfruit Pineapple)</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Watermelon-Essential-Energy-Drink-12-fl-oz-Single-Can/974614417" target="_blank" rel="noopener noreferrer" class="flavor-link">Watermelon</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Watermelon-Lemonade-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/8864669016" target="_blank" rel="noopener noreferrer" class="flavor-link">Watermelon Lemonade</a>
                 </div>
             </div>
             
@@ -1770,7 +1901,7 @@
                 <div class='availability both'>In-store & online</div>
                 
             </div>
-            <a class="view-button view-walmart" href="https://www.walmart.com/ip/CELSIUS-Fizz-Free-Peach-Mango-Green-Tea-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/175103532" target="_blank" rel="noopener noreferrer">
+            <a class="view-button view-walmart" href="https://www.walmart.com/ip/CELSIUS-Sparkling-Peach-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/768004808" target="_blank" rel="noopener noreferrer">
                 View on Walmart.com
             </a>
         </div>
