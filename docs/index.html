@@ -185,7 +185,8 @@
 .sb-filter-edge-tab{
   position: fixed;
   left: 0;
-  top: 50%;
+  /* Lower on screen than dead-center so it stays out of the hero/tiers */
+  top: 80%;
   transform: translateY(-50%);
   z-index: 38;
   display: flex;
@@ -264,12 +265,6 @@
   max-width: 1100px;
   margin: 0 auto;
   padding: 0 16px;
-}
-
-@media (max-width: 991px) {
-  .sb-deals-shell {
-    padding-left: 52px;
-  }
 }
 
 .sb-deals-main{
@@ -808,6 +803,14 @@
                 grid-template-columns: repeat(2, minmax(0, 1fr));
                 gap: 10px;
             }
+            .card-pricing {
+                flex-wrap: wrap;
+                row-gap: 2px;
+            }
+            .percent-off {
+                flex: 1 1 100%;
+                font-size: 15px;
+            }
         }
 
         .card {
@@ -997,7 +1000,7 @@
 
         .percent-off {
             color: var(--green);
-            font-size: 22px;
+            font-size: 18px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.03em;
@@ -1262,7 +1265,7 @@
                 <div class="sb-hero-pattern"></div>
                 <div class="sb-hero-content">
                     <div class="sb-hero-kicker">
-                        SnackBuddy • Last updated: May 14, 2026 at 08:20 PM (local time)
+                        SnackBuddy • Last updated: May 15, 2026 at 10:59 PM (local time)
                     </div>
                     <h1 class="sb-hero-title">Don&apos;t overpay for the snacks you already buy.</h1>
                     <p class="sb-hero-subtitle">
@@ -1328,7 +1331,7 @@
   </div>
 
   <div id="deal-count" class="count-pill">
-    👀 Showing 97 deals
+    👀 Showing 96 deals
   </div>
 </section>
 
@@ -1351,47 +1354,6 @@
         <!-- ============================ -->
         <section class="card-grid" id="deals-list">
             
-    <div class="card card-tier-diamond"
-         data-section="drinks"
-         data-category="energy drink"
-         data-retailer="walmart"
-         data-price="1.0"
-         data-percent="56.1"
-         data-deal-count="2"
-         data-tier="diamond">
-        <div class="card-image-wrap">
-            <img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Galaxy-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_7b435452-1a09-4b56-bb98-6e121dc10b0c.583fca215d1edfb7caba51a34a33406b.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Celsius Energy Drink" class="card-image"/>
-            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-elite'>💎 Diamond Deal</div>
-        </div>
-        <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-walmart">Walmart</div>
-                <div class="meta-category">Energy Drink</div>
-            </div>
-            <div class="card-pricing">
-                <span class='old-price'>$2.28</span>
-                <span class="new-price">$1.00</span>
-                <span class="percent-off">56% OFF</span>
-            </div>
-            <div class="card-title">Celsius Energy Drink</div>
-            
-            <div class="flavor-info">
-                <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Astro-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/5023829778" target="_blank" rel="noopener noreferrer" class="flavor-link">Astro Vibe (Blue Razz)</a>, <a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Galaxy-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/5020183718" target="_blank" rel="noopener noreferrer" class="flavor-link">Galaxy Vibe (Strawberry Watermelon)</a></span>
-            </div>
-            
-            <div class="card-footer">
-                <div class='availability check'>Check store availability</div>
-                
-            </div>
-            <a class="view-button view-walmart" href="https://www.walmart.com/ip/CELSIUS-Sparkling-Galaxy-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/5020183718" target="_blank" rel="noopener noreferrer">
-                View on Walmart.com
-            </a>
-        </div>
-    </div>
-    
-
     <div class="card card-tier-fire"
          data-section="food"
          data-category="bars"
@@ -1403,7 +1365,7 @@
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0064422573002" alt="Power Crunch Bar" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>5</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-strong'>🔥 Fire Deal</div>
+            <div class='badge badge-strong'>🔥 Fire</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -1419,12 +1381,12 @@
             
             <div class="flavor-info">
                 <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.kroger.com/p/power-crunch-chocolate-mint-whey-protein-energy-bars/0064422573002" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Mint</a>, <a href="https://www.kroger.com/p/power-crunch-peanut-butter-creme-protein-energy-bars/0064422573079" target="_blank" rel="noopener noreferrer" class="flavor-link">Peanut Butter</a></span>
-                <button class="flavor-expand-link" data-card-id="05111186" aria-expanded="false" aria-controls="flavors-05111186">
-                    + 2 more flavors
+                <span class="flavor-sample"><a href="https://www.kroger.com/p/power-crunch-chocolate-mint-whey-protein-energy-bars/0064422573002" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Mint</a></span>
+                <button type="button" class="flavor-expand-link" data-card-id="05111186" data-extra-count="3" aria-expanded="false" aria-controls="flavors-05111186">
+                    3 more
                 </button>
                 <div class="flavor-list-expanded" id="flavors-05111186" style="display: none;">
-                    <a href="https://www.kroger.com/p/power-crunch-peanut-butter-fudge-protein-energy-bars/0064422573006" target="_blank" rel="noopener noreferrer" class="flavor-link">Peanut Butter Fudge</a><a href="https://www.kroger.com/p/power-crunch-triple-chocolate-whey-protein-energy-bars/0064422573082" target="_blank" rel="noopener noreferrer" class="flavor-link">Triple Chocolate</a>
+                    <a href="https://www.kroger.com/p/power-crunch-peanut-butter-creme-protein-energy-bars/0064422573079" target="_blank" rel="noopener noreferrer" class="flavor-link">Peanut Butter</a><a href="https://www.kroger.com/p/power-crunch-peanut-butter-fudge-protein-energy-bars/0064422573006" target="_blank" rel="noopener noreferrer" class="flavor-link">Peanut Butter Fudge</a><a href="https://www.kroger.com/p/power-crunch-triple-chocolate-whey-protein-energy-bars/0064422573082" target="_blank" rel="noopener noreferrer" class="flavor-link">Triple Chocolate</a>
                 </div>
             </div>
             
@@ -1450,7 +1412,7 @@
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0088939200031" alt="Celsius Energy Drink" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
+            <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -1466,12 +1428,12 @@
             
             <div class="flavor-info">
                 <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.kroger.com/p/celsius-sparkling-arctic-vibe-energy-drink-can/0088939202141" target="_blank" rel="noopener noreferrer" class="flavor-link">Arctic Vibe (Frozen Berry)</a>, <a href="https://www.kroger.com/p/celsius-fizz-free-blue-razz-lemonade-energy-drink-can/0088939200139" target="_blank" rel="noopener noreferrer" class="flavor-link">Blue Razz Lemonade</a></span>
-                <button class="flavor-expand-link" data-card-id="d252d32f" aria-expanded="false" aria-controls="flavors-d252d32f">
-                    + 11 more flavors
+                <span class="flavor-sample"><a href="https://www.kroger.com/p/celsius-sparkling-arctic-vibe-energy-drink-can/0088939202141" target="_blank" rel="noopener noreferrer" class="flavor-link">Arctic Vibe (Frozen Berry)</a></span>
+                <button type="button" class="flavor-expand-link" data-card-id="d252d32f" data-extra-count="12" aria-expanded="false" aria-controls="flavors-d252d32f">
+                    12 more
                 </button>
                 <div class="flavor-list-expanded" id="flavors-d252d32f" style="display: none;">
-                    <a href="https://www.kroger.com/p/celsius-sparkling-cosmic-vibe-energy-drink-can/0088939200120" target="_blank" rel="noopener noreferrer" class="flavor-link">Cosmic Vibe (Fruit Punch)</a><a href="https://www.kroger.com/p/celsius-sparkling-fuji-apple-pear-energy-drink-can/0088939201017" target="_blank" rel="noopener noreferrer" class="flavor-link">Fuji Apple Pear</a><a href="https://www.kroger.com/p/celsius-sparkling-green-apple-cherry-energy-drink-can/0088939200086" target="_blank" rel="noopener noreferrer" class="flavor-link">Green Apple Cherry</a><a href="https://www.kroger.com/p/celsius-sparkling-kiwi-guava-energy-drink-can/0088939201014" target="_blank" rel="noopener noreferrer" class="flavor-link">Kiwi Guava</a><a href="https://www.kroger.com/p/celsius-sparkling-mango-lemonade-energy-drink-can/0088939200178" target="_blank" rel="noopener noreferrer" class="flavor-link">Mango Lemonade</a><a href="https://www.kroger.com/p/celsius-sparkling-orange-energy-drink-can/0088939200031" target="_blank" rel="noopener noreferrer" class="flavor-link">Orange</a><a href="https://www.kroger.com/p/celsius-sparkling-peach-vibe-energy-drink-can/0088939201019" target="_blank" rel="noopener noreferrer" class="flavor-link">Peach Vibe</a><a href="https://www.kroger.com/p/celsius-sparkling-playa-vibe-energy-drink-can/0088939200174" target="_blank" rel="noopener noreferrer" class="flavor-link">Playa Vibe (Pina Colada)</a><a href="https://www.kroger.com/p/celsius-sparkling-retro-vibe-energy-drink-can/0088939200172" target="_blank" rel="noopener noreferrer" class="flavor-link">Retro Vibe (Sherbert Slush)</a><a href="https://www.kroger.com/p/celsius-sparkling-watermelon-energy-drink-can/0088939200362" target="_blank" rel="noopener noreferrer" class="flavor-link">Watermelon</a><a href="https://www.kroger.com/p/celsius-sparkling-wild-berry-energy-drink-can/0088939200032" target="_blank" rel="noopener noreferrer" class="flavor-link">Wild Berry</a>
+                    <a href="https://www.kroger.com/p/celsius-fizz-free-blue-razz-lemonade-energy-drink-can/0088939200139" target="_blank" rel="noopener noreferrer" class="flavor-link">Blue Razz Lemonade</a><a href="https://www.kroger.com/p/celsius-sparkling-cosmic-vibe-energy-drink-can/0088939200120" target="_blank" rel="noopener noreferrer" class="flavor-link">Cosmic Vibe (Fruit Punch)</a><a href="https://www.kroger.com/p/celsius-sparkling-fuji-apple-pear-energy-drink-can/0088939201017" target="_blank" rel="noopener noreferrer" class="flavor-link">Fuji Apple Pear</a><a href="https://www.kroger.com/p/celsius-sparkling-green-apple-cherry-energy-drink-can/0088939200086" target="_blank" rel="noopener noreferrer" class="flavor-link">Green Apple Cherry</a><a href="https://www.kroger.com/p/celsius-sparkling-kiwi-guava-energy-drink-can/0088939201014" target="_blank" rel="noopener noreferrer" class="flavor-link">Kiwi Guava</a><a href="https://www.kroger.com/p/celsius-sparkling-mango-lemonade-energy-drink-can/0088939200178" target="_blank" rel="noopener noreferrer" class="flavor-link">Mango Lemonade</a><a href="https://www.kroger.com/p/celsius-sparkling-orange-energy-drink-can/0088939200031" target="_blank" rel="noopener noreferrer" class="flavor-link">Orange</a><a href="https://www.kroger.com/p/celsius-sparkling-peach-vibe-energy-drink-can/0088939201019" target="_blank" rel="noopener noreferrer" class="flavor-link">Peach Vibe</a><a href="https://www.kroger.com/p/celsius-sparkling-playa-vibe-energy-drink-can/0088939200174" target="_blank" rel="noopener noreferrer" class="flavor-link">Playa Vibe (Pina Colada)</a><a href="https://www.kroger.com/p/celsius-sparkling-retro-vibe-energy-drink-can/0088939200172" target="_blank" rel="noopener noreferrer" class="flavor-link">Retro Vibe (Sherbert Slush)</a><a href="https://www.kroger.com/p/celsius-sparkling-watermelon-energy-drink-can/0088939200362" target="_blank" rel="noopener noreferrer" class="flavor-link">Watermelon</a><a href="https://www.kroger.com/p/celsius-sparkling-wild-berry-energy-drink-can/0088939200032" target="_blank" rel="noopener noreferrer" class="flavor-link">Wild Berry</a>
                 </div>
             </div>
             
@@ -1481,6 +1443,47 @@
             </div>
             <a class="view-button view-kroger" href="https://www.kroger.com/p/celsius-sparkling-orange-energy-drink-can/0088939200031" target="_blank" rel="noopener noreferrer">
                 View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card card-tier-strong"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="walmart"
+         data-price="2.0"
+         data-percent="19.4"
+         data-deal-count="1"
+         data-tier="strong">
+        <div class="card-image-wrap">
+            <img src="https://i5.walmartimages.com/seo/Alani-Nu-Energy-Drink-Sherbet-Swirl-12oz_581b21c5-e62b-4638-99a3-fa66ba9b0e9e.b6014adef7afb346055e3fcdd9d99936.png?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Alani Nu Energy Drink" class="card-image"/>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-protein'>💪 Strong</div>
+        </div>
+        <div class="card-content">
+            <div class="card-meta-row">
+                <div class="retailer-pill retailer-walmart">Walmart</div>
+                <div class="meta-category">Energy Drink</div>
+            </div>
+            <div class="card-pricing">
+                <span class='old-price'>$2.48</span>
+                <span class="new-price">$2.00</span>
+                <span class="percent-off">19% OFF</span>
+            </div>
+            <div class="card-title">Alani Nu Energy Drink</div>
+            
+            <div class="flavor-info">
+                <span class="flavor-label">Available in: </span>
+                <span class="flavor-sample"><a href="https://www.walmart.com/ip/Alani-Nu-Energy-Drink-Sherbet-Swirl-12oz/14927820797" target="_blank" rel="noopener noreferrer" class="flavor-link">Sherbert Swirl</a></span>
+            </div>
+            
+            <div class="card-footer">
+                <div class='availability check'>Check store availability</div>
+                
+            </div>
+            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Alani-Nu-Energy-Drink-Sherbet-Swirl-12oz/14927820797" target="_blank" rel="noopener noreferrer">
+                View on Walmart.com
             </a>
         </div>
     </div>
@@ -1497,7 +1500,7 @@
         <div class="card-image-wrap">
             <img src="https://target.scene7.com/is/image/Target/GUEST_c393d251-0fc8-42e6-b88d-527213dac6fe?wid=600&amp;hei=600&amp;qlt=80" alt="Quest Hero Protein Bar" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
+            <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -1538,7 +1541,7 @@
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0088884901131" alt="Quest Peanut Butter Cups" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
+            <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -1579,7 +1582,7 @@
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0081012852819" alt="Ghost Energy Drink" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
+            <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -1595,12 +1598,12 @@
             
             <div class="flavor-info">
                 <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.kroger.com/p/ghost-zero-sugar-cherry-limeade-energy-drink-can/0081002829894?fulfillment=PICKUP" target="_blank" rel="noopener noreferrer" class="flavor-link">Cherry Limeade</a>, <a href="https://www.kroger.com/p/ghost-zero-sugar-faze-pop-energy-drink/0081008581909?fulfillment=PICKUP" target="_blank" rel="noopener noreferrer" class="flavor-link">Faze Pop</a></span>
-                <button class="flavor-expand-link" data-card-id="06fd4d4f" aria-expanded="false" aria-controls="flavors-06fd4d4f">
-                    + 4 more flavors
+                <span class="flavor-sample"><a href="https://www.kroger.com/p/ghost-zero-sugar-cherry-limeade-energy-drink-can/0081002829894?fulfillment=PICKUP" target="_blank" rel="noopener noreferrer" class="flavor-link">Cherry Limeade</a></span>
+                <button type="button" class="flavor-expand-link" data-card-id="06fd4d4f" data-extra-count="5" aria-expanded="false" aria-controls="flavors-06fd4d4f">
+                    5 more
                 </button>
                 <div class="flavor-list-expanded" id="flavors-06fd4d4f" style="display: none;">
-                    <a href="https://www.kroger.com/p/ghost-zero-sugar-orange-cream-energy-drink-can/0081008581218?fulfillment=PICKUP" target="_blank" rel="noopener noreferrer" class="flavor-link">Orange Cream</a><a href="https://www.kroger.com/p/ghost-zero-sugar-peaches-energy-drink-can/0081012852985?fulfillment=PICKUP" target="_blank" rel="noopener noreferrer" class="flavor-link">Peaches</a><a href="https://www.kroger.com/p/ghost-zero-sugar-sour-pink-lemonade-energy-drink-can/0081012852006?fulfillment=PICKUP" target="_blank" rel="noopener noreferrer" class="flavor-link">Sour Pink Lemonade</a><a href="https://www.kroger.com/p/ghost-zero-sugar-welch-s-grape-energy-drink-can/0081012852819?fulfillment=PICKUP&amp;searchType=suggestions" target="_blank" rel="noopener noreferrer" class="flavor-link">Welch&#x27;s Grape</a>
+                    <a href="https://www.kroger.com/p/ghost-zero-sugar-faze-pop-energy-drink/0081008581909?fulfillment=PICKUP" target="_blank" rel="noopener noreferrer" class="flavor-link">Faze Pop</a><a href="https://www.kroger.com/p/ghost-zero-sugar-orange-cream-energy-drink-can/0081008581218?fulfillment=PICKUP" target="_blank" rel="noopener noreferrer" class="flavor-link">Orange Cream</a><a href="https://www.kroger.com/p/ghost-zero-sugar-peaches-energy-drink-can/0081012852985?fulfillment=PICKUP" target="_blank" rel="noopener noreferrer" class="flavor-link">Peaches</a><a href="https://www.kroger.com/p/ghost-zero-sugar-sour-pink-lemonade-energy-drink-can/0081012852006?fulfillment=PICKUP" target="_blank" rel="noopener noreferrer" class="flavor-link">Sour Pink Lemonade</a><a href="https://www.kroger.com/p/ghost-zero-sugar-welch-s-grape-energy-drink-can/0081012852819?fulfillment=PICKUP&amp;searchType=suggestions" target="_blank" rel="noopener noreferrer" class="flavor-link">Welch&#x27;s Grape</a>
                 </div>
             </div>
             
@@ -1626,7 +1629,7 @@
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/2-pack-Quest-Tortilla-Style-Protein-Chips-Chili-Lime-1-1oz-4-Count-Bags_e3557fff-120a-48d6-8e73-1df50bdc97d6.b5f0e51ebb0d37d142e006ff8809de4a.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Quest Protein Chips" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>8</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
+            <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -1667,7 +1670,7 @@
         <div class="card-image-wrap">
             <img src="https://target.scene7.com/is/image/Target/GUEST_c0311697-cf8b-4422-a551-46fe1b556cc4?wid=600&amp;hei=600&amp;qlt=80" alt="Pure Protein Bar" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
+            <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -1683,11 +1686,17 @@
             
             <div class="flavor-info">
                 <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.target.com/p/pure-protein-19g-protein-bar-brookie-4ct/-/A-92988629" target="_blank" rel="noopener noreferrer" class="flavor-link">Brookie</a>, <a href="https://www.target.com/p/pure-protein-19g-protein-bar-sundae-cone-4ct/-/A-92988626" target="_blank" rel="noopener noreferrer" class="flavor-link">Sundae Cone</a></span>
+                <span class="flavor-sample"><a href="https://www.target.com/p/pure-protein-19g-protein-bar-brookie-4ct/-/A-92988629" target="_blank" rel="noopener noreferrer" class="flavor-link">Brookie</a></span>
+                <button type="button" class="flavor-expand-link" data-card-id="e936823e" data-extra-count="1" aria-expanded="false" aria-controls="flavors-e936823e">
+                    1 more
+                </button>
+                <div class="flavor-list-expanded" id="flavors-e936823e" style="display: none;">
+                    <a href="https://www.target.com/p/pure-protein-19g-protein-bar-sundae-cone-4ct/-/A-92988626" target="_blank" rel="noopener noreferrer" class="flavor-link">Sundae Cone</a>
+                </div>
             </div>
             
             <div class="card-footer">
-                <div class='availability online-only'>Online only</div>
+                <div class='availability check'>Check store availability</div>
                 
             </div>
             <a class="view-button view-target" href="https://www.target.com/p/pure-protein-19g-protein-bar-sundae-cone-4ct/-/A-92988626" target="_blank" rel="noopener noreferrer">
@@ -1708,7 +1717,7 @@
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/CELSIUS-Fizz-Free-Peach-Mango-Green-Tea-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_303cf513-31a8-44ec-b80a-60173a9c1ee0.f87a68d91893d415b59d259221feb198.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Celsius Energy Drink" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
+            <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -1724,12 +1733,12 @@
             
             <div class="flavor-info">
                 <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Arctic-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/273850672" target="_blank" rel="noopener noreferrer" class="flavor-link">Arctic Vibe (Frozen Berry)</a>, <a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Cosmic-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/1699265356" target="_blank" rel="noopener noreferrer" class="flavor-link">Cosmic Vibe (Fruit Punch)</a></span>
-                <button class="flavor-expand-link" data-card-id="0f3df232" aria-expanded="false" aria-controls="flavors-0f3df232">
-                    + 10 more flavors
+                <span class="flavor-sample"><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Arctic-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/273850672" target="_blank" rel="noopener noreferrer" class="flavor-link">Arctic Vibe (Frozen Berry)</a></span>
+                <button type="button" class="flavor-expand-link" data-card-id="0f3df232" data-extra-count="11" aria-expanded="false" aria-controls="flavors-0f3df232">
+                    11 more
                 </button>
                 <div class="flavor-list-expanded" id="flavors-0f3df232" style="display: none;">
-                    <a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Kiwi-Guava-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/483179684" target="_blank" rel="noopener noreferrer" class="flavor-link">Kiwi Guava</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Kiwi-Strawberry-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/5957535724" target="_blank" rel="noopener noreferrer" class="flavor-link">Kiwi Strawberry</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Orange-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/108931301" target="_blank" rel="noopener noreferrer" class="flavor-link">Orange</a><a href="https://www.walmart.com/ip/CELSIUS-Fizz-Free-Peach-Mango-Green-Tea-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/175103532" target="_blank" rel="noopener noreferrer" class="flavor-link">Peach Mango Green Tea</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Peach-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/768004808" target="_blank" rel="noopener noreferrer" class="flavor-link">Peach Vibe</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Playa-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/11166912078" target="_blank" rel="noopener noreferrer" class="flavor-link">Playa Vibe (Pina Colada)</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Retro-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/11148014826" target="_blank" rel="noopener noreferrer" class="flavor-link">Retro Vibe (Sherbert Slush)</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Tropical-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/225465367" target="_blank" rel="noopener noreferrer" class="flavor-link">Tropical Vibe (Starfruit Pineapple)</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Watermelon-Essential-Energy-Drink-12-fl-oz-Single-Can/974614417" target="_blank" rel="noopener noreferrer" class="flavor-link">Watermelon</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Watermelon-Lemonade-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/8864669016" target="_blank" rel="noopener noreferrer" class="flavor-link">Watermelon Lemonade</a>
+                    <a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Cosmic-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/1699265356" target="_blank" rel="noopener noreferrer" class="flavor-link">Cosmic Vibe (Fruit Punch)</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Kiwi-Guava-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/483179684" target="_blank" rel="noopener noreferrer" class="flavor-link">Kiwi Guava</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Kiwi-Strawberry-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/5957535724" target="_blank" rel="noopener noreferrer" class="flavor-link">Kiwi Strawberry</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Orange-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/108931301" target="_blank" rel="noopener noreferrer" class="flavor-link">Orange</a><a href="https://www.walmart.com/ip/CELSIUS-Fizz-Free-Peach-Mango-Green-Tea-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/175103532" target="_blank" rel="noopener noreferrer" class="flavor-link">Peach Mango Green Tea</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Peach-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/768004808" target="_blank" rel="noopener noreferrer" class="flavor-link">Peach Vibe</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Playa-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/11166912078" target="_blank" rel="noopener noreferrer" class="flavor-link">Playa Vibe (Pina Colada)</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Retro-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/11148014826" target="_blank" rel="noopener noreferrer" class="flavor-link">Retro Vibe (Sherbert Slush)</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Tropical-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/225465367" target="_blank" rel="noopener noreferrer" class="flavor-link">Tropical Vibe (Starfruit Pineapple)</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Watermelon-Essential-Energy-Drink-12-fl-oz-Single-Can/974614417" target="_blank" rel="noopener noreferrer" class="flavor-link">Watermelon</a><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Watermelon-Lemonade-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/8864669016" target="_blank" rel="noopener noreferrer" class="flavor-link">Watermelon Lemonade</a>
                 </div>
             </div>
             
@@ -1755,7 +1764,7 @@
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0088884900386" alt="Quest Protein Bar" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
+            <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -1771,12 +1780,12 @@
             
             <div class="flavor-info">
                 <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.kroger.com/p/quest-birthday-cake-protein-bars/0088884900668" target="_blank" rel="noopener noreferrer" class="flavor-link">Birthday Cake</a>, <a href="https://www.kroger.com/p/quest-chocolate-chip-cookie-dough-protein-bars/0088884900385" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Chip Cookie Dough</a></span>
-                <button class="flavor-expand-link" data-card-id="7320ea2c" aria-expanded="false" aria-controls="flavors-7320ea2c">
-                    + 4 more flavors
+                <span class="flavor-sample"><a href="https://www.kroger.com/p/quest-birthday-cake-protein-bars/0088884900668" target="_blank" rel="noopener noreferrer" class="flavor-link">Birthday Cake</a></span>
+                <button type="button" class="flavor-expand-link" data-card-id="7320ea2c" data-extra-count="5" aria-expanded="false" aria-controls="flavors-7320ea2c">
+                    5 more
                 </button>
                 <div class="flavor-list-expanded" id="flavors-7320ea2c" style="display: none;">
-                    <a href="https://www.kroger.com/p/quest-cookies-cream-protein-bars/0088884900386" target="_blank" rel="noopener noreferrer" class="flavor-link">Cookies &amp; Cream</a><a href="https://www.kroger.com/p/quest-double-chocolate-chunk-protein-bars/0088884900391" target="_blank" rel="noopener noreferrer" class="flavor-link">Double Chocolate Chunk</a><a href="https://www.kroger.com/p/quest-oatmeal-chocolate-chip-protein-bars/0088884900517" target="_blank" rel="noopener noreferrer" class="flavor-link">Oatmeal Chocolate Chip</a><a href="https://www.kroger.com/p/quest-s-mores-protein-bars/0088884900389" target="_blank" rel="noopener noreferrer" class="flavor-link">S&#x27;mores</a>
+                    <a href="https://www.kroger.com/p/quest-chocolate-chip-cookie-dough-protein-bars/0088884900385" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Chip Cookie Dough</a><a href="https://www.kroger.com/p/quest-cookies-cream-protein-bars/0088884900386" target="_blank" rel="noopener noreferrer" class="flavor-link">Cookies &amp; Cream</a><a href="https://www.kroger.com/p/quest-double-chocolate-chunk-protein-bars/0088884900391" target="_blank" rel="noopener noreferrer" class="flavor-link">Double Chocolate Chunk</a><a href="https://www.kroger.com/p/quest-oatmeal-chocolate-chip-protein-bars/0088884900517" target="_blank" rel="noopener noreferrer" class="flavor-link">Oatmeal Chocolate Chip</a><a href="https://www.kroger.com/p/quest-s-mores-protein-bars/0088884900389" target="_blank" rel="noopener noreferrer" class="flavor-link">S&#x27;mores</a>
                 </div>
             </div>
             
@@ -1802,7 +1811,7 @@
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0088884901160" alt="Quest Hero Protein Bar" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
+            <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -1818,12 +1827,12 @@
             
             <div class="flavor-info">
                 <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.kroger.com/p/quest-chocolate-caramel-pecan-hero-protein-bars/0088884900615" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Caramel Pecan</a>, <a href="https://www.kroger.com/p/quest-crispy-chocolate-peanut-butter-protein-bars/0088884901094" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Peanut Butter</a></span>
-                <button class="flavor-expand-link" data-card-id="9c708a82" aria-expanded="false" aria-controls="flavors-9c708a82">
-                    + 1 more flavor
+                <span class="flavor-sample"><a href="https://www.kroger.com/p/quest-chocolate-caramel-pecan-hero-protein-bars/0088884900615" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Caramel Pecan</a></span>
+                <button type="button" class="flavor-expand-link" data-card-id="9c708a82" data-extra-count="2" aria-expanded="false" aria-controls="flavors-9c708a82">
+                    2 more
                 </button>
                 <div class="flavor-list-expanded" id="flavors-9c708a82" style="display: none;">
-                    <a href="https://www.kroger.com/p/quest-crispy-cookies-cream-protein-bars/0088884901160" target="_blank" rel="noopener noreferrer" class="flavor-link">Cookies &amp; Cream</a>
+                    <a href="https://www.kroger.com/p/quest-crispy-chocolate-peanut-butter-protein-bars/0088884901094" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Peanut Butter</a><a href="https://www.kroger.com/p/quest-crispy-cookies-cream-protein-bars/0088884901160" target="_blank" rel="noopener noreferrer" class="flavor-link">Cookies &amp; Cream</a>
                 </div>
             </div>
             
@@ -1849,7 +1858,7 @@
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0088884901581" alt="Quest Overload" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
+            <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -1865,7 +1874,13 @@
             
             <div class="flavor-info">
                 <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.kroger.com/p/quest-overload-chocolate-explosion-protein-bar/0088884901578" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Explosion</a>, <a href="https://www.kroger.com/p/quest-overload-sundae-funday-protein-bar/0088884901581" target="_blank" rel="noopener noreferrer" class="flavor-link">Sundae Funday</a></span>
+                <span class="flavor-sample"><a href="https://www.kroger.com/p/quest-overload-chocolate-explosion-protein-bar/0088884901578" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Explosion</a></span>
+                <button type="button" class="flavor-expand-link" data-card-id="07ba1313" data-extra-count="1" aria-expanded="false" aria-controls="flavors-07ba1313">
+                    1 more
+                </button>
+                <div class="flavor-list-expanded" id="flavors-07ba1313" style="display: none;">
+                    <a href="https://www.kroger.com/p/quest-overload-sundae-funday-protein-bar/0088884901581" target="_blank" rel="noopener noreferrer" class="flavor-link">Sundae Funday</a>
+                </div>
             </div>
             
             <div class="card-footer">
@@ -1890,7 +1905,7 @@
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0084022930362" alt="Built Puff" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
+            <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -1906,7 +1921,13 @@
             
             <div class="flavor-info">
                 <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.kroger.com/p/built-puff-brownie-batter-protein-bar/0084022930362" target="_blank" rel="noopener noreferrer" class="flavor-link">Brownie Batter</a>, <a href="https://www.kroger.com/p/built-puff-coconut-protein-bar/0084022930037" target="_blank" rel="noopener noreferrer" class="flavor-link">Coconut</a></span>
+                <span class="flavor-sample"><a href="https://www.kroger.com/p/built-puff-brownie-batter-protein-bar/0084022930362" target="_blank" rel="noopener noreferrer" class="flavor-link">Brownie Batter</a></span>
+                <button type="button" class="flavor-expand-link" data-card-id="e2bc61e5" data-extra-count="1" aria-expanded="false" aria-controls="flavors-e2bc61e5">
+                    1 more
+                </button>
+                <div class="flavor-list-expanded" id="flavors-e2bc61e5" style="display: none;">
+                    <a href="https://www.kroger.com/p/built-puff-coconut-protein-bar/0084022930037" target="_blank" rel="noopener noreferrer" class="flavor-link">Coconut</a>
+                </div>
             </div>
             
             <div class="card-footer">
@@ -1931,7 +1952,7 @@
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0072225206946" alt="Clif Bar" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>5</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
+            <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -1947,7 +1968,13 @@
             
             <div class="flavor-info">
                 <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.kroger.com/p/clif-bar-cookies-creme-energy-protein-bars/0072225206946" target="_blank" rel="noopener noreferrer" class="flavor-link">Cookies &amp; Crème</a>, <a href="https://www.kroger.com/p/clif-bar-cool-mint-chocolate-with-caffeine-energy-protein-bars/0072225206868" target="_blank" rel="noopener noreferrer" class="flavor-link">Cool Mint Chocolate</a></span>
+                <span class="flavor-sample"><a href="https://www.kroger.com/p/clif-bar-cookies-creme-energy-protein-bars/0072225206946" target="_blank" rel="noopener noreferrer" class="flavor-link">Cookies &amp; Crème</a></span>
+                <button type="button" class="flavor-expand-link" data-card-id="663ff82d" data-extra-count="1" aria-expanded="false" aria-controls="flavors-663ff82d">
+                    1 more
+                </button>
+                <div class="flavor-list-expanded" id="flavors-663ff82d" style="display: none;">
+                    <a href="https://www.kroger.com/p/clif-bar-cool-mint-chocolate-with-caffeine-energy-protein-bars/0072225206868" target="_blank" rel="noopener noreferrer" class="flavor-link">Cool Mint Chocolate</a>
+                </div>
             </div>
             
             <div class="card-footer">
@@ -1972,7 +1999,7 @@
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/Myprotein-Crispy-Protein-Wafers-Chocolate-High-Protein-Snacks-15g-10-Pack_b4ed8578-4523-41bd-bc9e-7a15578140a6.3b02ac8e9055e6f4ed292e23172b1532.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="MyProtein Wafer" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>10</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
+            <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -1988,7 +2015,13 @@
             
             <div class="flavor-info">
                 <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.walmart.com/ip/Myprotein-Protein-Wafers-Vanilla-4pk/1582074407" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate</a>, <a href="https://www.walmart.com/ip/Myprotein-Protein-Wafers-Vanilla-4pk/1077226335" target="_blank" rel="noopener noreferrer" class="flavor-link">Vanilla</a></span>
+                <span class="flavor-sample"><a href="https://www.walmart.com/ip/Myprotein-Protein-Wafers-Vanilla-4pk/1582074407" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate</a></span>
+                <button type="button" class="flavor-expand-link" data-card-id="2d7cf5bd" data-extra-count="1" aria-expanded="false" aria-controls="flavors-2d7cf5bd">
+                    1 more
+                </button>
+                <div class="flavor-list-expanded" id="flavors-2d7cf5bd" style="display: none;">
+                    <a href="https://www.walmart.com/ip/Myprotein-Protein-Wafers-Vanilla-4pk/1077226335" target="_blank" rel="noopener noreferrer" class="flavor-link">Vanilla</a>
+                </div>
             </div>
             
             <div class="card-footer">
@@ -2013,7 +2046,7 @@
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0081162002195" alt="Core Power Protein Shake" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
+            <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -2029,7 +2062,13 @@
             
             <div class="flavor-info">
                 <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.kroger.com/p/core-power-chocolate-protein-shake/0081162002195" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate</a>, <a href="https://www.kroger.com/p/core-power-vanilla-protein-shake/0081162002196" target="_blank" rel="noopener noreferrer" class="flavor-link">Vanilla</a></span>
+                <span class="flavor-sample"><a href="https://www.kroger.com/p/core-power-chocolate-protein-shake/0081162002195" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate</a></span>
+                <button type="button" class="flavor-expand-link" data-card-id="45cb115e" data-extra-count="1" aria-expanded="false" aria-controls="flavors-45cb115e">
+                    1 more
+                </button>
+                <div class="flavor-list-expanded" id="flavors-45cb115e" style="display: none;">
+                    <a href="https://www.kroger.com/p/core-power-vanilla-protein-shake/0081162002196" target="_blank" rel="noopener noreferrer" class="flavor-link">Vanilla</a>
+                </div>
             </div>
             
             <div class="card-footer">
@@ -2054,7 +2093,7 @@
         <div class="card-image-wrap">
             <img src="https://www.kroger.com/product/images/xlarge/front/0088884901206" alt="Quest Crackers" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
+            <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -2070,7 +2109,13 @@
             
             <div class="flavor-info">
                 <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.kroger.com/p/quest-nutrition-protein-cheddar-blast-cheese-crackers/0088884901206" target="_blank" rel="noopener noreferrer" class="flavor-link">Cheddar</a>, <a href="https://www.kroger.com/p/quest-nutrition-spicy-cheddar-protein-cheese-crackers/0088884901400" target="_blank" rel="noopener noreferrer" class="flavor-link">Spicy Cheddar</a></span>
+                <span class="flavor-sample"><a href="https://www.kroger.com/p/quest-nutrition-protein-cheddar-blast-cheese-crackers/0088884901206" target="_blank" rel="noopener noreferrer" class="flavor-link">Cheddar</a></span>
+                <button type="button" class="flavor-expand-link" data-card-id="5299c5e1" data-extra-count="1" aria-expanded="false" aria-controls="flavors-5299c5e1">
+                    1 more
+                </button>
+                <div class="flavor-list-expanded" id="flavors-5299c5e1" style="display: none;">
+                    <a href="https://www.kroger.com/p/quest-nutrition-spicy-cheddar-protein-cheese-crackers/0088884901400" target="_blank" rel="noopener noreferrer" class="flavor-link">Spicy Cheddar</a>
+                </div>
             </div>
             
             <div class="card-footer">
@@ -2095,7 +2140,7 @@
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/Quest-Tortilla-Style-Protein-Chips-with-19g-of-Protein-Pizza-Flavor-4-Count_49617bcc-e947-4dc0-b589-62afe6c1d28c.8ec7edd9228866acd739fd1d5214e39c.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Quest Protein Chips" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
+            <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -2136,7 +2181,7 @@
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/CLIF-BAR-Chocolate-Chip-Made-with-Organic-Oats-Energy-Bars-Non-GMO-Plant-Based-Protein-Bars-5-Pack_0e790073-aba6-4cb1-8b63-8ed91249292b.382e7331aa5b813f2da46e7e0019d4c3.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Clif Bar" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>5</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
+            <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -2152,12 +2197,12 @@
             
             <div class="flavor-info">
                 <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.walmart.com/ip/CLIF-BAR-Blueberry-Almond-Crisp-Energy-Bars-Plant-Based-Protein-Bars-5ct/5195244226" target="_blank" rel="noopener noreferrer" class="flavor-link">Blueberry Almond</a>, <a href="https://www.walmart.com/ip/CLIF-BAR-Chocolate-Brownie-Flavor-Energy-Bars-Plant-Based-Protein-Bars-5ct/5193278282" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Brownie</a></span>
-                <button class="flavor-expand-link" data-card-id="55416def" aria-expanded="false" aria-controls="flavors-55416def">
-                    + 3 more flavors
+                <span class="flavor-sample"><a href="https://www.walmart.com/ip/CLIF-BAR-Blueberry-Almond-Crisp-Energy-Bars-Plant-Based-Protein-Bars-5ct/5195244226" target="_blank" rel="noopener noreferrer" class="flavor-link">Blueberry Almond</a></span>
+                <button type="button" class="flavor-expand-link" data-card-id="55416def" data-extra-count="4" aria-expanded="false" aria-controls="flavors-55416def">
+                    4 more
                 </button>
                 <div class="flavor-list-expanded" id="flavors-55416def" style="display: none;">
-                    <a href="https://www.walmart.com/ip/CLIF-BAR-Chocolate-Chip-Made-with-Organic-Oats-Energy-Bars-Non-GMO-Plant-Based-Protein-Bars-5-Pack/5195244229" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Chip</a><a href="https://www.walmart.com/ip/CLIF-BAR-Crunchy-Peanut-Butter-Made-with-Organic-Oats-Energy-Bars-Non-GMO-Plant-Based-Protein-Bars-5-Pack/5193278279" target="_blank" rel="noopener noreferrer" class="flavor-link">Crunchy Peanut Butter</a><a href="https://www.walmart.com/ip/CLIF-BAR-White-Chocolate-Macadamia-Nut-Flavor-Energy-Bars-Plant-Based-Protein-Bars-5ct/5193278277" target="_blank" rel="noopener noreferrer" class="flavor-link">White Chocolate Macadamia Nut</a>
+                    <a href="https://www.walmart.com/ip/CLIF-BAR-Chocolate-Brownie-Flavor-Energy-Bars-Plant-Based-Protein-Bars-5ct/5193278282" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Brownie</a><a href="https://www.walmart.com/ip/CLIF-BAR-Chocolate-Chip-Made-with-Organic-Oats-Energy-Bars-Non-GMO-Plant-Based-Protein-Bars-5-Pack/5195244229" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Chip</a><a href="https://www.walmart.com/ip/CLIF-BAR-Crunchy-Peanut-Butter-Made-with-Organic-Oats-Energy-Bars-Non-GMO-Plant-Based-Protein-Bars-5-Pack/5193278279" target="_blank" rel="noopener noreferrer" class="flavor-link">Crunchy Peanut Butter</a><a href="https://www.walmart.com/ip/CLIF-BAR-White-Chocolate-Macadamia-Nut-Flavor-Energy-Bars-Plant-Based-Protein-Bars-5ct/5193278277" target="_blank" rel="noopener noreferrer" class="flavor-link">White Chocolate Macadamia Nut</a>
                 </div>
             </div>
             
@@ -2183,7 +2228,7 @@
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/3-pack-CLIF-BAR-Blueberry-Almond-Crisp-Energy-Bars-Plant-Based-Protein-Bars-5ct_59cefee1-b40c-4b49-87ad-eb73bf4ac008.bc76cf1fb7a959533a6e8193db2bdbc2.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Clif Bar" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>15</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
+            <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -2224,7 +2269,7 @@
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/9-pack-CLIF-BAR-White-Chocolate-Macadamia-Nut-Flavor-Energy-Bars-Plant-Based-Protein-Bars-5ct_a5e86fca-8038-4790-b5c0-0df4bfdf9c05.9c2756d38ab1053818dd649b2b914816.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Clif Bar" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>45</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
+            <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -2265,7 +2310,7 @@
         <div class="card-image-wrap">
             <img src="https://i5.walmartimages.com/seo/4-pack-Core-Power-Protein-Shake-with-26g-Protein-by-fairlife-Milk-Vanilla-14-fl-oz_79f5a0d2-1754-4cb7-8678-959b090ef4de.51fdf61ac90deefcd0b040c1d0ef4d1b.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Core Power Protein Shake" class="card-image"/>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-protein'>💪 Strong Deal</div>
+            <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
             <div class="card-meta-row">
@@ -2363,12 +2408,12 @@
             
             <div class="flavor-info">
                 <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.kroger.com/p/kind-caramel-almond-sea-salt-energy-bars/0060265227029" target="_blank" rel="noopener noreferrer" class="flavor-link">Caramel Almond &amp; Sea Salt</a>, <a href="https://www.kroger.com/p/kind-cranberry-almond-fruit-and-nut-bars/0060265227150" target="_blank" rel="noopener noreferrer" class="flavor-link">Cranberry Almond</a></span>
-                <button class="flavor-expand-link" data-card-id="1dadcda0" aria-expanded="false" aria-controls="flavors-1dadcda0">
-                    + 4 more flavors
+                <span class="flavor-sample"><a href="https://www.kroger.com/p/kind-caramel-almond-sea-salt-energy-bars/0060265227029" target="_blank" rel="noopener noreferrer" class="flavor-link">Caramel Almond &amp; Sea Salt</a></span>
+                <button type="button" class="flavor-expand-link" data-card-id="1dadcda0" data-extra-count="5" aria-expanded="false" aria-controls="flavors-1dadcda0">
+                    5 more
                 </button>
                 <div class="flavor-list-expanded" id="flavors-1dadcda0" style="display: none;">
-                    <a href="https://www.kroger.com/p/kind-dark-chocolate-mocha-almond-nut-bars/0060265227154" target="_blank" rel="noopener noreferrer" class="flavor-link">Dark Choclate Mocha</a><a href="https://www.kroger.com/p/kind-dark-chocolate-cherry-cashew-fruit-and-nut-bars/0060265227142" target="_blank" rel="noopener noreferrer" class="flavor-link">Dark Chocolate Cherry Cashew</a><a href="https://www.kroger.com/p/kind-dark-chocolate-nuts-sea-salt-nut-bars/0060265227028" target="_blank" rel="noopener noreferrer" class="flavor-link">Dark Chocolate Nuts &amp; Sea Salt</a><a href="https://www.kroger.com/p/kind-peanut-butter-dark-chocolate-bars/0060265227134" target="_blank" rel="noopener noreferrer" class="flavor-link">Peanut Butter Dark Chocolate</a>
+                    <a href="https://www.kroger.com/p/kind-cranberry-almond-fruit-and-nut-bars/0060265227150" target="_blank" rel="noopener noreferrer" class="flavor-link">Cranberry Almond</a><a href="https://www.kroger.com/p/kind-dark-chocolate-mocha-almond-nut-bars/0060265227154" target="_blank" rel="noopener noreferrer" class="flavor-link">Dark Choclate Mocha</a><a href="https://www.kroger.com/p/kind-dark-chocolate-cherry-cashew-fruit-and-nut-bars/0060265227142" target="_blank" rel="noopener noreferrer" class="flavor-link">Dark Chocolate Cherry Cashew</a><a href="https://www.kroger.com/p/kind-dark-chocolate-nuts-sea-salt-nut-bars/0060265227028" target="_blank" rel="noopener noreferrer" class="flavor-link">Dark Chocolate Nuts &amp; Sea Salt</a><a href="https://www.kroger.com/p/kind-peanut-butter-dark-chocolate-bars/0060265227134" target="_blank" rel="noopener noreferrer" class="flavor-link">Peanut Butter Dark Chocolate</a>
                 </div>
             </div>
             
@@ -2410,12 +2455,12 @@
             
             <div class="flavor-info">
                 <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.kroger.com/p/barebells-birthday-cake-protein-bar/0085005410879" target="_blank" rel="noopener noreferrer" class="flavor-link">Birthday Cake</a>, <a href="https://www.kroger.com/p/barebells-caramel-cashew-protein-bars/0085000042961" target="_blank" rel="noopener noreferrer" class="flavor-link">Caramel Cashew</a></span>
-                <button class="flavor-expand-link" data-card-id="d025a044" aria-expanded="false" aria-controls="flavors-d025a044">
-                    + 5 more flavors
+                <span class="flavor-sample"><a href="https://www.kroger.com/p/barebells-birthday-cake-protein-bar/0085005410879" target="_blank" rel="noopener noreferrer" class="flavor-link">Birthday Cake</a></span>
+                <button type="button" class="flavor-expand-link" data-card-id="d025a044" data-extra-count="6" aria-expanded="false" aria-controls="flavors-d025a044">
+                    6 more
                 </button>
                 <div class="flavor-list-expanded" id="flavors-d025a044" style="display: none;">
-                    <a href="https://www.kroger.com/p/barebells-chocolate-dough-protein-bars/0085000042962" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Dough</a><a href="https://www.kroger.com/p/barebells-cookies-caramel-protein-bars/0085005410880" target="_blank" rel="noopener noreferrer" class="flavor-link">Cookes &amp; Caramel</a><a href="https://www.kroger.com/p/barebells-cookies-cream-protein-bars/0085000042959" target="_blank" rel="noopener noreferrer" class="flavor-link">Cookies &amp; Cream</a><a href="https://www.kroger.com/p/barebells-creamy-crisp-protein-bars/0085005410848" target="_blank" rel="noopener noreferrer" class="flavor-link">Creamy Crisp</a><a href="https://www.kroger.com/p/barebells-salty-peanut-protein-bar/0085000042960" target="_blank" rel="noopener noreferrer" class="flavor-link">Salty Peanut</a>
+                    <a href="https://www.kroger.com/p/barebells-caramel-cashew-protein-bars/0085000042961" target="_blank" rel="noopener noreferrer" class="flavor-link">Caramel Cashew</a><a href="https://www.kroger.com/p/barebells-chocolate-dough-protein-bars/0085000042962" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Dough</a><a href="https://www.kroger.com/p/barebells-cookies-caramel-protein-bars/0085005410880" target="_blank" rel="noopener noreferrer" class="flavor-link">Cookes &amp; Caramel</a><a href="https://www.kroger.com/p/barebells-cookies-cream-protein-bars/0085000042959" target="_blank" rel="noopener noreferrer" class="flavor-link">Cookies &amp; Cream</a><a href="https://www.kroger.com/p/barebells-creamy-crisp-protein-bars/0085005410848" target="_blank" rel="noopener noreferrer" class="flavor-link">Creamy Crisp</a><a href="https://www.kroger.com/p/barebells-salty-peanut-protein-bar/0085000042960" target="_blank" rel="noopener noreferrer" class="flavor-link">Salty Peanut</a>
                 </div>
             </div>
             
@@ -2457,7 +2502,13 @@
             
             <div class="flavor-info">
                 <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.kroger.com/p/celsius-sparkling-energy-drink-variety-pack-cans/0088939200093" target="_blank" rel="noopener noreferrer" class="flavor-link">Original Variety</a>, <a href="https://www.kroger.com/p/celsius-vibe-energy-drink-variety-pack-cans/0088939200095" target="_blank" rel="noopener noreferrer" class="flavor-link">Vibe Variety</a></span>
+                <span class="flavor-sample"><a href="https://www.kroger.com/p/celsius-sparkling-energy-drink-variety-pack-cans/0088939200093" target="_blank" rel="noopener noreferrer" class="flavor-link">Original Variety</a></span>
+                <button type="button" class="flavor-expand-link" data-card-id="f90ba89c" data-extra-count="1" aria-expanded="false" aria-controls="flavors-f90ba89c">
+                    1 more
+                </button>
+                <div class="flavor-list-expanded" id="flavors-f90ba89c" style="display: none;">
+                    <a href="https://www.kroger.com/p/celsius-vibe-energy-drink-variety-pack-cans/0088939200095" target="_blank" rel="noopener noreferrer" class="flavor-link">Vibe Variety</a>
+                </div>
             </div>
             
             <div class="card-footer">
@@ -2498,12 +2549,12 @@
             
             <div class="flavor-info">
                 <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.target.com/p/pure-protein-bar-chocolate-deluxe-12ct/-/A-14217302" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Deluxe</a>, <a href="https://www.target.com/p/pure-protein-bar-chocolate-peanut-butter-12ct/-/A-14217303" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Peanut Butter</a></span>
-                <button class="flavor-expand-link" data-card-id="a25327e5" aria-expanded="false" aria-controls="flavors-a25327e5">
-                    + 1 more flavor
+                <span class="flavor-sample"><a href="https://www.target.com/p/pure-protein-bar-chocolate-deluxe-12ct/-/A-14217302" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Deluxe</a></span>
+                <button type="button" class="flavor-expand-link" data-card-id="a25327e5" data-extra-count="2" aria-expanded="false" aria-controls="flavors-a25327e5">
+                    2 more
                 </button>
                 <div class="flavor-list-expanded" id="flavors-a25327e5" style="display: none;">
-                    <a href="https://www.target.com/p/pure-protein-20g-protein-bar-chocolate-peanut-caramel-12ct/-/A-15138759" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Peanut Caramel</a>
+                    <a href="https://www.target.com/p/pure-protein-bar-chocolate-peanut-butter-12ct/-/A-14217303" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Peanut Butter</a><a href="https://www.target.com/p/pure-protein-20g-protein-bar-chocolate-peanut-caramel-12ct/-/A-15138759" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Peanut Caramel</a>
                 </div>
             </div>
             
@@ -2545,12 +2596,12 @@
             
             <div class="flavor-info">
                 <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample"><a href="https://www.target.com/p/barebells-nutrition-bars-caramel-cashew/-/A-83942844" target="_blank" rel="noopener noreferrer" class="flavor-link">Caramel Cashew</a>, <a href="https://www.target.com/p/barebells-nutrition-bars-salty-peanut-7-76oz-4pk/-/A-83942845" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Dough</a></span>
-                <button class="flavor-expand-link" data-card-id="691cc75a" aria-expanded="false" aria-controls="flavors-691cc75a">
-                    + 3 more flavors
+                <span class="flavor-sample"><a href="https://www.target.com/p/barebells-nutrition-bars-caramel-cashew/-/A-83942844" target="_blank" rel="noopener noreferrer" class="flavor-link">Caramel Cashew</a></span>
+                <button type="button" class="flavor-expand-link" data-card-id="691cc75a" data-extra-count="4" aria-expanded="false" aria-controls="flavors-691cc75a">
+                    4 more
                 </button>
                 <div class="flavor-list-expanded" id="flavors-691cc75a" style="display: none;">
-                    <a href="https://www.target.com/p/barebells-nutrition-bars-cookies-cream/-/A-83942841" target="_blank" rel="noopener noreferrer" class="flavor-link">Cookies &amp; Cream</a><a href="https://www.target.com/p/barebells-nutrition-bars-salty-peanut-7-76oz-4pk/-/A-83942843" target="_blank" rel="noopener noreferrer" class="flavor-link">Salty Peanut</a><a href="https://www.target.com/p/barebells-nutrition-bars-salty-peanut-7-76oz-4pk/-/A-83942842" target="_blank" rel="noopener noreferrer" class="flavor-link">White Chocolate Almond</a>
+                    <a href="https://www.target.com/p/barebells-nutrition-bars-salty-peanut-7-76oz-4pk/-/A-83942845" target="_blank" rel="noopener noreferrer" class="flavor-link">Chocolate Dough</a><a href="https://www.target.com/p/barebells-nutrition-bars-cookies-cream/-/A-83942841" target="_blank" rel="noopener noreferrer" class="flavor-link">Cookies &amp; Cream</a><a href="https://www.target.com/p/barebells-nutrition-bars-salty-peanut-7-76oz-4pk/-/A-83942843" target="_blank" rel="noopener noreferrer" class="flavor-link">Salty Peanut</a><a href="https://www.target.com/p/barebells-nutrition-bars-salty-peanut-7-76oz-4pk/-/A-83942842" target="_blank" rel="noopener noreferrer" class="flavor-link">White Chocolate Almond</a>
                 </div>
             </div>
             
@@ -3189,9 +3240,9 @@ document.addEventListener("DOMContentLoaded", function () {
         // Collapse
         expandedList.style.display = "none";
         this.setAttribute("aria-expanded", "false");
-        const extraCount = this.textContent.match(/\d+/);
-        if (extraCount) {
-          this.textContent = "+ " + extraCount[0] + " more flavor" + (parseInt(extraCount[0]) > 1 ? "s" : "");
+        const n = this.getAttribute("data-extra-count");
+        if (n) {
+          this.textContent = n + " more";
         }
       } else {
         // Expand

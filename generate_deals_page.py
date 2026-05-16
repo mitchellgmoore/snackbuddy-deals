@@ -271,14 +271,14 @@ def group_deals(rows: list[dict]) -> list[dict]:
         if flavors:
             # Sort flavors for consistent display
             flavors.sort(key=lambda x: x["name"].lower())
-            sample = flavors[:2]
+            sample = flavors[:1]
             extra = max(0, len(flavors) - len(sample))
         else:
             sample = []
             extra = 0
         g["flavor_sample"] = sample
         g["flavor_extra_count"] = extra
-        g["flavor_extra_data"] = flavors[2:] if len(flavors) > 2 else []
+        g["flavor_extra_data"] = flavors[1:] if len(flavors) > 1 else []
 
     return list(groups.values())
 
@@ -308,9 +308,9 @@ def get_badge(deal):
     """
     Decide badge label & class from percent_off.
     Tier system:
-    - ≥25% → 💎 Diamond Deal (badge-elite)
-    - 20–24.99% → 🔥 Fire Deal (badge-strong)
-    - 10–19.99% → 💪 Strong Deal (badge-protein)
+    - ≥25% → 💎 Diamond (badge-elite)
+    - 20–24.99% → 🔥 Fire (badge-strong)
+    - 10–19.99% → 💪 Strong (badge-protein)
     - 0–9.99% → 🏷️ On Sale (badge-everyday)
     """
     try:
@@ -318,15 +318,15 @@ def get_badge(deal):
     except Exception:
         percent_off = 0.0
 
-    # Check for Diamond Deal tier (≥25%)
+    # Check for Diamond tier (≥25%)
     if percent_off >= 25.0:
-        return "💎 Diamond Deal", "badge badge-elite"
-    # Check for Fire Deal tier (20–24.99%)
+        return "💎 Diamond", "badge badge-elite"
+    # Check for Fire tier (20–24.99%)
     if percent_off >= 20.0:
-        return "🔥 Fire Deal", "badge badge-strong"
-    # Check for Strong Deal tier (10–19.99%)
+        return "🔥 Fire", "badge badge-strong"
+    # Check for Strong tier (10–19.99%)
     if percent_off >= 10.0:
-        return "💪 Strong Deal", "badge badge-protein"
+        return "💪 Strong", "badge badge-protein"
     # Check for On Sale tier (0–9.99%)
     if percent_off >= 0.0:
         return "🏷️ On Sale", "badge badge-everyday"
@@ -344,8 +344,7 @@ def format_streak(deal):
             return ""
     except Exception:
         return ""
-    day_word = "day" if streak_int == 1 else "days"
-    return f"Day {streak_int} of this deal"
+    return f"Day {streak_int}"
 
 
 def build_card_html(deal):
@@ -464,8 +463,8 @@ def build_card_html(deal):
             <div class="flavor-info">
                 <span class="flavor-label">Available in: </span>
                 <span class="flavor-sample">{flavor_display}</span>
-                <button class="flavor-expand-link" data-card-id="{card_id}" aria-expanded="false" aria-controls="flavors-{card_id}">
-                    + {flavor_extra_count} more flavor{'s' if flavor_extra_count > 1 else ''}
+                <button type="button" class="flavor-expand-link" data-card-id="{card_id}" data-extra-count="{flavor_extra_count}" aria-expanded="false" aria-controls="flavors-{card_id}">
+                    {flavor_extra_count} more
                 </button>
                 <div class="flavor-list-expanded" id="flavors-{card_id}" style="display: none;">
                     {''.join([f'<a href="{html.escape(f.get("url", "#"))}" target="_blank" rel="noopener noreferrer" class="flavor-link">{html.escape(f.get("name", ""))}</a>' for f in flavor_extra_data])}
@@ -737,7 +736,8 @@ def build_page_html(deals):
 .sb-filter-edge-tab{{
   position: fixed;
   left: 0;
-  top: 50%;
+  /* Lower on screen than dead-center so it stays out of the hero/tiers */
+  top: 80%;
   transform: translateY(-50%);
   z-index: 38;
   display: flex;
@@ -816,12 +816,6 @@ def build_page_html(deals):
   max-width: 1100px;
   margin: 0 auto;
   padding: 0 16px;
-}}
-
-@media (max-width: 991px) {{
-  .sb-deals-shell {{
-    padding-left: 52px;
-  }}
 }}
 
 .sb-deals-main{{
@@ -1360,6 +1354,14 @@ def build_page_html(deals):
                 grid-template-columns: repeat(2, minmax(0, 1fr));
                 gap: 10px;
             }}
+            .card-pricing {{
+                flex-wrap: wrap;
+                row-gap: 2px;
+            }}
+            .percent-off {{
+                flex: 1 1 100%;
+                font-size: 15px;
+            }}
         }}
 
         .card {{
@@ -1549,7 +1551,7 @@ def build_page_html(deals):
 
         .percent-off {{
             color: var(--green);
-            font-size: 22px;
+            font-size: 18px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.03em;
@@ -2487,9 +2489,9 @@ document.addEventListener("DOMContentLoaded", function () {{
         // Collapse
         expandedList.style.display = "none";
         this.setAttribute("aria-expanded", "false");
-        const extraCount = this.textContent.match(/\\d+/);
-        if (extraCount) {{
-          this.textContent = "+ " + extraCount[0] + " more flavor" + (parseInt(extraCount[0]) > 1 ? "s" : "");
+        const n = this.getAttribute("data-extra-count");
+        if (n) {{
+          this.textContent = n + " more";
         }}
       }} else {{
         // Expand
