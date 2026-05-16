@@ -736,9 +736,10 @@ def build_page_html(deals):
 .sb-filter-edge-tab{{
   position: fixed;
   left: 0;
-  /* Lower on screen than dead-center so it stays out of the hero/tiers */
-  top: 80%;
-  transform: translateY(-50%);
+  top: auto;
+  /* Mirror of prior top: 80% — sit in lower fifth, anchored from bottom */
+  bottom: 20%;
+  transform: translateY(50%);
   z-index: 38;
   display: flex;
   flex-direction: column;
@@ -761,7 +762,7 @@ def build_page_html(deals):
 }}
 
 .sb-filter-edge-tab:active{{
-  transform: translateY(-50%) translateX(1px);
+  transform: translateY(50%) translateX(1px);
 }}
 
 .sb-filter-edge-icons{{
@@ -1351,16 +1352,8 @@ def build_page_html(deals):
 
         @media (max-width: 640px) {{
             .card-grid {{
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-                gap: 10px;
-            }}
-            .card-pricing {{
-                flex-wrap: wrap;
-                row-gap: 2px;
-            }}
-            .percent-off {{
-                flex: 1 1 100%;
-                font-size: 15px;
+                grid-template-columns: 1fr;
+                gap: 12px;
             }}
         }}
 
