@@ -209,7 +209,7 @@ def group_deals(rows: list[dict]) -> list[dict]:
     Flavors that share this key are stacked into one group. Each flavor stores
     its name and retailer_url for clickable links.
 
-    Returns grouped deals with flavor_data containing {name, url} pairs.
+    Returns grouped deals with flavor_data containing {name, url, image_url} per flavor.
     """
     groups: dict[tuple, dict] = {}
 
@@ -246,7 +246,7 @@ def group_deals(rows: list[dict]) -> list[dict]:
         if key not in groups:
             # Start a new group using a shallow copy of the row
             g = dict(row)
-            g["flavor_data"] = []  # List of {name, url} dicts
+            g["flavor_data"] = []  # List of {name, url, image_url} dicts
             g["group_size"] = 0
             groups[key] = g
 
@@ -261,24 +261,19 @@ def group_deals(rows: list[dict]) -> list[dict]:
         if not existing_flavor and flavor_name and retailer_url:
             g["flavor_data"].append({
                 "name": flavor_name,
-                "url": retailer_url
+                "url": retailer_url,
+                "image_url": _norm_str(row.get("image_url") or ""),
             })
             g["group_size"] = len(g["flavor_data"])
 
-    # Finalize flavor_sample / flavor_extra_count for display
+    # Flavor images are shown in per-card carousel; no separate text expand list
     for g in groups.values():
         flavors = g.get("flavor_data") or []
         if flavors:
-            # Sort flavors for consistent display
             flavors.sort(key=lambda x: x["name"].lower())
-            sample = flavors[:1]
-            extra = max(0, len(flavors) - len(sample))
-        else:
-            sample = []
-            extra = 0
-        g["flavor_sample"] = sample
-        g["flavor_extra_count"] = extra
-        g["flavor_extra_data"] = flavors[1:] if len(flavors) > 1 else []
+        g["flavor_sample"] = []
+        g["flavor_extra_count"] = 0
+        g["flavor_extra_data"] = []
 
     return list(groups.values())
 
@@ -347,6 +342,77 @@ def format_streak(deal):
     return f"Day {streak_int}"
 
 
+def get_card_image_items(deal) -> list[dict]:
+    """All flavor images for the card carousel (falls back to deal image)."""
+    flavor_data = deal.get("flavor_data") or []
+    fallback_img = _norm_str(deal.get("image_url") or "")
+    fallback_url = _norm_str(deal.get("retailer_url") or deal.get("canonical_url") or "#")
+    items = []
+
+    for f in flavor_data:
+        img = _norm_str(f.get("image_url") or "") or fallback_img
+        if not img:
+            continue
+        items.append({
+            "name": _norm_str(f.get("name") or ""),
+            "url": _norm_str(f.get("url") or "") or fallback_url,
+            "image_url": img,
+        })
+
+    if not items and fallback_img:
+        items.append({
+            "name": "",
+            "url": fallback_url,
+            "image_url": fallback_img,
+        })
+
+    return items
+
+
+def build_card_image_carousel_html(deal, default_alt: str) -> str:
+    items = get_card_image_items(deal)
+    if not items:
+        return '<div class="card-carousel card-carousel--empty"></div>'
+
+    slides = []
+    for i, item in enumerate(items):
+        img_url = html.escape(item["image_url"])
+        alt = html.escape(item["name"] or default_alt)
+        url = html.escape(item["url"] or "#")
+        flavor_name = html.escape(item["name"])
+        slides.append(
+            f'<div class="card-carousel-slide" data-index="{i}" data-flavor-name="{flavor_name}">'
+            f'<a href="{url}" target="_blank" rel="noopener noreferrer" class="card-carousel-link">'
+            f'<img src="{img_url}" alt="{alt}" class="card-image" loading="lazy"/>'
+            f"</a></div>"
+        )
+
+    multi = len(items) > 1
+    arrows_html = ""
+    if multi:
+        arrows_html = """
+            <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
+            <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
+        """
+
+    first_caption = html.escape(items[0]["name"]) if items[0].get("name") else ""
+    caption_html = ""
+    if multi and first_caption:
+        caption_html = f'<div class="card-carousel-caption">{first_caption}</div>'
+
+    single_class = "" if multi else " card-carousel--single"
+
+    return f"""
+        <div class="card-carousel{single_class}" data-slide-count="{len(items)}">
+            <div class="card-carousel-stage">
+                {"".join(slides)}
+            </div>
+            {arrows_html}
+            {caption_html}
+        </div>
+    """
+
+
 def build_card_html(deal):
     # Use product_name directly from the deal (from CSV, not combined)
     # Remove pack size indicators since we have a pack pill overlay
@@ -358,15 +424,13 @@ def build_card_html(deal):
     old_price = deal.get("old_price")
     new_price = deal.get("new_price")
     percent_off = float(deal.get("percent_off", 0.0))
-    image_url = html.escape(deal.get("image_url", ""))
     retailer_url = html.escape(deal.get("retailer_url", "#"))
+    image_carousel_html = build_card_image_carousel_html(deal, product_name_cleaned)
     
     # Get the number of flavors/deals in this group (default to 1 if no flavor_data)
     flavor_data = deal.get("flavor_data", [])
     deal_count = len(flavor_data) if flavor_data else 1
     
-    # Get flavor data if this is a grouped deal
-    flavor_sample = deal.get("flavor_sample", [])
     flavor_extra_count = deal.get("flavor_extra_count", 0)
     flavor_extra_data = deal.get("flavor_extra_data", [])
 
@@ -441,42 +505,19 @@ def build_card_html(deal):
     if badge_label and badge_class:
         badge_html = f"<div class='{badge_class}'>{badge_label}</div>"
 
-    # Build flavor display HTML
+    # Text list only for flavors beyond the 4 shown as images
     flavor_html = ""
-    if flavor_sample or flavor_extra_count > 0:
-        # Build flavor sample display with links
-        flavor_links = []
-        for f in flavor_sample:
-            flavor_name = f.get("name", "")
-            flavor_url = f.get("url", "#")
-            if flavor_name:
-                flavor_links.append(f'<a href="{html.escape(flavor_url)}" target="_blank" rel="noopener noreferrer" class="flavor-link">{html.escape(flavor_name)}</a>')
-        flavor_display = ", ".join(flavor_links)
-        
-        # Generate unique ID for this card's flavor expand section
+    if flavor_extra_count > 0:
         import hashlib
         card_id = hashlib.md5(f"{retailer}{name}{new_price_val}".encode()).hexdigest()[:8]
-        
-        if flavor_extra_count > 0:
-            # Has extra flavors - make expandable
-            flavor_html = f"""
+        flavor_html = f"""
             <div class="flavor-info">
-                <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample">{flavor_display}</span>
                 <button type="button" class="flavor-expand-link" data-card-id="{card_id}" data-extra-count="{flavor_extra_count}" aria-expanded="false" aria-controls="flavors-{card_id}">
-                    {flavor_extra_count} more
+                    {flavor_extra_count} more flavors
                 </button>
                 <div class="flavor-list-expanded" id="flavors-{card_id}" style="display: none;">
                     {''.join([f'<a href="{html.escape(f.get("url", "#"))}" target="_blank" rel="noopener noreferrer" class="flavor-link">{html.escape(f.get("name", ""))}</a>' for f in flavor_extra_data])}
                 </div>
-            </div>
-            """
-        else:
-            # Just the sample flavors, no expansion needed
-            flavor_html = f"""
-            <div class="flavor-info">
-                <span class="flavor-label">Available in: </span>
-                <span class="flavor-sample">{flavor_display}</span>
             </div>
             """
 
@@ -490,7 +531,7 @@ def build_card_html(deal):
          data-deal-count="{deal_count}"
          data-tier="{tier_name}">
         <div class="card-image-wrap">
-            <img src="{image_url}" alt="{name}" class="card-image"/>
+            {image_carousel_html}
             {pack_pill_html}
             {badge_html}
         </div>
@@ -1389,17 +1430,123 @@ def build_page_html(deals):
 
         .card-image-wrap {{
             position: relative;
-            padding: 8px;
+            padding: 8px 4px;
+            min-height: 130px;
+        }}
+
+        .card-carousel {{
+            position: relative;
+            width: 100%;
+            padding: 0 28px;
+        }}
+
+        .card-carousel--single {{
+            padding: 0;
+        }}
+
+        .card-carousel-stage {{
+            position: relative;
+            height: 118px;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 120px;
+            overflow: hidden;
+        }}
+
+        .card-carousel-slide {{
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 62%;
+            max-width: 200px;
+            transition: transform 0.28s ease, opacity 0.28s ease;
+            transform: translate(-50%, -50%) scale(0.78);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 1;
+        }}
+
+        .card-carousel-slide.is-active {{
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 3;
+        }}
+
+        .card-carousel-slide.is-prev {{
+            transform: translate(calc(-50% - 58%), -50%) scale(0.82);
+            opacity: 0.42;
+            z-index: 2;
+        }}
+
+        .card-carousel-slide.is-next {{
+            transform: translate(calc(-50% + 58%), -50%) scale(0.82);
+            opacity: 0.42;
+            z-index: 2;
+        }}
+
+        .card-carousel-slide.is-hidden {{
+            opacity: 0;
+            z-index: 0;
+        }}
+
+        .card-carousel-link {{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            text-decoration: none;
         }}
 
         .card-image {{
             max-width: 100%;
             max-height: 110px;
             object-fit: contain;
+            display: block;
+        }}
+
+        .card-carousel-prev,
+        .card-carousel-next {{
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 5;
+            width: 26px;
+            height: 26px;
+            border: 1px solid var(--border-subtle);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--text-main);
+            font-size: 18px;
+            line-height: 1;
+            padding: 0;
+            cursor: pointer;
+            box-shadow: 0 1px 4px rgba(15, 23, 42, 0.12);
+        }}
+
+        .card-carousel-prev {{
+            left: 0;
+        }}
+
+        .card-carousel-next {{
+            right: 0;
+        }}
+
+        .card-carousel-prev:hover,
+        .card-carousel-next:hover {{
+            filter: brightness(0.98);
+        }}
+
+        .card-carousel-caption {{
+            margin-top: 4px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            line-height: 1.25;
+            padding: 0 28px;
+            min-height: 14px;
         }}
 
         .pack-pill {{
@@ -2467,6 +2614,69 @@ document.addEventListener("DOMContentLoaded", function () {{
   applyFiltersAndSort();
 
   /* ============================
+     CARD IMAGE CAROUSEL (per flavor)
+     ============================ */
+  function initCardCarousels(root) {{
+    const scope = root || document;
+    scope.querySelectorAll(".card-carousel").forEach(function(carousel) {{
+      if (carousel.dataset.carouselReady === "1") return;
+      const slides = Array.from(carousel.querySelectorAll(".card-carousel-slide"));
+      if (!slides.length) return;
+
+      carousel.dataset.carouselReady = "1";
+
+      if (slides.length === 1) {{
+        slides[0].classList.add("is-active");
+        return;
+      }}
+
+      let index = 0;
+      const prevBtn = carousel.querySelector(".card-carousel-prev");
+      const nextBtn = carousel.querySelector(".card-carousel-next");
+      const caption = carousel.querySelector(".card-carousel-caption");
+
+      function render() {{
+        const n = slides.length;
+        slides.forEach(function(slide, i) {{
+          slide.classList.remove("is-active", "is-prev", "is-next", "is-hidden");
+          if (i === index) {{
+            slide.classList.add("is-active");
+          }} else if (i === (index - 1 + n) % n) {{
+            slide.classList.add("is-prev");
+          }} else if (i === (index + 1) % n) {{
+            slide.classList.add("is-next");
+          }} else {{
+            slide.classList.add("is-hidden");
+          }}
+        }});
+        if (caption) {{
+          const name = slides[index].getAttribute("data-flavor-name") || "";
+          caption.textContent = name;
+          caption.hidden = !name;
+        }}
+      }}
+
+      prevBtn?.addEventListener("click", function(e) {{
+        e.preventDefault();
+        e.stopPropagation();
+        index = (index - 1 + slides.length) % slides.length;
+        render();
+      }});
+
+      nextBtn?.addEventListener("click", function(e) {{
+        e.preventDefault();
+        e.stopPropagation();
+        index = (index + 1) % slides.length;
+        render();
+      }});
+
+      render();
+    }});
+  }}
+
+  initCardCarousels(document);
+
+  /* ============================
      FLAVOR EXPAND/COLLAPSE
      ============================ */
   const flavorExpandLinks = document.querySelectorAll(".flavor-expand-link");
@@ -2484,7 +2694,7 @@ document.addEventListener("DOMContentLoaded", function () {{
         this.setAttribute("aria-expanded", "false");
         const n = this.getAttribute("data-extra-count");
         if (n) {{
-          this.textContent = n + " more";
+          this.textContent = n + " more flavors";
         }}
       }} else {{
         // Expand
