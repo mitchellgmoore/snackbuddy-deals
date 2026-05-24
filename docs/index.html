@@ -185,10 +185,10 @@
 .sb-filter-edge-tab{
   position: fixed;
   left: 0;
-  top: auto;
-  /* Mirror of prior top: 80% — sit in lower fifth, anchored from bottom */
-  bottom: 20%;
-  transform: translateY(50%);
+  /* Upper third on mobile — above halfway, clear of bottom thumb zone */
+  top: 32%;
+  bottom: auto;
+  transform: translateY(-50%);
   z-index: 38;
   display: flex;
   flex-direction: column;
@@ -211,7 +211,7 @@
 }
 
 .sb-filter-edge-tab:active{
-  transform: translateY(50%) translateX(1px);
+  transform: translateY(-50%) translateX(1px);
 }
 
 .sb-filter-edge-icons{
@@ -326,6 +326,10 @@
   .sb-filter-groups {
     max-height: calc(100vh - 220px);
     overflow-y: auto;
+  }
+  .sb-hero {
+    position: relative;
+    z-index: 36;
   }
 }
 
@@ -846,6 +850,7 @@
             position: relative;
             width: 100%;
             padding: 0 28px;
+            z-index: 1;
         }
 
         .card-carousel--single {
@@ -878,19 +883,19 @@
             transform: translate(-50%, -50%) scale(1);
             opacity: 1;
             pointer-events: auto;
-            z-index: 3;
+            z-index: 2;
         }
 
         .card-carousel-slide.is-prev {
             transform: translate(calc(-50% - 58%), -50%) scale(0.82);
             opacity: 0.42;
-            z-index: 2;
+            z-index: 1;
         }
 
         .card-carousel-slide.is-next {
             transform: translate(calc(-50% + 58%), -50%) scale(0.82);
             opacity: 0.42;
-            z-index: 2;
+            z-index: 1;
         }
 
         .card-carousel-slide.is-hidden {
@@ -957,10 +962,24 @@
             min-height: 14px;
         }
 
+        .card-category-tag {
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            font-size: 11px;
+            color: var(--text-muted);
+            z-index: 12;
+            max-width: 48%;
+            text-align: right;
+            line-height: 1.25;
+            pointer-events: none;
+        }
+
         .pack-pill {
             position: absolute;
             bottom: 6px;
             right: 8px;
+            z-index: 12;
             background-color: #111827;
             color: #ffffff;
             border-radius: 999px;
@@ -986,6 +1005,7 @@
             position: absolute;
             top: 6px;
             left: 8px;
+            z-index: 12;
             border-radius: var(--radius-pill);
             padding: 2px 8px;
             font-size: 11px;
@@ -1364,7 +1384,7 @@
                 <div class="sb-hero-pattern"></div>
                 <div class="sb-hero-content">
                     <div class="sb-hero-kicker">
-                        SnackBuddy • Last updated: May 23, 2026 at 08:41 PM (local time)
+                        SnackBuddy • Last updated: May 24, 2026 at 02:53 PM (local time)
                     </div>
                     <h1 class="sb-hero-title">Don&apos;t overpay for the snacks you already buy.</h1>
                     <p class="sb-hero-subtitle">
@@ -1430,7 +1450,7 @@
   </div>
 
   <div id="deal-count" class="count-pill">
-    👀 Showing 119 deals
+    👀 Showing 117 deals
   </div>
 </section>
 
@@ -1468,17 +1488,14 @@
                 <div class="card-carousel-slide" data-index="0" data-flavor-name="Taco"><a href="https://www.walmart.com/ip/Chomps-Grass-Fed-Finished-Taco-Beef-Stick-1-15oz/5652118871?fulfillmentIntent=In-store&amp;filters=%5B%7B%22intent%22%3A%22fulfillmentIntent%22%2C%22values%22%3A%5B%22In-store%22%5D%7D%5D&amp;classType=VARIANT&amp;from=/search" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/Chomps-Grass-Fed-Finished-Taco-Beef-Stick-1-15oz_939d10e7-08ae-49e9-b04f-cbdc11bbdb24.eaebda4075b1a1eba1fd6c9535f01163.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Taco" class="card-image" loading="lazy"/></a></div>
             </div>
             
-            
+            <div class="card-carousel-caption">Taco</div>
         </div>
     
+            <div class="card-category-tag">Meat Snack</div>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
             <div class='badge badge-elite'>💎 Diamond</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-walmart">Walmart</div>
-                <div class="meta-category">Meat Snack</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$2.56</span>
                 <span class="new-price">$1.87</span>
@@ -1518,14 +1535,11 @@
             <div class="card-carousel-caption">Chocolate Mint</div>
         </div>
     
+            <div class="card-category-tag">Bars</div>
             <div class='pack-pill'><span class='pack-count'>5</span> <span class='pack-unit'>bars</span></div>
             <div class='badge badge-strong'>🔥 Fire</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-kroger">Kroger</div>
-                <div class="meta-category">Bars</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$9.99</span>
                 <span class="new-price">$7.99</span>
@@ -1565,14 +1579,11 @@
             <div class="card-carousel-caption">Arctic Vibe (Frozen Berry)</div>
         </div>
     
+            <div class="card-category-tag">Energy Drink</div>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
             <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-kroger">Kroger</div>
-                <div class="meta-category">Energy Drink</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$2.49</span>
                 <span class="new-price">$2.00</span>
@@ -1606,17 +1617,14 @@
                 <div class="card-carousel-slide" data-index="0" data-flavor-name="Birthday Cake"><a href="https://www.target.com/p/quest-nutrition-birthday-cake-bar/-/A-92987990" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_c393d251-0fc8-42e6-b88d-527213dac6fe?wid=600&amp;hei=600&amp;qlt=80" alt="Birthday Cake" class="card-image" loading="lazy"/></a></div>
             </div>
             
-            
+            <div class="card-carousel-caption">Birthday Cake</div>
         </div>
     
+            <div class="card-category-tag">Bars</div>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
             <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-target">Target</div>
-                <div class="meta-category">Bars</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$25.99</span>
                 <span class="new-price">$20.99</span>
@@ -1650,17 +1658,14 @@
                 <div class="card-carousel-slide" data-index="0" data-flavor-name="Peanut Butter Cups"><a href="https://www.kroger.com/p/quest-protein-low-sugar-peanut-butter-cups/0088884901131" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088884901131" alt="Peanut Butter Cups" class="card-image" loading="lazy"/></a></div>
             </div>
             
-            
+            <div class="card-carousel-caption">Peanut Butter Cups</div>
         </div>
     
+            <div class="card-category-tag">Cookies &amp; Sweets</div>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
             <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-kroger">Kroger</div>
-                <div class="meta-category">Cookies &amp; Sweets</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$10.99</span>
                 <span class="new-price">$8.99</span>
@@ -1700,14 +1705,11 @@
             <div class="card-carousel-caption">Cherry Limeade</div>
         </div>
     
+            <div class="card-category-tag">Energy Drink</div>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
             <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-kroger">Kroger</div>
-                <div class="meta-category">Energy Drink</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$2.99</span>
                 <span class="new-price">$2.50</span>
@@ -1741,17 +1743,14 @@
                 <div class="card-carousel-slide" data-index="0" data-flavor-name="Chili Lime"><a href="https://www.walmart.com/ip/Quest-Tortilla-Style-Protein-Chips-with-20g-of-Protein-Chili-Lime-Flavor-1-1-Oz-Single/15559513009" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/2-pack-Quest-Tortilla-Style-Protein-Chips-Chili-Lime-1-1oz-4-Count-Bags_e3557fff-120a-48d6-8e73-1df50bdc97d6.b5f0e51ebb0d37d142e006ff8809de4a.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Chili Lime" class="card-image" loading="lazy"/></a></div>
             </div>
             
-            
+            <div class="card-carousel-caption">Chili Lime</div>
         </div>
     
+            <div class="card-category-tag">Chips &amp; Crunchy</div>
             <div class='pack-pill'><span class='pack-count'>8</span> <span class='pack-unit'>ct</span></div>
             <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-walmart">Walmart</div>
-                <div class="meta-category">Chips &amp; Crunchy</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$18.96</span>
                 <span class="new-price">$15.93</span>
@@ -1791,14 +1790,11 @@
             <div class="card-carousel-caption">Brookie</div>
         </div>
     
+            <div class="card-category-tag">Bars</div>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
             <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-target">Target</div>
-                <div class="meta-category">Bars</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$5.99</span>
                 <span class="new-price">$5.09</span>
@@ -1838,14 +1834,11 @@
             <div class="card-carousel-caption">Arctic Vibe (Frozen Berry)</div>
         </div>
     
+            <div class="card-category-tag">Energy Drink</div>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
             <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-walmart">Walmart</div>
-                <div class="meta-category">Energy Drink</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$2.28</span>
                 <span class="new-price">$1.97</span>
@@ -1885,14 +1878,11 @@
             <div class="card-carousel-caption">Birthday Cake</div>
         </div>
     
+            <div class="card-category-tag">Bars</div>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
             <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-kroger">Kroger</div>
-                <div class="meta-category">Bars</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$10.99</span>
                 <span class="new-price">$9.49</span>
@@ -1932,14 +1922,11 @@
             <div class="card-carousel-caption">Chocolate Caramel Pecan</div>
         </div>
     
+            <div class="card-category-tag">Bars</div>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
             <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-kroger">Kroger</div>
-                <div class="meta-category">Bars</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$10.99</span>
                 <span class="new-price">$9.49</span>
@@ -1979,14 +1966,11 @@
             <div class="card-carousel-caption">Chocolate Explosion</div>
         </div>
     
+            <div class="card-category-tag">Bars</div>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
             <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-kroger">Kroger</div>
-                <div class="meta-category">Bars</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$10.99</span>
                 <span class="new-price">$9.49</span>
@@ -2026,14 +2010,11 @@
             <div class="card-carousel-caption">Brownie Batter</div>
         </div>
     
+            <div class="card-category-tag">Bars</div>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
             <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-kroger">Kroger</div>
-                <div class="meta-category">Bars</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$2.89</span>
                 <span class="new-price">$2.50</span>
@@ -2073,14 +2054,11 @@
             <div class="card-carousel-caption">Cookies &amp; Crème</div>
         </div>
     
+            <div class="card-category-tag">Bars</div>
             <div class='pack-pill'><span class='pack-count'>5</span> <span class='pack-unit'>bars</span></div>
             <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-kroger">Kroger</div>
-                <div class="meta-category">Bars</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$6.79</span>
                 <span class="new-price">$5.99</span>
@@ -2120,14 +2098,11 @@
             <div class="card-carousel-caption">Chocolate</div>
         </div>
     
+            <div class="card-category-tag">Cookies &amp; Sweets</div>
             <div class='pack-pill'><span class='pack-count'>10</span> <span class='pack-unit'>ct</span></div>
             <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-walmart">Walmart</div>
-                <div class="meta-category">Cookies &amp; Sweets</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$25.99</span>
                 <span class="new-price">$22.99</span>
@@ -2167,14 +2142,11 @@
             <div class="card-carousel-caption">Chocolate</div>
         </div>
     
+            <div class="card-category-tag">RTD Protein Shake</div>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
             <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-kroger">Kroger</div>
-                <div class="meta-category">RTD Protein Shake</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$4.49</span>
                 <span class="new-price">$3.99</span>
@@ -2214,14 +2186,11 @@
             <div class="card-carousel-caption">Cheddar</div>
         </div>
     
+            <div class="card-category-tag">Chips &amp; Crunchy</div>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
             <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-kroger">Kroger</div>
-                <div class="meta-category">Chips &amp; Crunchy</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$8.99</span>
                 <span class="new-price">$7.99</span>
@@ -2255,17 +2224,14 @@
                 <div class="card-carousel-slide" data-index="0" data-flavor-name="Pizza Flavor"><a href="https://www.walmart.com/ip/Quest-Tortilla-Style-Protein-Chips-with-19g-of-Protein-Pizza-Flavor-4-Count/15780952775" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/Quest-Tortilla-Style-Protein-Chips-with-19g-of-Protein-Pizza-Flavor-4-Count_49617bcc-e947-4dc0-b589-62afe6c1d28c.8ec7edd9228866acd739fd1d5214e39c.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Pizza Flavor" class="card-image" loading="lazy"/></a></div>
             </div>
             
-            
+            <div class="card-carousel-caption">Pizza Flavor</div>
         </div>
     
+            <div class="card-category-tag">Chips &amp; Crunchy</div>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
             <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-walmart">Walmart</div>
-                <div class="meta-category">Chips &amp; Crunchy</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$9.48</span>
                 <span class="new-price">$8.48</span>
@@ -2305,14 +2271,11 @@
             <div class="card-carousel-caption">Blueberry Almond</div>
         </div>
     
+            <div class="card-category-tag">Bars</div>
             <div class='pack-pill'><span class='pack-count'>5</span> <span class='pack-unit'>bars</span></div>
             <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-walmart">Walmart</div>
-                <div class="meta-category">Bars</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$6.38</span>
                 <span class="new-price">$5.72</span>
@@ -2346,17 +2309,14 @@
                 <div class="card-carousel-slide" data-index="0" data-flavor-name="Blueberry Almond"><a href="https://www.walmart.com/ip/CLIF-BAR-Blueberry-Almond-Crisp-Energy-Bars-Plant-Based-Protein-Bars-5ct/15352150734" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/3-pack-CLIF-BAR-Blueberry-Almond-Crisp-Energy-Bars-Plant-Based-Protein-Bars-5ct_59cefee1-b40c-4b49-87ad-eb73bf4ac008.bc76cf1fb7a959533a6e8193db2bdbc2.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Blueberry Almond" class="card-image" loading="lazy"/></a></div>
             </div>
             
-            
+            <div class="card-carousel-caption">Blueberry Almond</div>
         </div>
     
+            <div class="card-category-tag">Bars</div>
             <div class='pack-pill'><span class='pack-count'>15</span> <span class='pack-unit'>bars</span></div>
             <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-walmart">Walmart</div>
-                <div class="meta-category">Bars</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$19.14</span>
                 <span class="new-price">$17.16</span>
@@ -2390,17 +2350,14 @@
                 <div class="card-carousel-slide" data-index="0" data-flavor-name="White Chocolate Macadamia Nut"><a href="https://www.walmart.com/ip/CLIF-BAR-White-Chocolate-Macadamia-Nut-Flavor-Energy-Bars-Plant-Based-Protein-Bars-5ct/15332723182" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/9-pack-CLIF-BAR-White-Chocolate-Macadamia-Nut-Flavor-Energy-Bars-Plant-Based-Protein-Bars-5ct_a5e86fca-8038-4790-b5c0-0df4bfdf9c05.9c2756d38ab1053818dd649b2b914816.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="White Chocolate Macadamia Nut" class="card-image" loading="lazy"/></a></div>
             </div>
             
-            
+            <div class="card-carousel-caption">White Chocolate Macadamia Nut</div>
         </div>
     
+            <div class="card-category-tag">Bars</div>
             <div class='pack-pill'><span class='pack-count'>45</span> <span class='pack-unit'>bars</span></div>
             <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-walmart">Walmart</div>
-                <div class="meta-category">Bars</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$57.42</span>
                 <span class="new-price">$51.48</span>
@@ -2434,17 +2391,14 @@
                 <div class="card-carousel-slide" data-index="0" data-flavor-name="Vanilla"><a href="https://www.walmart.com/ip/Core-Power-Protein-Shake-with-26g-Protein-by-fairlife-Milk-Vanilla-14-fl-oz/5262660866" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/4-pack-Core-Power-Protein-Shake-with-26g-Protein-by-fairlife-Milk-Vanilla-14-fl-oz_79f5a0d2-1754-4cb7-8678-959b090ef4de.51fdf61ac90deefcd0b040c1d0ef4d1b.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Vanilla" class="card-image" loading="lazy"/></a></div>
             </div>
             
-            
+            <div class="card-carousel-caption">Vanilla</div>
         </div>
     
+            <div class="card-category-tag">RTD Protein Shake</div>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
             <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-walmart">Walmart</div>
-                <div class="meta-category">RTD Protein Shake</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$14.32</span>
                 <span class="new-price">$12.88</span>
@@ -2478,17 +2432,14 @@
                 <div class="card-carousel-slide" data-index="0" data-flavor-name="Chocolate Chip"><a href="https://www.kroger.com/p/quest-nutrition-chocolate-chip-protein-cookies/0088884900600" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088884900600" alt="Chocolate Chip" class="card-image" loading="lazy"/></a></div>
             </div>
             
-            
+            <div class="card-carousel-caption">Chocolate Chip</div>
         </div>
     
+            <div class="card-category-tag">Cookies &amp; Sweets</div>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
             <div class='badge badge-everyday'>🏷️ On Sale</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-kroger">Kroger</div>
-                <div class="meta-category">Cookies &amp; Sweets</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$10.49</span>
                 <span class="new-price">$9.49</span>
@@ -2528,14 +2479,11 @@
             <div class="card-carousel-caption">Caramel Almond &amp; Sea Salt</div>
         </div>
     
+            <div class="card-category-tag">Bars</div>
             <div class='pack-pill'><span class='pack-count'>6</span> <span class='pack-unit'>bars</span></div>
             <div class='badge badge-everyday'>🏷️ On Sale</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-kroger">Kroger</div>
-                <div class="meta-category">Bars</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$8.79</span>
                 <span class="new-price">$7.99</span>
@@ -2569,17 +2517,14 @@
                 <div class="card-carousel-slide" data-index="0" data-flavor-name="Birthday Cake"><a href="https://www.walmart.com/ip/Quest-Crispy-Hero-Protein-Bar-Birthday-Cake-Flavor-Low-Sugar-4-Count/5727669028" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/Quest-Crispy-Hero-Protein-Bar-Birthday-Cake-Flavor-Low-Sugar-4-Count_1979f8c2-7c0c-4730-9e87-134ba4576451.5c7d50baac593be030f702c6e7b71557.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Birthday Cake" class="card-image" loading="lazy"/></a></div>
             </div>
             
-            
+            <div class="card-carousel-caption">Birthday Cake</div>
         </div>
     
+            <div class="card-category-tag">Bars</div>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
             <div class='badge badge-everyday'>🏷️ On Sale</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-walmart">Walmart</div>
-                <div class="meta-category">Bars</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$8.88</span>
                 <span class="new-price">$8.07</span>
@@ -2619,14 +2564,11 @@
             <div class="card-carousel-caption">Birthday Cake</div>
         </div>
     
+            <div class="card-category-tag">Bars</div>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
             <div class='badge badge-everyday'>🏷️ On Sale</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-kroger">Kroger</div>
-                <div class="meta-category">Bars</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$10.99</span>
                 <span class="new-price">$9.99</span>
@@ -2666,14 +2608,11 @@
             <div class="card-carousel-caption">Original Variety</div>
         </div>
     
+            <div class="card-category-tag">Energy Drink</div>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>ct</span></div>
             <div class='badge badge-everyday'>🏷️ On Sale</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-kroger">Kroger</div>
-                <div class="meta-category">Energy Drink</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$21.99</span>
                 <span class="new-price">$19.99</span>
@@ -2713,14 +2652,11 @@
             <div class="card-carousel-caption">Blueberry</div>
         </div>
     
+            <div class="card-category-tag">Bars</div>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
             <div class='badge badge-everyday'>🏷️ On Sale</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-kroger">Kroger</div>
-                <div class="meta-category">Bars</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$2.19</span>
                 <span class="new-price">$2.00</span>
@@ -2760,14 +2696,11 @@
             <div class="card-carousel-caption">Caramel Cashew</div>
         </div>
     
+            <div class="card-category-tag">Bars</div>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
             <div class='badge badge-everyday'>🏷️ On Sale</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-target">Target</div>
-                <div class="meta-category">Bars</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$29.99</span>
                 <span class="new-price">$27.49</span>
@@ -2780,6 +2713,47 @@
                 
             </div>
             <a class="view-button view-target" href="https://www.target.com/p/barebells-nutrition-bars-cookies-cream/-/A-83942841" target="_blank" rel="noopener noreferrer">
+                View on Target.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card card-tier-sale"
+         data-section="food"
+         data-category="bars"
+         data-retailer="target"
+         data-price="11.99"
+         data-percent="7.7"
+         data-deal-count="1"
+         data-tier="sale">
+        <div class="card-image-wrap">
+            
+        <div class="card-carousel card-carousel--single" data-slide-count="1">
+            <div class="card-carousel-stage">
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Peanut Butter Chocolate Chip"><a href="https://www.target.com/p/larabar-peanut-butter-chocolate-chip-protein-bar/-/A-82603208" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_4aa67e07-e839-4985-811e-96f32f345bb4?wid=1200&amp;hei=1200&amp;qlt=80" alt="Peanut Butter Chocolate Chip" class="card-image" loading="lazy"/></a></div>
+            </div>
+            
+            <div class="card-carousel-caption">Peanut Butter Chocolate Chip</div>
+        </div>
+    
+            <div class="card-category-tag">Bars</div>
+            <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
+            <div class='badge badge-everyday'>🏷️ On Sale</div>
+        </div>
+        <div class="card-content">
+            <div class="card-pricing">
+                <span class='old-price'>$12.99</span>
+                <span class="new-price">$11.99</span>
+                <span class="percent-off">8% OFF</span>
+            </div>
+            <div class="card-title">Larabar</div>
+            
+            <div class="card-footer">
+                <div class='availability both'>In-store & online</div>
+                
+            </div>
+            <a class="view-button view-target" href="https://www.target.com/p/larabar-peanut-butter-chocolate-chip-protein-bar/-/A-82603208" target="_blank" rel="noopener noreferrer">
                 View on Target.com
             </a>
         </div>
@@ -2807,14 +2781,11 @@
             <div class="card-carousel-caption">Chocolate Deluxe</div>
         </div>
     
+            <div class="card-category-tag">Bars</div>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
             <div class='badge badge-everyday'>🏷️ On Sale</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-target">Target</div>
-                <div class="meta-category">Bars</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$15.99</span>
                 <span class="new-price">$14.89</span>
@@ -2854,14 +2825,11 @@
             <div class="card-carousel-caption">Chocolate Dough</div>
         </div>
     
+            <div class="card-category-tag">Bars</div>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
             <div class='badge badge-everyday'>🏷️ On Sale</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-target">Target</div>
-                <div class="meta-category">Bars</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$29.99</span>
                 <span class="new-price">$27.99</span>
@@ -2874,6 +2842,47 @@
                 
             </div>
             <a class="view-button view-target" href="https://www.target.com/p/barebells-nutrition-bars-salty-peanut-7-76oz-4pk/-/A-83942842" target="_blank" rel="noopener noreferrer">
+                View on Target.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card card-tier-sale"
+         data-section="food"
+         data-category="bars"
+         data-retailer="target"
+         data-price="21.49"
+         data-percent="6.5"
+         data-deal-count="1"
+         data-tier="sale">
+        <div class="card-image-wrap">
+            
+        <div class="card-carousel card-carousel--single" data-slide-count="1">
+            <div class="card-carousel-stage">
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Chocolate Peanut Butter"><a href="https://www.target.com/p/quest-nutrition-18g-hero-protein-bar-crispy-chocolate-peanut-butter/-/A-89846528" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_bd132c61-19e1-45ff-9bf0-11ca2448ac64?wid=600&amp;hei=600&amp;qlt=80" alt="Chocolate Peanut Butter" class="card-image" loading="lazy"/></a></div>
+            </div>
+            
+            <div class="card-carousel-caption">Chocolate Peanut Butter</div>
+        </div>
+    
+            <div class="card-category-tag">Bars</div>
+            <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
+            <div class='badge badge-everyday'>🏷️ On Sale</div>
+        </div>
+        <div class="card-content">
+            <div class="card-pricing">
+                <span class='old-price'>$22.99</span>
+                <span class="new-price">$21.49</span>
+                <span class="percent-off">6% OFF</span>
+            </div>
+            <div class="card-title">Quest Hero Protein Bar</div>
+            
+            <div class="card-footer">
+                <div class='availability online-only'>Online only</div>
+                
+            </div>
+            <a class="view-button view-target" href="https://www.target.com/p/quest-nutrition-18g-hero-protein-bar-crispy-chocolate-peanut-butter/-/A-89846528" target="_blank" rel="noopener noreferrer">
                 View on Target.com
             </a>
         </div>
@@ -2901,14 +2910,11 @@
             <div class="card-carousel-caption">Birthday Cake</div>
         </div>
     
+            <div class="card-category-tag">Bars</div>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
             <div class='badge badge-everyday'>🏷️ On Sale</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-target">Target</div>
-                <div class="meta-category">Bars</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$9.59</span>
                 <span class="new-price">$8.99</span>
@@ -2948,14 +2954,11 @@
             <div class="card-carousel-caption">Caramel Choco</div>
         </div>
     
+            <div class="card-category-tag">Bars</div>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
             <div class='badge badge-everyday'>🏷️ On Sale</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-target">Target</div>
-                <div class="meta-category">Bars</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$9.59</span>
                 <span class="new-price">$8.99</span>
@@ -2978,53 +2981,6 @@
          data-section="food"
          data-category="bars"
          data-retailer="target"
-         data-price="14.99"
-         data-percent="6.3"
-         data-deal-count="4"
-         data-tier="sale">
-        <div class="card-image-wrap">
-            
-        <div class="card-carousel" data-slide-count="4">
-            <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Chewy Chocolate Chip"><a href="https://www.target.com/p/pure-protein-20g-protein-bar-chewy-chocolate-chip-12pk/-/A-50409156" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_93b3242a-e6d2-45eb-ab46-f25e6957fb16?wid=600&amp;hei=600&amp;qlt=80" alt="Chewy Chocolate Chip" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Chocolate Salted Caramel"><a href="https://www.target.com/p/pure-protein-19g-protein-bar-chocolate-salted-caramel-12ct/-/A-51524631" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_acca1c88-7ca5-4c7a-a9ad-a3ce8ef35427?wid=600&amp;hei=600&amp;qlt=80" alt="Chocolate Salted Caramel" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="2" data-flavor-name="Galactic Brownie"><a href="https://www.target.com/p/pure-protein-nutrition-protein-bars-galactic-brownie-1-53lbs-12ct/-/A-91972465" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_2ad162c2-7d43-486b-bca6-dbb2d21eda0c?wid=600&amp;hei=600&amp;qlt=80" alt="Galactic Brownie" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="3" data-flavor-name="Lemon Cake"><a href="https://www.target.com/p/pure-protein-20g-protein-bar-lemon-cake-12ct/-/A-80607005" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_c5e4c1d8-db3f-4648-b859-b93657c482d2?wid=600&amp;hei=600&amp;qlt=80" alt="Lemon Cake" class="card-image" loading="lazy"/></a></div>
-            </div>
-            
-            <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
-            <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
-        
-            <div class="card-carousel-caption">Chewy Chocolate Chip</div>
-        </div>
-    
-            <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-everyday'>🏷️ On Sale</div>
-        </div>
-        <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-target">Target</div>
-                <div class="meta-category">Bars</div>
-            </div>
-            <div class="card-pricing">
-                <span class='old-price'>$15.99</span>
-                <span class="new-price">$14.99</span>
-                <span class="percent-off">6% OFF</span>
-            </div>
-            <div class="card-title">Pure Protein Bar</div>
-            
-            <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
-                
-            </div>
-            <a class="view-button view-target" href="https://www.target.com/p/pure-protein-nutrition-protein-bars-galactic-brownie-1-53lbs-12ct/-/A-91972465" target="_blank" rel="noopener noreferrer">
-                View on Target.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card card-tier-sale"
-         data-section="food"
-         data-category="bars"
-         data-retailer="target"
          data-price="8.99"
          data-percent="5.3"
          data-deal-count="1"
@@ -3036,17 +2992,14 @@
                 <div class="card-carousel-slide" data-index="0" data-flavor-name="Banana Caramel"><a href="https://www.target.com/p/barebells-soft-banana-caramel-protein-bars-7-76oz-4pk-16gms-protein/-/A-94719714" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_a245dbde-3a0e-4c7a-8d35-1f81a3bf5594?wid=600&amp;hei=600&amp;qlt=80" alt="Banana Caramel" class="card-image" loading="lazy"/></a></div>
             </div>
             
-            
+            <div class="card-carousel-caption">Banana Caramel</div>
         </div>
     
+            <div class="card-category-tag">Bars</div>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
             <div class='badge badge-everyday'>🏷️ On Sale</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-target">Target</div>
-                <div class="meta-category">Bars</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$9.49</span>
                 <span class="new-price">$8.99</span>
@@ -3086,14 +3039,11 @@
             <div class="card-carousel-caption">Key Lime Pie</div>
         </div>
     
+            <div class="card-category-tag">Bars</div>
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
             <div class='badge badge-everyday'>🏷️ On Sale</div>
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="retailer-pill retailer-target">Target</div>
-                <div class="meta-category">Bars</div>
-            </div>
             <div class="card-pricing">
                 <span class='old-price'>$9.49</span>
                 <span class="new-price">$8.99</span>
@@ -3691,15 +3641,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
       carousel.dataset.carouselReady = "1";
 
+      let index = 0;
+      const caption = carousel.querySelector(".card-carousel-caption");
+      const stage = carousel.querySelector(".card-carousel-stage");
+
+      function updateCaption() {
+        if (!caption) return;
+        const name = slides[index].getAttribute("data-flavor-name") || "";
+        caption.textContent = name;
+        caption.hidden = !name;
+      }
+
       if (slides.length === 1) {
         slides[0].classList.add("is-active");
+        updateCaption();
         return;
       }
 
-      let index = 0;
       const prevBtn = carousel.querySelector(".card-carousel-prev");
       const nextBtn = carousel.querySelector(".card-carousel-next");
-      const caption = carousel.querySelector(".card-carousel-caption");
 
       function render() {
         const n = slides.length;
@@ -3715,26 +3675,48 @@ document.addEventListener("DOMContentLoaded", function () {
             slide.classList.add("is-hidden");
           }
         });
-        if (caption) {
-          const name = slides[index].getAttribute("data-flavor-name") || "";
-          caption.textContent = name;
-          caption.hidden = !name;
-        }
+        updateCaption();
+      }
+
+      function goPrev() {
+        index = (index - 1 + slides.length) % slides.length;
+        render();
+      }
+
+      function goNext() {
+        index = (index + 1) % slides.length;
+        render();
       }
 
       prevBtn?.addEventListener("click", function(e) {
         e.preventDefault();
         e.stopPropagation();
-        index = (index - 1 + slides.length) % slides.length;
-        render();
+        goPrev();
       });
 
       nextBtn?.addEventListener("click", function(e) {
         e.preventDefault();
         e.stopPropagation();
-        index = (index + 1) % slides.length;
-        render();
+        goNext();
       });
+
+      if (stage) {
+        let touchStartX = 0;
+        let touchStartY = 0;
+        stage.addEventListener("touchstart", function(e) {
+          if (!e.changedTouches.length) return;
+          touchStartX = e.changedTouches[0].screenX;
+          touchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+        stage.addEventListener("touchend", function(e) {
+          if (!e.changedTouches.length) return;
+          const dx = e.changedTouches[0].screenX - touchStartX;
+          const dy = e.changedTouches[0].screenY - touchStartY;
+          if (Math.abs(dx) < 36 || Math.abs(dx) < Math.abs(dy)) return;
+          if (dx < 0) goNext();
+          else goPrev();
+        }, { passive: true });
+      }
 
       render();
     });

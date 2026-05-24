@@ -397,7 +397,7 @@ def build_card_image_carousel_html(deal, default_alt: str) -> str:
 
     first_caption = html.escape(items[0]["name"]) if items[0].get("name") else ""
     caption_html = ""
-    if multi and first_caption:
+    if first_caption:
         caption_html = f'<div class="card-carousel-caption">{first_caption}</div>'
 
     single_class = "" if multi else " card-carousel--single"
@@ -505,6 +505,10 @@ def build_card_html(deal):
     if badge_label and badge_class:
         badge_html = f"<div class='{badge_class}'>{badge_label}</div>"
 
+    category_tag_html = ""
+    if category:
+        category_tag_html = f'<div class="card-category-tag">{category}</div>'
+
     # Text list only for flavors beyond the 4 shown as images
     flavor_html = ""
     if flavor_extra_count > 0:
@@ -532,14 +536,11 @@ def build_card_html(deal):
          data-tier="{tier_name}">
         <div class="card-image-wrap">
             {image_carousel_html}
+            {category_tag_html}
             {pack_pill_html}
             {badge_html}
         </div>
         <div class="card-content">
-            <div class="card-meta-row">
-                <div class="{pill_class}">{retailer}</div>
-                <div class="meta-category">{category}</div>
-            </div>
             <div class="card-pricing">
                 {old_price_html}
                 <span class="new-price">${new_price_val:.2f}</span>
@@ -777,10 +778,10 @@ def build_page_html(deals):
 .sb-filter-edge-tab{{
   position: fixed;
   left: 0;
-  top: auto;
-  /* Mirror of prior top: 80% — sit in lower fifth, anchored from bottom */
-  bottom: 20%;
-  transform: translateY(50%);
+  /* Upper third on mobile — above halfway, clear of bottom thumb zone */
+  top: 32%;
+  bottom: auto;
+  transform: translateY(-50%);
   z-index: 38;
   display: flex;
   flex-direction: column;
@@ -803,7 +804,7 @@ def build_page_html(deals):
 }}
 
 .sb-filter-edge-tab:active{{
-  transform: translateY(50%) translateX(1px);
+  transform: translateY(-50%) translateX(1px);
 }}
 
 .sb-filter-edge-icons{{
@@ -918,6 +919,10 @@ def build_page_html(deals):
   .sb-filter-groups {{
     max-height: calc(100vh - 220px);
     overflow-y: auto;
+  }}
+  .sb-hero {{
+    position: relative;
+    z-index: 36;
   }}
 }}
 
@@ -1438,6 +1443,7 @@ def build_page_html(deals):
             position: relative;
             width: 100%;
             padding: 0 28px;
+            z-index: 1;
         }}
 
         .card-carousel--single {{
@@ -1470,19 +1476,19 @@ def build_page_html(deals):
             transform: translate(-50%, -50%) scale(1);
             opacity: 1;
             pointer-events: auto;
-            z-index: 3;
+            z-index: 2;
         }}
 
         .card-carousel-slide.is-prev {{
             transform: translate(calc(-50% - 58%), -50%) scale(0.82);
             opacity: 0.42;
-            z-index: 2;
+            z-index: 1;
         }}
 
         .card-carousel-slide.is-next {{
             transform: translate(calc(-50% + 58%), -50%) scale(0.82);
             opacity: 0.42;
-            z-index: 2;
+            z-index: 1;
         }}
 
         .card-carousel-slide.is-hidden {{
@@ -1549,10 +1555,24 @@ def build_page_html(deals):
             min-height: 14px;
         }}
 
+        .card-category-tag {{
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            font-size: 11px;
+            color: var(--text-muted);
+            z-index: 12;
+            max-width: 48%;
+            text-align: right;
+            line-height: 1.25;
+            pointer-events: none;
+        }}
+
         .pack-pill {{
             position: absolute;
             bottom: 6px;
             right: 8px;
+            z-index: 12;
             background-color: #111827;
             color: #ffffff;
             border-radius: 999px;
@@ -1578,6 +1598,7 @@ def build_page_html(deals):
             position: absolute;
             top: 6px;
             left: 8px;
+            z-index: 12;
             border-radius: var(--radius-pill);
             padding: 2px 8px;
             font-size: 11px;
@@ -2625,15 +2646,25 @@ document.addEventListener("DOMContentLoaded", function () {{
 
       carousel.dataset.carouselReady = "1";
 
+      let index = 0;
+      const caption = carousel.querySelector(".card-carousel-caption");
+      const stage = carousel.querySelector(".card-carousel-stage");
+
+      function updateCaption() {{
+        if (!caption) return;
+        const name = slides[index].getAttribute("data-flavor-name") || "";
+        caption.textContent = name;
+        caption.hidden = !name;
+      }}
+
       if (slides.length === 1) {{
         slides[0].classList.add("is-active");
+        updateCaption();
         return;
       }}
 
-      let index = 0;
       const prevBtn = carousel.querySelector(".card-carousel-prev");
       const nextBtn = carousel.querySelector(".card-carousel-next");
-      const caption = carousel.querySelector(".card-carousel-caption");
 
       function render() {{
         const n = slides.length;
@@ -2649,26 +2680,48 @@ document.addEventListener("DOMContentLoaded", function () {{
             slide.classList.add("is-hidden");
           }}
         }});
-        if (caption) {{
-          const name = slides[index].getAttribute("data-flavor-name") || "";
-          caption.textContent = name;
-          caption.hidden = !name;
-        }}
+        updateCaption();
+      }}
+
+      function goPrev() {{
+        index = (index - 1 + slides.length) % slides.length;
+        render();
+      }}
+
+      function goNext() {{
+        index = (index + 1) % slides.length;
+        render();
       }}
 
       prevBtn?.addEventListener("click", function(e) {{
         e.preventDefault();
         e.stopPropagation();
-        index = (index - 1 + slides.length) % slides.length;
-        render();
+        goPrev();
       }});
 
       nextBtn?.addEventListener("click", function(e) {{
         e.preventDefault();
         e.stopPropagation();
-        index = (index + 1) % slides.length;
-        render();
+        goNext();
       }});
+
+      if (stage) {{
+        let touchStartX = 0;
+        let touchStartY = 0;
+        stage.addEventListener("touchstart", function(e) {{
+          if (!e.changedTouches.length) return;
+          touchStartX = e.changedTouches[0].screenX;
+          touchStartY = e.changedTouches[0].screenY;
+        }}, {{ passive: true }});
+        stage.addEventListener("touchend", function(e) {{
+          if (!e.changedTouches.length) return;
+          const dx = e.changedTouches[0].screenX - touchStartX;
+          const dy = e.changedTouches[0].screenY - touchStartY;
+          if (Math.abs(dx) < 36 || Math.abs(dx) < Math.abs(dy)) return;
+          if (dx < 0) goNext();
+          else goPrev();
+        }}, {{ passive: true }});
+      }}
 
       render();
     }});
