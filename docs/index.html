@@ -178,291 +178,335 @@
         }
 
 /* ============================ */
-/* FILTER DRAWER (LEFT)         */
+/* FILTER BAR (Walmart-style pills) */
 /* ============================ */
 
-/* Mobile: fixed left tab opens filter drawer; desktop: floating panel (does not narrow the grid) */
-.sb-filter-edge-tab{
-  position: fixed;
-  left: 0;
-  /* Upper third on mobile — above halfway, clear of bottom thumb zone */
-  top: 32%;
-  bottom: auto;
-  transform: translateY(-50%);
-  z-index: 38;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 10px 8px 10px 6px;
-  margin: 0;
-  border: 1px solid var(--border-subtle);
-  border-left: none;
-  border-radius: 0 14px 14px 0;
-  background: #ffffff;
-  box-shadow: 4px 2px 14px rgba(15, 23, 42, 0.12);
-  cursor: pointer;
-  font: inherit;
-  line-height: 1;
+.sb-filter-bar-section {
+  max-width: 1100px;
+  margin: 10px auto 12px;
+  padding: 0 16px;
+  position: relative;
+  z-index: 30;
 }
 
-.sb-filter-edge-tab:hover{
+.sb-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.sb-filter-master {
+  position: relative;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid #111827;
+  border-radius: 999px;
+  background: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.sb-filter-master:hover {
   filter: brightness(0.98);
 }
 
-.sb-filter-edge-tab:active{
-  transform: translateY(-50%) translateX(1px);
-}
-
-.sb-filter-edge-icons{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-
-.sb-filter-mascot{
-  width: 22px;
-  height: 22px;
+.sb-filter-master-icon {
+  width: 26px;
+  height: 26px;
   object-fit: contain;
   display: block;
 }
 
-.sb-filter-funnel{
-  width: 16px;
-  height: 16px;
-  color: var(--navy);
+.sb-filter-master-badge,
+.sb-filter-pill-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #111827;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 18px;
+  text-align: center;
+}
+
+.sb-filter-pill-badge {
+  top: -6px;
+  right: -6px;
+}
+
+.sb-filter-scroll-btn {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--text-main);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.sb-filter-scroll-btn.is-visible {
+  display: inline-flex;
+}
+
+.sb-filter-bar-track {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: visible;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.sb-filter-bar-track::-webkit-scrollbar {
+  display: none;
+}
+
+.sb-filter-bar-inner {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 2px;
+  min-width: min-content;
+}
+
+.sb-filter-pill-wrap {
+  position: relative;
   flex-shrink: 0;
 }
 
-.sb-filter-edge-count{
-  font-size: 11px;
-  font-weight: 900;
-  color: var(--text-muted);
-  letter-spacing: -0.02em;
+.sb-filter-pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border: 1px solid #111827;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  font-family: inherit;
+  line-height: 1.2;
 }
 
-.sb-filter-count{
-  font-weight: 900;
-  color: var(--text-muted);
+.sb-filter-pill:hover {
+  background: #f9fafb;
 }
 
-.sb-filter-backdrop{
+.sb-filter-pill[aria-expanded="true"] {
+  background: #f3f4f6;
+  box-shadow: inset 0 0 0 1px #111827;
+}
+
+.sb-filter-pill-chevron {
+  font-size: 12px;
+  color: #374151;
+  line-height: 1;
+}
+
+.sb-filter-dropdown-panel {
+  position: fixed;
+  z-index: 46;
+  min-width: 220px;
+  max-width: min(320px, calc(100vw - 16px));
+  max-height: min(320px, calc(100vh - 16px));
+  overflow-y: auto;
+  padding: 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.14);
+}
+
+.sb-filter-dropdown-panel[hidden] {
+  display: none !important;
+}
+
+.sb-filter-dropdown-empty {
+  padding: 8px 4px;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.sb-filter-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.sb-filter-check input {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.sb-filter-dropdown-backdrop {
   position: fixed;
   inset: 0;
+  z-index: 44;
+  background: transparent;
+  display: none;
+}
+
+.sb-filter-dropdown-backdrop.open {
+  display: block;
+}
+
+.sb-filter-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 48;
   background: rgba(15, 23, 42, 0.35);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.18s ease-out;
-  z-index: 39;
 }
 
-.sb-filter-backdrop.open{
+.sb-filter-sheet-backdrop.open {
   opacity: 1;
   pointer-events: auto;
 }
 
-.sb-deals-shell{
+.sb-filter-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 49;
+  max-height: 85vh;
+  background: #ffffff;
+  border-radius: 18px 18px 0 0;
+  box-shadow: 0 -8px 28px rgba(15, 23, 42, 0.18);
+  transform: translateY(105%);
+  transition: transform 0.22s ease-out;
+  display: flex;
+  flex-direction: column;
+}
+
+.sb-filter-sheet.open {
+  transform: translateY(0);
+}
+
+.sb-filter-sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.sb-filter-sheet-title {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.sb-filter-sheet-close {
+  border: none;
+  background: transparent;
+  font-size: 24px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.sb-filter-sheet-body {
+  overflow-y: auto;
+  padding: 12px 16px 16px;
+}
+
+.sb-filter-sheet-group {
+  margin-bottom: 14px;
+}
+
+.sb-filter-sheet-group-title {
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.sb-filter-sheet-footer {
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px 16px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.sb-filter-sheet-clear,
+.sb-filter-sheet-done {
+  flex: 1;
+  border-radius: 12px;
+  padding: 12px;
+  font-weight: 800;
+  font-size: 14px;
+  cursor: pointer;
+  border: 1px solid var(--border-subtle);
+  background: #ffffff;
+}
+
+.sb-filter-sheet-done {
+  background: var(--navy);
+  color: #ffffff;
+  border-color: var(--navy);
+}
+
+@media (min-width: 992px) {
+  .sb-filter-sheet {
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    top: 50%;
+    width: min(420px, 92vw);
+    max-height: 80vh;
+    border-radius: 16px;
+    transform: translate(-50%, -50%) scale(0.96);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .sb-filter-sheet.open {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .sb-hero {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+.sb-deals-shell {
   max-width: 1100px;
   margin: 0 auto;
   padding: 0 16px;
 }
 
-.sb-deals-main{
+.sb-deals-main {
   min-width: 0;
-}
-
-.sb-filter-drawer{
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  width: min(340px, 92vw);
-  background: #ffffff;
-  box-shadow: 8px 0 20px rgba(15,23,42,0.25);
-  transform: translateX(-105%);
-  transition: transform 0.2s ease-out;
-  z-index: 40;
-  display: flex;
-  flex-direction: column;
-}
-
-.sb-filter-drawer.open{
-  transform: translateX(0%);
-}
-
-@media (min-width: 992px) {
-  .sb-filter-edge-tab {
-    display: none;
-  }
-  .sb-filter-backdrop {
-    display: none !important;
-  }
-  /* Full-width deals column (4-across grid); filters float over the viewport, not in layout flow */
-  .sb-filter-drawer {
-    position: fixed;
-    top: 50%;
-    left: max(16px, calc((100vw - min(1100px, 100vw - 32px)) / 2 - 292px));
-    transform: translateY(-50%);
-    width: 280px;
-    height: auto;
-    max-height: calc(100vh - 80px);
-    z-index: 35;
-    box-shadow: 0 8px 28px rgba(15, 23, 42, 0.18);
-    border-radius: 16px;
-    border: 1px solid var(--border-subtle);
-    background: #ffffff;
-  }
-  .sb-filter-drawer.open {
-    transform: translateY(-50%);
-  }
-  .sb-filter-close {
-    display: none;
-  }
-  .sb-filter-inner {
-    height: auto;
-    max-height: calc(100vh - 96px);
-  }
-  .sb-filter-groups {
-    max-height: calc(100vh - 220px);
-    overflow-y: auto;
-  }
-  .sb-hero {
-    position: relative;
-    z-index: 36;
-  }
-}
-
-.sb-filter-inner{
-  padding: 16px 16px;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  gap: 12px;
-}
-
-.sb-filter-header{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.sb-filter-title{
-  font-weight: 900;
-  font-size: 18px;
-}
-
-.sb-filter-close{
-  border: none;
-  background: transparent;
-  font-size: 22px;
-  cursor: pointer;
-}
-
-.sb-filter-groups{
-  overflow: auto;
-  padding-right: 6px;
-}
-
-.sb-filter-group{
-  border: 1px solid var(--border-subtle);
-  border-radius: 14px;
-  padding: 10px 10px;
-  margin-bottom: 10px;
-}
-
-.sb-filter-group-header{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
-  user-select: none;
-}
-
-.sb-filter-group-title{
-  font-weight: 900;
-  font-size: 13px;
-}
-
-.sb-filter-group-meta{
-  font-size: 12px;
-  color: var(--text-muted);
-  font-weight: 800;
-}
-
-.sb-filter-options{
-  margin-top: 10px;
-  display: none;
-}
-
-.sb-filter-group.open .sb-filter-options{
-  display: grid;
-  gap: 8px;
-}
-
-.sb-check{
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 13px;
-}
-
-.sb-check input{
-  width: 16px;
-  height: 16px;
-}
-
-.sb-filter-footer{
-  margin-top: auto;
-  display: flex;
-  gap: 10px;
-}
-
-.sb-filter-clear{
-  flex: 1;
-  border: 1px solid var(--border-subtle);
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 10px 12px;
-  font-weight: 900;
-  cursor: pointer;
-}
-
-.sb-filter-apply{
-  flex: 1;
-  border: none;
-  background: var(--navy);
-  color: #ffffff;
-  border-radius: 12px;
-  padding: 10px 12px;
-  font-weight: 900;
-  cursor: pointer;
-}
-
-.sb-filter-actions{
-  margin-top: auto;
-  display: flex;
-  gap: 10px;
-}
-
-.sb-filter-action{
-  flex: 1;
-  border-radius: 12px;
-  padding: 10px 12px;
-  font-weight: 800;
-  cursor: pointer;
-  border: 1px solid var(--border-subtle);
-}
-
-.sb-filter-action.primary{
-  background: var(--navy);
-  color: #fff;
-  border-color: var(--navy);
-}
-
-.sb-filter-action.secondary{
-  background: #fff;
-  color: var(--text-main);
 }
 
         /* ============================ */
@@ -550,245 +594,6 @@
 
         .sb-hero-cta:hover {
             filter: brightness(1.02);
-        }
-
-        /* =================================== */
-        /* TIER FILTER PILLS                   */
-        /* =================================== */
-
-        .sb-tier-filters {
-            margin: 8px 0 0;
-            padding: 0;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .sb-tier-filters-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-            width: 100%;
-        }
-
-        .sb-tier-filters-remaining {
-            width: 100%;
-            margin-top: 8px;
-            display: none; /* Hidden by default, shown via JS when needed */
-            justify-content: flex-start;
-            flex-basis: 100%; /* Force to new line on mobile */
-        }
-
-        @media (min-width: 640px) {
-            .sb-tier-filters-remaining {
-                width: auto;
-                margin-top: 0;
-                margin-left: auto;
-                flex-basis: auto;
-            }
-        }
-
-        .sb-tier-pill {
-            padding: 8px 14px;
-            border-radius: var(--radius-pill);
-            border: 2px solid #cbd5e1;
-            background-color: rgba(255, 255, 255, 0.86);
-            color: #111827;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.15s ease;
-            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-        }
-
-        .sb-tier-pill:hover {
-            border-color: var(--text-muted);
-            transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08);
-        }
-
-        .sb-tier-pill[aria-pressed="true"] {
-            background-color: #111827;
-            color: #ffffff;
-            border-color: #111827;
-            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.18);
-        }
-
-        .sb-tier-pill[aria-pressed="true"]:hover {
-            filter: brightness(1.05);
-        }
-
-        .sb-tier-pill.sb-show-remaining {
-            background-color: var(--bg);
-            border-color: var(--text-muted);
-            color: var(--text-main);
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .sb-tier-pill.sb-show-remaining:hover {
-            background-color: #e5e7eb;
-            border-color: var(--text-main);
-        }
-
-        #remaining-count {
-            font-weight: 700;
-            color: var(--blue);
-        }
-
-        /* =================================== */
-        /* SECTION 1C: FILTERS + COUNT ROW      */
-        /* =================================== */
-
-        .sb-utility-row {
-            max-width: 1100px;
-            margin: 12px auto 12px;
-            padding: 0 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        @media (min-width: 640px) {
-            .sb-utility-row {
-                flex-direction: row;
-                align-items: center;
-                justify-content: space-between;
-            }
-        }
-
-        .pill-label,
-        .count-pill {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 8px 12px;
-            border-radius: var(--radius-pill);
-            font-size: 13px;
-        }
-
-        .pill-label {
-            border: 1px solid var(--border-subtle);
-            background-color: #f9fafb;
-            color: var(--text-main);
-            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-        }
-
-        .count-pill {
-            background-color: var(--navy);
-            color: #ffffff;
-            font-weight: 600;
-        }
-
-        .filter-controls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .sb-filter {
-            padding: 6px 10px;
-            border-radius: 12px;
-            border: 1px solid var(--border-subtle);
-            background-color: #ffffff;
-            font-size: 13px;
-            min-width: 140px;
-        }
-
-        /* ============================ */
-        /* ACTIVE FILTERS INDICATOR     */
-        /* ============================ */
-
-        .sb-active-filters {
-            max-width: 1100px;
-            margin: 0 auto 12px;
-            padding: 0 16px;
-            display: none; /* JS will show when filters are active */
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-        }
-
-        .sb-active-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            min-width: 0;
-        }
-
-        .sb-active-label {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text-muted);
-        }
-
-        .sb-chip-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .sb-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 10px;
-            border-radius: var(--radius-pill);
-            background: #ffffff;
-            border: 1px solid var(--border-subtle);
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text-main);
-            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-        }
-
-        .sb-chip small {
-            font-size: 11px;
-            font-weight: 800;
-            color: var(--text-muted);
-        }
-
-        .sb-chip button {
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            font-size: 14px;
-            line-height: 1;
-            padding: 0;
-            color: var(--text-muted);
-        }
-
-        .sb-chip button:hover {
-            color: var(--text-main);
-        }
-
-        .sb-clear-all {
-            border: 1px solid var(--border-subtle);
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 8px 12px;
-            font-size: 12px;
-            font-weight: 800;
-            cursor: pointer;
-        }
-
-        .sb-clear-all:hover {
-            filter: brightness(0.98);
-        }
-
-        @media (max-width: 640px) {
-            .sb-active-filters {
-                align-items: flex-start;
-                flex-direction: column;
-            }
-            .sb-clear-all {
-                width: 100%;
-            }
         }
 
         /* ============================ */
@@ -1367,15 +1172,6 @@
     </header>
 
     <main class="page">
-        <button type="button" class="sb-filter-edge-tab" id="sb-filter-open" aria-label="Open filters" aria-expanded="false">
-            <span class="sb-filter-edge-icons" aria-hidden="true">
-                <img src="assets/icons/raccoon-detective.png" alt="" class="sb-filter-mascot" />
-                <svg class="sb-filter-funnel" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">
-                    <path fill="currentColor" d="M22 3H2l7 9.46V20a2 2 0 001.11 1.79L12 23v-9.54L22 3z"/>
-                </svg>
-            </span>
-            <span class="sb-filter-edge-count" id="sb-filter-count">(0)</span>
-        </button>
         <!-- ============================ -->
         <!-- SECTION 1B: HERO BANNER      -->
         <!-- ============================ -->
@@ -1384,99 +1180,50 @@
                 <div class="sb-hero-pattern"></div>
                 <div class="sb-hero-content">
                     <div class="sb-hero-kicker">
-                        SnackBuddy • Last updated: May 26, 2026 at 04:49 PM (local time)
+                        SnackBuddy • Last updated: June 05, 2026 at 08:51 PM (local time)
                     </div>
                     <h1 class="sb-hero-title">Don&apos;t overpay for the snacks you already buy.</h1>
-                    <p class="sb-hero-subtitle">
-                        Discount Tier (% off):
-                    </p>
-                    <section class="sb-tier-filters" id="tier-filters">
-                        <div class="sb-tier-filters-row">
-                            <button class="sb-tier-pill" data-tier="diamond" aria-pressed="true">
-                                💎 >25%
-                            </button>
-                            <button class="sb-tier-pill" data-tier="fire" aria-pressed="true">
-                                🔥 20-24%
-                            </button>
-                            <button class="sb-tier-pill" data-tier="strong" aria-pressed="false">
-                                💪 10-19%
-                            </button>
-                            <button class="sb-tier-pill" data-tier="sale" aria-pressed="false">
-                                🏷️ 0-9%
-                            </button>
-                        </div>
-                        <div class="sb-tier-filters-remaining">
-                            <button class="sb-tier-pill sb-show-remaining" id="show-remaining-pill" aria-pressed="false" style="display: none;">
-                                Show Remaining <span id="remaining-count">0</span> Deals
-                            </button>
-                        </div>
-                    </section>
                 </div>
             </div>
         </section>
 
-        <div class="sb-deals-shell">
-        <div class="sb-filter-backdrop" id="sb-filter-backdrop"></div>
-        <aside class="sb-filter-drawer" id="sb-filter-drawer" aria-label="Deal filters">
-            <div class="sb-filter-inner">
-                <div class="sb-filter-header">
-                    <div class="sb-filter-title">Filters</div>
-                    <button class="sb-filter-close" id="sb-filter-close" type="button" aria-label="Close filters">&times;</button>
+        <section class="sb-filter-bar-section" aria-label="Deal filters">
+            <div class="sb-filter-bar">
+                <button type="button" class="sb-filter-master" id="sb-filter-master" aria-label="All filters" aria-expanded="false">
+                    <img src="assets/icons/raccoon-detective.png" alt="" class="sb-filter-master-icon" />
+                    <span class="sb-filter-master-badge" id="sb-filter-master-count" hidden>0</span>
+                </button>
+                <button type="button" class="sb-filter-scroll-btn sb-filter-scroll-prev" id="sb-filter-scroll-prev" aria-label="Scroll filters left">&#8249;</button>
+                <div class="sb-filter-bar-track" id="sb-filter-bar-track">
+                    <div class="sb-filter-bar-inner" id="sb-filter-bar-inner"></div>
                 </div>
-
-                <div class="sb-filter-groups" id="sb-filter-groups">
-                    <!-- JS injects groups + checkboxes -->
-                </div>
-
-                <div class="sb-filter-footer">
-                    <button class="sb-filter-clear" id="sb-filter-clear" type="button">Clear</button>
-                    <button class="sb-filter-apply" id="sb-filter-apply" type="button">Apply</button>
-                </div>
+                <button type="button" class="sb-filter-scroll-btn sb-filter-scroll-next" id="sb-filter-scroll-next" aria-label="Scroll filters right">&#8250;</button>
+            </div>
+        </section>
+        <div class="sb-filter-dropdown-backdrop" id="sb-filter-dropdown-backdrop"></div>
+        <div class="sb-filter-dropdown-panel" id="sb-filter-dropdown-panel" hidden role="dialog" aria-modal="true"></div>
+        <div class="sb-filter-sheet-backdrop" id="sb-filter-sheet-backdrop"></div>
+        <aside class="sb-filter-sheet" id="sb-filter-sheet" aria-label="All filters">
+            <div class="sb-filter-sheet-header">
+                <div class="sb-filter-sheet-title">Filters</div>
+                <button type="button" class="sb-filter-sheet-close" id="sb-filter-sheet-close" aria-label="Close filters">&times;</button>
+            </div>
+            <div class="sb-filter-sheet-body" id="sb-filter-sheet-body"></div>
+            <div class="sb-filter-sheet-footer">
+                <button type="button" class="sb-filter-sheet-clear" id="sb-filter-sheet-clear">Clear all</button>
+                <button type="button" class="sb-filter-sheet-done" id="sb-filter-sheet-done">Done</button>
             </div>
         </aside>
 
+        <div class="sb-deals-shell">
         <div class="sb-deals-main">
-
-<!-- =================================== -->
-<!-- SECTION 1D: FILTERS + DEAL COUNT ROW -->
-<!-- =================================== -->
-<section class="sb-utility-row">
-  <div class="filter-controls">
-    <select id="sort-deals" class="sb-filter">
-      <option value="best">Sort: Best Deals</option>
-      <option value="price_asc">Sort: Price (low → high)</option>
-      <option value="price_desc">Sort: Price (high → low)</option>
-    </select>
-  </div>
-
-  <div id="deal-count" class="count-pill">
-    👀 Showing 117 deals
-  </div>
-</section>
-
-        <!-- ============================ -->
-        <!-- ACTIVE FILTERS INDICATOR     -->
-        <!-- ============================ -->
-        <section class="sb-active-filters" id="active-filters" aria-live="polite">
-            <div class="sb-active-left">
-                <span class="sb-active-label">Active:</span>
-                <div class="sb-chip-row" id="active-filter-chips"></div>
-            </div>
-
-            <button class="sb-clear-all" id="clear-all-filters" type="button">
-                Clear all
-            </button>
-        </section>
-
-        <!-- ============================ -->
-        <!-- SECTION 2: DEAL CARD GRID    -->
-        <!-- ============================ -->
         <section class="card-grid" id="deals-list">
             
     <div class="card card-tier-diamond"
          data-section="drinks"
          data-category="energy drink"
          data-retailer="walmart"
+         data-brand="ghost"
          data-price="2.0"
          data-percent="69.1"
          data-deal-count="1"
@@ -1514,19 +1261,110 @@
     </div>
     
 
-    <div class="card card-tier-fire"
+    <div class="card card-tier-diamond"
+         data-section="food"
+         data-category="bars"
+         data-retailer="target"
+         data-brand="pure protein"
+         data-price="4.19"
+         data-percent="30.1"
+         data-deal-count="2"
+         data-tier="diamond">
+        <div class="card-image-wrap">
+            
+        <div class="card-carousel" data-slide-count="2">
+            <div class="card-carousel-stage">
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Brookie"><a href="https://www.target.com/p/pure-protein-19g-protein-bar-brookie-4ct/-/A-92988629" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_7894dd44-bc54-4b14-9d33-0d19d288b98f?wid=600&amp;hei=600&amp;qlt=80" alt="Brookie" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Sundae Cone"><a href="https://www.target.com/p/pure-protein-19g-protein-bar-sundae-cone-4ct/-/A-92988626" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_c0311697-cf8b-4422-a551-46fe1b556cc4?wid=600&amp;hei=600&amp;qlt=80" alt="Sundae Cone" class="card-image" loading="lazy"/></a></div>
+            </div>
+            
+            <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
+            <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
+        
+            <div class="card-carousel-caption">Brookie</div>
+        </div>
+    
+            <div class="card-category-tag">Bars</div>
+            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
+            <div class='badge badge-elite'>💎 Diamond</div>
+        </div>
+        <div class="card-content">
+            <div class="card-pricing">
+                <span class='old-price'>$5.99</span>
+                <span class="new-price">$4.19</span>
+                <span class="percent-off">30% OFF</span>
+            </div>
+            <div class="card-title">Pure Protein Bar</div>
+            
+            <div class="card-footer">
+                <div class='availability online-only'>Online only</div>
+                
+            </div>
+            <a class="view-button view-target" href="https://www.target.com/p/pure-protein-19g-protein-bar-sundae-cone-4ct/-/A-92988626" target="_blank" rel="noopener noreferrer">
+                View on Target.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card card-tier-diamond"
          data-section="food"
          data-category="bars"
          data-retailer="kroger"
-         data-price="7.99"
-         data-percent="20.0"
+         data-brand="kind"
+         data-price="4.49"
+         data-percent="25.0"
          data-deal-count="4"
-         data-tier="fire">
+         data-tier="diamond">
         <div class="card-image-wrap">
             
         <div class="card-carousel" data-slide-count="4">
             <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Chocolate Mint"><a href="https://www.kroger.com/p/power-crunch-chocolate-mint-whey-protein-energy-bars/0064422573002" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0064422573002" alt="Chocolate Mint" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Peanut Butter"><a href="https://www.kroger.com/p/power-crunch-peanut-butter-creme-protein-energy-bars/0064422573079" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0064422573079" alt="Peanut Butter" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="2" data-flavor-name="Peanut Butter Fudge"><a href="https://www.kroger.com/p/power-crunch-peanut-butter-fudge-protein-energy-bars/0064422573006" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0064422573006" alt="Peanut Butter Fudge" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="3" data-flavor-name="Triple Chocolate"><a href="https://www.kroger.com/p/power-crunch-triple-chocolate-whey-protein-energy-bars/0064422573082" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0064422573082" alt="Triple Chocolate" class="card-image" loading="lazy"/></a></div>
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Almond Butter"><a href="https://www.kroger.com/p/kind-almond-butter-breakfast-protein-bars/0060265241929" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0060265241929" alt="Almond Butter" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Apple Cinnamon"><a href="https://www.kroger.com/p/kind-breakfast-apple-cinnamon-gluten-free-protein-bars/0060265265184" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0060265265184" alt="Apple Cinnamon" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="2" data-flavor-name="Dark Chocolate Cocoa"><a href="https://www.kroger.com/p/kind-dark-chocolate-cocoa-breakfast-protein-bars/0060265241930" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0060265241930" alt="Dark Chocolate Cocoa" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="3" data-flavor-name="Peanut Butter Banana Dark Chocolate"><a href="https://www.kroger.com/p/kind-peanut-butter-banana-dark-chocolate-breakfast-protein-bars/0060265241931" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0060265241931" alt="Peanut Butter Banana Dark Chocolate" class="card-image" loading="lazy"/></a></div>
+            </div>
+            
+            <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
+            <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
+        
+            <div class="card-carousel-caption">Almond Butter</div>
+        </div>
+    
+            <div class="card-category-tag">Bars</div>
+            <div class='pack-pill'><span class='pack-count'>6</span> <span class='pack-unit'>bars</span></div>
+            <div class='badge badge-elite'>💎 Diamond</div>
+        </div>
+        <div class="card-content">
+            <div class="card-pricing">
+                <span class='old-price'>$5.99</span>
+                <span class="new-price">$4.49</span>
+                <span class="percent-off">25% OFF</span>
+            </div>
+            <div class="card-title">KIND Protein Bar</div>
+            
+            <div class="card-footer">
+                <div class='availability both'>In-store & online</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/kind-almond-butter-breakfast-protein-bars/0060265241929" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card card-tier-fire"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-brand="clif builders"
+         data-price="17.99"
+         data-percent="21.7"
+         data-deal-count="2"
+         data-tier="fire">
+        <div class="card-image-wrap">
+            
+        <div class="card-carousel" data-slide-count="2">
+            <div class="card-carousel-stage">
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Chocolate Mint"><a href="https://www.kroger.com/p/clif-builders-chocolatey-mint-20g-protein-bars/0072225218359" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0072225218359" alt="Chocolate Mint" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Chocolate Peanut Butter"><a href="https://www.kroger.com/p/clif-builders-chocolatey-peanut-butter-20g-protein-bars/0072225223951" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0072225223951" alt="Chocolate Peanut Butter" class="card-image" loading="lazy"/></a></div>
             </div>
             
             <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
@@ -1536,22 +1374,22 @@
         </div>
     
             <div class="card-category-tag">Bars</div>
-            <div class='pack-pill'><span class='pack-count'>5</span> <span class='pack-unit'>bars</span></div>
+            <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
             <div class='badge badge-strong'>🔥 Fire</div>
         </div>
         <div class="card-content">
             <div class="card-pricing">
-                <span class='old-price'>$9.99</span>
-                <span class="new-price">$7.99</span>
-                <span class="percent-off">20% OFF</span>
+                <span class='old-price'>$22.99</span>
+                <span class="new-price">$17.99</span>
+                <span class="percent-off">22% OFF</span>
             </div>
-            <div class="card-title">Power Crunch Bar</div>
+            <div class="card-title">Clif Builders</div>
             
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
             </div>
-            <a class="view-button view-kroger" href="https://www.kroger.com/p/power-crunch-chocolate-mint-whey-protein-energy-bars/0064422573002" target="_blank" rel="noopener noreferrer">
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/clif-builders-chocolatey-mint-20g-protein-bars/0072225218359" target="_blank" rel="noopener noreferrer">
                 View on Kroger.com
             </a>
         </div>
@@ -1561,22 +1399,20 @@
     <div class="card card-tier-strong"
          data-section="drinks"
          data-category="energy drink"
-         data-retailer="kroger"
-         data-price="2.0"
-         data-percent="19.7"
-         data-deal-count="13"
+         data-retailer="walmart"
+         data-brand="ghost"
+         data-price="1.99"
+         data-percent="19.8"
+         data-deal-count="1"
          data-tier="strong">
         <div class="card-image-wrap">
             
-        <div class="card-carousel" data-slide-count="13">
+        <div class="card-carousel card-carousel--single" data-slide-count="1">
             <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Arctic Vibe (Frozen Berry)"><a href="https://www.kroger.com/p/celsius-sparkling-arctic-vibe-energy-drink-can/0088939202141" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088939202141" alt="Arctic Vibe (Frozen Berry)" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Blue Razz Lemonade"><a href="https://www.kroger.com/p/celsius-fizz-free-blue-razz-lemonade-energy-drink-can/0088939200139" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088939200139" alt="Blue Razz Lemonade" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="2" data-flavor-name="Cosmic Vibe (Fruit Punch)"><a href="https://www.kroger.com/p/celsius-sparkling-cosmic-vibe-energy-drink-can/0088939200120" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088939200120" alt="Cosmic Vibe (Fruit Punch)" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="3" data-flavor-name="Fuji Apple Pear"><a href="https://www.kroger.com/p/celsius-sparkling-fuji-apple-pear-energy-drink-can/0088939201017" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088939201017" alt="Fuji Apple Pear" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="4" data-flavor-name="Green Apple Cherry"><a href="https://www.kroger.com/p/celsius-sparkling-green-apple-cherry-energy-drink-can/0088939200086" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088939200086" alt="Green Apple Cherry" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="5" data-flavor-name="Kiwi Guava"><a href="https://www.kroger.com/p/celsius-sparkling-kiwi-guava-energy-drink-can/0088939201014" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088939201014" alt="Kiwi Guava" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="6" data-flavor-name="Mango Lemonade"><a href="https://www.kroger.com/p/celsius-sparkling-mango-lemonade-energy-drink-can/0088939200178" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088939200178" alt="Mango Lemonade" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="7" data-flavor-name="Orange"><a href="https://www.kroger.com/p/celsius-sparkling-orange-energy-drink-can/0088939200031" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088939200031" alt="Orange" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="8" data-flavor-name="Peach Vibe"><a href="https://www.kroger.com/p/celsius-sparkling-peach-vibe-energy-drink-can/0088939201019" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088939201019" alt="Peach Vibe" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="9" data-flavor-name="Playa Vibe (Pina Colada)"><a href="https://www.kroger.com/p/celsius-sparkling-playa-vibe-energy-drink-can/0088939200174" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088939200174" alt="Playa Vibe (Pina Colada)" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="10" data-flavor-name="Retro Vibe (Sherbert Slush)"><a href="https://www.kroger.com/p/celsius-sparkling-retro-vibe-energy-drink-can/0088939200172" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088939200172" alt="Retro Vibe (Sherbert Slush)" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="11" data-flavor-name="Watermelon"><a href="https://www.kroger.com/p/celsius-sparkling-watermelon-energy-drink-can/0088939200362" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088939200362" alt="Watermelon" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="12" data-flavor-name="Wild Berry"><a href="https://www.kroger.com/p/celsius-sparkling-wild-berry-energy-drink-can/0088939200032" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088939200032" alt="Wild Berry" class="card-image" loading="lazy"/></a></div>
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Sour Patch Kids Blue Raspberry"><a href="https://www.walmart.com/ip/GHOST-ENERGY-Zero-Sugars-Energy-Drink-SOUR-PATCH-KIDS-Blue-Raspberry-16-fl-oz-Can/105327573" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/GHOST-ENERGY-Zero-Sugars-Energy-Drink-SOUR-PATCH-KIDS-Blue-Raspberry-16-fl-oz-Can_aba4647d-f190-4a7c-af4b-8fe63466b970.a2285526e4a5cb7dda2b82476e8d7f3b.png?odnHeight=573&amp;odnWidth=573&amp;odnBg=FFFFFF" alt="Sour Patch Kids Blue Raspberry" class="card-image" loading="lazy"/></a></div>
             </div>
             
-            <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
-            <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
-        
-            <div class="card-carousel-caption">Arctic Vibe (Frozen Berry)</div>
+            <div class="card-carousel-caption">Sour Patch Kids Blue Raspberry</div>
         </div>
     
             <div class="card-category-tag">Energy Drink</div>
@@ -1585,18 +1421,18 @@
         </div>
         <div class="card-content">
             <div class="card-pricing">
-                <span class='old-price'>$2.49</span>
-                <span class="new-price">$2.00</span>
+                <span class='old-price'>$2.48</span>
+                <span class="new-price">$1.99</span>
                 <span class="percent-off">20% OFF</span>
             </div>
-            <div class="card-title">Celsius Energy Drink</div>
+            <div class="card-title">Ghost Energy Drink</div>
             
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
+                <div class='availability online-only'>Online only</div>
                 
             </div>
-            <a class="view-button view-kroger" href="https://www.kroger.com/p/celsius-sparkling-orange-energy-drink-can/0088939200031" target="_blank" rel="noopener noreferrer">
-                View on Kroger.com
+            <a class="view-button view-walmart" href="https://www.walmart.com/ip/GHOST-ENERGY-Zero-Sugars-Energy-Drink-SOUR-PATCH-KIDS-Blue-Raspberry-16-fl-oz-Can/105327573" target="_blank" rel="noopener noreferrer">
+                View on Walmart.com
             </a>
         </div>
     </div>
@@ -1606,6 +1442,7 @@
          data-section="food"
          data-category="bars"
          data-retailer="target"
+         data-brand="quest"
          data-price="20.99"
          data-percent="19.2"
          data-deal-count="1"
@@ -1645,24 +1482,28 @@
 
     <div class="card card-tier-strong"
          data-section="food"
-         data-category="cookies &amp; sweets"
+         data-category="bars"
          data-retailer="kroger"
+         data-brand="built"
          data-price="8.99"
          data-percent="18.2"
-         data-deal-count="1"
+         data-deal-count="2"
          data-tier="strong">
         <div class="card-image-wrap">
             
-        <div class="card-carousel card-carousel--single" data-slide-count="1">
+        <div class="card-carousel" data-slide-count="2">
             <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Peanut Butter Cups"><a href="https://www.kroger.com/p/quest-protein-low-sugar-peanut-butter-cups/0088884901131" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088884901131" alt="Peanut Butter Cups" class="card-image" loading="lazy"/></a></div>
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Brownie Batter"><a href="https://www.kroger.com/p/built-puff-snack-bars-brownie-batter-17g-protein-140-calorie-4-count-box-1-41-oz-bars/0084022930380" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0084022930380" alt="Brownie Batter" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Coconut"><a href="https://www.kroger.com/p/built-puff-snack-bar-coconut-17g-protein-collagen-140-calories/0084022930381" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0084022930381" alt="Coconut" class="card-image" loading="lazy"/></a></div>
             </div>
             
-            <div class="card-carousel-caption">Peanut Butter Cups</div>
+            <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
+            <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
+        
+            <div class="card-carousel-caption">Brownie Batter</div>
         </div>
     
-            <div class="card-category-tag">Cookies &amp; Sweets</div>
-            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
+            <div class="card-category-tag">Bars</div>
+            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
             <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
@@ -1671,57 +1512,13 @@
                 <span class="new-price">$8.99</span>
                 <span class="percent-off">18% OFF</span>
             </div>
-            <div class="card-title">Quest Peanut Butter Cups</div>
+            <div class="card-title">Built Puff</div>
             
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
             </div>
-            <a class="view-button view-kroger" href="https://www.kroger.com/p/quest-protein-low-sugar-peanut-butter-cups/0088884901131" target="_blank" rel="noopener noreferrer">
-                View on Kroger.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card card-tier-strong"
-         data-section="drinks"
-         data-category="energy drink"
-         data-retailer="kroger"
-         data-price="2.5"
-         data-percent="16.4"
-         data-deal-count="6"
-         data-tier="strong">
-        <div class="card-image-wrap">
-            
-        <div class="card-carousel" data-slide-count="6">
-            <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Cherry Limeade"><a href="https://www.kroger.com/p/ghost-zero-sugar-cherry-limeade-energy-drink-can/0081002829894?fulfillment=PICKUP" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0081002829894" alt="Cherry Limeade" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Faze Pop"><a href="https://www.kroger.com/p/ghost-zero-sugar-faze-pop-energy-drink/0081008581909?fulfillment=PICKUP" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0081008581909" alt="Faze Pop" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="2" data-flavor-name="Orange Cream"><a href="https://www.kroger.com/p/ghost-zero-sugar-orange-cream-energy-drink-can/0081008581218?fulfillment=PICKUP" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0081008581218" alt="Orange Cream" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="3" data-flavor-name="Peaches"><a href="https://www.kroger.com/p/ghost-zero-sugar-peaches-energy-drink-can/0081012852985?fulfillment=PICKUP" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0081012852985" alt="Peaches" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="4" data-flavor-name="Sour Pink Lemonade"><a href="https://www.kroger.com/p/ghost-zero-sugar-sour-pink-lemonade-energy-drink-can/0081012852006?fulfillment=PICKUP" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0081012852006" alt="Sour Pink Lemonade" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="5" data-flavor-name="Welch&#x27;s Grape"><a href="https://www.kroger.com/p/ghost-zero-sugar-welch-s-grape-energy-drink-can/0081012852819?fulfillment=PICKUP&amp;searchType=suggestions" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0081012852819" alt="Welch&#x27;s Grape" class="card-image" loading="lazy"/></a></div>
-            </div>
-            
-            <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
-            <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
-        
-            <div class="card-carousel-caption">Cherry Limeade</div>
-        </div>
-    
-            <div class="card-category-tag">Energy Drink</div>
-            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-protein'>💪 Strong</div>
-        </div>
-        <div class="card-content">
-            <div class="card-pricing">
-                <span class='old-price'>$2.99</span>
-                <span class="new-price">$2.50</span>
-                <span class="percent-off">16% OFF</span>
-            </div>
-            <div class="card-title">Ghost Energy Drink</div>
-            
-            <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
-                
-            </div>
-            <a class="view-button view-kroger" href="https://www.kroger.com/p/ghost-zero-sugar-welch-s-grape-energy-drink-can/0081012852819?fulfillment=PICKUP&amp;searchType=suggestions" target="_blank" rel="noopener noreferrer">
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/built-puff-snack-bars-brownie-batter-17g-protein-140-calorie-4-count-box-1-41-oz-bars/0084022930380" target="_blank" rel="noopener noreferrer">
                 View on Kroger.com
             </a>
         </div>
@@ -1732,6 +1529,7 @@
          data-section="food"
          data-category="chips &amp; crunchy"
          data-retailer="walmart"
+         data-brand="quest"
          data-price="15.93"
          data-percent="16.0"
          data-deal-count="1"
@@ -1772,42 +1570,88 @@
     <div class="card card-tier-strong"
          data-section="food"
          data-category="bars"
-         data-retailer="target"
-         data-price="5.09"
-         data-percent="15.0"
-         data-deal-count="2"
+         data-retailer="kroger"
+         data-brand="david"
+         data-price="2.79"
+         data-percent="15.2"
+         data-deal-count="3"
          data-tier="strong">
         <div class="card-image-wrap">
             
-        <div class="card-carousel" data-slide-count="2">
+        <div class="card-carousel" data-slide-count="3">
             <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Brookie"><a href="https://www.target.com/p/pure-protein-19g-protein-bar-brookie-4ct/-/A-92988629" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_7894dd44-bc54-4b14-9d33-0d19d288b98f?wid=600&amp;hei=600&amp;qlt=80" alt="Brookie" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Sundae Cone"><a href="https://www.target.com/p/pure-protein-19g-protein-bar-sundae-cone-4ct/-/A-92988626" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_c0311697-cf8b-4422-a551-46fe1b556cc4?wid=600&amp;hei=600&amp;qlt=80" alt="Sundae Cone" class="card-image" loading="lazy"/></a></div>
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Chocolate Chip Cookie Dough"><a href="https://www.kroger.com/p/david-chocolate-chip-cookie-dough-protein-bar/0085006430300" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0085006430300" alt="Chocolate Chip Cookie Dough" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Fudge Brownie"><a href="https://www.kroger.com/p/david-fudge-brownie-flavored-protein-bar/0085006430303" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0085006430303" alt="Fudge Brownie" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="2" data-flavor-name="Peanut Butter Chocolate Chunk"><a href="https://www.kroger.com/p/david-peanut-butter-chocolate-chunk-protein-bar/0085006430315" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0085006430315" alt="Peanut Butter Chocolate Chunk" class="card-image" loading="lazy"/></a></div>
             </div>
             
             <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
             <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
         
-            <div class="card-carousel-caption">Brookie</div>
+            <div class="card-carousel-caption">Chocolate Chip Cookie Dough</div>
         </div>
     
             <div class="card-category-tag">Bars</div>
-            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
             <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
             <div class="card-pricing">
-                <span class='old-price'>$5.99</span>
-                <span class="new-price">$5.09</span>
+                <span class='old-price'>$3.29</span>
+                <span class="new-price">$2.79</span>
                 <span class="percent-off">15% OFF</span>
             </div>
-            <div class="card-title">Pure Protein Bar</div>
+            <div class="card-title">David Protein Bar</div>
             
             <div class="card-footer">
-                <div class='availability check'>Check store availability</div>
+                <div class='availability both'>In-store & online</div>
                 
             </div>
-            <a class="view-button view-target" href="https://www.target.com/p/pure-protein-19g-protein-bar-sundae-cone-4ct/-/A-92988626" target="_blank" rel="noopener noreferrer">
-                View on Target.com
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/david-chocolate-chip-cookie-dough-protein-bar/0085006430300" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card card-tier-strong"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-brand="power crunch"
+         data-price="8.49"
+         data-percent="15.0"
+         data-deal-count="4"
+         data-tier="strong">
+        <div class="card-image-wrap">
+            
+        <div class="card-carousel" data-slide-count="4">
+            <div class="card-carousel-stage">
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Chocolate Mint"><a href="https://www.kroger.com/p/power-crunch-chocolate-mint-whey-protein-energy-bars/0064422573002" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0064422573002" alt="Chocolate Mint" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Peanut Butter"><a href="https://www.kroger.com/p/power-crunch-peanut-butter-creme-protein-energy-bars/0064422573079" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0064422573079" alt="Peanut Butter" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="2" data-flavor-name="Peanut Butter Fudge"><a href="https://www.kroger.com/p/power-crunch-peanut-butter-fudge-protein-energy-bars/0064422573006" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0064422573006" alt="Peanut Butter Fudge" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="3" data-flavor-name="Triple Chocolate"><a href="https://www.kroger.com/p/power-crunch-triple-chocolate-whey-protein-energy-bars/0064422573082" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0064422573082" alt="Triple Chocolate" class="card-image" loading="lazy"/></a></div>
+            </div>
+            
+            <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
+            <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
+        
+            <div class="card-carousel-caption">Chocolate Mint</div>
+        </div>
+    
+            <div class="card-category-tag">Bars</div>
+            <div class='pack-pill'><span class='pack-count'>5</span> <span class='pack-unit'>bars</span></div>
+            <div class='badge badge-protein'>💪 Strong</div>
+        </div>
+        <div class="card-content">
+            <div class="card-pricing">
+                <span class='old-price'>$9.99</span>
+                <span class="new-price">$8.49</span>
+                <span class="percent-off">15% OFF</span>
+            </div>
+            <div class="card-title">Power Crunch Bar</div>
+            
+            <div class="card-footer">
+                <div class='availability both'>In-store & online</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/power-crunch-chocolate-mint-whey-protein-energy-bars/0064422573002" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
             </a>
         </div>
     </div>
@@ -1817,21 +1661,22 @@
          data-section="drinks"
          data-category="energy drink"
          data-retailer="walmart"
+         data-brand="celsius"
          data-price="1.97"
          data-percent="13.6"
-         data-deal-count="12"
+         data-deal-count="6"
          data-tier="strong">
         <div class="card-image-wrap">
             
-        <div class="card-carousel" data-slide-count="12">
+        <div class="card-carousel" data-slide-count="6">
             <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Arctic Vibe (Frozen Berry)"><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Arctic-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/273850672" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Arctic-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_e3b42317-cdf6-4d9a-8f43-60f7ee275202.4022cec9e47ce0280d16633b71a4cd7b.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Arctic Vibe (Frozen Berry)" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Cosmic Vibe (Fruit Punch)"><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Cosmic-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/1699265356" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Cosmic-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_49e9cb1f-cdd1-4292-9911-c93dcd9467dd.423d38dbd6920fe533d4a2ee96a4cf47.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Cosmic Vibe (Fruit Punch)" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="2" data-flavor-name="Kiwi Guava"><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Kiwi-Guava-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/483179684" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Kiwi-Guava-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_7a16e405-8ab4-432e-8937-b44b1bcc0a48.95b110b5c867baed438ef5eaa8655e8c.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Kiwi Guava" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="3" data-flavor-name="Kiwi Strawberry"><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Kiwi-Strawberry-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/5957535724" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Kiwi-Strawberry-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_d761c725-c36a-4711-9ab7-7f4f8f6bea82.4ed9664b7dc390c65ee28aeddf260902.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Kiwi Strawberry" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="4" data-flavor-name="Orange"><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Orange-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/108931301" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Orange-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_d4c577c2-1e47-4c70-8421-57a2bb824fc1.edb36081e97fddc675fcb62f888cfe7a.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Orange" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="5" data-flavor-name="Peach Mango Green Tea"><a href="https://www.walmart.com/ip/CELSIUS-Fizz-Free-Peach-Mango-Green-Tea-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/175103532" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/CELSIUS-Fizz-Free-Peach-Mango-Green-Tea-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_303cf513-31a8-44ec-b80a-60173a9c1ee0.f87a68d91893d415b59d259221feb198.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Peach Mango Green Tea" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="6" data-flavor-name="Peach Vibe"><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Peach-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/768004808" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Peach-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_ac52ad45-8bf4-447b-9da9-ec2de92c8164.02835f7020362532703b19bebc374abe.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Peach Vibe" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="7" data-flavor-name="Playa Vibe (Pina Colada)"><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Playa-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/11166912078" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Playa-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_d754285a-9624-4006-a6bf-16930ab022a6.1c5e5fc0736781c57652168e4f6840b6.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Playa Vibe (Pina Colada)" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="8" data-flavor-name="Retro Vibe (Sherbert Slush)"><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Retro-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/11148014826" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Retro-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_9d9cebe1-ea85-4784-a469-82205bd26cfa.a8a07ea573e09ca20e3ae390e5724be2.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Retro Vibe (Sherbert Slush)" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="9" data-flavor-name="Tropical Vibe (Starfruit Pineapple)"><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Tropical-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/225465367" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Tropical-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_1e54aa77-3832-4d4c-908d-632a1e6e70a3.40b260dae09010a531138af9f7c060ce.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Tropical Vibe (Starfruit Pineapple)" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="10" data-flavor-name="Watermelon"><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Watermelon-Essential-Energy-Drink-12-fl-oz-Single-Can/974614417" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Watermelon-Essential-Energy-Drink-12-fl-oz-Single-Can_e451904f-0d3b-45b8-b6b9-0c62e765b7c5.f0fd519b0d4f938d3467cfba29da4298.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Watermelon" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="11" data-flavor-name="Watermelon Lemonade"><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Watermelon-Lemonade-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/8864669016" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Watermelon-Lemonade-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_b4966b7c-ad94-4261-bac0-5ebf5173e70a.21414bd9216d3af253d025e1435cbe47.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Watermelon Lemonade" class="card-image" loading="lazy"/></a></div>
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Cosmic Vibe (Fruit Punch)"><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Cosmic-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/1699265356" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Cosmic-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_49e9cb1f-cdd1-4292-9911-c93dcd9467dd.423d38dbd6920fe533d4a2ee96a4cf47.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Cosmic Vibe (Fruit Punch)" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Kiwi Strawberry"><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Kiwi-Strawberry-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/5957535724" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Kiwi-Strawberry-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_d761c725-c36a-4711-9ab7-7f4f8f6bea82.4ed9664b7dc390c65ee28aeddf260902.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Kiwi Strawberry" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="2" data-flavor-name="Playa Vibe (Pina Colada)"><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Playa-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/11166912078" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Playa-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_d754285a-9624-4006-a6bf-16930ab022a6.1c5e5fc0736781c57652168e4f6840b6.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Playa Vibe (Pina Colada)" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="3" data-flavor-name="Retro Vibe (Sherbert Slush)"><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Retro-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/11148014826" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Retro-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_9d9cebe1-ea85-4784-a469-82205bd26cfa.a8a07ea573e09ca20e3ae390e5724be2.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Retro Vibe (Sherbert Slush)" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="4" data-flavor-name="Watermelon"><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Watermelon-Essential-Energy-Drink-12-fl-oz-Single-Can/974614417" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Watermelon-Essential-Energy-Drink-12-fl-oz-Single-Can_e451904f-0d3b-45b8-b6b9-0c62e765b7c5.f0fd519b0d4f938d3467cfba29da4298.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Watermelon" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="5" data-flavor-name="Watermelon Lemonade"><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Watermelon-Lemonade-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/8864669016" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Watermelon-Lemonade-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_b4966b7c-ad94-4261-bac0-5ebf5173e70a.21414bd9216d3af253d025e1435cbe47.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Watermelon Lemonade" class="card-image" loading="lazy"/></a></div>
             </div>
             
             <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
             <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
         
-            <div class="card-carousel-caption">Arctic Vibe (Frozen Berry)</div>
+            <div class="card-carousel-caption">Cosmic Vibe (Fruit Punch)</div>
         </div>
     
             <div class="card-category-tag">Energy Drink</div>
@@ -1847,10 +1692,10 @@
             <div class="card-title">Celsius Energy Drink</div>
             
             <div class="card-footer">
-                <div class='availability in-store'>In-store</div>
+                <div class='availability both'>In-store & online</div>
                 
             </div>
-            <a class="view-button view-walmart" href="https://www.walmart.com/ip/CELSIUS-Fizz-Free-Peach-Mango-Green-Tea-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/175103532" target="_blank" rel="noopener noreferrer">
+            <a class="view-button view-walmart" href="https://www.walmart.com/ip/CELSIUS-Sparkling-Playa-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/11166912078" target="_blank" rel="noopener noreferrer">
                 View on Walmart.com
             </a>
         </div>
@@ -1861,138 +1706,7 @@
          data-section="food"
          data-category="bars"
          data-retailer="kroger"
-         data-price="9.49"
-         data-percent="13.6"
-         data-deal-count="6"
-         data-tier="strong">
-        <div class="card-image-wrap">
-            
-        <div class="card-carousel" data-slide-count="6">
-            <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Birthday Cake"><a href="https://www.kroger.com/p/quest-birthday-cake-protein-bars/0088884900668" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088884900668" alt="Birthday Cake" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Chocolate Chip Cookie Dough"><a href="https://www.kroger.com/p/quest-chocolate-chip-cookie-dough-protein-bars/0088884900385" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088884900385" alt="Chocolate Chip Cookie Dough" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="2" data-flavor-name="Cookies &amp; Cream"><a href="https://www.kroger.com/p/quest-cookies-cream-protein-bars/0088884900386" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088884900386" alt="Cookies &amp; Cream" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="3" data-flavor-name="Double Chocolate Chunk"><a href="https://www.kroger.com/p/quest-double-chocolate-chunk-protein-bars/0088884900391" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088884900391" alt="Double Chocolate Chunk" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="4" data-flavor-name="Oatmeal Chocolate Chip"><a href="https://www.kroger.com/p/quest-oatmeal-chocolate-chip-protein-bars/0088884900517" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088884900517" alt="Oatmeal Chocolate Chip" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="5" data-flavor-name="S&#x27;mores"><a href="https://www.kroger.com/p/quest-s-mores-protein-bars/0088884900389" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088884900389" alt="S&#x27;mores" class="card-image" loading="lazy"/></a></div>
-            </div>
-            
-            <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
-            <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
-        
-            <div class="card-carousel-caption">Birthday Cake</div>
-        </div>
-    
-            <div class="card-category-tag">Bars</div>
-            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-protein'>💪 Strong</div>
-        </div>
-        <div class="card-content">
-            <div class="card-pricing">
-                <span class='old-price'>$10.99</span>
-                <span class="new-price">$9.49</span>
-                <span class="percent-off">14% OFF</span>
-            </div>
-            <div class="card-title">Quest Protein Bar</div>
-            
-            <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
-                
-            </div>
-            <a class="view-button view-kroger" href="https://www.kroger.com/p/quest-cookies-cream-protein-bars/0088884900386" target="_blank" rel="noopener noreferrer">
-                View on Kroger.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card card-tier-strong"
-         data-section="food"
-         data-category="bars"
-         data-retailer="kroger"
-         data-price="9.49"
-         data-percent="13.6"
-         data-deal-count="3"
-         data-tier="strong">
-        <div class="card-image-wrap">
-            
-        <div class="card-carousel" data-slide-count="3">
-            <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Chocolate Caramel Pecan"><a href="https://www.kroger.com/p/quest-chocolate-caramel-pecan-hero-protein-bars/0088884900615" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088884900615" alt="Chocolate Caramel Pecan" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Chocolate Peanut Butter"><a href="https://www.kroger.com/p/quest-crispy-chocolate-peanut-butter-protein-bars/0088884901094" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088884901094" alt="Chocolate Peanut Butter" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="2" data-flavor-name="Cookies &amp; Cream"><a href="https://www.kroger.com/p/quest-crispy-cookies-cream-protein-bars/0088884901160" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088884901160" alt="Cookies &amp; Cream" class="card-image" loading="lazy"/></a></div>
-            </div>
-            
-            <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
-            <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
-        
-            <div class="card-carousel-caption">Chocolate Caramel Pecan</div>
-        </div>
-    
-            <div class="card-category-tag">Bars</div>
-            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-protein'>💪 Strong</div>
-        </div>
-        <div class="card-content">
-            <div class="card-pricing">
-                <span class='old-price'>$10.99</span>
-                <span class="new-price">$9.49</span>
-                <span class="percent-off">14% OFF</span>
-            </div>
-            <div class="card-title">Quest Hero Protein Bar</div>
-            
-            <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
-                
-            </div>
-            <a class="view-button view-kroger" href="https://www.kroger.com/p/quest-crispy-cookies-cream-protein-bars/0088884901160" target="_blank" rel="noopener noreferrer">
-                View on Kroger.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card card-tier-strong"
-         data-section="food"
-         data-category="bars"
-         data-retailer="kroger"
-         data-price="9.49"
-         data-percent="13.6"
-         data-deal-count="2"
-         data-tier="strong">
-        <div class="card-image-wrap">
-            
-        <div class="card-carousel" data-slide-count="2">
-            <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Chocolate Explosion"><a href="https://www.kroger.com/p/quest-overload-chocolate-explosion-protein-bar/0088884901578" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088884901578" alt="Chocolate Explosion" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Sundae Funday"><a href="https://www.kroger.com/p/quest-overload-sundae-funday-protein-bar/0088884901581" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088884901581" alt="Sundae Funday" class="card-image" loading="lazy"/></a></div>
-            </div>
-            
-            <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
-            <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
-        
-            <div class="card-carousel-caption">Chocolate Explosion</div>
-        </div>
-    
-            <div class="card-category-tag">Bars</div>
-            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-protein'>💪 Strong</div>
-        </div>
-        <div class="card-content">
-            <div class="card-pricing">
-                <span class='old-price'>$10.99</span>
-                <span class="new-price">$9.49</span>
-                <span class="percent-off">14% OFF</span>
-            </div>
-            <div class="card-title">Quest Overload</div>
-            
-            <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
-                
-            </div>
-            <a class="view-button view-kroger" href="https://www.kroger.com/p/quest-overload-sundae-funday-protein-bar/0088884901581" target="_blank" rel="noopener noreferrer">
-                View on Kroger.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card card-tier-strong"
-         data-section="food"
-         data-category="bars"
-         data-retailer="kroger"
+         data-brand="built"
          data-price="2.5"
          data-percent="13.5"
          data-deal-count="2"
@@ -2037,21 +1751,22 @@
          data-section="food"
          data-category="bars"
          data-retailer="kroger"
-         data-price="5.99"
-         data-percent="11.8"
-         data-deal-count="2"
+         data-brand="rxbar"
+         data-price="9.99"
+         data-percent="13.1"
+         data-deal-count="6"
          data-tier="strong">
         <div class="card-image-wrap">
             
-        <div class="card-carousel" data-slide-count="2">
+        <div class="card-carousel" data-slide-count="6">
             <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Cookies &amp; Crème"><a href="https://www.kroger.com/p/clif-bar-cookies-creme-energy-protein-bars/0072225206946" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0072225206946" alt="Cookies &amp; Crème" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Cool Mint Chocolate"><a href="https://www.kroger.com/p/clif-bar-cool-mint-chocolate-with-caffeine-energy-protein-bars/0072225206868" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0072225206868" alt="Cool Mint Chocolate" class="card-image" loading="lazy"/></a></div>
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Blueberry"><a href="https://www.kroger.com/p/rxbar-blueberry-protein-bars/0085803000843" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0085803000843" alt="Blueberry" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Chocolate Sea Salt"><a href="https://www.kroger.com/p/rxbar-chocolate-sea-salt-protein-bars/0085803000841" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0085803000841" alt="Chocolate Sea Salt" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="2" data-flavor-name="Coconut Chocolate"><a href="https://www.kroger.com/p/rxbar-coconut-chocolate-protein-bars/0085803000844" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0085803000844" alt="Coconut Chocolate" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="3" data-flavor-name="Peanut Butter Chocolate"><a href="https://www.kroger.com/p/rxbar-peanut-butter-chocolate-protein-bars/0085803000842" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0085803000842" alt="Peanut Butter Chocolate" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="4" data-flavor-name="Strawberry"><a href="https://www.kroger.com/p/rxbar-strawberry-protein-bars/0019390800628" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0019390800628" alt="Strawberry" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="5" data-flavor-name="Vanilla Almond"><a href="https://www.kroger.com/p/rxbar-vanilla-almond-protein-bars/0019390800178" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0019390800178" alt="Vanilla Almond" class="card-image" loading="lazy"/></a></div>
             </div>
             
             <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
             <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
         
-            <div class="card-carousel-caption">Cookies &amp; Crème</div>
+            <div class="card-carousel-caption">Blueberry</div>
         </div>
     
             <div class="card-category-tag">Bars</div>
@@ -2060,17 +1775,17 @@
         </div>
         <div class="card-content">
             <div class="card-pricing">
-                <span class='old-price'>$6.79</span>
-                <span class="new-price">$5.99</span>
-                <span class="percent-off">12% OFF</span>
+                <span class='old-price'>$11.49</span>
+                <span class="new-price">$9.99</span>
+                <span class="percent-off">13% OFF</span>
             </div>
-            <div class="card-title">Clif Bar</div>
+            <div class="card-title">RXBAR</div>
             
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
             </div>
-            <a class="view-button view-kroger" href="https://www.kroger.com/p/clif-bar-cookies-creme-energy-protein-bars/0072225206946" target="_blank" rel="noopener noreferrer">
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/rxbar-chocolate-sea-salt-protein-bars/0085803000841" target="_blank" rel="noopener noreferrer">
                 View on Kroger.com
             </a>
         </div>
@@ -2081,6 +1796,7 @@
          data-section="food"
          data-category="cookies &amp; sweets"
          data-retailer="walmart"
+         data-brand="myprotein"
          data-price="22.99"
          data-percent="11.5"
          data-deal-count="2"
@@ -2125,6 +1841,7 @@
          data-section="drinks"
          data-category="rtd protein shake"
          data-retailer="kroger"
+         data-brand="fairlife"
          data-price="3.99"
          data-percent="11.1"
          data-deal-count="2"
@@ -2168,51 +1885,8 @@
     <div class="card card-tier-strong"
          data-section="food"
          data-category="chips &amp; crunchy"
-         data-retailer="kroger"
-         data-price="7.99"
-         data-percent="11.1"
-         data-deal-count="2"
-         data-tier="strong">
-        <div class="card-image-wrap">
-            
-        <div class="card-carousel" data-slide-count="2">
-            <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Cheddar"><a href="https://www.kroger.com/p/quest-nutrition-protein-cheddar-blast-cheese-crackers/0088884901206" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088884901206" alt="Cheddar" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Spicy Cheddar"><a href="https://www.kroger.com/p/quest-nutrition-spicy-cheddar-protein-cheese-crackers/0088884901400" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088884901400" alt="Spicy Cheddar" class="card-image" loading="lazy"/></a></div>
-            </div>
-            
-            <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
-            <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
-        
-            <div class="card-carousel-caption">Cheddar</div>
-        </div>
-    
-            <div class="card-category-tag">Chips &amp; Crunchy</div>
-            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-protein'>💪 Strong</div>
-        </div>
-        <div class="card-content">
-            <div class="card-pricing">
-                <span class='old-price'>$8.99</span>
-                <span class="new-price">$7.99</span>
-                <span class="percent-off">11% OFF</span>
-            </div>
-            <div class="card-title">Quest Crackers</div>
-            
-            <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
-                
-            </div>
-            <a class="view-button view-kroger" href="https://www.kroger.com/p/quest-nutrition-protein-cheddar-blast-cheese-crackers/0088884901206" target="_blank" rel="noopener noreferrer">
-                View on Kroger.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card card-tier-strong"
-         data-section="food"
-         data-category="chips &amp; crunchy"
          data-retailer="walmart"
+         data-brand="quest"
          data-price="8.48"
          data-percent="10.5"
          data-deal-count="1"
@@ -2254,6 +1928,7 @@
          data-section="food"
          data-category="bars"
          data-retailer="walmart"
+         data-brand="clif"
          data-price="5.72"
          data-percent="10.3"
          data-deal-count="5"
@@ -2298,6 +1973,7 @@
          data-section="food"
          data-category="bars"
          data-retailer="walmart"
+         data-brand="clif"
          data-price="17.16"
          data-percent="10.3"
          data-deal-count="1"
@@ -2339,6 +2015,7 @@
          data-section="food"
          data-category="bars"
          data-retailer="walmart"
+         data-brand="clif"
          data-price="51.48"
          data-percent="10.3"
          data-deal-count="1"
@@ -2376,221 +2053,11 @@
     </div>
     
 
-    <div class="card card-tier-strong"
-         data-section="drinks"
-         data-category="rtd protein shake"
-         data-retailer="walmart"
-         data-price="12.88"
-         data-percent="10.1"
-         data-deal-count="1"
-         data-tier="strong">
-        <div class="card-image-wrap">
-            
-        <div class="card-carousel card-carousel--single" data-slide-count="1">
-            <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Vanilla"><a href="https://www.walmart.com/ip/Core-Power-Protein-Shake-with-26g-Protein-by-fairlife-Milk-Vanilla-14-fl-oz/5262660866" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/4-pack-Core-Power-Protein-Shake-with-26g-Protein-by-fairlife-Milk-Vanilla-14-fl-oz_79f5a0d2-1754-4cb7-8678-959b090ef4de.51fdf61ac90deefcd0b040c1d0ef4d1b.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Vanilla" class="card-image" loading="lazy"/></a></div>
-            </div>
-            
-            <div class="card-carousel-caption">Vanilla</div>
-        </div>
-    
-            <div class="card-category-tag">RTD Protein Shake</div>
-            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-protein'>💪 Strong</div>
-        </div>
-        <div class="card-content">
-            <div class="card-pricing">
-                <span class='old-price'>$14.32</span>
-                <span class="new-price">$12.88</span>
-                <span class="percent-off">10% OFF</span>
-            </div>
-            <div class="card-title">Core Power Protein Shake</div>
-            
-            <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
-                
-            </div>
-            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Core-Power-Protein-Shake-with-26g-Protein-by-fairlife-Milk-Vanilla-14-fl-oz/5262660866" target="_blank" rel="noopener noreferrer">
-                View on Walmart.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card card-tier-sale"
-         data-section="food"
-         data-category="cookies &amp; sweets"
-         data-retailer="kroger"
-         data-price="9.49"
-         data-percent="9.5"
-         data-deal-count="1"
-         data-tier="sale">
-        <div class="card-image-wrap">
-            
-        <div class="card-carousel card-carousel--single" data-slide-count="1">
-            <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Chocolate Chip"><a href="https://www.kroger.com/p/quest-nutrition-chocolate-chip-protein-cookies/0088884900600" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088884900600" alt="Chocolate Chip" class="card-image" loading="lazy"/></a></div>
-            </div>
-            
-            <div class="card-carousel-caption">Chocolate Chip</div>
-        </div>
-    
-            <div class="card-category-tag">Cookies &amp; Sweets</div>
-            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-everyday'>🏷️ On Sale</div>
-        </div>
-        <div class="card-content">
-            <div class="card-pricing">
-                <span class='old-price'>$10.49</span>
-                <span class="new-price">$9.49</span>
-                <span class="percent-off">10% OFF</span>
-            </div>
-            <div class="card-title">Quest Protein Cookies</div>
-            
-            <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
-                
-            </div>
-            <a class="view-button view-kroger" href="https://www.kroger.com/p/quest-nutrition-chocolate-chip-protein-cookies/0088884900600" target="_blank" rel="noopener noreferrer">
-                View on Kroger.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card card-tier-sale"
-         data-section="food"
-         data-category="bars"
-         data-retailer="kroger"
-         data-price="7.99"
-         data-percent="9.1"
-         data-deal-count="6"
-         data-tier="sale">
-        <div class="card-image-wrap">
-            
-        <div class="card-carousel" data-slide-count="6">
-            <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Caramel Almond &amp; Sea Salt"><a href="https://www.kroger.com/p/kind-caramel-almond-sea-salt-energy-bars/0060265227029" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0060265227029" alt="Caramel Almond &amp; Sea Salt" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Cranberry Almond"><a href="https://www.kroger.com/p/kind-cranberry-almond-fruit-and-nut-bars/0060265227150" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0060265227150" alt="Cranberry Almond" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="2" data-flavor-name="Dark Choclate Mocha"><a href="https://www.kroger.com/p/kind-dark-chocolate-mocha-almond-nut-bars/0060265227154" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0060265227154" alt="Dark Choclate Mocha" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="3" data-flavor-name="Dark Chocolate Cherry Cashew"><a href="https://www.kroger.com/p/kind-dark-chocolate-cherry-cashew-fruit-and-nut-bars/0060265227142" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0060265227142" alt="Dark Chocolate Cherry Cashew" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="4" data-flavor-name="Dark Chocolate Nuts &amp; Sea Salt"><a href="https://www.kroger.com/p/kind-dark-chocolate-nuts-sea-salt-nut-bars/0060265227028" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0060265227028" alt="Dark Chocolate Nuts &amp; Sea Salt" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="5" data-flavor-name="Peanut Butter Dark Chocolate"><a href="https://www.kroger.com/p/kind-peanut-butter-dark-chocolate-bars/0060265227134" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0060265227134" alt="Peanut Butter Dark Chocolate" class="card-image" loading="lazy"/></a></div>
-            </div>
-            
-            <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
-            <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
-        
-            <div class="card-carousel-caption">Caramel Almond &amp; Sea Salt</div>
-        </div>
-    
-            <div class="card-category-tag">Bars</div>
-            <div class='pack-pill'><span class='pack-count'>6</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-everyday'>🏷️ On Sale</div>
-        </div>
-        <div class="card-content">
-            <div class="card-pricing">
-                <span class='old-price'>$8.79</span>
-                <span class="new-price">$7.99</span>
-                <span class="percent-off">9% OFF</span>
-            </div>
-            <div class="card-title">KIND Bar</div>
-            
-            <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
-                
-            </div>
-            <a class="view-button view-kroger" href="https://www.kroger.com/p/kind-dark-chocolate-nuts-sea-salt-nut-bars/0060265227028" target="_blank" rel="noopener noreferrer">
-                View on Kroger.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card card-tier-sale"
-         data-section="food"
-         data-category="bars"
-         data-retailer="walmart"
-         data-price="8.07"
-         data-percent="9.1"
-         data-deal-count="1"
-         data-tier="sale">
-        <div class="card-image-wrap">
-            
-        <div class="card-carousel card-carousel--single" data-slide-count="1">
-            <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Birthday Cake"><a href="https://www.walmart.com/ip/Quest-Crispy-Hero-Protein-Bar-Birthday-Cake-Flavor-Low-Sugar-4-Count/5727669028" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/Quest-Crispy-Hero-Protein-Bar-Birthday-Cake-Flavor-Low-Sugar-4-Count_1979f8c2-7c0c-4730-9e87-134ba4576451.5c7d50baac593be030f702c6e7b71557.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Birthday Cake" class="card-image" loading="lazy"/></a></div>
-            </div>
-            
-            <div class="card-carousel-caption">Birthday Cake</div>
-        </div>
-    
-            <div class="card-category-tag">Bars</div>
-            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-everyday'>🏷️ On Sale</div>
-        </div>
-        <div class="card-content">
-            <div class="card-pricing">
-                <span class='old-price'>$8.88</span>
-                <span class="new-price">$8.07</span>
-                <span class="percent-off">9% OFF</span>
-            </div>
-            <div class="card-title">Quest Hero Protein Bar</div>
-            
-            <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
-                
-            </div>
-            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Quest-Crispy-Hero-Protein-Bar-Birthday-Cake-Flavor-Low-Sugar-4-Count/5727669028" target="_blank" rel="noopener noreferrer">
-                View on Walmart.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card card-tier-sale"
-         data-section="food"
-         data-category="bars"
-         data-retailer="kroger"
-         data-price="9.99"
-         data-percent="9.1"
-         data-deal-count="7"
-         data-tier="sale">
-        <div class="card-image-wrap">
-            
-        <div class="card-carousel" data-slide-count="7">
-            <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Birthday Cake"><a href="https://www.kroger.com/p/barebells-birthday-cake-protein-bar/0085005410879" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0085005410879" alt="Birthday Cake" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Caramel Cashew"><a href="https://www.kroger.com/p/barebells-caramel-cashew-protein-bars/0085000042961" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0085000042961" alt="Caramel Cashew" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="2" data-flavor-name="Chocolate Dough"><a href="https://www.kroger.com/p/barebells-chocolate-dough-protein-bars/0085000042962" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0085000042962" alt="Chocolate Dough" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="3" data-flavor-name="Cookes &amp; Caramel"><a href="https://www.kroger.com/p/barebells-cookies-caramel-protein-bars/0085005410880" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0085005410880" alt="Cookes &amp; Caramel" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="4" data-flavor-name="Cookies &amp; Cream"><a href="https://www.kroger.com/p/barebells-cookies-cream-protein-bars/0085000042959" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0085000042959" alt="Cookies &amp; Cream" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="5" data-flavor-name="Creamy Crisp"><a href="https://www.kroger.com/p/barebells-creamy-crisp-protein-bars/0085005410848" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0085005410848" alt="Creamy Crisp" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="6" data-flavor-name="Salty Peanut"><a href="https://www.kroger.com/p/barebells-salty-peanut-protein-bar/0085000042960" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0085000042960" alt="Salty Peanut" class="card-image" loading="lazy"/></a></div>
-            </div>
-            
-            <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
-            <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
-        
-            <div class="card-carousel-caption">Birthday Cake</div>
-        </div>
-    
-            <div class="card-category-tag">Bars</div>
-            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-everyday'>🏷️ On Sale</div>
-        </div>
-        <div class="card-content">
-            <div class="card-pricing">
-                <span class='old-price'>$10.99</span>
-                <span class="new-price">$9.99</span>
-                <span class="percent-off">9% OFF</span>
-            </div>
-            <div class="card-title">Barebells Protein Bar</div>
-            
-            <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
-                
-            </div>
-            <a class="view-button view-kroger" href="https://www.kroger.com/p/barebells-cookies-caramel-protein-bars/0085005410880" target="_blank" rel="noopener noreferrer">
-                View on Kroger.com
-            </a>
-        </div>
-    </div>
-    
-
     <div class="card card-tier-sale"
          data-section="drinks"
          data-category="energy drink"
          data-retailer="kroger"
+         data-brand="celsius"
          data-price="19.99"
          data-percent="9.1"
          data-deal-count="2"
@@ -2635,6 +2102,7 @@
          data-section="food"
          data-category="bars"
          data-retailer="kroger"
+         data-brand="rxbar"
          data-price="2.0"
          data-percent="8.7"
          data-deal-count="5"
@@ -2679,15 +2147,16 @@
          data-section="food"
          data-category="bars"
          data-retailer="target"
+         data-brand="barebells"
          data-price="27.49"
          data-percent="8.3"
-         data-deal-count="2"
+         data-deal-count="5"
          data-tier="sale">
         <div class="card-image-wrap">
             
-        <div class="card-carousel" data-slide-count="2">
+        <div class="card-carousel" data-slide-count="5">
             <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Caramel Cashew"><a href="https://www.target.com/p/barebells-nutrition-bars-caramel-cashew/-/A-83942844" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_7a272a2a-21ee-4fa7-ba04-5fb7a3ab7f7e?wid=600&amp;hei=600&amp;qlt=80" alt="Caramel Cashew" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Cookies &amp; Cream"><a href="https://www.target.com/p/barebells-nutrition-bars-cookies-cream/-/A-83942841" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_fa246207-5fe6-4bf7-81e0-0b6b1389a63b?wid=600&amp;hei=600&amp;qlt=80" alt="Cookies &amp; Cream" class="card-image" loading="lazy"/></a></div>
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Caramel Cashew"><a href="https://www.target.com/p/barebells-nutrition-bars-caramel-cashew/-/A-83942844" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_7a272a2a-21ee-4fa7-ba04-5fb7a3ab7f7e?wid=600&amp;hei=600&amp;qlt=80" alt="Caramel Cashew" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Chocolate Dough"><a href="https://www.target.com/p/barebells-nutrition-bars-salty-peanut-7-76oz-4pk/-/A-83942845" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_2b84ce93-6a84-46d9-9dc1-702862db604d?wid=600&amp;hei=600&amp;qlt=80" alt="Chocolate Dough" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="2" data-flavor-name="Cookies &amp; Cream"><a href="https://www.target.com/p/barebells-nutrition-bars-cookies-cream/-/A-83942841" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_fa246207-5fe6-4bf7-81e0-0b6b1389a63b?wid=600&amp;hei=600&amp;qlt=80" alt="Cookies &amp; Cream" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="3" data-flavor-name="Salty Peanut"><a href="https://www.target.com/p/barebells-nutrition-bars-salty-peanut-7-76oz-4pk/-/A-83942843" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_da236175-24bb-4fa3-9ce7-eb8cfc04e65e?wid=600&amp;hei=600&amp;qlt=80" alt="Salty Peanut" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="4" data-flavor-name="White Chocolate Almond"><a href="https://www.target.com/p/barebells-nutrition-bars-salty-peanut-7-76oz-4pk/-/A-83942842" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_c0f0dca6-6fe3-4c3b-a83d-f2fd0804f766?wid=600&amp;hei=600&amp;qlt=80" alt="White Chocolate Almond" class="card-image" loading="lazy"/></a></div>
             </div>
             
             <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
@@ -2723,6 +2192,49 @@
          data-section="food"
          data-category="bars"
          data-retailer="target"
+         data-brand="clif"
+         data-price="5.99"
+         data-percent="7.7"
+         data-deal-count="1"
+         data-tier="sale">
+        <div class="card-image-wrap">
+            
+        <div class="card-carousel card-carousel--single" data-slide-count="1">
+            <div class="card-carousel-stage">
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Chocolate Chip"><a href="https://www.target.com/p/clif-bar-chocolate-chip-energy-bars/-/A-90611818" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_191760e6-ffe6-41b1-92e9-79a95575a464?wid=1200&amp;hei=1200&amp;qlt=80" alt="Chocolate Chip" class="card-image" loading="lazy"/></a></div>
+            </div>
+            
+            <div class="card-carousel-caption">Chocolate Chip</div>
+        </div>
+    
+            <div class="card-category-tag">Bars</div>
+            <div class='pack-pill'><span class='pack-count'>5</span> <span class='pack-unit'>bars</span></div>
+            <div class='badge badge-everyday'>🏷️ On Sale</div>
+        </div>
+        <div class="card-content">
+            <div class="card-pricing">
+                <span class='old-price'>$6.49</span>
+                <span class="new-price">$5.99</span>
+                <span class="percent-off">8% OFF</span>
+            </div>
+            <div class="card-title">Clif Bar</div>
+            
+            <div class="card-footer">
+                <div class='availability both'>In-store & online</div>
+                
+            </div>
+            <a class="view-button view-target" href="https://www.target.com/p/clif-bar-chocolate-chip-energy-bars/-/A-90611818" target="_blank" rel="noopener noreferrer">
+                View on Target.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card card-tier-sale"
+         data-section="food"
+         data-category="bars"
+         data-retailer="target"
+         data-brand="larabar"
          data-price="11.99"
          data-percent="7.7"
          data-deal-count="1"
@@ -2763,86 +2275,88 @@
     <div class="card card-tier-sale"
          data-section="food"
          data-category="bars"
-         data-retailer="target"
-         data-price="14.89"
-         data-percent="6.9"
-         data-deal-count="3"
-         data-tier="sale">
-        <div class="card-image-wrap">
-            
-        <div class="card-carousel" data-slide-count="3">
-            <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Chocolate Deluxe"><a href="https://www.target.com/p/pure-protein-bar-chocolate-deluxe-12ct/-/A-14217302" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_f21ec858-cd92-4dd8-82c7-3478b4dd8316?wid=600&amp;hei=600&amp;qlt=80" alt="Chocolate Deluxe" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Chocolate Peanut Butter"><a href="https://www.target.com/p/pure-protein-bar-chocolate-peanut-butter-12ct/-/A-14217303" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_8ab72653-0eb7-47d0-aaea-03e9b1c15efd?wid=600&amp;hei=600&amp;qlt=80" alt="Chocolate Peanut Butter" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="2" data-flavor-name="Chocolate Peanut Caramel"><a href="https://www.target.com/p/pure-protein-20g-protein-bar-chocolate-peanut-caramel-12ct/-/A-15138759" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_34407d93-bcaa-4c77-9562-8c07f5cc02a3?wid=600&amp;hei=600&amp;qlt=80" alt="Chocolate Peanut Caramel" class="card-image" loading="lazy"/></a></div>
-            </div>
-            
-            <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
-            <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
-        
-            <div class="card-carousel-caption">Chocolate Deluxe</div>
-        </div>
-    
-            <div class="card-category-tag">Bars</div>
-            <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-everyday'>🏷️ On Sale</div>
-        </div>
-        <div class="card-content">
-            <div class="card-pricing">
-                <span class='old-price'>$15.99</span>
-                <span class="new-price">$14.89</span>
-                <span class="percent-off">7% OFF</span>
-            </div>
-            <div class="card-title">Pure Protein Bar</div>
-            
-            <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
-                
-            </div>
-            <a class="view-button view-target" href="https://www.target.com/p/pure-protein-bar-chocolate-deluxe-12ct/-/A-14217302" target="_blank" rel="noopener noreferrer">
-                View on Target.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card card-tier-sale"
-         data-section="food"
-         data-category="bars"
-         data-retailer="target"
-         data-price="27.99"
+         data-retailer="kroger"
+         data-brand="barebells"
+         data-price="2.79"
          data-percent="6.7"
-         data-deal-count="3"
+         data-deal-count="7"
          data-tier="sale">
         <div class="card-image-wrap">
             
-        <div class="card-carousel" data-slide-count="3">
+        <div class="card-carousel" data-slide-count="7">
             <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Chocolate Dough"><a href="https://www.target.com/p/barebells-nutrition-bars-salty-peanut-7-76oz-4pk/-/A-83942845" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_2b84ce93-6a84-46d9-9dc1-702862db604d?wid=600&amp;hei=600&amp;qlt=80" alt="Chocolate Dough" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Salty Peanut"><a href="https://www.target.com/p/barebells-nutrition-bars-salty-peanut-7-76oz-4pk/-/A-83942843" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_da236175-24bb-4fa3-9ce7-eb8cfc04e65e?wid=600&amp;hei=600&amp;qlt=80" alt="Salty Peanut" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="2" data-flavor-name="White Chocolate Almond"><a href="https://www.target.com/p/barebells-nutrition-bars-salty-peanut-7-76oz-4pk/-/A-83942842" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_c0f0dca6-6fe3-4c3b-a83d-f2fd0804f766?wid=600&amp;hei=600&amp;qlt=80" alt="White Chocolate Almond" class="card-image" loading="lazy"/></a></div>
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Birthday Cake"><a href="https://www.kroger.com/p/barebells-birthday-cake-protein-bar/0085005410860" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0085005410860" alt="Birthday Cake" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Caramel Cashew"><a href="https://www.kroger.com/p/barebells-caramel-cashew-protein-bar/0085000042909" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0085000042909" alt="Caramel Cashew" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="2" data-flavor-name="Chocolate Dough"><a href="https://www.kroger.com/p/barebells-chocolate-dough-protein-bar/0085000042926" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0085000042926" alt="Chocolate Dough" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="3" data-flavor-name="Cookes &amp; Caramel"><a href="https://www.kroger.com/p/barebells-cookies-caramel-protein-bar/0085005410854" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0085005410854" alt="Cookes &amp; Caramel" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="4" data-flavor-name="Cookies &amp; Cream"><a href="https://www.kroger.com/p/barebells-cookies-cream-protein-bar-55g/0085000042911" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0085000042911" alt="Cookies &amp; Cream" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="5" data-flavor-name="Creamy Crisp"><a href="https://www.kroger.com/p/barebells-creamy-crisp-protein-bar/0085000042941" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0085000042941" alt="Creamy Crisp" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="6" data-flavor-name="Salty Peanut"><a href="https://www.kroger.com/p/barebells-salty-peanut-protein-bars/0085000042908" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0085000042908" alt="Salty Peanut" class="card-image" loading="lazy"/></a></div>
             </div>
             
             <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
             <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
         
-            <div class="card-carousel-caption">Chocolate Dough</div>
+            <div class="card-carousel-caption">Birthday Cake</div>
         </div>
     
             <div class="card-category-tag">Bars</div>
-            <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>bars</span></div>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
             <div class='badge badge-everyday'>🏷️ On Sale</div>
         </div>
         <div class="card-content">
             <div class="card-pricing">
-                <span class='old-price'>$29.99</span>
-                <span class="new-price">$27.99</span>
+                <span class='old-price'>$2.99</span>
+                <span class="new-price">$2.79</span>
                 <span class="percent-off">7% OFF</span>
             </div>
             <div class="card-title">Barebells Protein Bar</div>
             
             <div class="card-footer">
-                <div class='availability check'>Check store availability</div>
+                <div class='availability both'>In-store & online</div>
                 
             </div>
-            <a class="view-button view-target" href="https://www.target.com/p/barebells-nutrition-bars-salty-peanut-7-76oz-4pk/-/A-83942842" target="_blank" rel="noopener noreferrer">
-                View on Target.com
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/barebells-birthday-cake-protein-bar/0085005410860" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card card-tier-sale"
+         data-section="food"
+         data-category="bars"
+         data-retailer="kroger"
+         data-brand="barebells"
+         data-price="2.79"
+         data-percent="6.7"
+         data-deal-count="2"
+         data-tier="sale">
+        <div class="card-image-wrap">
+            
+        <div class="card-carousel" data-slide-count="2">
+            <div class="card-carousel-stage">
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Caramel Choco"><a href="https://www.kroger.com/p/barebells-soft-caramel-choco-protein-bar/0085006495000" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0085006495000" alt="Caramel Choco" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Peanut Caramel"><a href="https://www.kroger.com/p/barebells-salted-peanut-caramel-soft-protein-bar/0085006495004" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0085006495004" alt="Peanut Caramel" class="card-image" loading="lazy"/></a></div>
+            </div>
+            
+            <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
+            <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
+        
+            <div class="card-carousel-caption">Caramel Choco</div>
+        </div>
+    
+            <div class="card-category-tag">Bars</div>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
+            <div class='badge badge-everyday'>🏷️ On Sale</div>
+        </div>
+        <div class="card-content">
+            <div class="card-pricing">
+                <span class='old-price'>$2.99</span>
+                <span class="new-price">$2.79</span>
+                <span class="percent-off">7% OFF</span>
+            </div>
+            <div class="card-title">Barebells Soft Bar</div>
+            
+            <div class="card-footer">
+                <div class='availability both'>In-store & online</div>
+                
+            </div>
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/barebells-soft-caramel-choco-protein-bar/0085006495000" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
             </a>
         </div>
     </div>
@@ -2852,6 +2366,7 @@
          data-section="food"
          data-category="bars"
          data-retailer="target"
+         data-brand="quest"
          data-price="21.49"
          data-percent="6.5"
          data-deal-count="1"
@@ -2892,171 +2407,43 @@
     <div class="card card-tier-sale"
          data-section="food"
          data-category="bars"
-         data-retailer="target"
-         data-price="8.99"
-         data-percent="6.3"
-         data-deal-count="8"
+         data-retailer="kroger"
+         data-brand="kind"
+         data-price="8.29"
+         data-percent="5.7"
+         data-deal-count="6"
          data-tier="sale">
         <div class="card-image-wrap">
             
-        <div class="card-carousel" data-slide-count="8">
+        <div class="card-carousel" data-slide-count="6">
             <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Birthday Cake"><a href="https://www.target.com/p/barebells-nutrition-bars-birthday-cake-7-76oz-4pk/-/A-94299305" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_f9bfc807-ae56-4a92-8e9c-98d60c95fbe4?wid=600&amp;hei=600&amp;qlt=80" alt="Birthday Cake" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Caramel Cashew"><a href="https://www.target.com/p/barebells-nutrition-bars-caramel-cashew/-/A-89709564" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_f4358461-9a5e-4c2b-9f1a-df008def9321?wid=600&amp;hei=600&amp;qlt=80" alt="Caramel Cashew" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="2" data-flavor-name="Chocolate Dough"><a href="https://www.target.com/p/barebells-nutrition-bars-chocolate-dough-4pk/-/A-89709562" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_709998c2-4e9b-428c-8936-e0eb053ccf39?wid=600&amp;hei=600&amp;qlt=80" alt="Chocolate Dough" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="3" data-flavor-name="Cookes &amp; Caramel"><a href="https://www.target.com/p/barebells-nutrition-bars-cookies-38-caramel-4pk/-/A-93060745" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_81d45b05-dfc2-497f-aa97-a5390c36b373?wid=600&amp;hei=600&amp;qlt=80" alt="Cookes &amp; Caramel" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="4" data-flavor-name="Cookies &amp; Cream"><a href="https://www.target.com/p/barebells-nutrition-bars-cookies-cream/-/A-89709561" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_e2225597-c23a-41dc-9715-fb050991caa6?wid=600&amp;hei=600&amp;qlt=80" alt="Cookies &amp; Cream" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="5" data-flavor-name="Creamy Crisp"><a href="https://www.target.com/p/barebells-nutrition-bars-creamy-crisp-7-76oz-4pk/-/A-92506496" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_f581ee6e-3873-4e3f-a3a7-495a9fe1591c?wid=600&amp;hei=600&amp;qlt=80" alt="Creamy Crisp" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="6" data-flavor-name="Minty Chocolate"><a href="https://www.target.com/p/barebells-soft-minty-chocolate-protein-bars-7-76oz-4pk-16gms-protein/-/A-94719712" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_f521b363-7a1f-4361-972b-661f61143ce0?wid=600&amp;hei=600&amp;qlt=80" alt="Minty Chocolate" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="7" data-flavor-name="Salty Peanut"><a href="https://www.target.com/p/barebells-nutrition-bars-salty-peanut-7-76oz-4pk/-/A-89709563" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_d54f650e-f3d2-40c9-92b8-708af8b99332?wid=600&amp;hei=600&amp;qlt=80" alt="Salty Peanut" class="card-image" loading="lazy"/></a></div>
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Caramel Almond &amp; Sea Salt"><a href="https://www.kroger.com/p/kind-caramel-almond-sea-salt-energy-bars/0060265227029" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0060265227029" alt="Caramel Almond &amp; Sea Salt" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Cranberry Almond"><a href="https://www.kroger.com/p/kind-cranberry-almond-fruit-and-nut-bars/0060265227150" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0060265227150" alt="Cranberry Almond" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="2" data-flavor-name="Dark Choclate Mocha"><a href="https://www.kroger.com/p/kind-dark-chocolate-mocha-almond-nut-bars/0060265227154" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0060265227154" alt="Dark Choclate Mocha" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="3" data-flavor-name="Dark Chocolate Cherry Cashew"><a href="https://www.kroger.com/p/kind-dark-chocolate-cherry-cashew-fruit-and-nut-bars/0060265227142" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0060265227142" alt="Dark Chocolate Cherry Cashew" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="4" data-flavor-name="Dark Chocolate Nuts &amp; Sea Salt"><a href="https://www.kroger.com/p/kind-dark-chocolate-nuts-sea-salt-nut-bars/0060265227028" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0060265227028" alt="Dark Chocolate Nuts &amp; Sea Salt" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="5" data-flavor-name="Peanut Butter Dark Chocolate"><a href="https://www.kroger.com/p/kind-peanut-butter-dark-chocolate-bars/0060265227134" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0060265227134" alt="Peanut Butter Dark Chocolate" class="card-image" loading="lazy"/></a></div>
             </div>
             
             <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
             <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
         
-            <div class="card-carousel-caption">Birthday Cake</div>
+            <div class="card-carousel-caption">Caramel Almond &amp; Sea Salt</div>
         </div>
     
             <div class="card-category-tag">Bars</div>
-            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
+            <div class='pack-pill'><span class='pack-count'>6</span> <span class='pack-unit'>bars</span></div>
             <div class='badge badge-everyday'>🏷️ On Sale</div>
         </div>
         <div class="card-content">
             <div class="card-pricing">
-                <span class='old-price'>$9.59</span>
-                <span class="new-price">$8.99</span>
+                <span class='old-price'>$8.79</span>
+                <span class="new-price">$8.29</span>
                 <span class="percent-off">6% OFF</span>
             </div>
-            <div class="card-title">Barebells Protein Bar</div>
+            <div class="card-title">KIND Bar</div>
             
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
             </div>
-            <a class="view-button view-target" href="https://www.target.com/p/barebells-nutrition-bars-cookies-cream/-/A-89709561" target="_blank" rel="noopener noreferrer">
-                View on Target.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card card-tier-sale"
-         data-section="food"
-         data-category="bars"
-         data-retailer="target"
-         data-price="8.99"
-         data-percent="6.3"
-         data-deal-count="3"
-         data-tier="sale">
-        <div class="card-image-wrap">
-            
-        <div class="card-carousel" data-slide-count="3">
-            <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Caramel Choco"><a href="https://www.target.com/p/barebells-soft-protein-bars-caramel-choco-7-76oz-4pk/-/A-94133803" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_529469bb-ed02-46f6-9e4f-d15e22937cd5?wid=600&amp;hei=600&amp;qlt=80" alt="Caramel Choco" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Peanut Butter"><a href="https://www.target.com/p/barebells-nutrition-protein-bars-peanut-butter-7-76oz-4pk/-/A-94409127" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_96b31006-2a77-4f79-b91e-70034737beb0?wid=600&amp;hei=600&amp;qlt=80" alt="Peanut Butter" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="2" data-flavor-name="Peanut Caramel"><a href="https://www.target.com/p/barebells-soft-protein-bars-salted-peanut-caramel-7-76oz-4pk/-/A-94133804" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_fc5c3c5d-52fe-410c-a6ea-897fea82acec?wid=600&amp;hei=600&amp;qlt=80" alt="Peanut Caramel" class="card-image" loading="lazy"/></a></div>
-            </div>
-            
-            <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
-            <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
-        
-            <div class="card-carousel-caption">Caramel Choco</div>
-        </div>
-    
-            <div class="card-category-tag">Bars</div>
-            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-everyday'>🏷️ On Sale</div>
-        </div>
-        <div class="card-content">
-            <div class="card-pricing">
-                <span class='old-price'>$9.59</span>
-                <span class="new-price">$8.99</span>
-                <span class="percent-off">6% OFF</span>
-            </div>
-            <div class="card-title">Barebells Soft Bar</div>
-            
-            <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
-                
-            </div>
-            <a class="view-button view-target" href="https://www.target.com/p/barebells-nutrition-protein-bars-peanut-butter-7-76oz-4pk/-/A-94409127" target="_blank" rel="noopener noreferrer">
-                View on Target.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card card-tier-sale"
-         data-section="food"
-         data-category="bars"
-         data-retailer="target"
-         data-price="8.99"
-         data-percent="5.3"
-         data-deal-count="1"
-         data-tier="sale">
-        <div class="card-image-wrap">
-            
-        <div class="card-carousel card-carousel--single" data-slide-count="1">
-            <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Banana Caramel"><a href="https://www.target.com/p/barebells-soft-banana-caramel-protein-bars-7-76oz-4pk-16gms-protein/-/A-94719714" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_a245dbde-3a0e-4c7a-8d35-1f81a3bf5594?wid=600&amp;hei=600&amp;qlt=80" alt="Banana Caramel" class="card-image" loading="lazy"/></a></div>
-            </div>
-            
-            <div class="card-carousel-caption">Banana Caramel</div>
-        </div>
-    
-            <div class="card-category-tag">Bars</div>
-            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-everyday'>🏷️ On Sale</div>
-        </div>
-        <div class="card-content">
-            <div class="card-pricing">
-                <span class='old-price'>$9.49</span>
-                <span class="new-price">$8.99</span>
-                <span class="percent-off">5% OFF</span>
-            </div>
-            <div class="card-title">Barebells Soft Bar</div>
-            
-            <div class="card-footer">
-                <div class='availability online-only'>Online only</div>
-                
-            </div>
-            <a class="view-button view-target" href="https://www.target.com/p/barebells-soft-banana-caramel-protein-bars-7-76oz-4pk-16gms-protein/-/A-94719714" target="_blank" rel="noopener noreferrer">
-                View on Target.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card card-tier-sale"
-         data-section="food"
-         data-category="bars"
-         data-retailer="target"
-         data-price="8.99"
-         data-percent="5.3"
-         data-deal-count="2"
-         data-tier="sale">
-        <div class="card-image-wrap">
-            
-        <div class="card-carousel" data-slide-count="2">
-            <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Key Lime Pie"><a href="https://www.target.com/p/barebells-key-lime-pie-nutrition-bars-7-76oz-4pk-20gms-protein/-/A-94719711" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_913c783f-0aef-4e4e-ac01-f6fa770fe2e8?wid=600&amp;hei=600&amp;qlt=80" alt="Key Lime Pie" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Wild Cherry"><a href="https://www.target.com/p/barebells-wild-cherry-nutrition-bars-7-76oz-4pk-20gms-protein/-/A-94719713" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_a17821ba-3d1c-417a-ba47-b1e68ce3012d?wid=600&amp;hei=600&amp;qlt=80" alt="Wild Cherry" class="card-image" loading="lazy"/></a></div>
-            </div>
-            
-            <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
-            <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
-        
-            <div class="card-carousel-caption">Key Lime Pie</div>
-        </div>
-    
-            <div class="card-category-tag">Bars</div>
-            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-everyday'>🏷️ On Sale</div>
-        </div>
-        <div class="card-content">
-            <div class="card-pricing">
-                <span class='old-price'>$9.49</span>
-                <span class="new-price">$8.99</span>
-                <span class="percent-off">5% OFF</span>
-            </div>
-            <div class="card-title">Barebells Protein Bar</div>
-            
-            <div class="card-footer">
-                <div class='availability online-only'>Online only</div>
-                
-            </div>
-            <a class="view-button view-target" href="https://www.target.com/p/barebells-wild-cherry-nutrition-bars-7-76oz-4pk-20gms-protein/-/A-94719713" target="_blank" rel="noopener noreferrer">
-                View on Target.com
+            <a class="view-button view-kroger" href="https://www.kroger.com/p/kind-dark-chocolate-nuts-sea-salt-nut-bars/0060265227028" target="_blank" rel="noopener noreferrer">
+                View on Kroger.com
             </a>
         </div>
     </div>
@@ -3146,12 +2533,20 @@ document.addEventListener("DOMContentLoaded", function () {
   const grid = document.getElementById("deals-list");
   const cards = Array.from(document.querySelectorAll(".card"));
 
-  const sortSelect = document.getElementById("sort-deals");
-  const countEl = document.getElementById("deal-count");
-
-  const chipsWrap = document.getElementById("active-filter-chips");
-  const clearAllBtn = document.getElementById("clear-all-filters");
-  const activeSection = document.getElementById("active-filters");
+  const filterBarInner = document.getElementById("sb-filter-bar-inner");
+  const filterSheetBody = document.getElementById("sb-filter-sheet-body");
+  const filterMasterBtn = document.getElementById("sb-filter-master");
+  const filterMasterCount = document.getElementById("sb-filter-master-count");
+  const filterDropdownBackdrop = document.getElementById("sb-filter-dropdown-backdrop");
+  const filterDropdownPanel = document.getElementById("sb-filter-dropdown-panel");
+  const filterSheet = document.getElementById("sb-filter-sheet");
+  const filterSheetBackdrop = document.getElementById("sb-filter-sheet-backdrop");
+  const filterSheetClose = document.getElementById("sb-filter-sheet-close");
+  const filterSheetClear = document.getElementById("sb-filter-sheet-clear");
+  const filterSheetDone = document.getElementById("sb-filter-sheet-done");
+  const filterTrack = document.getElementById("sb-filter-bar-track");
+  const filterScrollPrev = document.getElementById("sb-filter-scroll-prev");
+  const filterScrollNext = document.getElementById("sb-filter-scroll-next");
 
   /* ============================
      NAV DRAWER (RIGHT)
@@ -3191,65 +2586,12 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   /* ============================
-     FILTER PANEL — mobile slide-over; desktop fixed float (see CSS)
+     FILTER BAR (Walmart-style pills)
      ============================ */
-  const openBtn = document.getElementById("sb-filter-open");
-  const drawer = document.getElementById("sb-filter-drawer");
-  const backdrop = document.getElementById("sb-filter-backdrop");
-  const closeBtn = document.getElementById("sb-filter-close");
-  const applyBtn = document.getElementById("sb-filter-apply");
-  const clearBtn = document.getElementById("sb-filter-clear");
-  const groupsWrap = document.getElementById("sb-filter-groups");
-  const filterCountEl = document.getElementById("sb-filter-count");
-  const mqFilterDesktop = window.matchMedia("(min-width: 992px)");
-
-  function setFilterOpenAria(isOpen) {
-    if (!openBtn) return;
-    openBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
-  }
-
-  function openDrawer() {
-    if (mqFilterDesktop.matches) return;
-    drawer?.classList.add("open");
-    backdrop?.classList.add("open");
-    setFilterOpenAria(true);
-  }
-
-  function closeDrawer() {
-    drawer?.classList.remove("open");
-    backdrop?.classList.remove("open");
-    setFilterOpenAria(false);
-  }
-
-  function syncFilterLayout() {
-    if (mqFilterDesktop.matches) {
-      closeDrawer();
-    }
-  }
-
-  openBtn?.addEventListener("click", function () {
-    if (mqFilterDesktop.matches) return;
-    if (drawer?.classList.contains("open")) closeDrawer();
-    else openDrawer();
-  });
-  backdrop?.addEventListener("click", closeDrawer);
-  closeBtn?.addEventListener("click", closeDrawer);
-  mqFilterDesktop.addEventListener("change", syncFilterLayout);
-  window.addEventListener("resize", syncFilterLayout);
-  syncFilterLayout();
-
-  document.addEventListener("keydown", function (ev) {
-    if (ev.key === "Escape") closeDrawer();
-  });
-
-  /* ============================
-     FILTER SYSTEM (checkbox sets)
-     ============================ */
-  if (!grid || !cards.length || !sortSelect || !countEl || !groupsWrap || !applyBtn || !clearBtn || !filterCountEl) {
+  if (!grid || !cards.length || !filterBarInner) {
     return;
   }
 
-  // Preserve original order
   cards.forEach(function(card, idx) {
     card.dataset.originalIndex = String(idx);
   });
@@ -3258,79 +2600,8 @@ document.addEventListener("DOMContentLoaded", function () {
     return Array.from(new Set(values.filter(Boolean))).sort();
   }
 
-  const retailers = uniq(cards.map(function(c) { return c.dataset.retailer; }));
-  const sections  = uniq(cards.map(function(c) { return c.dataset.section; }));
-  const categories = uniq(cards.map(function(c) { return c.dataset.category; }));
-
-  const selected = {
-    retailer: new Set(),
-    section: new Set(),
-    category: new Set(),
-  };
-
-  /* ============================
-     TIER FILTER PILLS
-     ============================ */
-  const tierPills = document.querySelectorAll(".sb-tier-pill:not(.sb-show-remaining)");
-  const selectedTiers = new Set(["diamond", "fire"]); // Default: Diamond and Fire deals
-  
-  // Initialize tier pills to show Diamond and Fire as active
-  tierPills.forEach(function(pill) {
-    const tier = pill.getAttribute("data-tier");
-    if (selectedTiers.has(tier)) {
-      pill.setAttribute("aria-pressed", "true");
-    } else {
-      pill.setAttribute("aria-pressed", "false");
-    }
-  });
-  
-  // Handle tier pill clicks
-  tierPills.forEach(function(pill) {
-    // Skip the "Show Remaining" pill - it has different behavior
-    if (pill.classList.contains("sb-show-remaining")) return;
-    
-    pill.addEventListener("click", function() {
-      const tier = this.getAttribute("data-tier");
-      const isPressed = this.getAttribute("aria-pressed") === "true";
-      
-      if (isPressed) {
-        selectedTiers.delete(tier);
-        this.setAttribute("aria-pressed", "false");
-      } else {
-        selectedTiers.add(tier);
-        this.setAttribute("aria-pressed", "true");
-      }
-      
-      applyFiltersAndSort();
-    });
-  });
-  
-  // Handle "Show Remaining" pill click
-  const showRemainingPill = document.getElementById("show-remaining-pill");
-  const remainingContainer = document.querySelector(".sb-tier-filters-remaining");
-  if (showRemainingPill) {
-    showRemainingPill.addEventListener("click", function() {
-      // Enable Strong and Sale tiers
-      selectedTiers.add("strong");
-      selectedTiers.add("sale");
-      
-      // Update pill states
-      const strongPill = document.querySelector('.sb-tier-pill[data-tier="strong"]');
-      const salePill = document.querySelector('.sb-tier-pill[data-tier="sale"]');
-      if (strongPill) strongPill.setAttribute("aria-pressed", "true");
-      if (salePill) salePill.setAttribute("aria-pressed", "true");
-      
-      // Hide the "Show Remaining" pill and its container
-      if (remainingContainer) remainingContainer.style.display = "none";
-      this.style.display = "none";
-      
-      applyFiltersAndSort();
-    });
-  }
-
   function titleize(s) {
     if (!s) return "";
-    // Handle special cases for proper title case
     const specialCases = {
       "rtd": "RTD",
       "protein": "Protein",
@@ -3344,190 +2615,292 @@ document.addEventListener("DOMContentLoaded", function () {
       "meat": "Meat",
       "energy": "Energy"
     };
-    
-    // Split by spaces, &, and - while preserving delimiters
     const parts = s.split(/([\s&\-])/);
     return parts.map(function(part) {
-      // Keep whitespace and delimiters as-is
       if (part.match(/^[\s&\-]$/)) return part;
       const lower = part.toLowerCase();
-      // Check special cases first
       if (specialCases[lower]) return specialCases[lower];
-      // Default: capitalize first letter, lowercase rest
       return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
     }).join("");
   }
 
-  function updateFilterCount() {
-    const total = selected.retailer.size + selected.section.size + selected.category.size;
-    filterCountEl.textContent = "(" + total + ")";
-  }
-
-  function buildGroup(key, title, options) {
-    const group = document.createElement("div");
-    group.className = "sb-filter-group open";
-
-    const header = document.createElement("div");
-    header.className = "sb-filter-group-header";
-
-    const left = document.createElement("div");
-    left.className = "sb-filter-group-title";
-    left.textContent = title;
-
-    const meta = document.createElement("div");
-    meta.className = "sb-filter-group-meta";
-    meta.textContent = "Any";
-
-    header.appendChild(left);
-    header.appendChild(meta);
-
-    const body = document.createElement("div");
-    body.className = "sb-filter-options";
-
-    function updateMeta() {
-      const n = selected[key].size;
-      meta.textContent = n === 0 ? "Any" : (n + " selected");
-    }
-
-    options.forEach(function(optVal) {
-      const label = document.createElement("label");
-      label.className = "sb-check";
-
-      const cb = document.createElement("input");
-      cb.type = "checkbox";
-      cb.value = optVal;
-
-      cb.addEventListener("change", function() {
-        if (cb.checked) selected[key].add(optVal);
-        else selected[key].delete(optVal);
-        updateMeta();
-        updateFilterCount();
-      });
-
-      const span = document.createElement("span");
-      span.textContent = titleize(optVal);
-
-      label.appendChild(cb);
-      label.appendChild(span);
-      body.appendChild(label);
-    });
-
-    header.addEventListener("click", function(e) {
-      if (e.target && e.target.tagName === "INPUT") return;
-      group.classList.toggle("open");
-    });
-
-    updateMeta();
-
-    group.appendChild(header);
-    group.appendChild(body);
-
-    group._key = key;
-    group._updateMeta = updateMeta;
-    return group;
-  }
-
-  // Render groups
-  groupsWrap.innerHTML = "";
-  const groupEls = [
-    buildGroup("retailer", "Retailer", retailers),
-    buildGroup("section", "Section", sections),
-    buildGroup("category", "Category", categories),
+  const FILTER_DEFS = [
+    { key: "retailer", label: "Retailer" },
+    { key: "section", label: "Section" },
+    { key: "category", label: "Category" },
+    { key: "brand", label: "Brand" },
   ];
-  groupEls.forEach(function(g) { groupsWrap.appendChild(g); });
+
+  const selected = {
+    retailer: new Set(),
+    section: new Set(),
+    category: new Set(),
+    brand: new Set(),
+  };
+
+  const pillWraps = {};
+  let openDropdownKey = null;
+
+  function cardMatchesSelected(card, excludeKey) {
+    const r = card.dataset.retailer;
+    const s = card.dataset.section;
+    const c = card.dataset.category;
+    const b = card.dataset.brand;
+
+    if (excludeKey !== "retailer" && selected.retailer.size > 0 && !selected.retailer.has(r)) return false;
+    if (excludeKey !== "section" && selected.section.size > 0 && !selected.section.has(s)) return false;
+    if (excludeKey !== "category" && selected.category.size > 0 && !selected.category.has(c)) return false;
+    if (excludeKey !== "brand" && selected.brand.size > 0 && !selected.brand.has(b)) return false;
+    return true;
+  }
+
+  function getSmartOptionsForKey(key) {
+    const matching = cards.filter(function(card) { return cardMatchesSelected(card, key); });
+
+    return uniq(matching.map(function(card) { return card.dataset[key]; })).map(function(v) {
+      return { value: v, label: titleize(v) };
+    });
+  }
+
+  function pruneInvalidSelections() {
+    FILTER_DEFS.forEach(function(def) {
+      const available = new Set(getSmartOptionsForKey(def.key).map(function(opt) { return opt.value; }));
+      Array.from(selected[def.key]).forEach(function(val) {
+        if (!available.has(val)) selected[def.key].delete(val);
+      });
+    });
+  }
+
+  function totalSelectedCount() {
+    return selected.retailer.size + selected.section.size
+      + selected.category.size + selected.brand.size;
+  }
+
+  function updateBadges() {
+    FILTER_DEFS.forEach(function(def) {
+      const wrap = pillWraps[def.key];
+      if (!wrap) return;
+      const badge = wrap.querySelector(".sb-filter-pill-badge");
+      const n = selected[def.key].size;
+      if (!badge) return;
+      if (n > 0) {
+        badge.textContent = String(n);
+        badge.hidden = false;
+      } else {
+        badge.hidden = true;
+      }
+    });
+    const total = totalSelectedCount();
+    if (filterMasterCount) {
+      if (total > 0) {
+        filterMasterCount.textContent = String(total);
+        filterMasterCount.hidden = false;
+      } else {
+        filterMasterCount.hidden = true;
+      }
+    }
+  }
 
   function syncCheckboxes(key) {
-    const group = groupEls.find(function(g) { return g._key === key; });
-    if (!group) return;
-    const inputs = group.querySelectorAll('input[type="checkbox"]');
-    inputs.forEach(function(cb) {
+    document.querySelectorAll('input[data-filter-key="' + key + '"]').forEach(function(cb) {
       cb.checked = selected[key].has(cb.value);
     });
-    if (group._updateMeta) group._updateMeta();
   }
 
-  function renderChips() {
-    if (!chipsWrap || !activeSection || !clearAllBtn) return;
+  function syncAllCheckboxes() {
+    FILTER_DEFS.forEach(function(def) { syncCheckboxes(def.key); });
+  }
 
-    chipsWrap.innerHTML = "";
-
-    function addChip(label, value, onClear) {
-      const chip = document.createElement("div");
-      chip.className = "sb-chip";
-      chip.innerHTML =
-        "<small>" + label + ":</small> " + value +
-        ' <button type="button" aria-label="Clear ' + label + '">×</button>';
-      chip.querySelector("button").addEventListener("click", onClear);
-      chipsWrap.appendChild(chip);
+  function closeAllDropdowns() {
+    openDropdownKey = null;
+    Object.keys(pillWraps).forEach(function(k) {
+      pillWraps[k].classList.remove("is-open");
+      const btn = pillWraps[k].querySelector(".sb-filter-pill");
+      if (btn) btn.setAttribute("aria-expanded", "false");
+    });
+    if (filterDropdownPanel) {
+      filterDropdownPanel.hidden = true;
+      filterDropdownPanel.innerHTML = "";
     }
+    filterDropdownBackdrop?.classList.remove("open");
+  }
 
-    selected.retailer.forEach(function(v) {
-      addChip("Retailer", titleize(v), function() {
-        selected.retailer.delete(v);
-        syncCheckboxes("retailer");
-        updateFilterCount();
-        applyFiltersAndSort();
+  function positionDropdownPanel(anchorBtn) {
+    if (!filterDropdownPanel || !anchorBtn) return;
+    filterDropdownPanel.hidden = false;
+    const rect = anchorBtn.getBoundingClientRect();
+    const panelWidth = filterDropdownPanel.offsetWidth;
+    const panelHeight = filterDropdownPanel.offsetHeight;
+    let left = rect.left;
+    let top = rect.bottom + 6;
+    left = Math.max(8, Math.min(left, window.innerWidth - panelWidth - 8));
+    if (top + panelHeight > window.innerHeight - 8) {
+      top = Math.max(8, rect.top - panelHeight - 6);
+    }
+    filterDropdownPanel.style.left = left + "px";
+    filterDropdownPanel.style.top = top + "px";
+  }
+
+  function openDropdown(key) {
+    closeAllDropdowns();
+    const wrap = pillWraps[key];
+    if (!wrap || !filterDropdownPanel) return;
+    const btn = wrap.querySelector(".sb-filter-pill");
+    if (!btn) return;
+
+    openDropdownKey = key;
+    wrap.classList.add("is-open");
+    btn.setAttribute("aria-expanded", "true");
+    buildCheckboxList(filterDropdownPanel, key);
+    const def = FILTER_DEFS.find(function(d) { return d.key === key; });
+    filterDropdownPanel.setAttribute("aria-label", (def ? def.label : "Filter") + " options");
+    positionDropdownPanel(btn);
+    filterDropdownBackdrop?.classList.add("open");
+  }
+
+  function openFilterSheet() {
+    filterSheet?.classList.add("open");
+    filterSheetBackdrop?.classList.add("open");
+    filterMasterBtn?.setAttribute("aria-expanded", "true");
+    closeAllDropdowns();
+  }
+
+  function closeFilterSheet() {
+    filterSheet?.classList.remove("open");
+    filterSheetBackdrop?.classList.remove("open");
+    filterMasterBtn?.setAttribute("aria-expanded", "false");
+  }
+
+  function onFilterChange(key, value, checked) {
+    if (checked) selected[key].add(value);
+    else selected[key].delete(value);
+    pruneInvalidSelections();
+    syncAllCheckboxes();
+    updateBadges();
+    applyFiltersAndSort();
+    refreshFilterOptionLists();
+  }
+
+  function buildCheckboxList(container, key) {
+    container.innerHTML = "";
+    const options = getSmartOptionsForKey(key);
+    if (!options.length) {
+      const empty = document.createElement("div");
+      empty.className = "sb-filter-dropdown-empty";
+      empty.textContent = "No options match your current filters.";
+      container.appendChild(empty);
+      return;
+    }
+    options.forEach(function(opt) {
+      const label = document.createElement("label");
+      label.className = "sb-filter-check";
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.value = opt.value;
+      cb.dataset.filterKey = key;
+      cb.checked = selected[key].has(opt.value);
+      cb.addEventListener("change", function() {
+        onFilterChange(key, opt.value, cb.checked);
       });
+      const span = document.createElement("span");
+      span.textContent = opt.label;
+      label.appendChild(cb);
+      label.appendChild(span);
+      container.appendChild(label);
     });
+  }
 
-    selected.section.forEach(function(v) {
-      addChip("Section", titleize(v), function() {
-        selected.section.delete(v);
-        syncCheckboxes("section");
-        updateFilterCount();
-        applyFiltersAndSort();
+  function refreshFilterOptionLists() {
+    if (filterSheet?.classList.contains("open")) {
+      buildFilterSheet();
+    }
+    if (openDropdownKey && filterDropdownPanel && !filterDropdownPanel.hidden) {
+      const wrap = pillWraps[openDropdownKey];
+      const btn = wrap?.querySelector(".sb-filter-pill");
+      buildCheckboxList(filterDropdownPanel, openDropdownKey);
+      if (btn) positionDropdownPanel(btn);
+    }
+  }
+
+  function buildFilterBar() {
+    filterBarInner.innerHTML = "";
+    FILTER_DEFS.forEach(function(def) {
+      const wrap = document.createElement("div");
+      wrap.className = "sb-filter-pill-wrap";
+      wrap.dataset.filterKey = def.key;
+
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "sb-filter-pill";
+      btn.setAttribute("aria-expanded", "false");
+      btn.innerHTML = def.label + ' <span class="sb-filter-pill-chevron" aria-hidden="true">▾</span>';
+
+      const badge = document.createElement("span");
+      badge.className = "sb-filter-pill-badge";
+      badge.hidden = true;
+      btn.appendChild(badge);
+
+      btn.addEventListener("click", function(e) {
+        e.stopPropagation();
+        if (wrap.classList.contains("is-open")) closeAllDropdowns();
+        else openDropdown(def.key);
       });
-    });
 
-    selected.category.forEach(function(v) {
-      addChip("Category", titleize(v), function() {
-        selected.category.delete(v);
-        syncCheckboxes("category");
-        updateFilterCount();
-        applyFiltersAndSort();
-      });
+      wrap.appendChild(btn);
+      filterBarInner.appendChild(wrap);
+      pillWraps[def.key] = wrap;
     });
+  }
 
-    activeSection.style.display = chipsWrap.children.length ? "flex" : "none";
+  function buildFilterSheet() {
+    if (!filterSheetBody) return;
+    filterSheetBody.innerHTML = "";
+    FILTER_DEFS.forEach(function(def) {
+      const group = document.createElement("div");
+      group.className = "sb-filter-sheet-group";
+      const title = document.createElement("div");
+      title.className = "sb-filter-sheet-group-title";
+      title.textContent = def.label;
+      const body = document.createElement("div");
+      buildCheckboxList(body, def.key);
+      group.appendChild(title);
+      group.appendChild(body);
+      filterSheetBody.appendChild(group);
+    });
+  }
+
+  function updateScrollButtons() {
+    if (!filterTrack || !filterScrollPrev || !filterScrollNext) return;
+    const maxScroll = filterTrack.scrollWidth - filterTrack.clientWidth;
+    const show = maxScroll > 4;
+    filterScrollPrev.classList.toggle("is-visible", show && filterTrack.scrollLeft > 4);
+    filterScrollNext.classList.toggle("is-visible", show && filterTrack.scrollLeft < maxScroll - 4);
   }
 
   function applyFiltersAndSort() {
-    const sortMode = sortSelect.value;
-
+    pruneInvalidSelections();
     const selR = selected.retailer;
     const selS = selected.section;
     const selC = selected.category;
-
+    const selB = selected.brand;
     let shown = [];
-    let totalDeals = 0;
-    let hiddenDeals = 0; // Count of deals hidden due to tier filter only
 
     cards.forEach(function(card) {
       const r = card.dataset.retailer;
       const s = card.dataset.section;
       const c = card.dataset.category;
-      const tier = card.dataset.tier || "";
+      const b = card.dataset.brand;
 
-      // Check tier filter (default: diamond and fire only)
-      const matchTier = selectedTiers.size === 0 || selectedTiers.has(tier);
-      
       const matchR = selR.size === 0 || selR.has(r);
       const matchS = selS.size === 0 || selS.has(s);
       const matchC = selC.size === 0 || selC.has(c);
+      const matchB = selB.size === 0 || selB.has(b);
 
-      // Check if this card would be shown if tier filter wasn't applied
-      const wouldShowIfTierMatch = matchR && matchS && matchC;
-
-      if (matchTier && wouldShowIfTierMatch) {
+      if (matchR && matchS && matchC && matchB) {
         card.style.display = "";
         shown.push(card);
-        totalDeals += parseInt(card.dataset.dealCount || "1", 10);
       } else {
         card.style.display = "none";
-        // Count hidden deals that are only hidden due to tier filter (not other filters)
-        if (wouldShowIfTierMatch && !matchTier) {
-          hiddenDeals += parseInt(card.dataset.dealCount || "1", 10);
-        }
       }
     });
 
@@ -3538,97 +2911,78 @@ document.addEventListener("DOMContentLoaded", function () {
       const bPct = parseFloat(b.dataset.percent || "0");
       const aTier = a.dataset.tier || "sale";
       const bTier = b.dataset.tier || "sale";
-      
-      // Tier priority: diamond (4) > fire (3) > strong (2) > sale (1)
+
       function getTierPriority(tier) {
         if (tier === "diamond") return 4;
         if (tier === "fire") return 3;
         if (tier === "strong") return 2;
         return 1;
       }
-      
+
       const aTierPriority = getTierPriority(aTier);
       const bTierPriority = getTierPriority(bTier);
-
-      if (sortMode === "price_asc") {
-        if (aPrice !== bPrice) return aPrice - bPrice;
-        return bPct - aPct;
-      }
-      if (sortMode === "price_desc") {
-        if (aPrice !== bPrice) return bPrice - aPrice;
-        return bPct - aPct;
-      }
-      // Default sort: tier priority first, then percent off, then price
-      if (aTierPriority !== bTierPriority) {
-        return bTierPriority - aTierPriority;
-      }
-      if (aPct !== bPct) {
-        return bPct - aPct;
-      }
+      if (aTierPriority !== bTierPriority) return bTierPriority - aTierPriority;
+      if (aPct !== bPct) return bPct - aPct;
       return aPrice - bPrice;
     });
 
-    shown.forEach(function(card) {
-      grid.appendChild(card);
-    });
-
-    // totalDeals is already calculated in the forEach loop above
-    countEl.textContent = "👀 Showing " + totalDeals + " deals";
-    
-    // Show/hide "Show Remaining" pill
-    const showRemainingPill = document.getElementById("show-remaining-pill");
-    const remainingCountEl = document.getElementById("remaining-count");
-    const remainingContainer = document.querySelector(".sb-tier-filters-remaining");
-    
-    // Show the pill only if Diamond and Fire are selected AND there are hidden deals
-    const hasDiamond = selectedTiers.has("diamond");
-    const hasFire = selectedTiers.has("fire");
-    const onlyDiamondAndFire = selectedTiers.size === 2 && hasDiamond && hasFire;
-    
-    if (onlyDiamondAndFire && hiddenDeals > 0 && showRemainingPill && remainingCountEl && remainingContainer) {
-      showRemainingPill.style.display = "inline-flex";
-      remainingContainer.style.display = "flex";
-      remainingCountEl.textContent = hiddenDeals;
-    } else if (showRemainingPill && remainingContainer) {
-      showRemainingPill.style.display = "none";
-      remainingContainer.style.display = "none";
-    }
-    
-    renderChips();
+    shown.forEach(function(card) { grid.appendChild(card); });
   }
 
-  function clearAll() {
+  function clearAllFilters() {
     selected.retailer.clear();
     selected.section.clear();
     selected.category.clear();
-
-    groupEls.forEach(function(g) {
-      const inputs = g.querySelectorAll('input[type="checkbox"]');
-      inputs.forEach(function(cb) { cb.checked = false; });
-      if (g._updateMeta) g._updateMeta();
-    });
-
-    updateFilterCount();
+    selected.brand.clear();
+    syncAllCheckboxes();
+    updateBadges();
     applyFiltersAndSort();
+    refreshFilterOptionLists();
   }
 
-  // Drawer buttons
-  applyBtn.addEventListener("click", function() {
-    applyFiltersAndSort();
-    closeDrawer();
-  });
-
-  clearBtn.addEventListener("click", clearAll);
-
-  // Existing chip-row Clear all
-  clearAllBtn?.addEventListener("click", clearAll);
-
-  sortSelect.addEventListener("change", applyFiltersAndSort);
-
-  // Initial
-  updateFilterCount();
+  buildFilterBar();
+  buildFilterSheet();
+  updateBadges();
   applyFiltersAndSort();
 
+  filterMasterBtn?.addEventListener("click", function() {
+    if (filterSheet?.classList.contains("open")) closeFilterSheet();
+    else openFilterSheet();
+  });
+  filterSheetClose?.addEventListener("click", closeFilterSheet);
+  filterSheetDone?.addEventListener("click", closeFilterSheet);
+  filterSheetClear?.addEventListener("click", clearAllFilters);
+  filterSheetBackdrop?.addEventListener("click", closeFilterSheet);
+  filterDropdownBackdrop?.addEventListener("click", closeAllDropdowns);
+
+  filterScrollPrev?.addEventListener("click", function() {
+    filterTrack.scrollBy({ left: -180, behavior: "smooth" });
+  });
+  filterScrollNext?.addEventListener("click", function() {
+    filterTrack.scrollBy({ left: 180, behavior: "smooth" });
+  });
+  filterTrack?.addEventListener("scroll", function() {
+    updateScrollButtons();
+    if (openDropdownKey) {
+      const btn = pillWraps[openDropdownKey]?.querySelector(".sb-filter-pill");
+      if (btn && filterDropdownPanel && !filterDropdownPanel.hidden) positionDropdownPanel(btn);
+    }
+  });
+  window.addEventListener("resize", function() {
+    updateScrollButtons();
+    if (openDropdownKey) {
+      const btn = pillWraps[openDropdownKey]?.querySelector(".sb-filter-pill");
+      if (btn && filterDropdownPanel && !filterDropdownPanel.hidden) positionDropdownPanel(btn);
+    }
+  });
+  updateScrollButtons();
+
+  document.addEventListener("keydown", function(ev) {
+    if (ev.key === "Escape") {
+      closeAllDropdowns();
+      closeFilterSheet();
+    }
+  });
   /* ============================
      CARD IMAGE CAROUSEL (per flavor)
      ============================ */

@@ -246,6 +246,7 @@ def group_deals(rows: list[dict]) -> list[dict]:
         if key not in groups:
             # Start a new group using a shallow copy of the row
             g = dict(row)
+            g["brand"] = brand
             g["flavor_data"] = []  # List of {name, url, image_url} dicts
             g["group_size"] = 0
             groups[key] = g
@@ -438,10 +439,12 @@ def build_card_html(deal):
     section_raw = (deal.get("section") or "").strip().lower()
     category_raw = (deal.get("category") or "").strip().lower()
     retailer_raw = normalize_retailer_value(deal.get("retailer") or "")
+    brand_raw = (_norm_str(deal.get("brand")) or extract_brand_from_product_name(product_name)).lower()
 
     section_attr = html.escape(section_raw)
     category_attr = html.escape(category_raw)
     retailer_attr = html.escape(retailer_raw)
+    brand_attr = html.escape(brand_raw)
 
     # Retailer specific styling
     pill_class, button_class = retailer_classes(deal.get("retailer", ""))
@@ -530,6 +533,7 @@ def build_card_html(deal):
          data-section="{section_attr}"
          data-category="{category_attr}"
          data-retailer="{retailer_attr}"
+         data-brand="{brand_attr}"
          data-price="{new_price_val}"
          data-percent="{float(percent_off) if percent_off is not None else 0.0}"
          data-deal-count="{deal_count}"
@@ -771,291 +775,335 @@ def build_page_html(deals):
         }}
 
 /* ============================ */
-/* FILTER DRAWER (LEFT)         */
+/* FILTER BAR (Walmart-style pills) */
 /* ============================ */
 
-/* Mobile: fixed left tab opens filter drawer; desktop: floating panel (does not narrow the grid) */
-.sb-filter-edge-tab{{
-  position: fixed;
-  left: 0;
-  /* Upper third on mobile — above halfway, clear of bottom thumb zone */
-  top: 32%;
-  bottom: auto;
-  transform: translateY(-50%);
-  z-index: 38;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 10px 8px 10px 6px;
-  margin: 0;
-  border: 1px solid var(--border-subtle);
-  border-left: none;
-  border-radius: 0 14px 14px 0;
-  background: #ffffff;
-  box-shadow: 4px 2px 14px rgba(15, 23, 42, 0.12);
-  cursor: pointer;
-  font: inherit;
-  line-height: 1;
+.sb-filter-bar-section {{
+  max-width: 1100px;
+  margin: 10px auto 12px;
+  padding: 0 16px;
+  position: relative;
+  z-index: 30;
 }}
 
-.sb-filter-edge-tab:hover{{
+.sb-filter-bar {{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}}
+
+.sb-filter-master {{
+  position: relative;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid #111827;
+  border-radius: 999px;
+  background: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}}
+
+.sb-filter-master:hover {{
   filter: brightness(0.98);
 }}
 
-.sb-filter-edge-tab:active{{
-  transform: translateY(-50%) translateX(1px);
-}}
-
-.sb-filter-edge-icons{{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}}
-
-.sb-filter-mascot{{
-  width: 22px;
-  height: 22px;
+.sb-filter-master-icon {{
+  width: 26px;
+  height: 26px;
   object-fit: contain;
   display: block;
 }}
 
-.sb-filter-funnel{{
-  width: 16px;
-  height: 16px;
-  color: var(--navy);
+.sb-filter-master-badge,
+.sb-filter-pill-badge {{
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #111827;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 18px;
+  text-align: center;
+}}
+
+.sb-filter-pill-badge {{
+  top: -6px;
+  right: -6px;
+}}
+
+.sb-filter-scroll-btn {{
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--text-main);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}}
+
+.sb-filter-scroll-btn.is-visible {{
+  display: inline-flex;
+}}
+
+.sb-filter-bar-track {{
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: visible;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}}
+
+.sb-filter-bar-track::-webkit-scrollbar {{
+  display: none;
+}}
+
+.sb-filter-bar-inner {{
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 2px;
+  min-width: min-content;
+}}
+
+.sb-filter-pill-wrap {{
+  position: relative;
   flex-shrink: 0;
 }}
 
-.sb-filter-edge-count{{
-  font-size: 11px;
-  font-weight: 900;
-  color: var(--text-muted);
-  letter-spacing: -0.02em;
+.sb-filter-pill {{
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border: 1px solid #111827;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  font-family: inherit;
+  line-height: 1.2;
 }}
 
-.sb-filter-count{{
-  font-weight: 900;
-  color: var(--text-muted);
+.sb-filter-pill:hover {{
+  background: #f9fafb;
 }}
 
-.sb-filter-backdrop{{
+.sb-filter-pill[aria-expanded="true"] {{
+  background: #f3f4f6;
+  box-shadow: inset 0 0 0 1px #111827;
+}}
+
+.sb-filter-pill-chevron {{
+  font-size: 12px;
+  color: #374151;
+  line-height: 1;
+}}
+
+.sb-filter-dropdown-panel {{
+  position: fixed;
+  z-index: 46;
+  min-width: 220px;
+  max-width: min(320px, calc(100vw - 16px));
+  max-height: min(320px, calc(100vh - 16px));
+  overflow-y: auto;
+  padding: 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.14);
+}}
+
+.sb-filter-dropdown-panel[hidden] {{
+  display: none !important;
+}}
+
+.sb-filter-dropdown-empty {{
+  padding: 8px 4px;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}}
+
+.sb-filter-check {{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 4px;
+  font-size: 14px;
+  cursor: pointer;
+}}
+
+.sb-filter-check input {{
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}}
+
+.sb-filter-dropdown-backdrop {{
   position: fixed;
   inset: 0;
+  z-index: 44;
+  background: transparent;
+  display: none;
+}}
+
+.sb-filter-dropdown-backdrop.open {{
+  display: block;
+}}
+
+.sb-filter-sheet-backdrop {{
+  position: fixed;
+  inset: 0;
+  z-index: 48;
   background: rgba(15, 23, 42, 0.35);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.18s ease-out;
-  z-index: 39;
 }}
 
-.sb-filter-backdrop.open{{
+.sb-filter-sheet-backdrop.open {{
   opacity: 1;
   pointer-events: auto;
 }}
 
-.sb-deals-shell{{
+.sb-filter-sheet {{
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 49;
+  max-height: 85vh;
+  background: #ffffff;
+  border-radius: 18px 18px 0 0;
+  box-shadow: 0 -8px 28px rgba(15, 23, 42, 0.18);
+  transform: translateY(105%);
+  transition: transform 0.22s ease-out;
+  display: flex;
+  flex-direction: column;
+}}
+
+.sb-filter-sheet.open {{
+  transform: translateY(0);
+}}
+
+.sb-filter-sheet-header {{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+}}
+
+.sb-filter-sheet-title {{
+  font-size: 18px;
+  font-weight: 800;
+}}
+
+.sb-filter-sheet-close {{
+  border: none;
+  background: transparent;
+  font-size: 24px;
+  cursor: pointer;
+  line-height: 1;
+}}
+
+.sb-filter-sheet-body {{
+  overflow-y: auto;
+  padding: 12px 16px 16px;
+}}
+
+.sb-filter-sheet-group {{
+  margin-bottom: 14px;
+}}
+
+.sb-filter-sheet-group-title {{
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}}
+
+.sb-filter-sheet-footer {{
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px 16px;
+  border-top: 1px solid var(--border-subtle);
+}}
+
+.sb-filter-sheet-clear,
+.sb-filter-sheet-done {{
+  flex: 1;
+  border-radius: 12px;
+  padding: 12px;
+  font-weight: 800;
+  font-size: 14px;
+  cursor: pointer;
+  border: 1px solid var(--border-subtle);
+  background: #ffffff;
+}}
+
+.sb-filter-sheet-done {{
+  background: var(--navy);
+  color: #ffffff;
+  border-color: var(--navy);
+}}
+
+@media (min-width: 992px) {{
+  .sb-filter-sheet {{
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    top: 50%;
+    width: min(420px, 92vw);
+    max-height: 80vh;
+    border-radius: 16px;
+    transform: translate(-50%, -50%) scale(0.96);
+    opacity: 0;
+    pointer-events: none;
+  }}
+  .sb-filter-sheet.open {{
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+  }}
+  .sb-hero {{
+    position: relative;
+    z-index: 1;
+  }}
+}}
+
+.sb-deals-shell {{
   max-width: 1100px;
   margin: 0 auto;
   padding: 0 16px;
 }}
 
-.sb-deals-main{{
+.sb-deals-main {{
   min-width: 0;
-}}
-
-.sb-filter-drawer{{
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  width: min(340px, 92vw);
-  background: #ffffff;
-  box-shadow: 8px 0 20px rgba(15,23,42,0.25);
-  transform: translateX(-105%);
-  transition: transform 0.2s ease-out;
-  z-index: 40;
-  display: flex;
-  flex-direction: column;
-}}
-
-.sb-filter-drawer.open{{
-  transform: translateX(0%);
-}}
-
-@media (min-width: 992px) {{
-  .sb-filter-edge-tab {{
-    display: none;
-  }}
-  .sb-filter-backdrop {{
-    display: none !important;
-  }}
-  /* Full-width deals column (4-across grid); filters float over the viewport, not in layout flow */
-  .sb-filter-drawer {{
-    position: fixed;
-    top: 50%;
-    left: max(16px, calc((100vw - min(1100px, 100vw - 32px)) / 2 - 292px));
-    transform: translateY(-50%);
-    width: 280px;
-    height: auto;
-    max-height: calc(100vh - 80px);
-    z-index: 35;
-    box-shadow: 0 8px 28px rgba(15, 23, 42, 0.18);
-    border-radius: 16px;
-    border: 1px solid var(--border-subtle);
-    background: #ffffff;
-  }}
-  .sb-filter-drawer.open {{
-    transform: translateY(-50%);
-  }}
-  .sb-filter-close {{
-    display: none;
-  }}
-  .sb-filter-inner {{
-    height: auto;
-    max-height: calc(100vh - 96px);
-  }}
-  .sb-filter-groups {{
-    max-height: calc(100vh - 220px);
-    overflow-y: auto;
-  }}
-  .sb-hero {{
-    position: relative;
-    z-index: 36;
-  }}
-}}
-
-.sb-filter-inner{{
-  padding: 16px 16px;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  gap: 12px;
-}}
-
-.sb-filter-header{{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}}
-
-.sb-filter-title{{
-  font-weight: 900;
-  font-size: 18px;
-}}
-
-.sb-filter-close{{
-  border: none;
-  background: transparent;
-  font-size: 22px;
-  cursor: pointer;
-}}
-
-.sb-filter-groups{{
-  overflow: auto;
-  padding-right: 6px;
-}}
-
-.sb-filter-group{{
-  border: 1px solid var(--border-subtle);
-  border-radius: 14px;
-  padding: 10px 10px;
-  margin-bottom: 10px;
-}}
-
-.sb-filter-group-header{{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
-  user-select: none;
-}}
-
-.sb-filter-group-title{{
-  font-weight: 900;
-  font-size: 13px;
-}}
-
-.sb-filter-group-meta{{
-  font-size: 12px;
-  color: var(--text-muted);
-  font-weight: 800;
-}}
-
-.sb-filter-options{{
-  margin-top: 10px;
-  display: none;
-}}
-
-.sb-filter-group.open .sb-filter-options{{
-  display: grid;
-  gap: 8px;
-}}
-
-.sb-check{{
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 13px;
-}}
-
-.sb-check input{{
-  width: 16px;
-  height: 16px;
-}}
-
-.sb-filter-footer{{
-  margin-top: auto;
-  display: flex;
-  gap: 10px;
-}}
-
-.sb-filter-clear{{
-  flex: 1;
-  border: 1px solid var(--border-subtle);
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 10px 12px;
-  font-weight: 900;
-  cursor: pointer;
-}}
-
-.sb-filter-apply{{
-  flex: 1;
-  border: none;
-  background: var(--navy);
-  color: #ffffff;
-  border-radius: 12px;
-  padding: 10px 12px;
-  font-weight: 900;
-  cursor: pointer;
-}}
-
-.sb-filter-actions{{
-  margin-top: auto;
-  display: flex;
-  gap: 10px;
-}}
-
-.sb-filter-action{{
-  flex: 1;
-  border-radius: 12px;
-  padding: 10px 12px;
-  font-weight: 800;
-  cursor: pointer;
-  border: 1px solid var(--border-subtle);
-}}
-
-.sb-filter-action.primary{{
-  background: var(--navy);
-  color: #fff;
-  border-color: var(--navy);
-}}
-
-.sb-filter-action.secondary{{
-  background: #fff;
-  color: var(--text-main);
 }}
 
         /* ============================ */
@@ -1143,245 +1191,6 @@ def build_page_html(deals):
 
         .sb-hero-cta:hover {{
             filter: brightness(1.02);
-        }}
-
-        /* =================================== */
-        /* TIER FILTER PILLS                   */
-        /* =================================== */
-
-        .sb-tier-filters {{
-            margin: 8px 0 0;
-            padding: 0;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-        }}
-
-        .sb-tier-filters-row {{
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-            width: 100%;
-        }}
-
-        .sb-tier-filters-remaining {{
-            width: 100%;
-            margin-top: 8px;
-            display: none; /* Hidden by default, shown via JS when needed */
-            justify-content: flex-start;
-            flex-basis: 100%; /* Force to new line on mobile */
-        }}
-
-        @media (min-width: 640px) {{
-            .sb-tier-filters-remaining {{
-                width: auto;
-                margin-top: 0;
-                margin-left: auto;
-                flex-basis: auto;
-            }}
-        }}
-
-        .sb-tier-pill {{
-            padding: 8px 14px;
-            border-radius: var(--radius-pill);
-            border: 2px solid #cbd5e1;
-            background-color: rgba(255, 255, 255, 0.86);
-            color: #111827;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.15s ease;
-            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-        }}
-
-        .sb-tier-pill:hover {{
-            border-color: var(--text-muted);
-            transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08);
-        }}
-
-        .sb-tier-pill[aria-pressed="true"] {{
-            background-color: #111827;
-            color: #ffffff;
-            border-color: #111827;
-            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.18);
-        }}
-
-        .sb-tier-pill[aria-pressed="true"]:hover {{
-            filter: brightness(1.05);
-        }}
-
-        .sb-tier-pill.sb-show-remaining {{
-            background-color: var(--bg);
-            border-color: var(--text-muted);
-            color: var(--text-main);
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }}
-
-        .sb-tier-pill.sb-show-remaining:hover {{
-            background-color: #e5e7eb;
-            border-color: var(--text-main);
-        }}
-
-        #remaining-count {{
-            font-weight: 700;
-            color: var(--blue);
-        }}
-
-        /* =================================== */
-        /* SECTION 1C: FILTERS + COUNT ROW      */
-        /* =================================== */
-
-        .sb-utility-row {{
-            max-width: 1100px;
-            margin: 12px auto 12px;
-            padding: 0 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }}
-
-        @media (min-width: 640px) {{
-            .sb-utility-row {{
-                flex-direction: row;
-                align-items: center;
-                justify-content: space-between;
-            }}
-        }}
-
-        .pill-label,
-        .count-pill {{
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 8px 12px;
-            border-radius: var(--radius-pill);
-            font-size: 13px;
-        }}
-
-        .pill-label {{
-            border: 1px solid var(--border-subtle);
-            background-color: #f9fafb;
-            color: var(--text-main);
-            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-        }}
-
-        .count-pill {{
-            background-color: var(--navy);
-            color: #ffffff;
-            font-weight: 600;
-        }}
-
-        .filter-controls {{
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            align-items: center;
-        }}
-
-        .sb-filter {{
-            padding: 6px 10px;
-            border-radius: 12px;
-            border: 1px solid var(--border-subtle);
-            background-color: #ffffff;
-            font-size: 13px;
-            min-width: 140px;
-        }}
-
-        /* ============================ */
-        /* ACTIVE FILTERS INDICATOR     */
-        /* ============================ */
-
-        .sb-active-filters {{
-            max-width: 1100px;
-            margin: 0 auto 12px;
-            padding: 0 16px;
-            display: none; /* JS will show when filters are active */
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-        }}
-
-        .sb-active-left {{
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            min-width: 0;
-        }}
-
-        .sb-active-label {{
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text-muted);
-        }}
-
-        .sb-chip-row {{
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }}
-
-        .sb-chip {{
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 10px;
-            border-radius: var(--radius-pill);
-            background: #ffffff;
-            border: 1px solid var(--border-subtle);
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text-main);
-            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-        }}
-
-        .sb-chip small {{
-            font-size: 11px;
-            font-weight: 800;
-            color: var(--text-muted);
-        }}
-
-        .sb-chip button {{
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            font-size: 14px;
-            line-height: 1;
-            padding: 0;
-            color: var(--text-muted);
-        }}
-
-        .sb-chip button:hover {{
-            color: var(--text-main);
-        }}
-
-        .sb-clear-all {{
-            border: 1px solid var(--border-subtle);
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 8px 12px;
-            font-size: 12px;
-            font-weight: 800;
-            cursor: pointer;
-        }}
-
-        .sb-clear-all:hover {{
-            filter: brightness(0.98);
-        }}
-
-        @media (max-width: 640px) {{
-            .sb-active-filters {{
-                align-items: flex-start;
-                flex-direction: column;
-            }}
-            .sb-clear-all {{
-                width: 100%;
-            }}
         }}
 
         /* ============================ */
@@ -1960,15 +1769,6 @@ def build_page_html(deals):
     </header>
 
     <main class="page">
-        <button type="button" class="sb-filter-edge-tab" id="sb-filter-open" aria-label="Open filters" aria-expanded="false">
-            <span class="sb-filter-edge-icons" aria-hidden="true">
-                <img src="assets/icons/raccoon-detective.png" alt="" class="sb-filter-mascot" />
-                <svg class="sb-filter-funnel" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">
-                    <path fill="currentColor" d="M22 3H2l7 9.46V20a2 2 0 001.11 1.79L12 23v-9.54L22 3z"/>
-                </svg>
-            </span>
-            <span class="sb-filter-edge-count" id="sb-filter-count">(0)</span>
-        </button>
         <!-- ============================ -->
         <!-- SECTION 1B: HERO BANNER      -->
         <!-- ============================ -->
@@ -1980,90 +1780,40 @@ def build_page_html(deals):
                         SnackBuddy • Last updated: {last_updated} (local time)
                     </div>
                     <h1 class="sb-hero-title">Don&apos;t overpay for the snacks you already buy.</h1>
-                    <p class="sb-hero-subtitle">
-                        Discount Tier (% off):
-                    </p>
-                    <section class="sb-tier-filters" id="tier-filters">
-                        <div class="sb-tier-filters-row">
-                            <button class="sb-tier-pill" data-tier="diamond" aria-pressed="true">
-                                💎 >25%
-                            </button>
-                            <button class="sb-tier-pill" data-tier="fire" aria-pressed="true">
-                                🔥 20-24%
-                            </button>
-                            <button class="sb-tier-pill" data-tier="strong" aria-pressed="false">
-                                💪 10-19%
-                            </button>
-                            <button class="sb-tier-pill" data-tier="sale" aria-pressed="false">
-                                🏷️ 0-9%
-                            </button>
-                        </div>
-                        <div class="sb-tier-filters-remaining">
-                            <button class="sb-tier-pill sb-show-remaining" id="show-remaining-pill" aria-pressed="false" style="display: none;">
-                                Show Remaining <span id="remaining-count">0</span> Deals
-                            </button>
-                        </div>
-                    </section>
                 </div>
             </div>
         </section>
 
-        <div class="sb-deals-shell">
-        <div class="sb-filter-backdrop" id="sb-filter-backdrop"></div>
-        <aside class="sb-filter-drawer" id="sb-filter-drawer" aria-label="Deal filters">
-            <div class="sb-filter-inner">
-                <div class="sb-filter-header">
-                    <div class="sb-filter-title">Filters</div>
-                    <button class="sb-filter-close" id="sb-filter-close" type="button" aria-label="Close filters">&times;</button>
+        <section class="sb-filter-bar-section" aria-label="Deal filters">
+            <div class="sb-filter-bar">
+                <button type="button" class="sb-filter-master" id="sb-filter-master" aria-label="All filters" aria-expanded="false">
+                    <img src="assets/icons/raccoon-detective.png" alt="" class="sb-filter-master-icon" />
+                    <span class="sb-filter-master-badge" id="sb-filter-master-count" hidden>0</span>
+                </button>
+                <button type="button" class="sb-filter-scroll-btn sb-filter-scroll-prev" id="sb-filter-scroll-prev" aria-label="Scroll filters left">&#8249;</button>
+                <div class="sb-filter-bar-track" id="sb-filter-bar-track">
+                    <div class="sb-filter-bar-inner" id="sb-filter-bar-inner"></div>
                 </div>
-
-                <div class="sb-filter-groups" id="sb-filter-groups">
-                    <!-- JS injects groups + checkboxes -->
-                </div>
-
-                <div class="sb-filter-footer">
-                    <button class="sb-filter-clear" id="sb-filter-clear" type="button">Clear</button>
-                    <button class="sb-filter-apply" id="sb-filter-apply" type="button">Apply</button>
-                </div>
+                <button type="button" class="sb-filter-scroll-btn sb-filter-scroll-next" id="sb-filter-scroll-next" aria-label="Scroll filters right">&#8250;</button>
+            </div>
+        </section>
+        <div class="sb-filter-dropdown-backdrop" id="sb-filter-dropdown-backdrop"></div>
+        <div class="sb-filter-dropdown-panel" id="sb-filter-dropdown-panel" hidden role="dialog" aria-modal="true"></div>
+        <div class="sb-filter-sheet-backdrop" id="sb-filter-sheet-backdrop"></div>
+        <aside class="sb-filter-sheet" id="sb-filter-sheet" aria-label="All filters">
+            <div class="sb-filter-sheet-header">
+                <div class="sb-filter-sheet-title">Filters</div>
+                <button type="button" class="sb-filter-sheet-close" id="sb-filter-sheet-close" aria-label="Close filters">&times;</button>
+            </div>
+            <div class="sb-filter-sheet-body" id="sb-filter-sheet-body"></div>
+            <div class="sb-filter-sheet-footer">
+                <button type="button" class="sb-filter-sheet-clear" id="sb-filter-sheet-clear">Clear all</button>
+                <button type="button" class="sb-filter-sheet-done" id="sb-filter-sheet-done">Done</button>
             </div>
         </aside>
 
+        <div class="sb-deals-shell">
         <div class="sb-deals-main">
-
-<!-- =================================== -->
-<!-- SECTION 1D: FILTERS + DEAL COUNT ROW -->
-<!-- =================================== -->
-<section class="sb-utility-row">
-  <div class="filter-controls">
-    <select id="sort-deals" class="sb-filter">
-      <option value="best">Sort: Best Deals</option>
-      <option value="price_asc">Sort: Price (low → high)</option>
-      <option value="price_desc">Sort: Price (high → low)</option>
-    </select>
-  </div>
-
-  <div id="deal-count" class="count-pill">
-    👀 Showing {total_deals} deals
-  </div>
-</section>
-
-        <!-- ============================ -->
-        <!-- ACTIVE FILTERS INDICATOR     -->
-        <!-- ============================ -->
-        <section class="sb-active-filters" id="active-filters" aria-live="polite">
-            <div class="sb-active-left">
-                <span class="sb-active-label">Active:</span>
-                <div class="sb-chip-row" id="active-filter-chips"></div>
-            </div>
-
-            <button class="sb-clear-all" id="clear-all-filters" type="button">
-                Clear all
-            </button>
-        </section>
-
-        <!-- ============================ -->
-        <!-- SECTION 2: DEAL CARD GRID    -->
-        <!-- ============================ -->
         <section class="card-grid" id="deals-list">
             {cards_html}
         </section>
@@ -2151,12 +1901,20 @@ document.addEventListener("DOMContentLoaded", function () {{
   const grid = document.getElementById("deals-list");
   const cards = Array.from(document.querySelectorAll(".card"));
 
-  const sortSelect = document.getElementById("sort-deals");
-  const countEl = document.getElementById("deal-count");
-
-  const chipsWrap = document.getElementById("active-filter-chips");
-  const clearAllBtn = document.getElementById("clear-all-filters");
-  const activeSection = document.getElementById("active-filters");
+  const filterBarInner = document.getElementById("sb-filter-bar-inner");
+  const filterSheetBody = document.getElementById("sb-filter-sheet-body");
+  const filterMasterBtn = document.getElementById("sb-filter-master");
+  const filterMasterCount = document.getElementById("sb-filter-master-count");
+  const filterDropdownBackdrop = document.getElementById("sb-filter-dropdown-backdrop");
+  const filterDropdownPanel = document.getElementById("sb-filter-dropdown-panel");
+  const filterSheet = document.getElementById("sb-filter-sheet");
+  const filterSheetBackdrop = document.getElementById("sb-filter-sheet-backdrop");
+  const filterSheetClose = document.getElementById("sb-filter-sheet-close");
+  const filterSheetClear = document.getElementById("sb-filter-sheet-clear");
+  const filterSheetDone = document.getElementById("sb-filter-sheet-done");
+  const filterTrack = document.getElementById("sb-filter-bar-track");
+  const filterScrollPrev = document.getElementById("sb-filter-scroll-prev");
+  const filterScrollNext = document.getElementById("sb-filter-scroll-next");
 
   /* ============================
      NAV DRAWER (RIGHT)
@@ -2196,65 +1954,12 @@ document.addEventListener("DOMContentLoaded", function () {{
   }}
 
   /* ============================
-     FILTER PANEL — mobile slide-over; desktop fixed float (see CSS)
+     FILTER BAR (Walmart-style pills)
      ============================ */
-  const openBtn = document.getElementById("sb-filter-open");
-  const drawer = document.getElementById("sb-filter-drawer");
-  const backdrop = document.getElementById("sb-filter-backdrop");
-  const closeBtn = document.getElementById("sb-filter-close");
-  const applyBtn = document.getElementById("sb-filter-apply");
-  const clearBtn = document.getElementById("sb-filter-clear");
-  const groupsWrap = document.getElementById("sb-filter-groups");
-  const filterCountEl = document.getElementById("sb-filter-count");
-  const mqFilterDesktop = window.matchMedia("(min-width: 992px)");
-
-  function setFilterOpenAria(isOpen) {{
-    if (!openBtn) return;
-    openBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
-  }}
-
-  function openDrawer() {{
-    if (mqFilterDesktop.matches) return;
-    drawer?.classList.add("open");
-    backdrop?.classList.add("open");
-    setFilterOpenAria(true);
-  }}
-
-  function closeDrawer() {{
-    drawer?.classList.remove("open");
-    backdrop?.classList.remove("open");
-    setFilterOpenAria(false);
-  }}
-
-  function syncFilterLayout() {{
-    if (mqFilterDesktop.matches) {{
-      closeDrawer();
-    }}
-  }}
-
-  openBtn?.addEventListener("click", function () {{
-    if (mqFilterDesktop.matches) return;
-    if (drawer?.classList.contains("open")) closeDrawer();
-    else openDrawer();
-  }});
-  backdrop?.addEventListener("click", closeDrawer);
-  closeBtn?.addEventListener("click", closeDrawer);
-  mqFilterDesktop.addEventListener("change", syncFilterLayout);
-  window.addEventListener("resize", syncFilterLayout);
-  syncFilterLayout();
-
-  document.addEventListener("keydown", function (ev) {{
-    if (ev.key === "Escape") closeDrawer();
-  }});
-
-  /* ============================
-     FILTER SYSTEM (checkbox sets)
-     ============================ */
-  if (!grid || !cards.length || !sortSelect || !countEl || !groupsWrap || !applyBtn || !clearBtn || !filterCountEl) {{
+  if (!grid || !cards.length || !filterBarInner) {{
     return;
   }}
 
-  // Preserve original order
   cards.forEach(function(card, idx) {{
     card.dataset.originalIndex = String(idx);
   }});
@@ -2263,79 +1968,8 @@ document.addEventListener("DOMContentLoaded", function () {{
     return Array.from(new Set(values.filter(Boolean))).sort();
   }}
 
-  const retailers = uniq(cards.map(function(c) {{ return c.dataset.retailer; }}));
-  const sections  = uniq(cards.map(function(c) {{ return c.dataset.section; }}));
-  const categories = uniq(cards.map(function(c) {{ return c.dataset.category; }}));
-
-  const selected = {{
-    retailer: new Set(),
-    section: new Set(),
-    category: new Set(),
-  }};
-
-  /* ============================
-     TIER FILTER PILLS
-     ============================ */
-  const tierPills = document.querySelectorAll(".sb-tier-pill:not(.sb-show-remaining)");
-  const selectedTiers = new Set(["diamond", "fire"]); // Default: Diamond and Fire deals
-  
-  // Initialize tier pills to show Diamond and Fire as active
-  tierPills.forEach(function(pill) {{
-    const tier = pill.getAttribute("data-tier");
-    if (selectedTiers.has(tier)) {{
-      pill.setAttribute("aria-pressed", "true");
-    }} else {{
-      pill.setAttribute("aria-pressed", "false");
-    }}
-  }});
-  
-  // Handle tier pill clicks
-  tierPills.forEach(function(pill) {{
-    // Skip the "Show Remaining" pill - it has different behavior
-    if (pill.classList.contains("sb-show-remaining")) return;
-    
-    pill.addEventListener("click", function() {{
-      const tier = this.getAttribute("data-tier");
-      const isPressed = this.getAttribute("aria-pressed") === "true";
-      
-      if (isPressed) {{
-        selectedTiers.delete(tier);
-        this.setAttribute("aria-pressed", "false");
-      }} else {{
-        selectedTiers.add(tier);
-        this.setAttribute("aria-pressed", "true");
-      }}
-      
-      applyFiltersAndSort();
-    }});
-  }});
-  
-  // Handle "Show Remaining" pill click
-  const showRemainingPill = document.getElementById("show-remaining-pill");
-  const remainingContainer = document.querySelector(".sb-tier-filters-remaining");
-  if (showRemainingPill) {{
-    showRemainingPill.addEventListener("click", function() {{
-      // Enable Strong and Sale tiers
-      selectedTiers.add("strong");
-      selectedTiers.add("sale");
-      
-      // Update pill states
-      const strongPill = document.querySelector('.sb-tier-pill[data-tier="strong"]');
-      const salePill = document.querySelector('.sb-tier-pill[data-tier="sale"]');
-      if (strongPill) strongPill.setAttribute("aria-pressed", "true");
-      if (salePill) salePill.setAttribute("aria-pressed", "true");
-      
-      // Hide the "Show Remaining" pill and its container
-      if (remainingContainer) remainingContainer.style.display = "none";
-      this.style.display = "none";
-      
-      applyFiltersAndSort();
-    }});
-  }}
-
   function titleize(s) {{
     if (!s) return "";
-    // Handle special cases for proper title case
     const specialCases = {{
       "rtd": "RTD",
       "protein": "Protein",
@@ -2349,190 +1983,292 @@ document.addEventListener("DOMContentLoaded", function () {{
       "meat": "Meat",
       "energy": "Energy"
     }};
-    
-    // Split by spaces, &, and - while preserving delimiters
     const parts = s.split(/([\\s&\\-])/);
     return parts.map(function(part) {{
-      // Keep whitespace and delimiters as-is
       if (part.match(/^[\\s&\\-]$/)) return part;
       const lower = part.toLowerCase();
-      // Check special cases first
       if (specialCases[lower]) return specialCases[lower];
-      // Default: capitalize first letter, lowercase rest
       return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
     }}).join("");
   }}
 
-  function updateFilterCount() {{
-    const total = selected.retailer.size + selected.section.size + selected.category.size;
-    filterCountEl.textContent = "(" + total + ")";
-  }}
-
-  function buildGroup(key, title, options) {{
-    const group = document.createElement("div");
-    group.className = "sb-filter-group open";
-
-    const header = document.createElement("div");
-    header.className = "sb-filter-group-header";
-
-    const left = document.createElement("div");
-    left.className = "sb-filter-group-title";
-    left.textContent = title;
-
-    const meta = document.createElement("div");
-    meta.className = "sb-filter-group-meta";
-    meta.textContent = "Any";
-
-    header.appendChild(left);
-    header.appendChild(meta);
-
-    const body = document.createElement("div");
-    body.className = "sb-filter-options";
-
-    function updateMeta() {{
-      const n = selected[key].size;
-      meta.textContent = n === 0 ? "Any" : (n + " selected");
-    }}
-
-    options.forEach(function(optVal) {{
-      const label = document.createElement("label");
-      label.className = "sb-check";
-
-      const cb = document.createElement("input");
-      cb.type = "checkbox";
-      cb.value = optVal;
-
-      cb.addEventListener("change", function() {{
-        if (cb.checked) selected[key].add(optVal);
-        else selected[key].delete(optVal);
-        updateMeta();
-        updateFilterCount();
-      }});
-
-      const span = document.createElement("span");
-      span.textContent = titleize(optVal);
-
-      label.appendChild(cb);
-      label.appendChild(span);
-      body.appendChild(label);
-    }});
-
-    header.addEventListener("click", function(e) {{
-      if (e.target && e.target.tagName === "INPUT") return;
-      group.classList.toggle("open");
-    }});
-
-    updateMeta();
-
-    group.appendChild(header);
-    group.appendChild(body);
-
-    group._key = key;
-    group._updateMeta = updateMeta;
-    return group;
-  }}
-
-  // Render groups
-  groupsWrap.innerHTML = "";
-  const groupEls = [
-    buildGroup("retailer", "Retailer", retailers),
-    buildGroup("section", "Section", sections),
-    buildGroup("category", "Category", categories),
+  const FILTER_DEFS = [
+    {{ key: "retailer", label: "Retailer" }},
+    {{ key: "section", label: "Section" }},
+    {{ key: "category", label: "Category" }},
+    {{ key: "brand", label: "Brand" }},
   ];
-  groupEls.forEach(function(g) {{ groupsWrap.appendChild(g); }});
+
+  const selected = {{
+    retailer: new Set(),
+    section: new Set(),
+    category: new Set(),
+    brand: new Set(),
+  }};
+
+  const pillWraps = {{}};
+  let openDropdownKey = null;
+
+  function cardMatchesSelected(card, excludeKey) {{
+    const r = card.dataset.retailer;
+    const s = card.dataset.section;
+    const c = card.dataset.category;
+    const b = card.dataset.brand;
+
+    if (excludeKey !== "retailer" && selected.retailer.size > 0 && !selected.retailer.has(r)) return false;
+    if (excludeKey !== "section" && selected.section.size > 0 && !selected.section.has(s)) return false;
+    if (excludeKey !== "category" && selected.category.size > 0 && !selected.category.has(c)) return false;
+    if (excludeKey !== "brand" && selected.brand.size > 0 && !selected.brand.has(b)) return false;
+    return true;
+  }}
+
+  function getSmartOptionsForKey(key) {{
+    const matching = cards.filter(function(card) {{ return cardMatchesSelected(card, key); }});
+
+    return uniq(matching.map(function(card) {{ return card.dataset[key]; }})).map(function(v) {{
+      return {{ value: v, label: titleize(v) }};
+    }});
+  }}
+
+  function pruneInvalidSelections() {{
+    FILTER_DEFS.forEach(function(def) {{
+      const available = new Set(getSmartOptionsForKey(def.key).map(function(opt) {{ return opt.value; }}));
+      Array.from(selected[def.key]).forEach(function(val) {{
+        if (!available.has(val)) selected[def.key].delete(val);
+      }});
+    }});
+  }}
+
+  function totalSelectedCount() {{
+    return selected.retailer.size + selected.section.size
+      + selected.category.size + selected.brand.size;
+  }}
+
+  function updateBadges() {{
+    FILTER_DEFS.forEach(function(def) {{
+      const wrap = pillWraps[def.key];
+      if (!wrap) return;
+      const badge = wrap.querySelector(".sb-filter-pill-badge");
+      const n = selected[def.key].size;
+      if (!badge) return;
+      if (n > 0) {{
+        badge.textContent = String(n);
+        badge.hidden = false;
+      }} else {{
+        badge.hidden = true;
+      }}
+    }});
+    const total = totalSelectedCount();
+    if (filterMasterCount) {{
+      if (total > 0) {{
+        filterMasterCount.textContent = String(total);
+        filterMasterCount.hidden = false;
+      }} else {{
+        filterMasterCount.hidden = true;
+      }}
+    }}
+  }}
 
   function syncCheckboxes(key) {{
-    const group = groupEls.find(function(g) {{ return g._key === key; }});
-    if (!group) return;
-    const inputs = group.querySelectorAll('input[type="checkbox"]');
-    inputs.forEach(function(cb) {{
+    document.querySelectorAll('input[data-filter-key="' + key + '"]').forEach(function(cb) {{
       cb.checked = selected[key].has(cb.value);
     }});
-    if (group._updateMeta) group._updateMeta();
   }}
 
-  function renderChips() {{
-    if (!chipsWrap || !activeSection || !clearAllBtn) return;
+  function syncAllCheckboxes() {{
+    FILTER_DEFS.forEach(function(def) {{ syncCheckboxes(def.key); }});
+  }}
 
-    chipsWrap.innerHTML = "";
-
-    function addChip(label, value, onClear) {{
-      const chip = document.createElement("div");
-      chip.className = "sb-chip";
-      chip.innerHTML =
-        "<small>" + label + ":</small> " + value +
-        ' <button type="button" aria-label="Clear ' + label + '">×</button>';
-      chip.querySelector("button").addEventListener("click", onClear);
-      chipsWrap.appendChild(chip);
+  function closeAllDropdowns() {{
+    openDropdownKey = null;
+    Object.keys(pillWraps).forEach(function(k) {{
+      pillWraps[k].classList.remove("is-open");
+      const btn = pillWraps[k].querySelector(".sb-filter-pill");
+      if (btn) btn.setAttribute("aria-expanded", "false");
+    }});
+    if (filterDropdownPanel) {{
+      filterDropdownPanel.hidden = true;
+      filterDropdownPanel.innerHTML = "";
     }}
+    filterDropdownBackdrop?.classList.remove("open");
+  }}
 
-    selected.retailer.forEach(function(v) {{
-      addChip("Retailer", titleize(v), function() {{
-        selected.retailer.delete(v);
-        syncCheckboxes("retailer");
-        updateFilterCount();
-        applyFiltersAndSort();
+  function positionDropdownPanel(anchorBtn) {{
+    if (!filterDropdownPanel || !anchorBtn) return;
+    filterDropdownPanel.hidden = false;
+    const rect = anchorBtn.getBoundingClientRect();
+    const panelWidth = filterDropdownPanel.offsetWidth;
+    const panelHeight = filterDropdownPanel.offsetHeight;
+    let left = rect.left;
+    let top = rect.bottom + 6;
+    left = Math.max(8, Math.min(left, window.innerWidth - panelWidth - 8));
+    if (top + panelHeight > window.innerHeight - 8) {{
+      top = Math.max(8, rect.top - panelHeight - 6);
+    }}
+    filterDropdownPanel.style.left = left + "px";
+    filterDropdownPanel.style.top = top + "px";
+  }}
+
+  function openDropdown(key) {{
+    closeAllDropdowns();
+    const wrap = pillWraps[key];
+    if (!wrap || !filterDropdownPanel) return;
+    const btn = wrap.querySelector(".sb-filter-pill");
+    if (!btn) return;
+
+    openDropdownKey = key;
+    wrap.classList.add("is-open");
+    btn.setAttribute("aria-expanded", "true");
+    buildCheckboxList(filterDropdownPanel, key);
+    const def = FILTER_DEFS.find(function(d) {{ return d.key === key; }});
+    filterDropdownPanel.setAttribute("aria-label", (def ? def.label : "Filter") + " options");
+    positionDropdownPanel(btn);
+    filterDropdownBackdrop?.classList.add("open");
+  }}
+
+  function openFilterSheet() {{
+    filterSheet?.classList.add("open");
+    filterSheetBackdrop?.classList.add("open");
+    filterMasterBtn?.setAttribute("aria-expanded", "true");
+    closeAllDropdowns();
+  }}
+
+  function closeFilterSheet() {{
+    filterSheet?.classList.remove("open");
+    filterSheetBackdrop?.classList.remove("open");
+    filterMasterBtn?.setAttribute("aria-expanded", "false");
+  }}
+
+  function onFilterChange(key, value, checked) {{
+    if (checked) selected[key].add(value);
+    else selected[key].delete(value);
+    pruneInvalidSelections();
+    syncAllCheckboxes();
+    updateBadges();
+    applyFiltersAndSort();
+    refreshFilterOptionLists();
+  }}
+
+  function buildCheckboxList(container, key) {{
+    container.innerHTML = "";
+    const options = getSmartOptionsForKey(key);
+    if (!options.length) {{
+      const empty = document.createElement("div");
+      empty.className = "sb-filter-dropdown-empty";
+      empty.textContent = "No options match your current filters.";
+      container.appendChild(empty);
+      return;
+    }}
+    options.forEach(function(opt) {{
+      const label = document.createElement("label");
+      label.className = "sb-filter-check";
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.value = opt.value;
+      cb.dataset.filterKey = key;
+      cb.checked = selected[key].has(opt.value);
+      cb.addEventListener("change", function() {{
+        onFilterChange(key, opt.value, cb.checked);
       }});
+      const span = document.createElement("span");
+      span.textContent = opt.label;
+      label.appendChild(cb);
+      label.appendChild(span);
+      container.appendChild(label);
     }});
+  }}
 
-    selected.section.forEach(function(v) {{
-      addChip("Section", titleize(v), function() {{
-        selected.section.delete(v);
-        syncCheckboxes("section");
-        updateFilterCount();
-        applyFiltersAndSort();
+  function refreshFilterOptionLists() {{
+    if (filterSheet?.classList.contains("open")) {{
+      buildFilterSheet();
+    }}
+    if (openDropdownKey && filterDropdownPanel && !filterDropdownPanel.hidden) {{
+      const wrap = pillWraps[openDropdownKey];
+      const btn = wrap?.querySelector(".sb-filter-pill");
+      buildCheckboxList(filterDropdownPanel, openDropdownKey);
+      if (btn) positionDropdownPanel(btn);
+    }}
+  }}
+
+  function buildFilterBar() {{
+    filterBarInner.innerHTML = "";
+    FILTER_DEFS.forEach(function(def) {{
+      const wrap = document.createElement("div");
+      wrap.className = "sb-filter-pill-wrap";
+      wrap.dataset.filterKey = def.key;
+
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "sb-filter-pill";
+      btn.setAttribute("aria-expanded", "false");
+      btn.innerHTML = def.label + ' <span class="sb-filter-pill-chevron" aria-hidden="true">▾</span>';
+
+      const badge = document.createElement("span");
+      badge.className = "sb-filter-pill-badge";
+      badge.hidden = true;
+      btn.appendChild(badge);
+
+      btn.addEventListener("click", function(e) {{
+        e.stopPropagation();
+        if (wrap.classList.contains("is-open")) closeAllDropdowns();
+        else openDropdown(def.key);
       }});
-    }});
 
-    selected.category.forEach(function(v) {{
-      addChip("Category", titleize(v), function() {{
-        selected.category.delete(v);
-        syncCheckboxes("category");
-        updateFilterCount();
-        applyFiltersAndSort();
-      }});
+      wrap.appendChild(btn);
+      filterBarInner.appendChild(wrap);
+      pillWraps[def.key] = wrap;
     }});
+  }}
 
-    activeSection.style.display = chipsWrap.children.length ? "flex" : "none";
+  function buildFilterSheet() {{
+    if (!filterSheetBody) return;
+    filterSheetBody.innerHTML = "";
+    FILTER_DEFS.forEach(function(def) {{
+      const group = document.createElement("div");
+      group.className = "sb-filter-sheet-group";
+      const title = document.createElement("div");
+      title.className = "sb-filter-sheet-group-title";
+      title.textContent = def.label;
+      const body = document.createElement("div");
+      buildCheckboxList(body, def.key);
+      group.appendChild(title);
+      group.appendChild(body);
+      filterSheetBody.appendChild(group);
+    }});
+  }}
+
+  function updateScrollButtons() {{
+    if (!filterTrack || !filterScrollPrev || !filterScrollNext) return;
+    const maxScroll = filterTrack.scrollWidth - filterTrack.clientWidth;
+    const show = maxScroll > 4;
+    filterScrollPrev.classList.toggle("is-visible", show && filterTrack.scrollLeft > 4);
+    filterScrollNext.classList.toggle("is-visible", show && filterTrack.scrollLeft < maxScroll - 4);
   }}
 
   function applyFiltersAndSort() {{
-    const sortMode = sortSelect.value;
-
+    pruneInvalidSelections();
     const selR = selected.retailer;
     const selS = selected.section;
     const selC = selected.category;
-
+    const selB = selected.brand;
     let shown = [];
-    let totalDeals = 0;
-    let hiddenDeals = 0; // Count of deals hidden due to tier filter only
 
     cards.forEach(function(card) {{
       const r = card.dataset.retailer;
       const s = card.dataset.section;
       const c = card.dataset.category;
-      const tier = card.dataset.tier || "";
+      const b = card.dataset.brand;
 
-      // Check tier filter (default: diamond and fire only)
-      const matchTier = selectedTiers.size === 0 || selectedTiers.has(tier);
-      
       const matchR = selR.size === 0 || selR.has(r);
       const matchS = selS.size === 0 || selS.has(s);
       const matchC = selC.size === 0 || selC.has(c);
+      const matchB = selB.size === 0 || selB.has(b);
 
-      // Check if this card would be shown if tier filter wasn't applied
-      const wouldShowIfTierMatch = matchR && matchS && matchC;
-
-      if (matchTier && wouldShowIfTierMatch) {{
+      if (matchR && matchS && matchC && matchB) {{
         card.style.display = "";
         shown.push(card);
-        totalDeals += parseInt(card.dataset.dealCount || "1", 10);
       }} else {{
         card.style.display = "none";
-        // Count hidden deals that are only hidden due to tier filter (not other filters)
-        if (wouldShowIfTierMatch && !matchTier) {{
-          hiddenDeals += parseInt(card.dataset.dealCount || "1", 10);
-        }}
       }}
     }});
 
@@ -2543,97 +2279,78 @@ document.addEventListener("DOMContentLoaded", function () {{
       const bPct = parseFloat(b.dataset.percent || "0");
       const aTier = a.dataset.tier || "sale";
       const bTier = b.dataset.tier || "sale";
-      
-      // Tier priority: diamond (4) > fire (3) > strong (2) > sale (1)
+
       function getTierPriority(tier) {{
         if (tier === "diamond") return 4;
         if (tier === "fire") return 3;
         if (tier === "strong") return 2;
         return 1;
       }}
-      
+
       const aTierPriority = getTierPriority(aTier);
       const bTierPriority = getTierPriority(bTier);
-
-      if (sortMode === "price_asc") {{
-        if (aPrice !== bPrice) return aPrice - bPrice;
-        return bPct - aPct;
-      }}
-      if (sortMode === "price_desc") {{
-        if (aPrice !== bPrice) return bPrice - aPrice;
-        return bPct - aPct;
-      }}
-      // Default sort: tier priority first, then percent off, then price
-      if (aTierPriority !== bTierPriority) {{
-        return bTierPriority - aTierPriority;
-      }}
-      if (aPct !== bPct) {{
-        return bPct - aPct;
-      }}
+      if (aTierPriority !== bTierPriority) return bTierPriority - aTierPriority;
+      if (aPct !== bPct) return bPct - aPct;
       return aPrice - bPrice;
     }});
 
-    shown.forEach(function(card) {{
-      grid.appendChild(card);
-    }});
-
-    // totalDeals is already calculated in the forEach loop above
-    countEl.textContent = "👀 Showing " + totalDeals + " deals";
-    
-    // Show/hide "Show Remaining" pill
-    const showRemainingPill = document.getElementById("show-remaining-pill");
-    const remainingCountEl = document.getElementById("remaining-count");
-    const remainingContainer = document.querySelector(".sb-tier-filters-remaining");
-    
-    // Show the pill only if Diamond and Fire are selected AND there are hidden deals
-    const hasDiamond = selectedTiers.has("diamond");
-    const hasFire = selectedTiers.has("fire");
-    const onlyDiamondAndFire = selectedTiers.size === 2 && hasDiamond && hasFire;
-    
-    if (onlyDiamondAndFire && hiddenDeals > 0 && showRemainingPill && remainingCountEl && remainingContainer) {{
-      showRemainingPill.style.display = "inline-flex";
-      remainingContainer.style.display = "flex";
-      remainingCountEl.textContent = hiddenDeals;
-    }} else if (showRemainingPill && remainingContainer) {{
-      showRemainingPill.style.display = "none";
-      remainingContainer.style.display = "none";
-    }}
-    
-    renderChips();
+    shown.forEach(function(card) {{ grid.appendChild(card); }});
   }}
 
-  function clearAll() {{
+  function clearAllFilters() {{
     selected.retailer.clear();
     selected.section.clear();
     selected.category.clear();
-
-    groupEls.forEach(function(g) {{
-      const inputs = g.querySelectorAll('input[type="checkbox"]');
-      inputs.forEach(function(cb) {{ cb.checked = false; }});
-      if (g._updateMeta) g._updateMeta();
-    }});
-
-    updateFilterCount();
+    selected.brand.clear();
+    syncAllCheckboxes();
+    updateBadges();
     applyFiltersAndSort();
+    refreshFilterOptionLists();
   }}
 
-  // Drawer buttons
-  applyBtn.addEventListener("click", function() {{
-    applyFiltersAndSort();
-    closeDrawer();
-  }});
-
-  clearBtn.addEventListener("click", clearAll);
-
-  // Existing chip-row Clear all
-  clearAllBtn?.addEventListener("click", clearAll);
-
-  sortSelect.addEventListener("change", applyFiltersAndSort);
-
-  // Initial
-  updateFilterCount();
+  buildFilterBar();
+  buildFilterSheet();
+  updateBadges();
   applyFiltersAndSort();
 
+  filterMasterBtn?.addEventListener("click", function() {{
+    if (filterSheet?.classList.contains("open")) closeFilterSheet();
+    else openFilterSheet();
+  }});
+  filterSheetClose?.addEventListener("click", closeFilterSheet);
+  filterSheetDone?.addEventListener("click", closeFilterSheet);
+  filterSheetClear?.addEventListener("click", clearAllFilters);
+  filterSheetBackdrop?.addEventListener("click", closeFilterSheet);
+  filterDropdownBackdrop?.addEventListener("click", closeAllDropdowns);
+
+  filterScrollPrev?.addEventListener("click", function() {{
+    filterTrack.scrollBy({{ left: -180, behavior: "smooth" }});
+  }});
+  filterScrollNext?.addEventListener("click", function() {{
+    filterTrack.scrollBy({{ left: 180, behavior: "smooth" }});
+  }});
+  filterTrack?.addEventListener("scroll", function() {{
+    updateScrollButtons();
+    if (openDropdownKey) {{
+      const btn = pillWraps[openDropdownKey]?.querySelector(".sb-filter-pill");
+      if (btn && filterDropdownPanel && !filterDropdownPanel.hidden) positionDropdownPanel(btn);
+    }}
+  }});
+  window.addEventListener("resize", function() {{
+    updateScrollButtons();
+    if (openDropdownKey) {{
+      const btn = pillWraps[openDropdownKey]?.querySelector(".sb-filter-pill");
+      if (btn && filterDropdownPanel && !filterDropdownPanel.hidden) positionDropdownPanel(btn);
+    }}
+  }});
+  updateScrollButtons();
+
+  document.addEventListener("keydown", function(ev) {{
+    if (ev.key === "Escape") {{
+      closeAllDropdowns();
+      closeFilterSheet();
+    }}
+  }});
   /* ============================
      CARD IMAGE CAROUSEL (per flavor)
      ============================ */
