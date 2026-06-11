@@ -1,5 +1,6 @@
 import json
 import html
+import random
 from pathlib import Path
 from datetime import datetime
 
@@ -48,6 +49,8 @@ def retailer_classes(retailer: str):
         return "retailer-pill retailer-kroger", "view-button view-kroger"
     if "target" in r:
         return "retailer-pill retailer-target", "view-button view-target"
+    if "meijer" in r:
+        return "retailer-pill retailer-meijer", "view-button view-meijer"
     return "retailer-pill retailer-generic", "view-button view-generic"
 
 def normalize_retailer_value(raw: str) -> str:
@@ -58,6 +61,8 @@ def normalize_retailer_value(raw: str) -> str:
         return "kroger"
     if "target" in r:
         return "target"
+    if "meijer" in r:
+        return "meijer"
     return r  # fallback
 
 def normalise_availability(raw):
@@ -300,6 +305,88 @@ def get_tier_name(percent_off):
     return "sale"  # fallback
 
 
+# Vertically elongated 4-point sparkle with concave sides (quadratic curves).
+# Tips: top/bottom long, left/right short (~2:1 axis ratio).
+SPARKLE_STAR_PATH = (
+    "M50 0 "
+    "Q56 39 76 50 "
+    "Q56 61 50 100 "
+    "Q44 61 24 50 "
+    "Q44 39 50 0 "
+    "Z"
+)
+
+
+def sparkle_star_svg() -> str:
+    return (
+        f'<svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false">'
+        f'<path class="sparkle-shape" d="{SPARKLE_STAR_PATH}"/></svg>'
+    )
+
+
+def fire_pill_flames_svg() -> str:
+    """Cartoon flame strip for the bottom edge of the Fire badge pill."""
+    return """
+<svg class="fire-pill-flames-svg" viewBox="0 0 120 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+  <path class="fire-pill-flame-outer" fill="#fb923c" d="M0,24 L0,16 C5,9 10,17 15,12 C20,7 25,15 30,10 C35,6 40,14 45,9 C50,5 55,13 60,8 C65,4 70,12 75,9 C80,6 85,13 90,10 C95,7 100,14 105,11 C110,8 115,15 120,13 L120,24 Z"/>
+  <path class="fire-pill-flame-inner" fill="#fef08a" d="M0,24 L0,18 C7,14 14,17 21,15 C28,13 35,17 42,14 C49,12 56,16 63,14 C70,12 77,16 84,14 C91,13 98,17 105,15 C112,14 116,17 120,16 L120,24 Z"/>
+  <ellipse class="fire-pill-spark fire-pill-spark--1" cx="18" cy="8" rx="2" ry="3" fill="#fb923c"/>
+  <ellipse class="fire-pill-spark fire-pill-spark--2" cx="58" cy="6" rx="1.6" ry="2.6" fill="#fb923c"/>
+  <ellipse class="fire-pill-spark fire-pill-spark--3" cx="96" cy="9" rx="1.8" ry="2.8" fill="#fb923c"/>
+</svg>""".strip()
+
+
+def build_diamond_sparkles_html(seed_key: str) -> str:
+    """Per-card randomized ✦ sparkles — stable layout for a given deal, varied across cards."""
+    rng = random.Random(seed_key)
+    count = rng.randint(5, 9)
+    twinkle_anims = (
+        "diamond-twinkle-a",
+        "diamond-twinkle-b",
+        "diamond-twinkle-c",
+        "diamond-twinkle-d",
+    )
+    timing_fns = ("linear",)
+
+    def sparkle_size(base: int) -> tuple[int, int]:
+        """Square canvas keeps the sparkle SVG symmetric."""
+        return base, base
+
+    stars = []
+    for _ in range(count):
+        width, height = sparkle_size(rng.randint(14, 30))
+
+        top = rng.uniform(5, 86)
+        if rng.random() < 0.5:
+            horizontal = f"left:{rng.uniform(3, 84):.1f}%;"
+        else:
+            horizontal = f"right:{rng.uniform(3, 84):.1f}%;left:auto;"
+
+        anim = rng.choice(twinkle_anims)
+        duration = rng.uniform(5.0, 11.5)
+        delay = rng.uniform(0, 9.5)
+        peak = rng.uniform(0.75, 1.2)
+
+        style = (
+            f"width:{width:.0f}px;height:{height:.0f}px;"
+            f"top:{top:.1f}%;{horizontal}"
+            f"animation-name:{anim};"
+            f"animation-duration:{duration:.2f}s;"
+            f"animation-delay:{delay:.2f}s;"
+            f"animation-timing-function:{rng.choice(timing_fns)};"
+            f"--sparkle-peak:{peak:.2f};"
+        )
+        stars.append(
+            f'<span class="sparkle" style="{style}">{sparkle_star_svg()}</span>'
+        )
+
+    body = "\n            ".join(stars)
+    return f"""
+        <div class="diamond-sparkles" aria-hidden="true">
+            {body}
+        </div>"""
+
+
 def get_badge(deal):
     """
     Decide badge label & class from percent_off.
@@ -506,7 +593,25 @@ def build_card_html(deal):
 
     badge_html = ""
     if badge_label and badge_class:
-        badge_html = f"<div class='{badge_class}'>{badge_label}</div>"
+        if tier_name == "fire":
+            import hashlib
+            flicker_seed = f"{retailer_raw}|{name}|{new_price_val}"
+            flicker_delay = (
+                int(hashlib.md5(flicker_seed.encode()).hexdigest()[:4], 16) % 80
+            ) / 10.0
+            badge_html = (
+                f"<div class='{badge_class} badge-fire-pill'>"
+                f"<span class='fire-pill-flames' style='animation-delay:{flicker_delay:.1f}s' "
+                f"aria-hidden='true'>{fire_pill_flames_svg()}</span>"
+                f"<span class='fire-pill-label'>🔥 Fire</span></div>"
+            )
+        else:
+            badge_html = f"<div class='{badge_class}'>{badge_label}</div>"
+
+    diamond_sparkles_html = ""
+    if tier_name == "diamond":
+        sparkle_seed = f"{retailer_raw}|{name}|{new_price_val}|{deal_count}"
+        diamond_sparkles_html = build_diamond_sparkles_html(sparkle_seed)
 
     category_tag_html = ""
     if category:
@@ -538,6 +643,7 @@ def build_card_html(deal):
          data-percent="{float(percent_off) if percent_off is not None else 0.0}"
          data-deal-count="{deal_count}"
          data-tier="{tier_name}">
+        {diamond_sparkles_html}
         <div class="card-image-wrap">
             {image_carousel_html}
             {category_tag_html}
@@ -1223,23 +1329,208 @@ def build_page_html(deals):
         }}
 
         .card-tier-diamond {{
+            position: relative;
+            overflow: hidden;
             background-color: #eff6ff;
             border-color: #93c5fd;
         }}
 
+        .diamond-sparkles {{
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 5;
+        }}
+
+        .sparkle {{
+            position: absolute;
+            opacity: 0;
+            transform: scale(0.1);
+            display: block;
+            line-height: 0;
+            animation: diamond-twinkle-a 4s linear infinite;
+        }}
+
+        .sparkle-svg {{
+            display: block;
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }}
+
+        .sparkle-shape {{
+            fill: #ffffff;
+            stroke: #1e40af;
+            stroke-width: 4;
+            stroke-linejoin: miter;
+            stroke-miterlimit: 8;
+            paint-order: stroke fill;
+            filter: drop-shadow(0 0 3px rgba(37, 99, 235, 0.75));
+        }}
+
+        @keyframes diamond-twinkle-a {{
+            0%, 100% {{
+                opacity: 0;
+                transform: scale(0.05);
+            }}
+            7% {{
+                opacity: 0.45;
+                transform: scale(calc(var(--sparkle-peak, 1.15) * 0.45));
+            }}
+            11% {{
+                opacity: 1;
+                transform: scale(var(--sparkle-peak, 1.15));
+            }}
+            15% {{
+                opacity: 0.45;
+                transform: scale(calc(var(--sparkle-peak, 1.15) * 0.45));
+            }}
+            19% {{
+                opacity: 0;
+                transform: scale(0.05);
+            }}
+        }}
+
+        @keyframes diamond-twinkle-b {{
+            0%, 100% {{
+                opacity: 0;
+                transform: scale(0.05);
+            }}
+            6% {{
+                opacity: 0.45;
+                transform: scale(calc(var(--sparkle-peak, 1.1) * 0.45));
+            }}
+            10% {{
+                opacity: 1;
+                transform: scale(var(--sparkle-peak, 1.1));
+            }}
+            14% {{
+                opacity: 0.45;
+                transform: scale(calc(var(--sparkle-peak, 1.1) * 0.45));
+            }}
+            18% {{
+                opacity: 0;
+                transform: scale(0.05);
+            }}
+            58% {{
+                opacity: 0;
+                transform: scale(0.05);
+            }}
+            64% {{
+                opacity: 0.45;
+                transform: scale(calc(var(--sparkle-peak, 1.1) * 0.45));
+            }}
+            68% {{
+                opacity: 1;
+                transform: scale(calc(var(--sparkle-peak, 1.1) * 0.92));
+            }}
+            72% {{
+                opacity: 0.45;
+                transform: scale(calc(var(--sparkle-peak, 1.1) * 0.45));
+            }}
+            76% {{
+                opacity: 0;
+                transform: scale(0.05);
+            }}
+        }}
+
+        @keyframes diamond-twinkle-c {{
+            0%, 100% {{
+                opacity: 0;
+                transform: scale(0.05);
+            }}
+            38% {{
+                opacity: 0;
+                transform: scale(0.05);
+            }}
+            44% {{
+                opacity: 0.45;
+                transform: scale(calc(var(--sparkle-peak, 1.2) * 0.45));
+            }}
+            48% {{
+                opacity: 1;
+                transform: scale(var(--sparkle-peak, 1.2));
+            }}
+            52% {{
+                opacity: 0.45;
+                transform: scale(calc(var(--sparkle-peak, 1.2) * 0.45));
+            }}
+            56% {{
+                opacity: 0;
+                transform: scale(0.05);
+            }}
+        }}
+
+        @keyframes diamond-twinkle-d {{
+            0%, 100% {{
+                opacity: 0;
+                transform: scale(0.05);
+            }}
+            4% {{
+                opacity: 0.4;
+                transform: scale(calc(var(--sparkle-peak, 1) * 0.4));
+            }}
+            7% {{
+                opacity: 0.95;
+                transform: scale(calc(var(--sparkle-peak, 1) * 0.88));
+            }}
+            10% {{
+                opacity: 0;
+                transform: scale(0.05);
+            }}
+            30% {{
+                opacity: 0;
+                transform: scale(0.05);
+            }}
+            33% {{
+                opacity: 0.4;
+                transform: scale(calc(var(--sparkle-peak, 1) * 0.4));
+            }}
+            36% {{
+                opacity: 0.95;
+                transform: scale(calc(var(--sparkle-peak, 1) * 0.88));
+            }}
+            39% {{
+                opacity: 0;
+                transform: scale(0.05);
+            }}
+            68% {{
+                opacity: 0;
+                transform: scale(0.05);
+            }}
+            71% {{
+                opacity: 0.4;
+                transform: scale(calc(var(--sparkle-peak, 1) * 0.4));
+            }}
+            74% {{
+                opacity: 0.95;
+                transform: scale(calc(var(--sparkle-peak, 1) * 0.88));
+            }}
+            77% {{
+                opacity: 0;
+                transform: scale(0.05);
+            }}
+        }}
+
+        @media (prefers-reduced-motion: reduce) {{
+            .diamond-sparkles {{
+                display: none;
+            }}
+        }}
+
         .card-tier-fire {{
-            background-color: #fff7ed;
-            border-color: #fed7aa;
+            background-color: #ffedd5;
+            border-color: #f9a03f;
         }}
 
         .card-tier-strong {{
-            background-color: #fefce8;
-            border-color: #fde68a;
+            background-color: #faf9f6;
+            border-color: #e5dfd0;
         }}
 
         .card-tier-sale {{
-            background-color: #f5e6d3;
-            border-color: #d4a574;
+            background-color: #fafafa;
+            border-color: #e8eaed;
         }}
 
         .card-image-wrap {{
@@ -1425,6 +1716,96 @@ def build_page_html(deals):
             border-color: #fdba74;
         }}
 
+        .badge-fire-pill {{
+            overflow: hidden;
+        }}
+
+        .fire-pill-label {{
+            position: relative;
+            z-index: 2;
+        }}
+
+        .fire-pill-flames {{
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 13px;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0;
+            transform: scaleY(0.15) translateY(3px);
+            transform-origin: center bottom;
+            animation: fire-pill-flames-rise 10s linear infinite;
+        }}
+
+        .fire-pill-flames-svg {{
+            display: block;
+            width: 100%;
+            height: 100%;
+        }}
+
+        .fire-pill-spark {{
+            opacity: 0;
+            transform-origin: center center;
+            animation: fire-pill-spark-pop 10s linear infinite;
+            animation-delay: inherit;
+        }}
+
+        @keyframes fire-pill-flames-rise {{
+            0%, 78%, 100% {{
+                opacity: 0;
+                transform: scaleY(0.12) translateY(4px);
+            }}
+            82% {{
+                opacity: 0.65;
+                transform: scaleY(0.55) translateY(2px);
+            }}
+            86% {{
+                opacity: 1;
+                transform: scaleY(0.95) translateY(0);
+            }}
+            90% {{
+                opacity: 1;
+                transform: scaleY(1.08) translateY(-1px);
+            }}
+            94% {{
+                opacity: 0.8;
+                transform: scaleY(0.72) translateY(1px);
+            }}
+            98% {{
+                opacity: 0;
+                transform: scaleY(0.1) translateY(4px);
+            }}
+        }}
+
+        @keyframes fire-pill-spark-pop {{
+            0%, 84%, 100% {{
+                opacity: 0;
+                transform: translateY(6px) scale(0.4);
+            }}
+            88% {{
+                opacity: 0.9;
+                transform: translateY(0) scale(1);
+            }}
+            92% {{
+                opacity: 0.55;
+                transform: translateY(-3px) scale(0.85);
+            }}
+            96% {{
+                opacity: 0;
+                transform: translateY(-7px) scale(0.35);
+            }}
+        }}
+
+        @media (prefers-reduced-motion: reduce) {{
+            .fire-pill-flames,
+            .fire-pill-spark {{
+                animation: none;
+                opacity: 0;
+            }}
+        }}
+
         .badge-regular {{
             background-color: #fefce8;
             color: #854d0e;
@@ -1442,8 +1823,8 @@ def build_page_html(deals):
         }}
 
         .badge-everyday {{
-            color: #7c3a00;
-            border-color: #d4a574;
+            color: #6b7280;
+            border-color: #d1d5db;
         }}
 
         .card-content {{
@@ -1481,6 +1862,12 @@ def build_page_html(deals):
         .retailer-target {{
             background-color: #CC0000;
             color: #ffffff;
+        }}
+
+        .retailer-meijer {{
+            background-color: #004F91;
+            color: #E31837;
+            font-weight: 700;
         }}
 
         .retailer-generic {{
@@ -1572,6 +1959,12 @@ def build_page_html(deals):
         .view-target {{
             background-color: #CC0000;
             color: #ffffff;
+        }}
+
+        .view-meijer {{
+            background-color: #004F91;
+            color: #E31837;
+            font-weight: 700;
         }}
 
         .view-generic {{

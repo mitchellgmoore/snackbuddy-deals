@@ -9,6 +9,18 @@ CSV_PATH = ROOT / "deals_today.csv"
 JSON_PATH = ROOT / "deals_today.json"
 
 
+def cell_str(val, default: str = "") -> str:
+    """Coerce a CSV cell to str; pandas uses float NaN for blank text fields."""
+    if val is None:
+        return default
+    try:
+        if pd.isna(val):
+            return default
+    except Exception:
+        pass
+    return str(val).strip()
+
+
 def build_product_name(row: pd.Series) -> str:
     """
     Build a readable product name like:
@@ -17,11 +29,8 @@ def build_product_name(row: pd.Series) -> str:
     """
     parts = []
 
-    brand = row.get("brand")
-    base_name = row.get("product_name")
-
-    brand_str = (brand or "").strip()
-    base_str = (base_name or "").strip()
+    brand_str = cell_str(row.get("brand"))
+    base_str = cell_str(row.get("product_name"))
 
     if brand_str:
         # Only add brand if base_name doesn't already start with it (case-insensitive)
@@ -31,9 +40,9 @@ def build_product_name(row: pd.Series) -> str:
     if base_str:
         parts.append(base_str)
 
-    flavor = row.get("flavor")
-    if isinstance(flavor, str) and flavor.strip():
-        parts.append(flavor.strip())
+    flavor_str = cell_str(row.get("flavor"))
+    if flavor_str:
+        parts.append(flavor_str)
 
     # Optional pack size in name
     pack_size = row.get("pack_size")
@@ -104,8 +113,8 @@ def get_unit_label(row):
     except Exception:
         return None, None
 
-    category = (row.get("category") or "").lower()
-    section = (row.get("section") or "").lower()
+    category = cell_str(row.get("category")).lower()
+    section = cell_str(row.get("section")).lower()
 
     # Treat bar-like things as 'bar(s)'
     if "bar" in category or "bar" in section:
@@ -150,14 +159,14 @@ def main():
 
         # Use original product_name from CSV (not combined with flavor)
         # This allows grouping logic to work properly and display flavors separately
-        product_name = row.get("product_name", "")
+        product_name = cell_str(row.get("product_name"))
 
-        availability = row.get("availability_norm", "")
+        availability = cell_str(row.get("availability_norm"))
         # Let the page generator normalise this; just pass through raw value
 
         # Deal strength from enrichment (e.g. '🔥 strong', '🟡 mild')
         # Note: We now use percent_off directly for badge determination, but keep this for reference
-        deal_strength = row.get("deal_strength", "")
+        deal_strength = cell_str(row.get("deal_strength"))
 
         # Optional streak days
         streak_days = get_streak_days(row)
@@ -168,20 +177,20 @@ def main():
         deal = {
             "product_name": product_name,
             # Also include brand and flavor separately for grouping logic
-            "brand": row.get("brand", ""),
-            "flavor": row.get("flavor", ""),
-            "retailer": row.get("retailer", ""),
+            "brand": cell_str(row.get("brand")),
+            "flavor": cell_str(row.get("flavor")),
+            "retailer": cell_str(row.get("retailer")),
             # Top-level grouping: Food / Drinks
-            "section": row.get("section", ""),
+            "section": cell_str(row.get("section")),
             # Sub-category within that section: bars, chips, energy drinks, etc.
-            "category": row.get("category", ""),
+            "category": cell_str(row.get("category")),
             "old_price": old_price,
             "new_price": new_price,
             "percent_off": round(float(percent_off), 1),
-            "image_url": row.get("image_url", ""),
-            "retailer_url": row.get("canonical_url", ""),
+            "image_url": cell_str(row.get("image_url")),
+            "retailer_url": cell_str(row.get("canonical_url")),
             "availability": availability,
-            "verified_at": row.get("timestamp", ""),
+            "verified_at": cell_str(row.get("timestamp")),
             "deal_strength": deal_strength,
             "pack_count": pack_count,
             "pack_unit": pack_unit,
