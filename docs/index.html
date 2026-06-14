@@ -217,10 +217,10 @@
 }
 
 .sb-filter-master-icon {
-  width: 26px;
-  height: 26px;
-  object-fit: contain;
+  width: 22px;
+  height: 22px;
   display: block;
+  color: #111827;
 }
 
 .sb-filter-master-badge,
@@ -246,12 +246,16 @@
 }
 
 .sb-filter-scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
   flex-shrink: 0;
   width: 32px;
   height: 32px;
   border: 1px solid var(--border-subtle);
   border-radius: 999px;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.96);
   color: var(--text-main);
   font-size: 20px;
   line-height: 1;
@@ -259,11 +263,35 @@
   display: none;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.12);
 }
 
 .sb-filter-scroll-btn.is-visible {
   display: inline-flex;
+}
+
+.sb-filter-scroll-prev {
+  left: 0;
+}
+
+.sb-filter-scroll-next {
+  right: 0;
+}
+
+.sb-filter-bar-scroll {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.sb-filter-bar-scroll.has-scroll-prev .sb-filter-bar-track {
+  padding-left: 38px;
+}
+
+.sb-filter-bar-scroll.has-scroll-next .sb-filter-bar-track {
+  padding-right: 38px;
 }
 
 .sb-filter-bar-track {
@@ -839,21 +867,32 @@
         .card-carousel {
             position: relative;
             width: 100%;
-            padding: 0 28px;
+            display: grid;
+            grid-template-columns: 30px minmax(0, 1fr) 30px;
+            grid-template-rows: auto auto;
+            align-items: center;
+            column-gap: 2px;
+            padding: 0;
             z-index: 1;
         }
 
         .card-carousel--single {
-            padding: 0;
+            grid-template-columns: minmax(0, 1fr);
         }
 
         .card-carousel-stage {
+            grid-column: 2;
+            grid-row: 1;
             position: relative;
             height: 118px;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+        }
+
+        .card-carousel--single .card-carousel-stage {
+            grid-column: 1;
         }
 
         .card-carousel-slide {
@@ -911,9 +950,11 @@
 
         .card-carousel-prev,
         .card-carousel-next {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
+            position: relative;
+            top: auto;
+            transform: none;
+            justify-self: center;
+            align-self: center;
             z-index: 5;
             width: 26px;
             height: 26px;
@@ -929,11 +970,13 @@
         }
 
         .card-carousel-prev {
-            left: 0;
+            grid-column: 1;
+            grid-row: 1;
         }
 
         .card-carousel-next {
-            right: 0;
+            grid-column: 3;
+            grid-row: 1;
         }
 
         .card-carousel-prev:hover,
@@ -942,14 +985,26 @@
         }
 
         .card-carousel-caption {
+            grid-column: 1 / -1;
+            grid-row: 2;
             margin-top: 4px;
             text-align: center;
             font-size: 11px;
             font-weight: 600;
             color: var(--text-muted);
             line-height: 1.25;
-            padding: 0 28px;
+            padding: 0 4px;
             min-height: 14px;
+        }
+
+        @media (max-width: 640px) {
+            .card-carousel-slide.is-prev {
+                transform: translate(calc(-50% - 48%), -50%) scale(0.78);
+            }
+
+            .card-carousel-slide.is-next {
+                transform: translate(calc(-50% + 48%), -50%) scale(0.78);
+            }
         }
 
         .card-category-tag {
@@ -1467,7 +1522,7 @@
                 <div class="sb-hero-pattern"></div>
                 <div class="sb-hero-content">
                     <div class="sb-hero-kicker">
-                        SnackBuddy • Last updated: June 13, 2026 at 05:49 AM (local time)
+                        SnackBuddy • Last updated: June 14, 2026 at 07:15 PM (local time)
                     </div>
                     <h1 class="sb-hero-title">Don&apos;t overpay for the snacks you already buy.</h1>
                 </div>
@@ -1477,14 +1532,18 @@
         <section class="sb-filter-bar-section" aria-label="Deal filters">
             <div class="sb-filter-bar">
                 <button type="button" class="sb-filter-master" id="sb-filter-master" aria-label="All filters" aria-expanded="false">
-                    <img src="assets/icons/raccoon-detective.png" alt="" class="sb-filter-master-icon" />
+                    <svg class="sb-filter-master-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path fill="currentColor" d="M4.5 5.75c0-.69.56-1.25 1.25-1.25h12.5c.69 0 1.25.56 1.25 1.25v.51c0 .24-.07.47-.2.67l-5.2 7.28v5.04c0 .41-.25.78-.63.92l-2.45 1.02c-.77.32-1.63-.24-1.63-1.08v-6.9L4.7 6.93c-.13-.2-.2-.43-.2-.67v-.51z"/>
+                    </svg>
                     <span class="sb-filter-master-badge" id="sb-filter-master-count" hidden>0</span>
                 </button>
-                <button type="button" class="sb-filter-scroll-btn sb-filter-scroll-prev" id="sb-filter-scroll-prev" aria-label="Scroll filters left">&#8249;</button>
-                <div class="sb-filter-bar-track" id="sb-filter-bar-track">
-                    <div class="sb-filter-bar-inner" id="sb-filter-bar-inner"></div>
+                <div class="sb-filter-bar-scroll" id="sb-filter-bar-scroll">
+                    <button type="button" class="sb-filter-scroll-btn sb-filter-scroll-prev" id="sb-filter-scroll-prev" aria-label="Scroll filters left">&#8249;</button>
+                    <div class="sb-filter-bar-track" id="sb-filter-bar-track">
+                        <div class="sb-filter-bar-inner" id="sb-filter-bar-inner"></div>
+                    </div>
+                    <button type="button" class="sb-filter-scroll-btn sb-filter-scroll-next" id="sb-filter-scroll-next" aria-label="Scroll filters right">&#8250;</button>
                 </div>
-                <button type="button" class="sb-filter-scroll-btn sb-filter-scroll-next" id="sb-filter-scroll-next" aria-label="Scroll filters right">&#8250;</button>
             </div>
         </section>
         <div class="sb-filter-dropdown-backdrop" id="sb-filter-dropdown-backdrop"></div>
@@ -1507,53 +1566,105 @@
         <section class="card-grid" id="deals-list">
             
     <div class="card card-tier-diamond"
-         data-section="food"
-         data-category="meat snack"
-         data-retailer="target"
-         data-brand="chomps"
-         data-price="7.99"
-         data-percent="56.8"
+         data-section="drinks"
+         data-category="rtd protein shake"
+         data-retailer="walmart"
+         data-brand="core power"
+         data-price="3.0"
+         data-percent="79.1"
          data-deal-count="1"
          data-tier="diamond">
         
         <div class="diamond-sparkles" aria-hidden="true">
-            <span class="sparkle" style="width:14px;height:14px;top:35.1%;right:29.4%;left:auto;animation-name:diamond-twinkle-a;animation-duration:5.67s;animation-delay:0.17s;animation-timing-function:linear;--sparkle-peak:1.08;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:28px;height:28px;top:17.0%;right:14.6%;left:auto;animation-name:diamond-twinkle-b;animation-duration:8.37s;animation-delay:5.23s;animation-timing-function:linear;--sparkle-peak:1.19;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:24px;height:24px;top:12.1%;right:70.7%;left:auto;animation-name:diamond-twinkle-b;animation-duration:7.96s;animation-delay:8.14s;animation-timing-function:linear;--sparkle-peak:1.00;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:21px;height:21px;top:43.1%;left:47.7%;animation-name:diamond-twinkle-d;animation-duration:9.41s;animation-delay:2.56s;animation-timing-function:linear;--sparkle-peak:1.17;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:17px;height:17px;top:14.5%;left:31.3%;animation-name:diamond-twinkle-d;animation-duration:8.36s;animation-delay:3.04s;animation-timing-function:linear;--sparkle-peak:0.87;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:23px;height:23px;top:64.0%;left:44.9%;animation-name:diamond-twinkle-a;animation-duration:7.28s;animation-delay:1.32s;animation-timing-function:linear;--sparkle-peak:0.80;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:14px;height:14px;top:68.3%;right:19.4%;left:auto;animation-name:diamond-twinkle-c;animation-duration:8.82s;animation-delay:3.65s;animation-timing-function:linear;--sparkle-peak:1.02;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:30px;height:30px;top:38.3%;left:22.6%;animation-name:diamond-twinkle-c;animation-duration:6.78s;animation-delay:7.30s;animation-timing-function:linear;--sparkle-peak:1.16;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:27px;height:27px;top:58.6%;right:64.5%;left:auto;animation-name:diamond-twinkle-c;animation-duration:10.33s;animation-delay:4.20s;animation-timing-function:linear;--sparkle-peak:0.84;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:19px;height:19px;top:37.3%;right:65.9%;left:auto;animation-name:diamond-twinkle-a;animation-duration:8.01s;animation-delay:7.04s;animation-timing-function:linear;--sparkle-peak:0.98;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:26px;height:26px;top:44.8%;right:54.6%;left:auto;animation-name:diamond-twinkle-b;animation-duration:6.15s;animation-delay:1.80s;animation-timing-function:linear;--sparkle-peak:1.13;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:14px;height:14px;top:24.6%;right:20.4%;left:auto;animation-name:diamond-twinkle-a;animation-duration:10.53s;animation-delay:9.11s;animation-timing-function:linear;--sparkle-peak:0.85;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:15px;height:15px;top:50.8%;right:45.8%;left:auto;animation-name:diamond-twinkle-c;animation-duration:9.42s;animation-delay:5.23s;animation-timing-function:linear;--sparkle-peak:0.81;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:29px;height:29px;top:77.2%;left:40.0%;animation-name:diamond-twinkle-a;animation-duration:6.28s;animation-delay:3.01s;animation-timing-function:linear;--sparkle-peak:1.19;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:27px;height:27px;top:20.3%;left:44.9%;animation-name:diamond-twinkle-b;animation-duration:10.79s;animation-delay:0.82s;animation-timing-function:linear;--sparkle-peak:0.93;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
         </div>
         <div class="card-image-wrap">
             
         <div class="card-carousel card-carousel--single" data-slide-count="1">
             <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Sea Salt"><a href="https://www.target.com/p/chomps-snack-sticks-chomplings-sea-salt-beef-mini-sticks-7oz-14ct/-/A-93974616#lnk=sametab" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_e5b49c96-dc80-46b6-9910-2e33ee00b533?wid=1200&amp;hei=1200&amp;qlt=80" alt="Sea Salt" class="card-image" loading="lazy"/></a></div>
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Vanilla"><a href="https://www.walmart.com/ip/Core-Power-Protein-Shake-with-26g-Protein-by-fairlife-Milk-Vanilla-14-fl-oz/5262660866" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/4-pack-Core-Power-Protein-Shake-with-26g-Protein-by-fairlife-Milk-Vanilla-14-fl-oz_79f5a0d2-1754-4cb7-8678-959b090ef4de.51fdf61ac90deefcd0b040c1d0ef4d1b.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Vanilla" class="card-image" loading="lazy"/></a></div>
             </div>
             
-            <div class="card-carousel-caption">Sea Salt</div>
+            <div class="card-carousel-caption">Vanilla</div>
         </div>
     
-            <div class="card-category-tag">Meat Snack</div>
-            <div class='pack-pill'><span class='pack-count'>14</span> <span class='pack-unit'>ct</span></div>
+            <div class="card-category-tag">RTD Protein Shake</div>
+            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
             <div class='badge badge-elite'>💎 Diamond</div>
         </div>
         <div class="card-content">
             <div class="card-pricing">
-                <span class='old-price'>$18.49</span>
-                <span class="new-price">$7.99</span>
-                <span class="percent-off">57% OFF</span>
+                <span class='old-price'>$14.32</span>
+                <span class="new-price">$3.00</span>
+                <span class="percent-off">79% OFF</span>
             </div>
-            <div class="card-title">Chomplings Meat Sticks</div>
+            <div class="card-title">Core Power Protein Shake</div>
+            
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Core-Power-Protein-Shake-with-26g-Protein-by-fairlife-Milk-Vanilla-14-fl-oz/5262660866" target="_blank" rel="noopener noreferrer">
+                View on Walmart.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card card-tier-diamond"
+         data-section="drinks"
+         data-category="energy drink"
+         data-retailer="walmart"
+         data-brand="alani nu"
+         data-price="1.25"
+         data-percent="49.6"
+         data-deal-count="1"
+         data-tier="diamond">
+        
+        <div class="diamond-sparkles" aria-hidden="true">
+            <span class="sparkle" style="width:16px;height:16px;top:6.8%;left:29.6%;animation-name:diamond-twinkle-b;animation-duration:5.04s;animation-delay:2.85s;animation-timing-function:linear;--sparkle-peak:0.95;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:26px;height:26px;top:28.2%;left:50.1%;animation-name:diamond-twinkle-c;animation-duration:11.01s;animation-delay:0.74s;animation-timing-function:linear;--sparkle-peak:1.12;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:18px;height:18px;top:15.7%;right:71.8%;left:auto;animation-name:diamond-twinkle-c;animation-duration:5.31s;animation-delay:0.23s;animation-timing-function:linear;--sparkle-peak:1.06;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:16px;height:16px;top:74.2%;left:66.0%;animation-name:diamond-twinkle-a;animation-duration:9.42s;animation-delay:1.89s;animation-timing-function:linear;--sparkle-peak:1.15;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:23px;height:23px;top:46.4%;left:59.5%;animation-name:diamond-twinkle-a;animation-duration:10.73s;animation-delay:8.63s;animation-timing-function:linear;--sparkle-peak:1.08;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:29px;height:29px;top:14.4%;left:79.9%;animation-name:diamond-twinkle-b;animation-duration:7.88s;animation-delay:4.38s;animation-timing-function:linear;--sparkle-peak:0.94;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:22px;height:22px;top:22.4%;left:63.3%;animation-name:diamond-twinkle-a;animation-duration:5.78s;animation-delay:1.92s;animation-timing-function:linear;--sparkle-peak:0.94;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:28px;height:28px;top:45.8%;left:19.3%;animation-name:diamond-twinkle-c;animation-duration:9.18s;animation-delay:7.65s;animation-timing-function:linear;--sparkle-peak:1.20;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+        </div>
+        <div class="card-image-wrap">
+            
+        <div class="card-carousel card-carousel--single" data-slide-count="1">
+            <div class="card-carousel-stage">
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Cherry Slush"><a href="https://www.walmart.com/ip/Alani-Nu-Sugar-Free-Energy-Drink-Cherry-Slush-12-fl-oz-Can-Single-Can/925507823" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/Alani-Nu-Sugar-Free-Energy-Drink-Cherry-Slush-12-fl-oz-Can-Single-Can_3b735203-4f1f-458f-8cef-2a4481dcc5e9.87e41043b270120321a183c52010e751.png?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Cherry Slush" class="card-image" loading="lazy"/></a></div>
+            </div>
+            
+            <div class="card-carousel-caption">Cherry Slush</div>
+        </div>
+    
+            <div class="card-category-tag">Energy Drink</div>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-elite'>💎 Diamond</div>
+        </div>
+        <div class="card-content">
+            <div class="card-pricing">
+                <span class='old-price'>$2.48</span>
+                <span class="new-price">$1.25</span>
+                <span class="percent-off">50% OFF</span>
+            </div>
+            <div class="card-title">Alani Nu Energy Drink</div>
             
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
             </div>
-            <a class="view-button view-target" href="https://www.target.com/p/chomps-snack-sticks-chomplings-sea-salt-beef-mini-sticks-7oz-14ct/-/A-93974616#lnk=sametab" target="_blank" rel="noopener noreferrer">
-                View on Target.com
+            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Alani-Nu-Sugar-Free-Energy-Drink-Cherry-Slush-12-fl-oz-Can-Single-Can/925507823" target="_blank" rel="noopener noreferrer">
+                View on Walmart.com
             </a>
         </div>
     </div>
@@ -1819,98 +1930,6 @@
             </div>
             <a class="view-button view-kroger" href="https://www.kroger.com/p/clif-builders-chocolatey-mint-20g-protein-bars/0072225218359" target="_blank" rel="noopener noreferrer">
                 View on Kroger.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card card-tier-fire"
-         data-section="drinks"
-         data-category="energy drink"
-         data-retailer="walmart"
-         data-brand="alani nu"
-         data-price="1.98"
-         data-percent="20.2"
-         data-deal-count="1"
-         data-tier="fire">
-        
-        <div class="card-image-wrap">
-            
-        <div class="card-carousel card-carousel--single" data-slide-count="1">
-            <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Cherry Slush"><a href="https://www.walmart.com/ip/Alani-Nu-Sugar-Free-Energy-Drink-Cherry-Slush-12-fl-oz-Can-Single-Can/925507823" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/Alani-Nu-Sugar-Free-Energy-Drink-Cherry-Slush-12-fl-oz-Can-Single-Can_3b735203-4f1f-458f-8cef-2a4481dcc5e9.87e41043b270120321a183c52010e751.png?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Cherry Slush" class="card-image" loading="lazy"/></a></div>
-            </div>
-            
-            <div class="card-carousel-caption">Cherry Slush</div>
-        </div>
-    
-            <div class="card-category-tag">Energy Drink</div>
-            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong badge-fire-pill'><span class='fire-pill-flames' style='animation-delay:7.3s' aria-hidden='true'><svg class="fire-pill-flames-svg" viewBox="0 0 120 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-  <path class="fire-pill-flame-outer" fill="#fb923c" d="M0,24 L0,16 C5,9 10,17 15,12 C20,7 25,15 30,10 C35,6 40,14 45,9 C50,5 55,13 60,8 C65,4 70,12 75,9 C80,6 85,13 90,10 C95,7 100,14 105,11 C110,8 115,15 120,13 L120,24 Z"/>
-  <path class="fire-pill-flame-inner" fill="#fef08a" d="M0,24 L0,18 C7,14 14,17 21,15 C28,13 35,17 42,14 C49,12 56,16 63,14 C70,12 77,16 84,14 C91,13 98,17 105,15 C112,14 116,17 120,16 L120,24 Z"/>
-  <ellipse class="fire-pill-spark fire-pill-spark--1" cx="18" cy="8" rx="2" ry="3" fill="#fb923c"/>
-  <ellipse class="fire-pill-spark fire-pill-spark--2" cx="58" cy="6" rx="1.6" ry="2.6" fill="#fb923c"/>
-  <ellipse class="fire-pill-spark fire-pill-spark--3" cx="96" cy="9" rx="1.8" ry="2.8" fill="#fb923c"/>
-</svg></span><span class='fire-pill-label'>🔥 Fire</span></div>
-        </div>
-        <div class="card-content">
-            <div class="card-pricing">
-                <span class='old-price'>$2.48</span>
-                <span class="new-price">$1.98</span>
-                <span class="percent-off">20% OFF</span>
-            </div>
-            <div class="card-title">Alani Nu Energy Drink</div>
-            
-            <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
-                
-            </div>
-            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Alani-Nu-Sugar-Free-Energy-Drink-Cherry-Slush-12-fl-oz-Can-Single-Can/925507823" target="_blank" rel="noopener noreferrer">
-                View on Walmart.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card card-tier-strong"
-         data-section="drinks"
-         data-category="energy drink"
-         data-retailer="walmart"
-         data-brand="ghost"
-         data-price="2.0"
-         data-percent="19.4"
-         data-deal-count="1"
-         data-tier="strong">
-        
-        <div class="card-image-wrap">
-            
-        <div class="card-carousel card-carousel--single" data-slide-count="1">
-            <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Sour Patch Kids Blue Raspberry"><a href="https://www.walmart.com/ip/GHOST-ENERGY-Zero-Sugars-Energy-Drink-SOUR-PATCH-KIDS-Blue-Raspberry-16-fl-oz-Can/105327573" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/GHOST-ENERGY-Zero-Sugars-Energy-Drink-SOUR-PATCH-KIDS-Blue-Raspberry-16-fl-oz-Can_aba4647d-f190-4a7c-af4b-8fe63466b970.a2285526e4a5cb7dda2b82476e8d7f3b.png?odnHeight=573&amp;odnWidth=573&amp;odnBg=FFFFFF" alt="Sour Patch Kids Blue Raspberry" class="card-image" loading="lazy"/></a></div>
-            </div>
-            
-            <div class="card-carousel-caption">Sour Patch Kids Blue Raspberry</div>
-        </div>
-    
-            <div class="card-category-tag">Energy Drink</div>
-            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-protein'>💪 Strong</div>
-        </div>
-        <div class="card-content">
-            <div class="card-pricing">
-                <span class='old-price'>$2.48</span>
-                <span class="new-price">$2.00</span>
-                <span class="percent-off">19% OFF</span>
-            </div>
-            <div class="card-title">Ghost Energy Drink</div>
-            
-            <div class="card-footer">
-                <div class='availability in-store'>In-store</div>
-                
-            </div>
-            <a class="view-button view-walmart" href="https://www.walmart.com/ip/GHOST-ENERGY-Zero-Sugars-Energy-Drink-SOUR-PATCH-KIDS-Blue-Raspberry-16-fl-oz-Can/105327573" target="_blank" rel="noopener noreferrer">
-                View on Walmart.com
             </a>
         </div>
     </div>
@@ -3129,20 +3148,23 @@
          data-section="food"
          data-category="bars"
          data-retailer="target"
-         data-brand="quest"
-         data-price="21.49"
-         data-percent="6.5"
-         data-deal-count="1"
+         data-brand="pure protein"
+         data-price="14.99"
+         data-percent="6.3"
+         data-deal-count="7"
          data-tier="sale">
         
         <div class="card-image-wrap">
             
-        <div class="card-carousel card-carousel--single" data-slide-count="1">
+        <div class="card-carousel" data-slide-count="7">
             <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Chocolate Peanut Butter"><a href="https://www.target.com/p/quest-nutrition-18g-hero-protein-bar-crispy-chocolate-peanut-butter/-/A-89846528" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_bd132c61-19e1-45ff-9bf0-11ca2448ac64?wid=600&amp;hei=600&amp;qlt=80" alt="Chocolate Peanut Butter" class="card-image" loading="lazy"/></a></div>
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Chewy Chocolate Chip"><a href="https://www.target.com/p/pure-protein-20g-protein-bar-chewy-chocolate-chip-12pk/-/A-50409156" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_93b3242a-e6d2-45eb-ab46-f25e6957fb16?wid=600&amp;hei=600&amp;qlt=80" alt="Chewy Chocolate Chip" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Chocolate Deluxe"><a href="https://www.target.com/p/pure-protein-bar-chocolate-deluxe-12ct/-/A-14217302" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_f21ec858-cd92-4dd8-82c7-3478b4dd8316?wid=600&amp;hei=600&amp;qlt=80" alt="Chocolate Deluxe" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="2" data-flavor-name="Chocolate Peanut Butter"><a href="https://www.target.com/p/pure-protein-bar-chocolate-peanut-butter-12ct/-/A-14217303" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_8ab72653-0eb7-47d0-aaea-03e9b1c15efd?wid=600&amp;hei=600&amp;qlt=80" alt="Chocolate Peanut Butter" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="3" data-flavor-name="Chocolate Peanut Caramel"><a href="https://www.target.com/p/pure-protein-20g-protein-bar-chocolate-peanut-caramel-12ct/-/A-15138759" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_34407d93-bcaa-4c77-9562-8c07f5cc02a3?wid=600&amp;hei=600&amp;qlt=80" alt="Chocolate Peanut Caramel" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="4" data-flavor-name="Chocolate Salted Caramel"><a href="https://www.target.com/p/pure-protein-19g-protein-bar-chocolate-salted-caramel-12ct/-/A-51524631" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_acca1c88-7ca5-4c7a-a9ad-a3ce8ef35427?wid=600&amp;hei=600&amp;qlt=80" alt="Chocolate Salted Caramel" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="5" data-flavor-name="Galactic Brownie"><a href="https://www.target.com/p/pure-protein-nutrition-protein-bars-galactic-brownie-1-53lbs-12ct/-/A-91972465" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_2ad162c2-7d43-486b-bca6-dbb2d21eda0c?wid=600&amp;hei=600&amp;qlt=80" alt="Galactic Brownie" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="6" data-flavor-name="Lemon Cake"><a href="https://www.target.com/p/pure-protein-20g-protein-bar-lemon-cake-12ct/-/A-80607005" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_c5e4c1d8-db3f-4648-b859-b93657c482d2?wid=600&amp;hei=600&amp;qlt=80" alt="Lemon Cake" class="card-image" loading="lazy"/></a></div>
             </div>
             
-            <div class="card-carousel-caption">Chocolate Peanut Butter</div>
+            <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
+            <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
+        
+            <div class="card-carousel-caption">Chewy Chocolate Chip</div>
         </div>
     
             <div class="card-category-tag">Bars</div>
@@ -3151,17 +3173,17 @@
         </div>
         <div class="card-content">
             <div class="card-pricing">
-                <span class='old-price'>$22.99</span>
-                <span class="new-price">$21.49</span>
+                <span class='old-price'>$15.99</span>
+                <span class="new-price">$14.99</span>
                 <span class="percent-off">6% OFF</span>
             </div>
-            <div class="card-title">Quest Hero Protein Bar</div>
+            <div class="card-title">Pure Protein Bar</div>
             
             <div class="card-footer">
-                <div class='availability online-only'>Online only</div>
+                <div class='availability both'>In-store & online</div>
                 
             </div>
-            <a class="view-button view-target" href="https://www.target.com/p/quest-nutrition-18g-hero-protein-bar-crispy-chocolate-peanut-butter/-/A-89846528" target="_blank" rel="noopener noreferrer">
+            <a class="view-button view-target" href="https://www.target.com/p/pure-protein-bar-chocolate-deluxe-12ct/-/A-14217302" target="_blank" rel="noopener noreferrer">
                 View on Target.com
             </a>
         </div>
@@ -3399,6 +3421,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const filterSheetClear = document.getElementById("sb-filter-sheet-clear");
   const filterSheetDone = document.getElementById("sb-filter-sheet-done");
   const filterTrack = document.getElementById("sb-filter-bar-track");
+  const filterBarScroll = document.getElementById("sb-filter-bar-scroll");
   const filterScrollPrev = document.getElementById("sb-filter-scroll-prev");
   const filterScrollNext = document.getElementById("sb-filter-scroll-next");
 
@@ -3727,8 +3750,12 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!filterTrack || !filterScrollPrev || !filterScrollNext) return;
     const maxScroll = filterTrack.scrollWidth - filterTrack.clientWidth;
     const show = maxScroll > 4;
-    filterScrollPrev.classList.toggle("is-visible", show && filterTrack.scrollLeft > 4);
-    filterScrollNext.classList.toggle("is-visible", show && filterTrack.scrollLeft < maxScroll - 4);
+    const hasPrev = show && filterTrack.scrollLeft > 4;
+    const hasNext = show && filterTrack.scrollLeft < maxScroll - 4;
+    filterScrollPrev.classList.toggle("is-visible", hasPrev);
+    filterScrollNext.classList.toggle("is-visible", hasNext);
+    filterBarScroll?.classList.toggle("has-scroll-prev", hasPrev);
+    filterBarScroll?.classList.toggle("has-scroll-next", hasNext);
   }
 
   function applyFiltersAndSort() {

@@ -920,10 +920,10 @@ def build_page_html(deals):
 }}
 
 .sb-filter-master-icon {{
-  width: 26px;
-  height: 26px;
-  object-fit: contain;
+  width: 22px;
+  height: 22px;
   display: block;
+  color: #111827;
 }}
 
 .sb-filter-master-badge,
@@ -949,12 +949,16 @@ def build_page_html(deals):
 }}
 
 .sb-filter-scroll-btn {{
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
   flex-shrink: 0;
   width: 32px;
   height: 32px;
   border: 1px solid var(--border-subtle);
   border-radius: 999px;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.96);
   color: var(--text-main);
   font-size: 20px;
   line-height: 1;
@@ -962,11 +966,35 @@ def build_page_html(deals):
   display: none;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.12);
 }}
 
 .sb-filter-scroll-btn.is-visible {{
   display: inline-flex;
+}}
+
+.sb-filter-scroll-prev {{
+  left: 0;
+}}
+
+.sb-filter-scroll-next {{
+  right: 0;
+}}
+
+.sb-filter-bar-scroll {{
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}}
+
+.sb-filter-bar-scroll.has-scroll-prev .sb-filter-bar-track {{
+  padding-left: 38px;
+}}
+
+.sb-filter-bar-scroll.has-scroll-next .sb-filter-bar-track {{
+  padding-right: 38px;
 }}
 
 .sb-filter-bar-track {{
@@ -1542,21 +1570,32 @@ def build_page_html(deals):
         .card-carousel {{
             position: relative;
             width: 100%;
-            padding: 0 28px;
+            display: grid;
+            grid-template-columns: 30px minmax(0, 1fr) 30px;
+            grid-template-rows: auto auto;
+            align-items: center;
+            column-gap: 2px;
+            padding: 0;
             z-index: 1;
         }}
 
         .card-carousel--single {{
-            padding: 0;
+            grid-template-columns: minmax(0, 1fr);
         }}
 
         .card-carousel-stage {{
+            grid-column: 2;
+            grid-row: 1;
             position: relative;
             height: 118px;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+        }}
+
+        .card-carousel--single .card-carousel-stage {{
+            grid-column: 1;
         }}
 
         .card-carousel-slide {{
@@ -1614,9 +1653,11 @@ def build_page_html(deals):
 
         .card-carousel-prev,
         .card-carousel-next {{
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
+            position: relative;
+            top: auto;
+            transform: none;
+            justify-self: center;
+            align-self: center;
             z-index: 5;
             width: 26px;
             height: 26px;
@@ -1632,11 +1673,13 @@ def build_page_html(deals):
         }}
 
         .card-carousel-prev {{
-            left: 0;
+            grid-column: 1;
+            grid-row: 1;
         }}
 
         .card-carousel-next {{
-            right: 0;
+            grid-column: 3;
+            grid-row: 1;
         }}
 
         .card-carousel-prev:hover,
@@ -1645,14 +1688,26 @@ def build_page_html(deals):
         }}
 
         .card-carousel-caption {{
+            grid-column: 1 / -1;
+            grid-row: 2;
             margin-top: 4px;
             text-align: center;
             font-size: 11px;
             font-weight: 600;
             color: var(--text-muted);
             line-height: 1.25;
-            padding: 0 28px;
+            padding: 0 4px;
             min-height: 14px;
+        }}
+
+        @media (max-width: 640px) {{
+            .card-carousel-slide.is-prev {{
+                transform: translate(calc(-50% - 48%), -50%) scale(0.78);
+            }}
+
+            .card-carousel-slide.is-next {{
+                transform: translate(calc(-50% + 48%), -50%) scale(0.78);
+            }}
         }}
 
         .card-category-tag {{
@@ -2180,14 +2235,18 @@ def build_page_html(deals):
         <section class="sb-filter-bar-section" aria-label="Deal filters">
             <div class="sb-filter-bar">
                 <button type="button" class="sb-filter-master" id="sb-filter-master" aria-label="All filters" aria-expanded="false">
-                    <img src="assets/icons/raccoon-detective.png" alt="" class="sb-filter-master-icon" />
+                    <svg class="sb-filter-master-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path fill="currentColor" d="M4.5 5.75c0-.69.56-1.25 1.25-1.25h12.5c.69 0 1.25.56 1.25 1.25v.51c0 .24-.07.47-.2.67l-5.2 7.28v5.04c0 .41-.25.78-.63.92l-2.45 1.02c-.77.32-1.63-.24-1.63-1.08v-6.9L4.7 6.93c-.13-.2-.2-.43-.2-.67v-.51z"/>
+                    </svg>
                     <span class="sb-filter-master-badge" id="sb-filter-master-count" hidden>0</span>
                 </button>
-                <button type="button" class="sb-filter-scroll-btn sb-filter-scroll-prev" id="sb-filter-scroll-prev" aria-label="Scroll filters left">&#8249;</button>
-                <div class="sb-filter-bar-track" id="sb-filter-bar-track">
-                    <div class="sb-filter-bar-inner" id="sb-filter-bar-inner"></div>
+                <div class="sb-filter-bar-scroll" id="sb-filter-bar-scroll">
+                    <button type="button" class="sb-filter-scroll-btn sb-filter-scroll-prev" id="sb-filter-scroll-prev" aria-label="Scroll filters left">&#8249;</button>
+                    <div class="sb-filter-bar-track" id="sb-filter-bar-track">
+                        <div class="sb-filter-bar-inner" id="sb-filter-bar-inner"></div>
+                    </div>
+                    <button type="button" class="sb-filter-scroll-btn sb-filter-scroll-next" id="sb-filter-scroll-next" aria-label="Scroll filters right">&#8250;</button>
                 </div>
-                <button type="button" class="sb-filter-scroll-btn sb-filter-scroll-next" id="sb-filter-scroll-next" aria-label="Scroll filters right">&#8250;</button>
             </div>
         </section>
         <div class="sb-filter-dropdown-backdrop" id="sb-filter-dropdown-backdrop"></div>
@@ -2306,6 +2365,7 @@ document.addEventListener("DOMContentLoaded", function () {{
   const filterSheetClear = document.getElementById("sb-filter-sheet-clear");
   const filterSheetDone = document.getElementById("sb-filter-sheet-done");
   const filterTrack = document.getElementById("sb-filter-bar-track");
+  const filterBarScroll = document.getElementById("sb-filter-bar-scroll");
   const filterScrollPrev = document.getElementById("sb-filter-scroll-prev");
   const filterScrollNext = document.getElementById("sb-filter-scroll-next");
 
@@ -2634,8 +2694,12 @@ document.addEventListener("DOMContentLoaded", function () {{
     if (!filterTrack || !filterScrollPrev || !filterScrollNext) return;
     const maxScroll = filterTrack.scrollWidth - filterTrack.clientWidth;
     const show = maxScroll > 4;
-    filterScrollPrev.classList.toggle("is-visible", show && filterTrack.scrollLeft > 4);
-    filterScrollNext.classList.toggle("is-visible", show && filterTrack.scrollLeft < maxScroll - 4);
+    const hasPrev = show && filterTrack.scrollLeft > 4;
+    const hasNext = show && filterTrack.scrollLeft < maxScroll - 4;
+    filterScrollPrev.classList.toggle("is-visible", hasPrev);
+    filterScrollNext.classList.toggle("is-visible", hasNext);
+    filterBarScroll?.classList.toggle("has-scroll-prev", hasPrev);
+    filterBarScroll?.classList.toggle("has-scroll-next", hasNext);
   }}
 
   function applyFiltersAndSort() {{
