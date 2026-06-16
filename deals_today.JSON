@@ -570,25 +570,6 @@
     "streak_days": null
   },
   {
-    "product_name": "Alani Nu Energy Drink",
-    "brand": "Alani Nu",
-    "flavor": "Cosmic Stardust",
-    "retailer": "Walmart",
-    "section": "Drinks",
-    "category": "Energy Drink",
-    "old_price": 2.67,
-    "new_price": 2.4,
-    "percent_off": 10.1,
-    "image_url": "https://i5.walmartimages.com/seo/Alani-Nu-Sugar-Free-Energy-Drink-Cosmic-Stardust-12-fl-oz-Can-Single-Can_143c446c-ea13-4d51-8e64-e12ecb3f4b8c.4cc9b4a71ab790411f003c978aa31447.png?odnHeight=2000&odnWidth=2000&odnBg=FFFFFF",
-    "retailer_url": "https://www.walmart.com/ip/Alani-Nu-Sugar-Free-Energy-Drink-Cosmic-Stardust-12-fl-oz-Can-Single-Can/288817357",
-    "availability": "online_only",
-    "verified_at": "2026-06-15T22:05:02.193495+00:00",
-    "deal_strength": "\ud83d\udcaa Strong Deal",
-    "pack_count": 1,
-    "pack_unit": "ct",
-    "streak_days": null
-  },
-  {
     "product_name": "Quest Protein Bar",
     "brand": "Quest",
     "flavor": "Chocolate Chip Cookie Dough",
