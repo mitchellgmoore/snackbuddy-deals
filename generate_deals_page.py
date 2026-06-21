@@ -2194,6 +2194,7 @@ def build_page_html(deals):
     <a href="#deals-list" class="sb-nav-link">All Deals</a>
     <a href="#about" class="sb-nav-link">About SnackBuddy</a>
     <a href="#how-it-works" class="sb-nav-link">How SnackBuddy Works</a>
+    <a href="#how-we-pick-snacks" class="sb-nav-link">How We Pick Snacks</a>
     <a href="#subscribe" class="sb-nav-link">Get Daily Deal Emails</a>
 
     <div class="sb-nav-footer">
@@ -2315,6 +2316,24 @@ def build_page_html(deals):
                 </p>
                 <p class="sb-note">
                     Note: Prices and availability can vary by location, especially for in-store items.
+                </p>
+            </div>
+        </section>
+
+        <!-- ============================ -->
+        <!-- SECTION 3C: HOW WE PICK      -->
+        <!-- ============================ -->
+        <section class="sb-info" id="how-we-pick-snacks">
+            <div class="sb-info-card">
+                <h2 class="sb-info-title">How We Pick Snacks</h2>
+                <p class="sb-info-text">
+                    Not everything that calls itself healthy earns a spot here. Every product is manually reviewed — we&apos;re looking for real protein content relative to calories, low added sugar, and meaningful fiber where it applies.
+                </p>
+                <p class="sb-info-text" style="margin-top: 8px;">
+                    We&apos;re not here to be perfect. SnackBuddy isn&apos;t about finding the most aggressive diet food on the shelf. It&apos;s about finding things that are genuinely better than the default — snacks real people actually want to eat, at a price worth buying them.
+                </p>
+                <p class="sb-info-text" style="margin-top: 8px;">
+                    Don&apos;t see something you think belongs here? Let us know — the list is always growing.
                 </p>
             </div>
         </section>
