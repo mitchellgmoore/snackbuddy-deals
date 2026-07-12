@@ -51,7 +51,18 @@ def retailer_classes(retailer: str):
         return "retailer-pill retailer-target", "view-button view-target"
     if "meijer" in r:
         return "retailer-pill retailer-meijer", "view-button view-meijer"
+    if "harris" in r and "teeter" in r:
+        return "retailer-pill retailer-harris-teeter", "view-button view-harris-teeter"
     return "retailer-pill retailer-generic", "view-button view-generic"
+
+
+def retailer_cta_label(retailer: str) -> str:
+    """Site CTA label for 'View on {label}.com' buttons."""
+    r = (retailer or "").lower()
+    if "harris" in r and "teeter" in r:
+        return "HarrisTeeter"
+    return (retailer or "Retailer").strip()
+
 
 def normalize_retailer_value(raw: str) -> str:
     r = (raw or "").strip().lower()
@@ -63,6 +74,8 @@ def normalize_retailer_value(raw: str) -> str:
         return "target"
     if "meijer" in r:
         return "meijer"
+    if "harris" in r and "teeter" in r:
+        return "harris teeter"
     return r  # fallback
 
 def normalise_availability(raw):
@@ -663,7 +676,7 @@ def build_card_html(deal):
                 {streak_html}
             </div>
             <a class="{button_class}" href="{retailer_url}" target="_blank" rel="noopener noreferrer">
-                View on {retailer}.com
+                View on {retailer_cta_label(deal.get("retailer", ""))}.com
             </a>
         </div>
     </div>
@@ -1925,6 +1938,11 @@ def build_page_html(deals):
             font-weight: 700;
         }}
 
+        .retailer-harris-teeter {{
+            background-color: #8E2344;
+            color: #ffffff;
+        }}
+
         .retailer-generic {{
             background-color: #6b7280;
             color: #ffffff;
@@ -2020,6 +2038,11 @@ def build_page_html(deals):
             background-color: #004F91;
             color: #E31837;
             font-weight: 700;
+        }}
+
+        .view-harris-teeter {{
+            background-color: #8E2344;
+            color: #ffffff;
         }}
 
         .view-generic {{
