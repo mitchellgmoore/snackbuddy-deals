@@ -720,6 +720,14 @@ def build_page_html(deals):
     <meta charset="UTF-8" />
     <title>SnackBuddy Daily Deals</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N900K39W95"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){{dataLayer.push(arguments);}}
+      gtag('js', new Date());
+      gtag('config', 'G-N900K39W95');
+    </script>
     <style>
         :root {{
             --bg: #f3f4f6;
