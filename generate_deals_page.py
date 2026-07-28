@@ -2201,6 +2201,20 @@ def build_page_html(deals):
             line-height: 1.45;
         }}
 
+        .sb-site-footer {{
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 8px 16px 28px;
+        }}
+
+        .sb-site-footer p {{
+            margin: 0;
+            font-size: 12px;
+            line-height: 1.5;
+            color: var(--text-muted);
+            max-width: 52rem;
+        }}
+
         @media (max-width: 640px) {{
             .page {{
                 padding-top: 8px;
@@ -2396,6 +2410,15 @@ def build_page_html(deals):
             </div>
         </section>
     </main>
+
+    <footer class="sb-site-footer">
+        <p>
+            SnackBuddy uses Google Analytics to understand how people use the site
+            (for example page views and which links are clicked). We don&apos;t sell
+            your personal information. Email signups are only used to send deal digests
+            you request.
+        </p>
+    </footer>
 
     <!-- Tiny JS for slide-out menu -->
 <script>
