@@ -1,5 +1,6 @@
 import json
 import html
+import os
 import random
 from pathlib import Path
 from datetime import datetime
@@ -9,6 +10,33 @@ ROOT = Path(__file__).parent
 JSON_PATH = ROOT / "deals_today.json"
 DOCS_DIR = ROOT / "docs"
 OUTPUT_PATH = DOCS_DIR / "index.html"
+
+# Beehiiv publication ID (pub_…) — from beehiiv Settings → Integrations.
+# Prefer env / sibling snack-buddy .env so the secret-ish ID isn't hardcoded.
+def _load_beehiiv_publication_id() -> str:
+    for key in ("BEEHIIV_PUBLICATION_ID", "BEEHIIV_PUB_ID"):
+        val = os.environ.get(key, "").strip()
+        if val:
+            return val
+    for env_path in (ROOT / ".env", ROOT.parent / "snack-buddy" / ".env"):
+        if not env_path.is_file():
+            continue
+        try:
+            for line in env_path.read_text(encoding="utf-8").splitlines():
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                k, _, v = line.partition("=")
+                if k.strip() in ("BEEHIIV_PUBLICATION_ID", "BEEHIIV_PUB_ID"):
+                    val = v.strip().strip('"').strip("'")
+                    if val:
+                        return val
+        except OSError:
+            pass
+    return ""
+
+
+BEEHIIV_PUBLICATION_ID = _load_beehiiv_publication_id()
 
 def load_deals():
     if not JSON_PATH.exists():
@@ -713,6 +741,7 @@ def build_page_html(deals):
 
     deals_sorted = sorted(grouped_deals, key=sort_key)
     cards_html = "\n".join(build_card_html(d) for d in deals_sorted)
+    beehiiv_pub_id = html.escape(BEEHIIV_PUBLICATION_ID)
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -720,6 +749,9 @@ def build_page_html(deals):
     <meta charset="UTF-8" />
     <title>SnackBuddy Daily Deals</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-N900K39W95"></script>
     <script>
@@ -2220,6 +2252,295 @@ def build_page_html(deals):
                 padding-top: 8px;
             }}
         }}
+
+        /* ============================ */
+        /* WELCOME / PREFS EXPERIENCE   */
+        /* ============================ */
+        .sb-welcome {{
+            position: fixed;
+            inset: 0;
+            z-index: 10050;
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.35s ease;
+        }}
+        .sb-welcome.open {{
+            opacity: 1;
+            pointer-events: auto;
+        }}
+        .sb-welcome-backdrop {{
+            position: absolute;
+            inset: 0;
+            /* Frosted glass over the live deals page (unfiltered on first step) */
+            background: rgba(243, 244, 246, 0.35);
+            -webkit-backdrop-filter: blur(18px) saturate(1.15);
+            backdrop-filter: blur(18px) saturate(1.15);
+        }}
+        @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {{
+            .sb-welcome-backdrop {{
+                background: rgba(15, 23, 42, 0.45);
+            }}
+        }}
+        .sb-welcome-panel {{
+            position: relative;
+            z-index: 1;
+            width: min(560px, 100%);
+            margin: auto 16px;
+            max-height: min(92vh, 720px);
+            overflow: auto;
+            padding: 28px 24px 22px;
+            border-radius: 24px;
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.98), rgba(239, 246, 255, 0.94));
+            border: 1px solid rgba(37, 99, 235, 0.12);
+            box-shadow: 0 30px 80px rgba(15, 23, 42, 0.22);
+            font-family: "Outfit", system-ui, sans-serif;
+            transform: translateY(18px) scale(0.98);
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }}
+        .sb-welcome.open .sb-welcome-panel {{
+            transform: translateY(0) scale(1);
+        }}
+        .sb-welcome-brand {{
+            font-family: "Fraunces", Georgia, serif;
+            font-weight: 700;
+            font-size: clamp(2rem, 6vw, 2.75rem);
+            line-height: 1.05;
+            letter-spacing: -0.03em;
+            color: var(--navy);
+            margin: 0 0 10px;
+        }}
+        .sb-welcome-brand span {{
+            color: var(--blue);
+        }}
+        .sb-welcome-kicker {{
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--green);
+            margin-bottom: 8px;
+        }}
+        .sb-welcome-lead {{
+            margin: 0 0 22px;
+            font-size: 1.05rem;
+            line-height: 1.45;
+            color: #334155;
+            max-width: 28ch;
+        }}
+        .sb-welcome-step {{
+            display: none;
+            animation: sbWelcomeIn 0.4s ease both;
+        }}
+        .sb-welcome-step.is-active {{
+            display: block;
+        }}
+        @keyframes sbWelcomeIn {{
+            from {{ opacity: 0; transform: translateY(10px); }}
+            to {{ opacity: 1; transform: translateY(0); }}
+        }}
+        .sb-welcome-step-title {{
+            font-family: "Fraunces", Georgia, serif;
+            font-size: 1.45rem;
+            margin: 0 0 6px;
+            color: var(--navy);
+        }}
+        .sb-welcome-step-text {{
+            margin: 0 0 16px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }}
+        .sb-welcome-chips {{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 18px;
+        }}
+        .sb-welcome-chip {{
+            appearance: none;
+            border: 1.5px solid #cbd5e1;
+            background: #fff;
+            color: var(--navy);
+            border-radius: 999px;
+            padding: 10px 14px;
+            font: inherit;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+        }}
+        .sb-welcome-chip:hover {{
+            transform: translateY(-1px);
+            border-color: var(--blue);
+            color: var(--blue);
+        }}
+        .sb-welcome-chip.is-on {{
+            background: var(--blue);
+            border-color: var(--blue);
+            color: #fff;
+        }}
+        .sb-welcome-preview {{
+            min-height: 1.25em;
+            margin: 0 0 16px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--green);
+        }}
+        .sb-welcome-actions {{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            margin-top: 8px;
+        }}
+        .sb-welcome-btn {{
+            appearance: none;
+            border: none;
+            border-radius: 14px;
+            padding: 12px 18px;
+            font: inherit;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            background: var(--blue);
+            color: #fff;
+            transition: filter 0.15s ease, transform 0.15s ease;
+        }}
+        .sb-welcome-btn:hover {{
+            filter: brightness(1.06);
+            transform: translateY(-1px);
+        }}
+        .sb-welcome-btn:disabled {{
+            opacity: 0.45;
+            cursor: not-allowed;
+            transform: none;
+        }}
+        .sb-welcome-btn-ghost {{
+            background: transparent;
+            color: var(--text-muted);
+            font-weight: 600;
+            padding: 10px 8px;
+        }}
+        .sb-welcome-btn-ghost:hover {{
+            color: var(--blue);
+            filter: none;
+            transform: none;
+        }}
+        .sb-welcome-email-row {{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 8px;
+        }}
+        .sb-welcome-email {{
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: 1.5px solid #cbd5e1;
+            font: inherit;
+            font-size: 15px;
+        }}
+        .sb-welcome-email:focus {{
+            outline: 2px solid rgba(37, 99, 235, 0.35);
+            border-color: var(--blue);
+        }}
+        .sb-welcome-note {{
+            margin: 0 0 12px;
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }}
+        .sb-welcome-status {{
+            min-height: 1.2em;
+            margin: 0 0 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--green);
+        }}
+        .sb-welcome-status.is-error {{
+            color: var(--red);
+        }}
+        .sb-welcome-progress {{
+            display: flex;
+            gap: 6px;
+            margin-bottom: 18px;
+        }}
+        .sb-welcome-dot {{
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: #cbd5e1;
+            transition: background 0.2s ease, width 0.2s ease;
+        }}
+        .sb-welcome-dot.is-on {{
+            background: var(--green);
+            width: 22px;
+        }}
+        .sb-welcome-other {{
+            margin: 0 0 14px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            background: rgba(37, 99, 235, 0.06);
+            border: 1px solid rgba(37, 99, 235, 0.15);
+        }}
+        .sb-welcome-other-label {{
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 6px;
+        }}
+        .sb-welcome-other-input {{
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1.5px solid #cbd5e1;
+            font: inherit;
+            font-size: 14px;
+            box-sizing: border-box;
+        }}
+        .sb-welcome-other-input:focus {{
+            outline: 2px solid rgba(37, 99, 235, 0.35);
+            border-color: var(--blue);
+        }}
+        .sb-welcome-other-hint {{
+            margin: 6px 0 0;
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.35;
+        }}
+        body.sb-welcome-lock {{
+            overflow: hidden;
+        }}
+
+        .sb-subscribe-form {{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+            align-items: center;
+        }}
+        .sb-subscribe-form .sb-email {{
+            flex: 1;
+            min-width: 200px;
+        }}
+        .sb-subscribe-status {{
+            width: 100%;
+            margin: 6px 0 0;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--green);
+            min-height: 1.2em;
+        }}
+        .sb-subscribe-status.is-error {{
+            color: var(--red);
+        }}
     </style>
 </head>
 <!-- NAV backdrop (right drawer) -->
@@ -2389,27 +2710,103 @@ def build_page_html(deals):
                     Want a quick digest of the best finds? Drop your email below.
                 </p>
 
-                <div class="sb-subscribe-row">
-    <a class="sb-subscribe-btn"
-       href="https://forms.gle/YatCfNYrLdALVq1N8"
-       target="_blank"
-       rel="noopener noreferrer">
-        Get Daily Deal Emails
-    </a>
+                <form class="sb-subscribe-form" id="sb-subscribe-form" novalidate>
+                    <input
+                        class="sb-email"
+                        id="sb-subscribe-email"
+                        type="email"
+                        name="email"
+                        autocomplete="email"
+                        placeholder="you@email.com"
+                        required
+                    />
+                    <button type="submit" class="sb-subscribe-btn">Get Daily Deal Emails</button>
+                </form>
+                <p class="sb-subscribe-status" id="sb-subscribe-status" aria-live="polite"></p>
 
-    <a class="sb-subscribe-alt"
-       href="mailto:savewithsnackbuddy@gmail.com?subject=SnackBuddy%20Daily%20Deals">
-        Or email us: savewithsnackbuddy@gmail.com
-    </a>
-</div>
+                <a class="sb-subscribe-alt"
+                   href="mailto:savewithsnackbuddy@gmail.com?subject=SnackBuddy%20Daily%20Deals">
+                    Or email us: savewithsnackbuddy@gmail.com
+                </a>
 
-<div class="sb-note">
-    You’ll get a quick daily digest when the best deals are worth grabbing. No spam—ever.
-</div>
-
+                <div class="sb-note">
+                    You’ll get a quick daily digest when the best deals are worth grabbing. No spam—ever.
+                </div>
             </div>
         </section>
     </main>
+
+    <div class="sb-welcome" id="sb-welcome" hidden aria-hidden="true">
+      <div class="sb-welcome-backdrop" aria-hidden="true"></div>
+      <div class="sb-welcome-panel" role="dialog" aria-modal="true" aria-labelledby="sb-welcome-brand">
+        <div class="sb-welcome-progress" aria-hidden="true">
+          <span class="sb-welcome-dot is-on" data-dot="0"></span>
+          <span class="sb-welcome-dot" data-dot="1"></span>
+          <span class="sb-welcome-dot" data-dot="2"></span>
+          <span class="sb-welcome-dot" data-dot="3"></span>
+        </div>
+
+        <section class="sb-welcome-step is-active" data-step="0">
+          <div class="sb-welcome-kicker">Better snacks. Smarter buys.</div>
+          <h1 class="sb-welcome-brand" id="sb-welcome-brand">Snack<span>Buddy</span></h1>
+          <p class="sb-welcome-lead">Your better-for-you deals — cut down to the stores and snacks you actually buy.</p>
+          <div class="sb-welcome-actions">
+            <button type="button" class="sb-welcome-btn" data-welcome-next>Personalize my deals</button>
+            <button type="button" class="sb-welcome-btn sb-welcome-btn-ghost" data-welcome-skip>Just show everything</button>
+          </div>
+        </section>
+
+        <section class="sb-welcome-step" data-step="1">
+          <h2 class="sb-welcome-step-title">Where do you shop?</h2>
+          <p class="sb-welcome-step-text">Pick any stores to narrow the list — or leave them all off to keep every store.</p>
+          <div class="sb-welcome-chips" id="sb-welcome-retailers"></div>
+          <div class="sb-welcome-other" id="sb-welcome-other-wrap" hidden>
+            <label class="sb-welcome-other-label" for="sb-welcome-other-store">Which store?</label>
+            <input
+              class="sb-welcome-other-input"
+              id="sb-welcome-other-store"
+              type="text"
+              maxlength="80"
+              placeholder="e.g. Costco, Aldi, Publix…"
+              autocomplete="organization"
+            />
+            <p class="sb-welcome-other-hint">We’ll use this to decide which stores to add next.</p>
+          </div>
+          <p class="sb-welcome-preview" id="sb-welcome-preview-stores"></p>
+          <div class="sb-welcome-actions">
+            <button type="button" class="sb-welcome-btn" data-welcome-next>Next</button>
+            <button type="button" class="sb-welcome-btn sb-welcome-btn-ghost" data-welcome-back>Back</button>
+          </div>
+        </section>
+
+        <section class="sb-welcome-step" data-step="2">
+          <h2 class="sb-welcome-step-title">What’s usually in your pantry?</h2>
+          <p class="sb-welcome-step-text">Pick the categories you restock most — or leave them off to keep everything.</p>
+          <div class="sb-welcome-chips" id="sb-welcome-categories"></div>
+          <p class="sb-welcome-preview" id="sb-welcome-preview-categories"></p>
+          <div class="sb-welcome-actions">
+            <button type="button" class="sb-welcome-btn" data-welcome-next>See my deals</button>
+            <button type="button" class="sb-welcome-btn sb-welcome-btn-ghost" data-welcome-back>Back</button>
+          </div>
+        </section>
+
+        <section class="sb-welcome-step" data-step="3">
+          <h2 class="sb-welcome-step-title">Don’t miss the ones worth a trip</h2>
+          <p class="sb-welcome-step-text">Optional. We’ll email when the good stuff drops — your filters stay either way.</p>
+          <form id="sb-welcome-email-form" novalidate>
+            <div class="sb-welcome-email-row">
+              <input class="sb-welcome-email" id="sb-welcome-email" type="email" name="email" autocomplete="email" placeholder="you@email.com" />
+              <button type="submit" class="sb-welcome-btn">Keep me posted</button>
+            </div>
+          </form>
+          <p class="sb-welcome-note">No spam. Unsubscribe anytime. Prefs stay on this device.</p>
+          <p class="sb-welcome-status" id="sb-welcome-email-status" aria-live="polite"></p>
+          <div class="sb-welcome-actions">
+            <button type="button" class="sb-welcome-btn sb-welcome-btn-ghost" data-welcome-skip>Skip for now</button>
+          </div>
+        </section>
+      </div>
+    </div>
 
     <footer class="sb-site-footer">
         <p>
@@ -2843,6 +3240,388 @@ document.addEventListener("DOMContentLoaded", function () {{
   updateBadges();
   applyFiltersAndSort();
 
+  /* ============================
+     WELCOME PREFS + BEEHIIV
+     ============================ */
+  const BEEHIIV_PUBLICATION_ID = "{beehiiv_pub_id}";
+  const WELCOME_STORAGE_KEY = "sb_welcome_v2";
+  const RETAILER_ORDER = ["walmart", "target", "kroger", "harris teeter", "meijer"];
+
+  function countMatchingCards() {{
+    let n = 0;
+    cards.forEach(function(card) {{
+      const r = card.dataset.retailer;
+      const s = card.dataset.section;
+      const c = card.dataset.category;
+      const b = card.dataset.brand;
+      const matchR = selected.retailer.size === 0 || selected.retailer.has(r);
+      const matchS = selected.section.size === 0 || selected.section.has(s);
+      const matchC = selected.category.size === 0 || selected.category.has(c);
+      const matchB = selected.brand.size === 0 || selected.brand.has(b);
+      if (matchR && matchS && matchC && matchB) n += 1;
+    }});
+    return n;
+  }}
+
+  function applyWelcomePrefs(prefs) {{
+    selected.retailer.clear();
+    selected.section.clear();
+    selected.category.clear();
+    selected.brand.clear();
+    (prefs.retailers || []).forEach(function(v) {{ if (v) selected.retailer.add(v); }});
+    (prefs.categories || []).forEach(function(v) {{ if (v) selected.category.add(v); }});
+    syncAllCheckboxes();
+    updateBadges();
+    applyFiltersAndSort();
+    refreshFilterOptionLists();
+  }}
+
+  function saveWelcomePrefs(prefs) {{
+    try {{
+      localStorage.setItem(WELCOME_STORAGE_KEY, JSON.stringify(prefs));
+    }} catch (err) {{}}
+  }}
+
+  function loadWelcomePrefs() {{
+    try {{
+      const raw = localStorage.getItem(WELCOME_STORAGE_KEY);
+      if (!raw) return null;
+      return JSON.parse(raw);
+    }} catch (err) {{
+      return null;
+    }}
+  }}
+
+  async function subscribeBeehiiv(email, meta) {{
+    const cleaned = String(email || "").trim();
+    if (!cleaned || cleaned.indexOf("@") < 1) {{
+      throw new Error("Enter a valid email.");
+    }}
+    if (!BEEHIIV_PUBLICATION_ID) {{
+      // Prefs still work; email waits until publication ID is configured.
+      throw new Error("Email signup is almost ready — prefs are saved. Try again soon, or email savewithsnackbuddy@gmail.com.");
+    }}
+    const body = new URLSearchParams();
+    body.append("email", cleaned);
+    body.append("utm_source", "snackbuddy");
+    body.append("utm_medium", "welcome");
+    const otherStore = meta && meta.otherStore ? String(meta.otherStore).trim() : "";
+    if (otherStore) {{
+      // Shows up in beehiiv subscriber attribution; not a full tally dashboard.
+      body.append("utm_content", "other_store:" + otherStore.slice(0, 80));
+      body.append("utm_campaign", "store_request");
+    }}
+    // Public form endpoint (no API key in the browser). Opaque response under no-cors.
+    await fetch("https://subscribe-forms.beehiiv.com/" + encodeURIComponent(BEEHIIV_PUBLICATION_ID) + "/submissions", {{
+      method: "POST",
+      mode: "no-cors",
+      headers: {{ "Content-Type": "application/x-www-form-urlencoded" }},
+      body: body.toString(),
+    }});
+    return cleaned;
+  }}
+
+  function initSubscribeForm() {{
+    const form = document.getElementById("sb-subscribe-form");
+    const statusEl = document.getElementById("sb-subscribe-status");
+    if (!form) return;
+    form.addEventListener("submit", async function(ev) {{
+      ev.preventDefault();
+      const input = document.getElementById("sb-subscribe-email");
+      const email = input ? input.value : "";
+      if (statusEl) {{
+        statusEl.classList.remove("is-error");
+        statusEl.textContent = "Signing you up…";
+      }}
+      try {{
+        const prefs = loadWelcomePrefs() || {{}};
+        await subscribeBeehiiv(email, {{ otherStore: prefs.otherStore || "" }});
+        if (statusEl) statusEl.textContent = "You're in — check your inbox for a confirm email.";
+        if (input) input.value = "";
+        const next = Object.assign({{ completed: true, retailers: [], categories: [] }}, prefs);
+        next.email = String(email).trim();
+        saveWelcomePrefs(next);
+      }} catch (err) {{
+        if (statusEl) {{
+          statusEl.classList.add("is-error");
+          statusEl.textContent = (err && err.message) ? err.message : "Couldn’t sign up — try again.";
+        }}
+      }}
+    }});
+  }}
+
+  function initWelcomeFlow() {{
+    const root = document.getElementById("sb-welcome");
+    if (!root) return;
+
+    const existing = loadWelcomePrefs();
+    if (existing && existing.completed) {{
+      applyWelcomePrefs(existing);
+      initSubscribeForm();
+      return;
+    }}
+
+    const retailerBox = document.getElementById("sb-welcome-retailers");
+    const categoryBox = document.getElementById("sb-welcome-categories");
+    const otherWrap = document.getElementById("sb-welcome-other-wrap");
+    const otherInput = document.getElementById("sb-welcome-other-store");
+    const previewStores = document.getElementById("sb-welcome-preview-stores");
+    const previewCategories = document.getElementById("sb-welcome-preview-categories");
+    const emailForm = document.getElementById("sb-welcome-email-form");
+    const emailStatus = document.getElementById("sb-welcome-email-status");
+    const dots = Array.from(root.querySelectorAll(".sb-welcome-dot"));
+    const steps = Array.from(root.querySelectorAll(".sb-welcome-step"));
+
+    const draft = {{
+      retailers: new Set(),
+      categories: new Set(),
+      otherOn: false,
+      otherStore: "",
+    }};
+
+    let step = 0;
+
+    function getOtherStore() {{
+      if (!draft.otherOn) return "";
+      const typed = otherInput ? String(otherInput.value || "").trim() : draft.otherStore;
+      draft.otherStore = typed;
+      return typed;
+    }}
+
+    function availableRetailers() {{
+      const present = uniq(cards.map(function(c) {{ return c.dataset.retailer; }}));
+      const ordered = RETAILER_ORDER.filter(function(r) {{ return present.indexOf(r) !== -1; }});
+      present.forEach(function(r) {{
+        if (ordered.indexOf(r) === -1) ordered.push(r);
+      }});
+      return ordered;
+    }}
+
+    function availableCategories() {{
+      const present = uniq(cards.map(function(c) {{ return c.dataset.category; }}));
+      const preferred = [
+        "bars",
+        "chips & crunchy",
+        "cookies & sweets",
+        "meat snack",
+        "wraps",
+        "energy drink",
+        "rtd protein shake",
+        "protein powder",
+      ];
+      const ordered = preferred.filter(function(c) {{ return present.indexOf(c) !== -1; }});
+      present.forEach(function(c) {{
+        if (ordered.indexOf(c) === -1) ordered.push(c);
+      }});
+      return ordered;
+    }}
+
+    function syncOtherUi() {{
+      if (otherWrap) otherWrap.hidden = !draft.otherOn;
+      if (draft.otherOn && otherInput) {{
+        window.setTimeout(function() {{ otherInput.focus(); }}, 50);
+      }}
+    }}
+
+    function renderRetailerChips() {{
+      if (!retailerBox) return;
+      retailerBox.innerHTML = "";
+      availableRetailers().forEach(function(val) {{
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "sb-welcome-chip" + (draft.retailers.has(val) ? " is-on" : "");
+        btn.textContent = titleize(val);
+        btn.addEventListener("click", function() {{
+          if (draft.retailers.has(val)) draft.retailers.delete(val);
+          else draft.retailers.add(val);
+          btn.classList.toggle("is-on", draft.retailers.has(val));
+          updateLivePreview();
+        }});
+        retailerBox.appendChild(btn);
+      }});
+      const otherBtn = document.createElement("button");
+      otherBtn.type = "button";
+      otherBtn.className = "sb-welcome-chip" + (draft.otherOn ? " is-on" : "");
+      otherBtn.textContent = "Other";
+      otherBtn.addEventListener("click", function() {{
+        draft.otherOn = !draft.otherOn;
+        otherBtn.classList.toggle("is-on", draft.otherOn);
+        if (!draft.otherOn) {{
+          draft.otherStore = "";
+          if (otherInput) otherInput.value = "";
+        }}
+        syncOtherUi();
+        updateLivePreview();
+      }});
+      retailerBox.appendChild(otherBtn);
+      syncOtherUi();
+    }}
+
+    function renderChips(container, values, setRef) {{
+      if (!container) return;
+      container.innerHTML = "";
+      values.forEach(function(val) {{
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "sb-welcome-chip" + (setRef.has(val) ? " is-on" : "");
+        btn.textContent = titleize(val);
+        btn.addEventListener("click", function() {{
+          if (setRef.has(val)) setRef.delete(val);
+          else setRef.add(val);
+          btn.classList.toggle("is-on", setRef.has(val));
+          updateLivePreview();
+        }});
+        container.appendChild(btn);
+      }});
+    }}
+
+    function updateLivePreview() {{
+      selected.retailer = new Set(draft.retailers);
+      selected.section.clear();
+      selected.category = new Set(draft.categories);
+      selected.brand.clear();
+      const n = countMatchingCards();
+      syncAllCheckboxes();
+      updateBadges();
+      applyFiltersAndSort();
+      const other = getOtherStore();
+      if (previewStores) {{
+        let msg = draft.retailers.size
+          ? (n + " deals match your stores")
+          : "Nothing selected = all stores (" + n + " deals)";
+        if (draft.otherOn && other) msg += " · noted: " + other;
+        else if (draft.otherOn) msg += " · add your store below";
+        previewStores.textContent = msg;
+      }}
+      if (previewCategories) {{
+        previewCategories.textContent = draft.categories.size
+          ? (n + " deals in your pantry mix")
+          : "Nothing selected = all categories (" + n + " deals)";
+      }}
+    }}
+
+    function setStep(next) {{
+      step = next;
+      steps.forEach(function(el) {{
+        el.classList.toggle("is-active", Number(el.dataset.step) === step);
+      }});
+      dots.forEach(function(dot) {{
+        dot.classList.toggle("is-on", Number(dot.dataset.dot) <= step);
+      }});
+      if (step === 1) {{
+        renderRetailerChips();
+        if (otherInput && draft.otherStore) otherInput.value = draft.otherStore;
+        updateLivePreview();
+      }}
+      if (step === 2) {{
+        getOtherStore();
+        renderChips(categoryBox, availableCategories(), draft.categories);
+        updateLivePreview();
+      }}
+    }}
+
+    if (otherInput) {{
+      otherInput.addEventListener("input", function() {{
+        draft.otherStore = String(otherInput.value || "").trim();
+        updateLivePreview();
+      }});
+    }}
+
+    function openWelcome() {{
+      // First paint: show the full (unfiltered) deals page behind the frost
+      draft.retailers.clear();
+      draft.categories.clear();
+      draft.otherOn = false;
+      draft.otherStore = "";
+      if (otherInput) otherInput.value = "";
+      selected.retailer.clear();
+      selected.section.clear();
+      selected.category.clear();
+      selected.brand.clear();
+      syncAllCheckboxes();
+      updateBadges();
+      applyFiltersAndSort();
+      refreshFilterOptionLists();
+
+      root.hidden = false;
+      root.setAttribute("aria-hidden", "false");
+      root.classList.add("open");
+      document.body.classList.add("sb-welcome-lock");
+      setStep(0);
+    }}
+
+    function closeWelcome(prefs) {{
+      const payload = Object.assign({{ completed: true }}, prefs || {{}});
+      payload.retailers = Array.from(draft.retailers);
+      payload.categories = Array.from(draft.categories);
+      payload.otherStore = getOtherStore();
+      saveWelcomePrefs(payload);
+      applyWelcomePrefs(payload);
+      root.classList.remove("open");
+      document.body.classList.remove("sb-welcome-lock");
+      window.setTimeout(function() {{
+        root.hidden = true;
+        root.setAttribute("aria-hidden", "true");
+      }}, 320);
+      try {{
+        const dealsList = document.getElementById("deals-list");
+        if (dealsList) dealsList.scrollIntoView({{ behavior: "smooth", block: "start" }});
+      }} catch (err) {{}}
+    }}
+
+    root.querySelectorAll("[data-welcome-next]").forEach(function(btn) {{
+      btn.addEventListener("click", function() {{
+        if (step < 3) setStep(step + 1);
+        else closeWelcome({{}});
+      }});
+    }});
+    root.querySelectorAll("[data-welcome-back]").forEach(function(btn) {{
+      btn.addEventListener("click", function() {{
+        if (step > 0) setStep(step - 1);
+      }});
+    }});
+    root.querySelectorAll("[data-welcome-skip]").forEach(function(btn) {{
+      btn.addEventListener("click", function() {{
+        if (step === 0) {{
+          draft.retailers.clear();
+          draft.categories.clear();
+          draft.otherOn = false;
+          draft.otherStore = "";
+          closeWelcome({{ skipped: true }});
+        }} else {{
+          closeWelcome({{}});
+        }}
+      }});
+    }});
+
+    if (emailForm) {{
+      emailForm.addEventListener("submit", async function(ev) {{
+        ev.preventDefault();
+        const input = document.getElementById("sb-welcome-email");
+        const email = input ? input.value : "";
+        if (emailStatus) {{
+          emailStatus.classList.remove("is-error");
+          emailStatus.textContent = "Signing you up…";
+        }}
+        try {{
+          await subscribeBeehiiv(email, {{ otherStore: getOtherStore() }});
+          if (emailStatus) emailStatus.textContent = "You're in — check your inbox.";
+          closeWelcome({{ email: String(email).trim() }});
+        }} catch (err) {{
+          if (emailStatus) {{
+            emailStatus.classList.add("is-error");
+            emailStatus.textContent = (err && err.message) ? err.message : "Couldn’t sign up.";
+          }}
+        }}
+      }});
+    }}
+
+    openWelcome();
+    initSubscribeForm();
+  }}
+
+  initWelcomeFlow();
+
   filterMasterBtn?.addEventListener("click", function() {{
     if (filterSheet?.classList.contains("open")) closeFilterSheet();
     else openFilterSheet();
@@ -3020,6 +3799,11 @@ def main():
     print("OUTPUT PATH:", OUTPUT_PATH.resolve())
     print("WROTE:", OUTPUT_PATH.resolve())
     print("DEALS:", len(deals))
+    pub = BEEHIIV_PUBLICATION_ID
+    if pub:
+        print("BEEHIIV:", pub[:8] + "…" if len(pub) > 8 else pub)
+    else:
+        print("BEEHIIV: (not set — welcome prefs work; email signup waits for BEEHIIV_PUBLICATION_ID)")
 
 if __name__ == "__main__":
-    main()                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+    main()
