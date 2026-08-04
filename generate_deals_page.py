@@ -378,16 +378,16 @@ def fire_pill_flames_svg() -> str:
 
 
 def build_diamond_sparkles_html(seed_key: str) -> str:
-    """Per-card randomized ✦ sparkles — denser + faster so diamonds always shimmer."""
+    """Per-card randomized ✦ sparkles — present but not overbearing."""
     rng = random.Random(seed_key)
-    count = rng.randint(10, 16)
-    # Weight multi-flash patterns so something is usually twinkling
+    count = rng.randint(6, 10)
+    # Prefer calmer single/double flashes over rapid multi-flash
     twinkle_anims = (
         "diamond-twinkle-a",
-        "diamond-twinkle-b",
+        "diamond-twinkle-a",
         "diamond-twinkle-b",
         "diamond-twinkle-c",
-        "diamond-twinkle-d",
+        "diamond-twinkle-c",
         "diamond-twinkle-d",
     )
     timing_fns = ("linear",)
@@ -398,7 +398,7 @@ def build_diamond_sparkles_html(seed_key: str) -> str:
 
     stars = []
     for _ in range(count):
-        width, height = sparkle_size(rng.randint(12, 28))
+        width, height = sparkle_size(rng.randint(12, 26))
 
         top = rng.uniform(4, 88)
         if rng.random() < 0.5:
@@ -407,9 +407,9 @@ def build_diamond_sparkles_html(seed_key: str) -> str:
             horizontal = f"right:{rng.uniform(2, 86):.1f}%;left:auto;"
 
         anim = rng.choice(twinkle_anims)
-        duration = rng.uniform(2.86, 5.28)  # ~10% slower than 2.6–4.8
-        delay = rng.uniform(0, 3.1)
-        peak = rng.uniform(0.85, 1.35)
+        duration = rng.uniform(5.5, 9.0)
+        delay = rng.uniform(0, 6.0)
+        peak = rng.uniform(0.8, 1.15)
 
         style = (
             f"width:{width:.0f}px;height:{height:.0f}px;"
@@ -1593,7 +1593,7 @@ def build_page_html(deals):
             transform: scale(0.1);
             display: block;
             line-height: 0;
-            animation: diamond-twinkle-a 3.5s linear infinite;
+            animation: diamond-twinkle-a 7s linear infinite;
         }}
 
         .sparkle-svg {{
