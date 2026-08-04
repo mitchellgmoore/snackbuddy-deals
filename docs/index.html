@@ -195,7 +195,7 @@
 .sb-filter-bar-section {
   max-width: 1100px;
   margin: 10px auto 12px;
-  padding: 0 16px;
+  padding: 0 8px 0 4px;
   position: relative;
   z-index: 30;
 }
@@ -203,7 +203,7 @@
 .sb-filter-bar {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   min-width: 0;
 }
 
@@ -213,8 +213,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   padding: 0;
   border: 1px solid #111827;
   border-radius: 999px;
@@ -228,8 +228,8 @@
 }
 
 .sb-filter-master-icon {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   display: block;
   color: #111827;
 }
@@ -260,21 +260,30 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 3;
+  z-index: 4;
   flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  border: 1px solid var(--border-subtle);
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid #cbd5e1;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.96);
-  color: var(--text-main);
-  font-size: 20px;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 16px;
+  font-weight: 700;
   line-height: 1;
   cursor: pointer;
   display: none;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.14);
+  opacity: 1;
+}
+
+.sb-filter-scroll-btn:hover,
+.sb-filter-scroll-btn:focus-visible {
+  border-color: #94a3b8;
+  background: #f8fafc;
 }
 
 .sb-filter-scroll-btn.is-visible {
@@ -282,11 +291,11 @@
 }
 
 .sb-filter-scroll-prev {
-  left: 0;
+  left: 2px;
 }
 
 .sb-filter-scroll-next {
-  right: 0;
+  right: 2px;
 }
 
 .sb-filter-bar-scroll {
@@ -297,12 +306,43 @@
   align-items: center;
 }
 
+/* Soft fade instead of hard cut-off when more pills sit off-screen */
+.sb-filter-bar-scroll.has-scroll-prev::before,
+.sb-filter-bar-scroll.has-scroll-next::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 20px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.sb-filter-bar-scroll.has-scroll-prev::before {
+  left: 0;
+  background: linear-gradient(to right, var(--bg) 15%, rgba(243, 244, 246, 0));
+}
+
+.sb-filter-bar-scroll.has-scroll-next::after {
+  right: 0;
+  background: linear-gradient(to left, var(--bg) 15%, rgba(243, 244, 246, 0));
+}
+
 .sb-filter-bar-scroll.has-scroll-prev .sb-filter-bar-track {
-  padding-left: 38px;
+  mask-image: linear-gradient(to right, transparent 0, #000 16px);
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 16px);
+  padding-left: 26px;
 }
 
 .sb-filter-bar-scroll.has-scroll-next .sb-filter-bar-track {
-  padding-right: 38px;
+  mask-image: linear-gradient(to left, transparent 0, #000 16px);
+  -webkit-mask-image: linear-gradient(to left, transparent 0, #000 16px);
+  padding-right: 26px;
+}
+
+.sb-filter-bar-scroll.has-scroll-prev.has-scroll-next .sb-filter-bar-track {
+  mask-image: linear-gradient(to right, transparent 0, #000 16px, #000 calc(100% - 16px), transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 16px, #000 calc(100% - 16px), transparent);
 }
 
 .sb-filter-bar-track {
@@ -323,9 +363,29 @@
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
-  gap: 8px;
-  padding: 4px 2px;
+  gap: 6px;
+  padding: 4px 0;
   min-width: min-content;
+}
+
+@media (max-width: 640px) {
+  .sb-filter-bar-section {
+    padding: 0 6px 0 2px;
+  }
+
+  .sb-filter-bar {
+    gap: 4px;
+  }
+
+  .sb-filter-master {
+    width: 38px;
+    height: 38px;
+  }
+
+  .sb-filter-pill {
+    padding: 9px 12px;
+    font-size: 13px;
+  }
 }
 
 .sb-filter-pill-wrap {
@@ -563,31 +623,36 @@
             padding: 18px 18px 14px;
             position: relative;
             overflow: hidden;
-            background: #ffffff;
+            background: linear-gradient(145deg, #e8f6ee 0%, #fafcfa 48%, #eef7f1 100%);
             color: #111827;
-            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
-            border: 1px solid #e5e7eb;
+            box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+            border: 1px solid #d8ebe0;
         }
 
         /* wallpaper brand texture */
         .sb-hero-pattern {
             position: absolute;
             inset: 0;
-            opacity: 0.16;
+            opacity: 0.30;
             background-image: url("assets/hero-wallpaper.png");
             background-repeat: repeat;
             background-size: 360px auto;
             background-position: top left;
-            filter: brightness(1.18) contrast(0.85);
+            /* Push muted grey doodles toward brand green */
+            filter: brightness(1.08) contrast(1.05) sepia(0.48) saturate(2.4) hue-rotate(68deg);
             pointer-events: none;
         }
 
-        /* soft white wash so text stays high-contrast */
+        /* soft wash so text stays readable without killing the green */
         .sb-hero-bg::after {
             content: "";
             position: absolute;
             inset: 0;
-            background: rgba(255, 255, 255, 0.44);
+            background: linear-gradient(
+                180deg,
+                rgba(255, 255, 255, 0.38) 0%,
+                rgba(247, 252, 249, 0.22) 100%
+            );
             pointer-events: none;
         }
 
@@ -618,6 +683,38 @@
             font-size: 14px;
             margin: 4px 0 10px;
             color: #374151;
+        }
+
+        .sb-hero-tiers {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 12px;
+            margin-top: 10px;
+            align-items: center;
+        }
+
+        .sb-hero-tiers-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #64748b;
+            margin-right: 2px;
+        }
+
+        .sb-hero-tier {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #475569;
+            letter-spacing: 0.01em;
+        }
+
+        .sb-hero-tier-icon {
+            font-size: 13px;
+            line-height: 1;
         }
 
         .sb-hero-cta {
@@ -667,8 +764,55 @@
         .card-tier-diamond {
             position: relative;
             overflow: hidden;
-            background-color: #eff6ff;
-            border-color: #93c5fd;
+            background: linear-gradient(165deg, #dbeafe 0%, #eff6ff 42%, #f8fbff 100%);
+            border-color: #60a5fa;
+            box-shadow:
+                0 0 0 1px rgba(59, 130, 246, 0.22),
+                0 10px 28px rgba(37, 99, 235, 0.16);
+        }
+
+        /* Soft light sweep — unique delay + duration per card */
+        .card-tier-diamond::before {
+            content: "";
+            position: absolute;
+            top: -30%;
+            bottom: -30%;
+            left: -40%;
+            width: 52%;
+            z-index: 4;
+            pointer-events: none;
+            background: linear-gradient(
+                105deg,
+                transparent 0%,
+                rgba(255, 255, 255, 0.03) 38%,
+                rgba(255, 255, 255, 0.16) 50%,
+                rgba(147, 197, 253, 0.08) 58%,
+                transparent 78%
+            );
+            transform: translateX(0) skewX(-14deg);
+            animation: diamond-sheen var(--diamond-sheen-duration, 5s) ease-in-out infinite;
+            animation-delay: var(--diamond-sheen-delay, 0s);
+        }
+
+        @keyframes diamond-sheen {
+            0% {
+                transform: translateX(-30%) skewX(-14deg);
+                opacity: 0;
+            }
+            8% {
+                opacity: 0.85;
+            }
+            28% {
+                opacity: 0.85;
+            }
+            40% {
+                transform: translateX(280%) skewX(-14deg);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(280%) skewX(-14deg);
+                opacity: 0;
+            }
         }
 
         .diamond-sparkles {
@@ -684,7 +828,7 @@
             transform: scale(0.1);
             display: block;
             line-height: 0;
-            animation: diamond-twinkle-a 4s linear infinite;
+            animation: diamond-twinkle-a 3.5s linear infinite;
         }
 
         .sparkle-svg {
@@ -701,7 +845,7 @@
             stroke-linejoin: miter;
             stroke-miterlimit: 8;
             paint-order: stroke fill;
-            filter: drop-shadow(0 0 3px rgba(37, 99, 235, 0.75));
+            filter: drop-shadow(0 0 4px rgba(37, 99, 235, 0.9));
         }
 
         @keyframes diamond-twinkle-a {
@@ -709,19 +853,35 @@
                 opacity: 0;
                 transform: scale(0.05);
             }
-            7% {
-                opacity: 0.45;
+            8% {
+                opacity: 0.55;
                 transform: scale(calc(var(--sparkle-peak, 1.15) * 0.45));
             }
-            11% {
+            14% {
                 opacity: 1;
                 transform: scale(var(--sparkle-peak, 1.15));
             }
-            15% {
-                opacity: 0.45;
+            20% {
+                opacity: 0.5;
                 transform: scale(calc(var(--sparkle-peak, 1.15) * 0.45));
             }
-            19% {
+            28% {
+                opacity: 0;
+                transform: scale(0.05);
+            }
+            55% {
+                opacity: 0;
+                transform: scale(0.05);
+            }
+            62% {
+                opacity: 0.7;
+                transform: scale(calc(var(--sparkle-peak, 1.15) * 0.5));
+            }
+            68% {
+                opacity: 1;
+                transform: scale(calc(var(--sparkle-peak, 1.15) * 0.95));
+            }
+            74% {
                 opacity: 0;
                 transform: scale(0.05);
             }
@@ -732,39 +892,51 @@
                 opacity: 0;
                 transform: scale(0.05);
             }
-            6% {
-                opacity: 0.45;
+            5% {
+                opacity: 0.5;
                 transform: scale(calc(var(--sparkle-peak, 1.1) * 0.45));
             }
             10% {
                 opacity: 1;
                 transform: scale(var(--sparkle-peak, 1.1));
             }
-            14% {
+            15% {
                 opacity: 0.45;
                 transform: scale(calc(var(--sparkle-peak, 1.1) * 0.45));
             }
-            18% {
+            20% {
                 opacity: 0;
                 transform: scale(0.05);
+            }
+            40% {
+                opacity: 0;
+                transform: scale(0.05);
+            }
+            46% {
+                opacity: 0.55;
+                transform: scale(calc(var(--sparkle-peak, 1.1) * 0.45));
+            }
+            52% {
+                opacity: 1;
+                transform: scale(calc(var(--sparkle-peak, 1.1) * 0.95));
             }
             58% {
                 opacity: 0;
                 transform: scale(0.05);
             }
-            64% {
-                opacity: 0.45;
-                transform: scale(calc(var(--sparkle-peak, 1.1) * 0.45));
+            78% {
+                opacity: 0;
+                transform: scale(0.05);
             }
-            68% {
+            84% {
+                opacity: 0.65;
+                transform: scale(calc(var(--sparkle-peak, 1.1) * 0.5));
+            }
+            90% {
                 opacity: 1;
-                transform: scale(calc(var(--sparkle-peak, 1.1) * 0.92));
+                transform: scale(calc(var(--sparkle-peak, 1.1) * 0.9));
             }
-            72% {
-                opacity: 0.45;
-                transform: scale(calc(var(--sparkle-peak, 1.1) * 0.45));
-            }
-            76% {
+            96% {
                 opacity: 0;
                 transform: scale(0.05);
             }
@@ -775,23 +947,39 @@
                 opacity: 0;
                 transform: scale(0.05);
             }
-            38% {
+            18% {
                 opacity: 0;
                 transform: scale(0.05);
             }
-            44% {
-                opacity: 0.45;
+            24% {
+                opacity: 0.55;
                 transform: scale(calc(var(--sparkle-peak, 1.2) * 0.45));
             }
-            48% {
+            30% {
                 opacity: 1;
                 transform: scale(var(--sparkle-peak, 1.2));
             }
-            52% {
+            36% {
                 opacity: 0.45;
                 transform: scale(calc(var(--sparkle-peak, 1.2) * 0.45));
             }
-            56% {
+            42% {
+                opacity: 0;
+                transform: scale(0.05);
+            }
+            68% {
+                opacity: 0;
+                transform: scale(0.05);
+            }
+            74% {
+                opacity: 0.7;
+                transform: scale(calc(var(--sparkle-peak, 1.2) * 0.5));
+            }
+            80% {
+                opacity: 1;
+                transform: scale(calc(var(--sparkle-peak, 1.2) * 0.92));
+            }
+            86% {
                 opacity: 0;
                 transform: scale(0.05);
             }
@@ -803,46 +991,62 @@
                 transform: scale(0.05);
             }
             4% {
-                opacity: 0.4;
+                opacity: 0.5;
                 transform: scale(calc(var(--sparkle-peak, 1) * 0.4));
             }
-            7% {
-                opacity: 0.95;
-                transform: scale(calc(var(--sparkle-peak, 1) * 0.88));
+            8% {
+                opacity: 1;
+                transform: scale(calc(var(--sparkle-peak, 1) * 0.95));
             }
-            10% {
+            12% {
                 opacity: 0;
                 transform: scale(0.05);
             }
-            30% {
+            28% {
                 opacity: 0;
                 transform: scale(0.05);
             }
-            33% {
-                opacity: 0.4;
+            32% {
+                opacity: 0.55;
                 transform: scale(calc(var(--sparkle-peak, 1) * 0.4));
             }
             36% {
-                opacity: 0.95;
-                transform: scale(calc(var(--sparkle-peak, 1) * 0.88));
+                opacity: 1;
+                transform: scale(calc(var(--sparkle-peak, 1) * 0.9));
             }
-            39% {
+            40% {
                 opacity: 0;
                 transform: scale(0.05);
             }
-            68% {
+            58% {
                 opacity: 0;
                 transform: scale(0.05);
             }
-            71% {
-                opacity: 0.4;
+            62% {
+                opacity: 0.6;
                 transform: scale(calc(var(--sparkle-peak, 1) * 0.4));
             }
-            74% {
-                opacity: 0.95;
+            66% {
+                opacity: 1;
+                transform: scale(calc(var(--sparkle-peak, 1) * 0.92));
+            }
+            70% {
+                opacity: 0;
+                transform: scale(0.05);
+            }
+            86% {
+                opacity: 0;
+                transform: scale(0.05);
+            }
+            90% {
+                opacity: 0.65;
+                transform: scale(calc(var(--sparkle-peak, 1) * 0.45));
+            }
+            94% {
+                opacity: 1;
                 transform: scale(calc(var(--sparkle-peak, 1) * 0.88));
             }
-            77% {
+            98% {
                 opacity: 0;
                 transform: scale(0.05);
             }
@@ -851,6 +1055,10 @@
         @media (prefers-reduced-motion: reduce) {
             .diamond-sparkles {
                 display: none;
+            }
+            .card-tier-diamond::before {
+                animation: none;
+                opacity: 0;
             }
         }
 
@@ -1099,7 +1307,7 @@
             opacity: 0;
             transform: scaleY(0.15) translateY(3px);
             transform-origin: center bottom;
-            animation: fire-pill-flames-rise 10s linear infinite;
+            animation: fire-pill-flames-rise 9s linear infinite;
         }
 
         .fire-pill-flames-svg {
@@ -1111,51 +1319,59 @@
         .fire-pill-spark {
             opacity: 0;
             transform-origin: center center;
-            animation: fire-pill-spark-pop 10s linear infinite;
+            animation: fire-pill-spark-pop 9s linear infinite;
             animation-delay: inherit;
         }
 
         @keyframes fire-pill-flames-rise {
-            0%, 78%, 100% {
+            0%, 48%, 100% {
                 opacity: 0;
                 transform: scaleY(0.12) translateY(4px);
             }
-            82% {
-                opacity: 0.65;
-                transform: scaleY(0.55) translateY(2px);
+            54% {
+                opacity: 0.55;
+                transform: scaleY(0.5) translateY(2px);
             }
-            86% {
+            60% {
                 opacity: 1;
                 transform: scaleY(0.95) translateY(0);
             }
-            90% {
+            72% {
                 opacity: 1;
                 transform: scaleY(1.08) translateY(-1px);
             }
-            94% {
-                opacity: 0.8;
-                transform: scaleY(0.72) translateY(1px);
+            84% {
+                opacity: 0.85;
+                transform: scaleY(0.85) translateY(0);
             }
-            98% {
+            92% {
+                opacity: 0.45;
+                transform: scaleY(0.45) translateY(2px);
+            }
+            97% {
                 opacity: 0;
                 transform: scaleY(0.1) translateY(4px);
             }
         }
 
         @keyframes fire-pill-spark-pop {
-            0%, 84%, 100% {
+            0%, 56%, 100% {
                 opacity: 0;
                 transform: translateY(6px) scale(0.4);
             }
-            88% {
-                opacity: 0.9;
+            62% {
+                opacity: 0.85;
                 transform: translateY(0) scale(1);
             }
-            92% {
-                opacity: 0.55;
-                transform: translateY(-3px) scale(0.85);
+            74% {
+                opacity: 0.7;
+                transform: translateY(-2px) scale(0.95);
             }
-            96% {
+            86% {
+                opacity: 0.35;
+                transform: translateY(-5px) scale(0.7);
+            }
+            94% {
                 opacity: 0;
                 transform: translateY(-7px) scale(0.35);
             }
@@ -1176,8 +1392,21 @@
         }
 
         .badge-elite {
-            color: #1e40af;
-            border-color: #93c5fd;
+            color: #1e3a8a;
+            border-color: #60a5fa;
+            background: linear-gradient(180deg, #ffffff 0%, #dbeafe 100%);
+            box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.2), 0 2px 8px rgba(37, 99, 235, 0.2);
+            animation: diamond-badge-glow 2.8s ease-in-out infinite;
+            animation-delay: var(--diamond-badge-delay, 0s);
+        }
+
+        @keyframes diamond-badge-glow {
+            0%, 100% {
+                box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.2), 0 2px 8px rgba(37, 99, 235, 0.18);
+            }
+            50% {
+                box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.45), 0 3px 12px rgba(37, 99, 235, 0.35);
+            }
         }
 
         .badge-protein {
@@ -1816,7 +2045,7 @@
     <a href="#about" class="sb-nav-link">About SnackBuddy</a>
     <a href="#how-it-works" class="sb-nav-link">How SnackBuddy Works</a>
     <a href="#how-we-pick-snacks" class="sb-nav-link">How We Pick Snacks</a>
-    <a href="#subscribe" class="sb-nav-link">Get Daily Deal Emails</a>
+    <a href="#subscribe" class="sb-nav-link">Don’t miss the ones worth a trip</a>
 
     <div class="sb-nav-footer">
       SnackBuddy helps you spot better-for-you snack deals.
@@ -1847,9 +2076,16 @@
                 <div class="sb-hero-pattern"></div>
                 <div class="sb-hero-content">
                     <div class="sb-hero-kicker">
-                        SnackBuddy • Last updated: August 03, 2026 at 05:56 PM (local time)
+                        SnackBuddy • Last updated: August 04, 2026 at 05:20 PM (local time)
                     </div>
                     <h1 class="sb-hero-title">Don&apos;t overpay for the snacks you already buy.</h1>
+                    <div class="sb-hero-tiers" aria-label="Deal strength key">
+                        <span class="sb-hero-tiers-label">Deal strength</span>
+                        <span class="sb-hero-tier"><span class="sb-hero-tier-icon" aria-hidden="true">💎</span> 25%+</span>
+                        <span class="sb-hero-tier"><span class="sb-hero-tier-icon" aria-hidden="true">🔥</span> 20–24%</span>
+                        <span class="sb-hero-tier"><span class="sb-hero-tier-icon" aria-hidden="true">💪</span> 10–19%</span>
+                        <span class="sb-hero-tier"><span class="sb-hero-tier-icon" aria-hidden="true">🏷️</span> under 10%</span>
+                    </div>
                 </div>
             </div>
         </section>
@@ -1890,7 +2126,7 @@
         <div class="sb-deals-main">
         <section class="card-grid" id="deals-list">
             
-    <div class="card card-tier-diamond"
+    <div class="card card-tier-diamond" style="--diamond-sheen-delay:1.781s;--diamond-sheen-duration:4.80s;--diamond-badge-delay:2.201s"
          data-section="food"
          data-category="bars"
          data-retailer="kroger"
@@ -1901,15 +2137,20 @@
          data-tier="diamond">
         
         <div class="diamond-sparkles" aria-hidden="true">
-            <span class="sparkle" style="width:22px;height:22px;top:68.8%;right:37.2%;left:auto;animation-name:diamond-twinkle-d;animation-duration:9.04s;animation-delay:2.70s;animation-timing-function:linear;--sparkle-peak:0.78;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:21px;height:21px;top:27.6%;right:26.9%;left:auto;animation-name:diamond-twinkle-d;animation-duration:9.90s;animation-delay:8.90s;animation-timing-function:linear;--sparkle-peak:1.02;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:30px;height:30px;top:29.4%;right:72.6%;left:auto;animation-name:diamond-twinkle-a;animation-duration:5.66s;animation-delay:6.23s;animation-timing-function:linear;--sparkle-peak:0.97;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:18px;height:18px;top:82.5%;left:53.4%;animation-name:diamond-twinkle-d;animation-duration:10.31s;animation-delay:2.12s;animation-timing-function:linear;--sparkle-peak:0.87;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:17px;height:17px;top:46.9%;left:42.0%;animation-name:diamond-twinkle-b;animation-duration:7.58s;animation-delay:3.94s;animation-timing-function:linear;--sparkle-peak:1.11;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:14px;height:14px;top:51.2%;right:66.5%;left:auto;animation-name:diamond-twinkle-c;animation-duration:10.97s;animation-delay:5.49s;animation-timing-function:linear;--sparkle-peak:1.16;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:22px;height:22px;top:81.6%;right:9.5%;left:auto;animation-name:diamond-twinkle-a;animation-duration:6.25s;animation-delay:7.58s;animation-timing-function:linear;--sparkle-peak:1.14;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:21px;height:21px;top:32.2%;right:41.0%;left:auto;animation-name:diamond-twinkle-c;animation-duration:5.84s;animation-delay:9.08s;animation-timing-function:linear;--sparkle-peak:1.01;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:25px;height:25px;top:86.0%;left:18.4%;animation-name:diamond-twinkle-c;animation-duration:10.17s;animation-delay:8.00s;animation-timing-function:linear;--sparkle-peak:1.20;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:20px;height:20px;top:70.1%;right:37.5%;left:auto;animation-name:diamond-twinkle-c;animation-duration:4.36s;animation-delay:0.88s;animation-timing-function:linear;--sparkle-peak:0.88;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:19px;height:19px;top:27.4%;right:26.8%;left:auto;animation-name:diamond-twinkle-c;animation-duration:4.68s;animation-delay:2.90s;animation-timing-function:linear;--sparkle-peak:1.15;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:28px;height:28px;top:29.3%;right:74.1%;left:auto;animation-name:diamond-twinkle-a;animation-duration:3.11s;animation-delay:2.03s;animation-timing-function:linear;--sparkle-peak:1.10;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:16px;height:16px;top:84.4%;left:54.3%;animation-name:diamond-twinkle-d;animation-duration:3.96s;animation-delay:2.92s;animation-timing-function:linear;--sparkle-peak:1.12;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:23px;height:23px;top:73.0%;right:45.5%;left:auto;animation-name:diamond-twinkle-c;animation-duration:4.19s;animation-delay:1.62s;animation-timing-function:linear;--sparkle-peak:1.05;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:16px;height:16px;top:7.6%;right:76.7%;left:auto;animation-name:diamond-twinkle-a;animation-duration:3.67s;animation-delay:3.03s;animation-timing-function:linear;--sparkle-peak:0.91;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:20px;height:20px;top:83.5%;right:8.8%;left:auto;animation-name:diamond-twinkle-a;animation-duration:3.33s;animation-delay:2.47s;animation-timing-function:linear;--sparkle-peak:1.28;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:19px;height:19px;top:32.2%;right:41.4%;left:auto;animation-name:diamond-twinkle-d;animation-duration:4.41s;animation-delay:0.40s;animation-timing-function:linear;--sparkle-peak:1.33;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:23px;height:23px;top:88.0%;left:18.0%;animation-name:diamond-twinkle-b;animation-duration:4.78s;animation-delay:2.61s;animation-timing-function:linear;--sparkle-peak:1.35;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:25px;height:25px;top:17.3%;left:5.2%;animation-name:diamond-twinkle-d;animation-duration:3.80s;animation-delay:0.31s;animation-timing-function:linear;--sparkle-peak:0.88;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:24px;height:24px;top:4.8%;right:9.1%;left:auto;animation-name:diamond-twinkle-b;animation-duration:2.95s;animation-delay:1.93s;animation-timing-function:linear;--sparkle-peak:1.34;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:16px;height:16px;top:50.4%;right:21.6%;left:auto;animation-name:diamond-twinkle-b;animation-duration:3.20s;animation-delay:0.47s;animation-timing-function:linear;--sparkle-peak:1.01;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:24px;height:24px;top:52.1%;right:46.3%;left:auto;animation-name:diamond-twinkle-c;animation-duration:3.87s;animation-delay:2.39s;animation-timing-function:linear;--sparkle-peak:1.22;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:15px;height:15px;top:30.1%;left:76.5%;animation-name:diamond-twinkle-a;animation-duration:3.79s;animation-delay:2.80s;animation-timing-function:linear;--sparkle-peak:1.35;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
         </div>
         <div class="card-image-wrap">
             
@@ -1947,7 +2188,7 @@
     </div>
     
 
-    <div class="card card-tier-diamond"
+    <div class="card card-tier-diamond" style="--diamond-sheen-delay:3.155s;--diamond-sheen-duration:4.40s;--diamond-badge-delay:1.691s"
          data-section="food"
          data-category="bars"
          data-retailer="kroger"
@@ -1958,14 +2199,19 @@
          data-tier="diamond">
         
         <div class="diamond-sparkles" aria-hidden="true">
-            <span class="sparkle" style="width:20px;height:20px;top:36.5%;left:52.4%;animation-name:diamond-twinkle-b;animation-duration:6.65s;animation-delay:0.33s;animation-timing-function:linear;--sparkle-peak:0.93;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:21px;height:21px;top:53.7%;right:39.5%;left:auto;animation-name:diamond-twinkle-a;animation-duration:5.24s;animation-delay:0.26s;animation-timing-function:linear;--sparkle-peak:0.90;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:16px;height:16px;top:46.7%;left:44.7%;animation-name:diamond-twinkle-d;animation-duration:5.16s;animation-delay:2.16s;animation-timing-function:linear;--sparkle-peak:0.84;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:24px;height:24px;top:60.6%;right:33.5%;left:auto;animation-name:diamond-twinkle-d;animation-duration:6.54s;animation-delay:7.18s;animation-timing-function:linear;--sparkle-peak:1.10;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:18px;height:18px;top:75.7%;left:31.3%;animation-name:diamond-twinkle-a;animation-duration:7.18s;animation-delay:0.74s;animation-timing-function:linear;--sparkle-peak:0.88;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:26px;height:26px;top:74.3%;left:57.2%;animation-name:diamond-twinkle-c;animation-duration:6.88s;animation-delay:4.51s;animation-timing-function:linear;--sparkle-peak:0.98;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:27px;height:27px;top:11.5%;left:64.2%;animation-name:diamond-twinkle-c;animation-duration:6.85s;animation-delay:5.98s;animation-timing-function:linear;--sparkle-peak:0.81;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:19px;height:19px;top:51.2%;left:20.5%;animation-name:diamond-twinkle-c;animation-duration:6.11s;animation-delay:2.13s;animation-timing-function:linear;--sparkle-peak:1.13;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:18px;height:18px;top:36.7%;left:53.3%;animation-name:diamond-twinkle-b;animation-duration:3.48s;animation-delay:0.11s;animation-timing-function:linear;--sparkle-peak:1.05;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:19px;height:19px;top:54.5%;right:39.9%;left:auto;animation-name:diamond-twinkle-a;animation-duration:2.95s;animation-delay:0.08s;animation-timing-function:linear;--sparkle-peak:1.02;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:14px;height:14px;top:47.3%;left:45.3%;animation-name:diamond-twinkle-c;animation-duration:2.92s;animation-delay:0.70s;animation-timing-function:linear;--sparkle-peak:0.94;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:22px;height:22px;top:61.7%;right:33.6%;left:auto;animation-name:diamond-twinkle-c;animation-duration:3.43s;animation-delay:2.34s;animation-timing-function:linear;--sparkle-peak:1.23;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:16px;height:16px;top:77.3%;left:31.4%;animation-name:diamond-twinkle-a;animation-duration:3.67s;animation-delay:0.24s;animation-timing-function:linear;--sparkle-peak:0.99;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:24px;height:24px;top:75.9%;left:58.2%;animation-name:diamond-twinkle-b;animation-duration:3.56s;animation-delay:1.47s;animation-timing-function:linear;--sparkle-peak:1.10;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:25px;height:25px;top:10.7%;left:65.4%;animation-name:diamond-twinkle-b;animation-duration:3.55s;animation-delay:1.95s;animation-timing-function:linear;--sparkle-peak:0.91;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:17px;height:17px;top:51.9%;left:20.2%;animation-name:diamond-twinkle-b;animation-duration:3.27s;animation-delay:0.70s;animation-timing-function:linear;--sparkle-peak:1.27;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:12px;height:12px;top:32.4%;left:56.8%;animation-name:diamond-twinkle-d;animation-duration:3.54s;animation-delay:2.59s;animation-timing-function:linear;--sparkle-peak:1.25;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:12px;height:12px;top:32.9%;right:55.4%;left:auto;animation-name:diamond-twinkle-c;animation-duration:3.43s;animation-delay:1.10s;animation-timing-function:linear;--sparkle-peak:0.96;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:27px;height:27px;top:14.8%;right:29.1%;left:auto;animation-name:diamond-twinkle-a;animation-duration:4.77s;animation-delay:1.53s;animation-timing-function:linear;--sparkle-peak:1.02;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:25px;height:25px;top:24.8%;right:24.9%;left:auto;animation-name:diamond-twinkle-b;animation-duration:5.04s;animation-delay:0.74s;animation-timing-function:linear;--sparkle-peak:1.00;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:17px;height:17px;top:75.3%;right:69.6%;left:auto;animation-name:diamond-twinkle-d;animation-duration:4.55s;animation-delay:1.86s;animation-timing-function:linear;--sparkle-peak:0.90;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
         </div>
         <div class="card-image-wrap">
             
@@ -2000,7 +2246,7 @@
     </div>
     
 
-    <div class="card card-tier-diamond"
+    <div class="card card-tier-diamond" style="--diamond-sheen-delay:4.514s;--diamond-sheen-duration:5.90s;--diamond-badge-delay:0.619s"
          data-section="food"
          data-category="wraps"
          data-retailer="harris teeter"
@@ -2011,14 +2257,19 @@
          data-tier="diamond">
         
         <div class="diamond-sparkles" aria-hidden="true">
-            <span class="sparkle" style="width:24px;height:24px;top:81.3%;left:59.2%;animation-name:diamond-twinkle-c;animation-duration:11.19s;animation-delay:6.17s;animation-timing-function:linear;--sparkle-peak:1.03;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:30px;height:30px;top:53.4%;right:63.3%;left:auto;animation-name:diamond-twinkle-b;animation-duration:5.72s;animation-delay:2.87s;animation-timing-function:linear;--sparkle-peak:0.96;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:21px;height:21px;top:42.5%;left:44.2%;animation-name:diamond-twinkle-b;animation-duration:8.90s;animation-delay:7.62s;animation-timing-function:linear;--sparkle-peak:0.82;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:15px;height:15px;top:22.6%;left:43.3%;animation-name:diamond-twinkle-b;animation-duration:7.22s;animation-delay:4.97s;animation-timing-function:linear;--sparkle-peak:0.91;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:16px;height:16px;top:54.8%;left:54.1%;animation-name:diamond-twinkle-b;animation-duration:9.35s;animation-delay:9.35s;animation-timing-function:linear;--sparkle-peak:0.81;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:18px;height:18px;top:67.1%;right:70.1%;left:auto;animation-name:diamond-twinkle-c;animation-duration:7.37s;animation-delay:4.53s;animation-timing-function:linear;--sparkle-peak:1.06;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:29px;height:29px;top:46.3%;left:24.4%;animation-name:diamond-twinkle-b;animation-duration:9.56s;animation-delay:3.16s;animation-timing-function:linear;--sparkle-peak:1.04;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:21px;height:21px;top:72.8%;left:5.2%;animation-name:diamond-twinkle-c;animation-duration:7.52s;animation-delay:8.03s;animation-timing-function:linear;--sparkle-peak:1.17;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:22px;height:22px;top:83.1%;left:60.3%;animation-name:diamond-twinkle-b;animation-duration:5.17s;animation-delay:2.01s;animation-timing-function:linear;--sparkle-peak:1.16;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:28px;height:28px;top:54.1%;right:64.6%;left:auto;animation-name:diamond-twinkle-b;animation-duration:3.13s;animation-delay:0.94s;animation-timing-function:linear;--sparkle-peak:1.08;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:19px;height:19px;top:42.9%;left:44.7%;animation-name:diamond-twinkle-b;animation-duration:4.31s;animation-delay:2.49s;animation-timing-function:linear;--sparkle-peak:0.93;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:13px;height:13px;top:22.3%;left:43.8%;animation-name:diamond-twinkle-d;animation-duration:3.45s;animation-delay:1.87s;animation-timing-function:linear;--sparkle-peak:1.21;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:19px;height:19px;top:9.5%;right:9.0%;left:auto;animation-name:diamond-twinkle-b;animation-duration:4.48s;animation-delay:3.05s;animation-timing-function:linear;--sparkle-peak:0.92;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:16px;height:16px;top:68.4%;right:71.6%;left:auto;animation-name:diamond-twinkle-d;animation-duration:3.74s;animation-delay:0.84s;animation-timing-function:linear;--sparkle-peak:1.05;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:19px;height:19px;top:77.8%;right:26.6%;left:auto;animation-name:diamond-twinkle-b;animation-duration:3.73s;animation-delay:1.84s;animation-timing-function:linear;--sparkle-peak:1.22;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:22px;height:22px;top:73.6%;right:76.4%;left:auto;animation-name:diamond-twinkle-b;animation-duration:4.48s;animation-delay:2.60s;animation-timing-function:linear;--sparkle-peak:1.08;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:26px;height:26px;top:28.9%;left:20.5%;animation-name:diamond-twinkle-b;animation-duration:4.61s;animation-delay:2.78s;animation-timing-function:linear;--sparkle-peak:0.98;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:19px;height:19px;top:73.4%;right:76.6%;left:auto;animation-name:diamond-twinkle-c;animation-duration:4.06s;animation-delay:2.31s;animation-timing-function:linear;--sparkle-peak:1.24;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:16px;height:16px;top:70.8%;left:57.5%;animation-name:diamond-twinkle-b;animation-duration:5.03s;animation-delay:1.98s;animation-timing-function:linear;--sparkle-peak:1.02;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:19px;height:19px;top:72.2%;left:78.2%;animation-name:diamond-twinkle-b;animation-duration:3.15s;animation-delay:2.38s;animation-timing-function:linear;--sparkle-peak:1.00;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:26px;height:26px;top:5.3%;right:59.0%;left:auto;animation-name:diamond-twinkle-b;animation-duration:3.90s;animation-delay:0.54s;animation-timing-function:linear;--sparkle-peak:1.33;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
         </div>
         <div class="card-image-wrap">
             
@@ -2053,7 +2304,7 @@
     </div>
     
 
-    <div class="card card-tier-diamond"
+    <div class="card card-tier-diamond" style="--diamond-sheen-delay:4.979s;--diamond-sheen-duration:5.40s;--diamond-badge-delay:0.216s"
          data-section="food"
          data-category="wraps"
          data-retailer="target"
@@ -2064,15 +2315,20 @@
          data-tier="diamond">
         
         <div class="diamond-sparkles" aria-hidden="true">
-            <span class="sparkle" style="width:30px;height:30px;top:48.2%;left:72.5%;animation-name:diamond-twinkle-a;animation-duration:10.59s;animation-delay:9.39s;animation-timing-function:linear;--sparkle-peak:1.15;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:26px;height:26px;top:5.7%;left:25.0%;animation-name:diamond-twinkle-c;animation-duration:9.64s;animation-delay:7.13s;animation-timing-function:linear;--sparkle-peak:0.80;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:23px;height:23px;top:77.4%;left:82.8%;animation-name:diamond-twinkle-d;animation-duration:7.31s;animation-delay:3.69s;animation-timing-function:linear;--sparkle-peak:0.97;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:28px;height:28px;top:12.4%;left:59.2%;animation-name:diamond-twinkle-c;animation-duration:5.03s;animation-delay:5.14s;animation-timing-function:linear;--sparkle-peak:0.83;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:15px;height:15px;top:40.3%;left:22.8%;animation-name:diamond-twinkle-a;animation-duration:5.26s;animation-delay:0.13s;animation-timing-function:linear;--sparkle-peak:0.96;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:30px;height:30px;top:56.4%;right:37.5%;left:auto;animation-name:diamond-twinkle-b;animation-duration:9.24s;animation-delay:3.86s;animation-timing-function:linear;--sparkle-peak:1.00;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:27px;height:27px;top:17.1%;right:77.0%;left:auto;animation-name:diamond-twinkle-c;animation-duration:10.96s;animation-delay:1.15s;animation-timing-function:linear;--sparkle-peak:1.05;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:24px;height:24px;top:76.6%;right:5.2%;left:auto;animation-name:diamond-twinkle-b;animation-duration:6.57s;animation-delay:8.96s;animation-timing-function:linear;--sparkle-peak:0.99;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
-            <span class="sparkle" style="width:14px;height:14px;top:61.5%;left:17.8%;animation-name:diamond-twinkle-b;animation-duration:7.23s;animation-delay:4.87s;animation-timing-function:linear;--sparkle-peak:0.87;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:28px;height:28px;top:48.8%;left:74.0%;animation-name:diamond-twinkle-a;animation-duration:4.94s;animation-delay:3.06s;animation-timing-function:linear;--sparkle-peak:1.29;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:24px;height:24px;top:4.7%;left:24.8%;animation-name:diamond-twinkle-d;animation-duration:4.15s;animation-delay:2.21s;animation-timing-function:linear;--sparkle-peak:1.23;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:13px;height:13px;top:30.1%;left:76.0%;animation-name:diamond-twinkle-a;animation-duration:4.94s;animation-delay:1.10s;animation-timing-function:linear;--sparkle-peak:1.04;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:25px;height:25px;top:62.5%;left:10.5%;animation-name:diamond-twinkle-d;animation-duration:3.02s;animation-delay:1.10s;animation-timing-function:linear;--sparkle-peak:1.34;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:14px;height:14px;top:65.6%;left:11.9%;animation-name:diamond-twinkle-b;animation-duration:3.76s;animation-delay:0.12s;animation-timing-function:linear;--sparkle-peak:0.86;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:19px;height:19px;top:71.7%;left:55.3%;animation-name:diamond-twinkle-d;animation-duration:3.47s;animation-delay:1.09s;animation-timing-function:linear;--sparkle-peak:1.18;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:28px;height:28px;top:51.5%;right:37.0%;left:auto;animation-name:diamond-twinkle-d;animation-duration:4.55s;animation-delay:2.83s;animation-timing-function:linear;--sparkle-peak:1.00;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:19px;height:19px;top:59.5%;left:30.5%;animation-name:diamond-twinkle-b;animation-duration:4.69s;animation-delay:0.08s;animation-timing-function:linear;--sparkle-peak:0.94;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:28px;height:28px;top:60.1%;left:69.9%;animation-name:diamond-twinkle-d;animation-duration:4.18s;animation-delay:2.90s;animation-timing-function:linear;--sparkle-peak:1.01;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:22px;height:22px;top:68.8%;left:18.2%;animation-name:diamond-twinkle-b;animation-duration:3.38s;animation-delay:2.10s;animation-timing-function:linear;--sparkle-peak:0.89;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:16px;height:16px;top:4.4%;left:40.2%;animation-name:diamond-twinkle-a;animation-duration:4.07s;animation-delay:1.35s;animation-timing-function:linear;--sparkle-peak:0.86;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:26px;height:26px;top:30.8%;left:85.6%;animation-name:diamond-twinkle-b;animation-duration:3.29s;animation-delay:0.54s;animation-timing-function:linear;--sparkle-peak:1.14;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:19px;height:19px;top:65.4%;left:82.2%;animation-name:diamond-twinkle-d;animation-duration:4.38s;animation-delay:2.83s;animation-timing-function:linear;--sparkle-peak:1.14;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
+            <span class="sparkle" style="width:15px;height:15px;top:74.5%;left:56.8%;animation-name:diamond-twinkle-d;animation-duration:4.84s;animation-delay:3.04s;animation-timing-function:linear;--sparkle-peak:1.20;"><svg class="sparkle-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path class="sparkle-shape" d="M50 0 Q56 39 76 50 Q56 61 50 100 Q44 61 24 50 Q44 39 50 0 Z"/></svg></span>
         </div>
         <div class="card-image-wrap">
             
@@ -2132,7 +2388,7 @@
     
             <div class="card-category-tag">Bars</div>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
-            <div class='badge badge-strong badge-fire-pill'><span class='fire-pill-flames' style='animation-delay:1.0s' aria-hidden='true'><svg class="fire-pill-flames-svg" viewBox="0 0 120 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+            <div class='badge badge-strong badge-fire-pill'><span class='fire-pill-flames' style='animation-delay:7.0s' aria-hidden='true'><svg class="fire-pill-flames-svg" viewBox="0 0 120 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">
   <path class="fire-pill-flame-outer" fill="#fb923c" d="M0,24 L0,16 C5,9 10,17 15,12 C20,7 25,15 30,10 C35,6 40,14 45,9 C50,5 55,13 60,8 C65,4 70,12 75,9 C80,6 85,13 90,10 C95,7 100,14 105,11 C110,8 115,15 120,13 L120,24 Z"/>
   <path class="fire-pill-flame-inner" fill="#fef08a" d="M0,24 L0,18 C7,14 14,17 21,15 C28,13 35,17 42,14 C49,12 56,16 63,14 C70,12 77,16 84,14 C91,13 98,17 105,15 C112,14 116,17 120,16 L120,24 Z"/>
   <ellipse class="fire-pill-spark fire-pill-spark--1" cx="18" cy="8" rx="2" ry="3" fill="#fb923c"/>
@@ -2161,6 +2417,55 @@
 
     <div class="card card-tier-fire"
          data-section="food"
+         data-category="chips &amp; crunchy"
+         data-retailer="walmart"
+         data-brand="quest"
+         data-price="7.18"
+         data-percent="24.3"
+         data-deal-count="1"
+         data-tier="fire">
+        
+        <div class="card-image-wrap">
+            
+        <div class="card-carousel card-carousel--single" data-slide-count="1">
+            <div class="card-carousel-stage">
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Pizza Flavor"><a href="https://www.walmart.com/ip/Quest-Tortilla-Style-Protein-Chips-with-19g-of-Protein-Pizza-Flavor-4-Count/15780952775" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/Quest-Tortilla-Style-Protein-Chips-with-19g-of-Protein-Pizza-Flavor-4-Count_49617bcc-e947-4dc0-b589-62afe6c1d28c.8ec7edd9228866acd739fd1d5214e39c.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Pizza Flavor" class="card-image" loading="lazy"/></a></div>
+            </div>
+            
+            <div class="card-carousel-caption">Pizza Flavor</div>
+        </div>
+    
+            <div class="card-category-tag">Chips &amp; Crunchy</div>
+            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-strong badge-fire-pill'><span class='fire-pill-flames' style='animation-delay:7.2s' aria-hidden='true'><svg class="fire-pill-flames-svg" viewBox="0 0 120 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+  <path class="fire-pill-flame-outer" fill="#fb923c" d="M0,24 L0,16 C5,9 10,17 15,12 C20,7 25,15 30,10 C35,6 40,14 45,9 C50,5 55,13 60,8 C65,4 70,12 75,9 C80,6 85,13 90,10 C95,7 100,14 105,11 C110,8 115,15 120,13 L120,24 Z"/>
+  <path class="fire-pill-flame-inner" fill="#fef08a" d="M0,24 L0,18 C7,14 14,17 21,15 C28,13 35,17 42,14 C49,12 56,16 63,14 C70,12 77,16 84,14 C91,13 98,17 105,15 C112,14 116,17 120,16 L120,24 Z"/>
+  <ellipse class="fire-pill-spark fire-pill-spark--1" cx="18" cy="8" rx="2" ry="3" fill="#fb923c"/>
+  <ellipse class="fire-pill-spark fire-pill-spark--2" cx="58" cy="6" rx="1.6" ry="2.6" fill="#fb923c"/>
+  <ellipse class="fire-pill-spark fire-pill-spark--3" cx="96" cy="9" rx="1.8" ry="2.8" fill="#fb923c"/>
+</svg></span><span class='fire-pill-label'>🔥 Fire</span></div>
+        </div>
+        <div class="card-content">
+            <div class="card-pricing">
+                <span class='old-price'>$9.48</span>
+                <span class="new-price">$7.18</span>
+                <span class="percent-off">24% OFF</span>
+            </div>
+            <div class="card-title">Quest Protein Chips</div>
+            
+            <div class="card-footer">
+                <div class='availability both'>In-store & online</div>
+                
+            </div>
+            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Quest-Tortilla-Style-Protein-Chips-with-19g-of-Protein-Pizza-Flavor-4-Count/15780952775" target="_blank" rel="noopener noreferrer">
+                View on Walmart.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card card-tier-fire"
+         data-section="food"
          data-category="bars"
          data-retailer="kroger"
          data-brand="rxbar"
@@ -2181,7 +2486,7 @@
     
             <div class="card-category-tag">Bars</div>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>bar</span></div>
-            <div class='badge badge-strong badge-fire-pill'><span class='fire-pill-flames' style='animation-delay:3.6s' aria-hidden='true'><svg class="fire-pill-flames-svg" viewBox="0 0 120 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+            <div class='badge badge-strong badge-fire-pill'><span class='fire-pill-flames' style='animation-delay:2.6s' aria-hidden='true'><svg class="fire-pill-flames-svg" viewBox="0 0 120 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">
   <path class="fire-pill-flame-outer" fill="#fb923c" d="M0,24 L0,16 C5,9 10,17 15,12 C20,7 25,15 30,10 C35,6 40,14 45,9 C50,5 55,13 60,8 C65,4 70,12 75,9 C80,6 85,13 90,10 C95,7 100,14 105,11 C110,8 115,15 120,13 L120,24 Z"/>
   <path class="fire-pill-flame-inner" fill="#fef08a" d="M0,24 L0,18 C7,14 14,17 21,15 C28,13 35,17 42,14 C49,12 56,16 63,14 C70,12 77,16 84,14 C91,13 98,17 105,15 C112,14 116,17 120,16 L120,24 Z"/>
   <ellipse class="fire-pill-spark fire-pill-spark--1" cx="18" cy="8" rx="2" ry="3" fill="#fb923c"/>
@@ -2233,7 +2538,7 @@
     
             <div class="card-category-tag">Bars</div>
             <div class='pack-pill'><span class='pack-count'>5</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-strong badge-fire-pill'><span class='fire-pill-flames' style='animation-delay:0.7s' aria-hidden='true'><svg class="fire-pill-flames-svg" viewBox="0 0 120 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+            <div class='badge badge-strong badge-fire-pill'><span class='fire-pill-flames' style='animation-delay:4.2s' aria-hidden='true'><svg class="fire-pill-flames-svg" viewBox="0 0 120 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">
   <path class="fire-pill-flame-outer" fill="#fb923c" d="M0,24 L0,16 C5,9 10,17 15,12 C20,7 25,15 30,10 C35,6 40,14 45,9 C50,5 55,13 60,8 C65,4 70,12 75,9 C80,6 85,13 90,10 C95,7 100,14 105,11 C110,8 115,15 120,13 L120,24 Z"/>
   <path class="fire-pill-flame-inner" fill="#fef08a" d="M0,24 L0,18 C7,14 14,17 21,15 C28,13 35,17 42,14 C49,12 56,16 63,14 C70,12 77,16 84,14 C91,13 98,17 105,15 C112,14 116,17 120,16 L120,24 Z"/>
   <ellipse class="fire-pill-spark fire-pill-spark--1" cx="18" cy="8" rx="2" ry="3" fill="#fb923c"/>
@@ -2282,7 +2587,7 @@
     
             <div class="card-category-tag">Energy Drink</div>
             <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong badge-fire-pill'><span class='fire-pill-flames' style='animation-delay:4.5s' aria-hidden='true'><svg class="fire-pill-flames-svg" viewBox="0 0 120 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+            <div class='badge badge-strong badge-fire-pill'><span class='fire-pill-flames' style='animation-delay:1.5s' aria-hidden='true'><svg class="fire-pill-flames-svg" viewBox="0 0 120 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">
   <path class="fire-pill-flame-outer" fill="#fb923c" d="M0,24 L0,16 C5,9 10,17 15,12 C20,7 25,15 30,10 C35,6 40,14 45,9 C50,5 55,13 60,8 C65,4 70,12 75,9 C80,6 85,13 90,10 C95,7 100,14 105,11 C110,8 115,15 120,13 L120,24 Z"/>
   <path class="fire-pill-flame-inner" fill="#fef08a" d="M0,24 L0,18 C7,14 14,17 21,15 C28,13 35,17 42,14 C49,12 56,16 63,14 C70,12 77,16 84,14 C91,13 98,17 105,15 C112,14 116,17 120,16 L120,24 Z"/>
   <ellipse class="fire-pill-spark fire-pill-spark--1" cx="18" cy="8" rx="2" ry="3" fill="#fb923c"/>
@@ -2383,7 +2688,7 @@
     
             <div class="card-category-tag">Cookies &amp; Sweets</div>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong badge-fire-pill'><span class='fire-pill-flames' style='animation-delay:6.2s' aria-hidden='true'><svg class="fire-pill-flames-svg" viewBox="0 0 120 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+            <div class='badge badge-strong badge-fire-pill'><span class='fire-pill-flames' style='animation-delay:5.2s' aria-hidden='true'><svg class="fire-pill-flames-svg" viewBox="0 0 120 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">
   <path class="fire-pill-flame-outer" fill="#fb923c" d="M0,24 L0,16 C5,9 10,17 15,12 C20,7 25,15 30,10 C35,6 40,14 45,9 C50,5 55,13 60,8 C65,4 70,12 75,9 C80,6 85,13 90,10 C95,7 100,14 105,11 C110,8 115,15 120,13 L120,24 Z"/>
   <path class="fire-pill-flame-inner" fill="#fef08a" d="M0,24 L0,18 C7,14 14,17 21,15 C28,13 35,17 42,14 C49,12 56,16 63,14 C70,12 77,16 84,14 C91,13 98,17 105,15 C112,14 116,17 120,16 L120,24 Z"/>
   <ellipse class="fire-pill-spark fire-pill-spark--1" cx="18" cy="8" rx="2" ry="3" fill="#fb923c"/>
@@ -2435,7 +2740,7 @@
     
             <div class="card-category-tag">Cookies &amp; Sweets</div>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong badge-fire-pill'><span class='fire-pill-flames' style='animation-delay:3.2s' aria-hidden='true'><svg class="fire-pill-flames-svg" viewBox="0 0 120 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+            <div class='badge badge-strong badge-fire-pill'><span class='fire-pill-flames' style='animation-delay:0.2s' aria-hidden='true'><svg class="fire-pill-flames-svg" viewBox="0 0 120 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">
   <path class="fire-pill-flame-outer" fill="#fb923c" d="M0,24 L0,16 C5,9 10,17 15,12 C20,7 25,15 30,10 C35,6 40,14 45,9 C50,5 55,13 60,8 C65,4 70,12 75,9 C80,6 85,13 90,10 C95,7 100,14 105,11 C110,8 115,15 120,13 L120,24 Z"/>
   <path class="fire-pill-flame-inner" fill="#fef08a" d="M0,24 L0,18 C7,14 14,17 21,15 C28,13 35,17 42,14 C49,12 56,16 63,14 C70,12 77,16 84,14 C91,13 98,17 105,15 C112,14 116,17 120,16 L120,24 Z"/>
   <ellipse class="fire-pill-spark fire-pill-spark--1" cx="18" cy="8" rx="2" ry="3" fill="#fb923c"/>
@@ -2487,7 +2792,7 @@
     
             <div class="card-category-tag">Energy Drink</div>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong badge-fire-pill'><span class='fire-pill-flames' style='animation-delay:3.9s' aria-hidden='true'><svg class="fire-pill-flames-svg" viewBox="0 0 120 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+            <div class='badge badge-strong badge-fire-pill'><span class='fire-pill-flames' style='animation-delay:6.4s' aria-hidden='true'><svg class="fire-pill-flames-svg" viewBox="0 0 120 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">
   <path class="fire-pill-flame-outer" fill="#fb923c" d="M0,24 L0,16 C5,9 10,17 15,12 C20,7 25,15 30,10 C35,6 40,14 45,9 C50,5 55,13 60,8 C65,4 70,12 75,9 C80,6 85,13 90,10 C95,7 100,14 105,11 C110,8 115,15 120,13 L120,24 Z"/>
   <path class="fire-pill-flame-inner" fill="#fef08a" d="M0,24 L0,18 C7,14 14,17 21,15 C28,13 35,17 42,14 C49,12 56,16 63,14 C70,12 77,16 84,14 C91,13 98,17 105,15 C112,14 116,17 120,16 L120,24 Z"/>
   <ellipse class="fire-pill-spark fire-pill-spark--1" cx="18" cy="8" rx="2" ry="3" fill="#fb923c"/>
@@ -2536,7 +2841,7 @@
     
             <div class="card-category-tag">Wraps</div>
             <div class='pack-pill'><span class='pack-count'>6</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong badge-fire-pill'><span class='fire-pill-flames' style='animation-delay:6.2s' aria-hidden='true'><svg class="fire-pill-flames-svg" viewBox="0 0 120 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+            <div class='badge badge-strong badge-fire-pill'><span class='fire-pill-flames' style='animation-delay:5.7s' aria-hidden='true'><svg class="fire-pill-flames-svg" viewBox="0 0 120 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">
   <path class="fire-pill-flame-outer" fill="#fb923c" d="M0,24 L0,16 C5,9 10,17 15,12 C20,7 25,15 30,10 C35,6 40,14 45,9 C50,5 55,13 60,8 C65,4 70,12 75,9 C80,6 85,13 90,10 C95,7 100,14 105,11 C110,8 115,15 120,13 L120,24 Z"/>
   <path class="fire-pill-flame-inner" fill="#fef08a" d="M0,24 L0,18 C7,14 14,17 21,15 C28,13 35,17 42,14 C49,12 56,16 63,14 C70,12 77,16 84,14 C91,13 98,17 105,15 C112,14 116,17 120,16 L120,24 Z"/>
   <ellipse class="fire-pill-spark fire-pill-spark--1" cx="18" cy="8" rx="2" ry="3" fill="#fb923c"/>
@@ -2588,7 +2893,7 @@
     
             <div class="card-category-tag">Protein Powder</div>
             <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-strong badge-fire-pill'><span class='fire-pill-flames' style='animation-delay:2.0s' aria-hidden='true'><svg class="fire-pill-flames-svg" viewBox="0 0 120 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+            <div class='badge badge-strong badge-fire-pill'><span class='fire-pill-flames' style='animation-delay:4.5s' aria-hidden='true'><svg class="fire-pill-flames-svg" viewBox="0 0 120 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">
   <path class="fire-pill-flame-outer" fill="#fb923c" d="M0,24 L0,16 C5,9 10,17 15,12 C20,7 25,15 30,10 C35,6 40,14 45,9 C50,5 55,13 60,8 C65,4 70,12 75,9 C80,6 85,13 90,10 C95,7 100,14 105,11 C110,8 115,15 120,13 L120,24 Z"/>
   <path class="fire-pill-flame-inner" fill="#fef08a" d="M0,24 L0,18 C7,14 14,17 21,15 C28,13 35,17 42,14 C49,12 56,16 63,14 C70,12 77,16 84,14 C91,13 98,17 105,15 C112,14 116,17 120,16 L120,24 Z"/>
   <ellipse class="fire-pill-spark fire-pill-spark--1" cx="18" cy="8" rx="2" ry="3" fill="#fb923c"/>
@@ -3381,49 +3686,6 @@
 
     <div class="card card-tier-strong"
          data-section="food"
-         data-category="bars"
-         data-retailer="walmart"
-         data-brand="larabar"
-         data-price="12.17"
-         data-percent="16.0"
-         data-deal-count="1"
-         data-tier="strong">
-        
-        <div class="card-image-wrap">
-            
-        <div class="card-carousel card-carousel--single" data-slide-count="1">
-            <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Chocolate Chip Cookie"><a href="https://www.walmart.com/ip/Larabar-Chocolate-Chip-Cookie-Dough-Mini-Bars-Gluten-Free-Vegan-Bar-20-ct/415045248?classType=VARIANT&amp;from=/search" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/Larabar-Chocolate-Chip-Cookie-Dough-Mini-Bars-Gluten-Free-Vegan-Bar-20-ct_099f7a33-c679-4730-ace9-92ea4c4351bd.9170b1c022827f81d698a905b4e3c548.jpeg?odnHeight=576&amp;odnWidth=576&amp;odnBg=FFFFFF" alt="Chocolate Chip Cookie" class="card-image" loading="lazy"/></a></div>
-            </div>
-            
-            <div class="card-carousel-caption">Chocolate Chip Cookie</div>
-        </div>
-    
-            <div class="card-category-tag">Bars</div>
-            <div class='pack-pill'><span class='pack-count'>20</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-protein'>💪 Strong</div>
-        </div>
-        <div class="card-content">
-            <div class="card-pricing">
-                <span class='old-price'>$14.49</span>
-                <span class="new-price">$12.17</span>
-                <span class="percent-off">16% OFF</span>
-            </div>
-            <div class="card-title">Larabar Minis</div>
-            
-            <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
-                
-            </div>
-            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Larabar-Chocolate-Chip-Cookie-Dough-Mini-Bars-Gluten-Free-Vegan-Bar-20-ct/415045248?classType=VARIANT&amp;from=/search" target="_blank" rel="noopener noreferrer">
-                View on Walmart.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card card-tier-strong"
-         data-section="food"
          data-category="chips &amp; crunchy"
          data-retailer="walmart"
          data-brand="quest"
@@ -3467,11 +3729,11 @@
 
     <div class="card card-tier-strong"
          data-section="food"
-         data-category="chips &amp; crunchy"
+         data-category="bars"
          data-retailer="walmart"
-         data-brand="quest"
-         data-price="8.0"
-         data-percent="15.6"
+         data-brand="larabar"
+         data-price="12.21"
+         data-percent="15.7"
          data-deal-count="1"
          data-tier="strong">
         
@@ -3479,29 +3741,29 @@
             
         <div class="card-carousel card-carousel--single" data-slide-count="1">
             <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Pizza Flavor"><a href="https://www.walmart.com/ip/Quest-Tortilla-Style-Protein-Chips-with-19g-of-Protein-Pizza-Flavor-4-Count/15780952775" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/Quest-Tortilla-Style-Protein-Chips-with-19g-of-Protein-Pizza-Flavor-4-Count_49617bcc-e947-4dc0-b589-62afe6c1d28c.8ec7edd9228866acd739fd1d5214e39c.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Pizza Flavor" class="card-image" loading="lazy"/></a></div>
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Chocolate Chip Cookie"><a href="https://www.walmart.com/ip/Larabar-Chocolate-Chip-Cookie-Dough-Mini-Bars-Gluten-Free-Vegan-Bar-20-ct/415045248?classType=VARIANT&amp;from=/search" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/Larabar-Chocolate-Chip-Cookie-Dough-Mini-Bars-Gluten-Free-Vegan-Bar-20-ct_099f7a33-c679-4730-ace9-92ea4c4351bd.9170b1c022827f81d698a905b4e3c548.jpeg?odnHeight=576&amp;odnWidth=576&amp;odnBg=FFFFFF" alt="Chocolate Chip Cookie" class="card-image" loading="lazy"/></a></div>
             </div>
             
-            <div class="card-carousel-caption">Pizza Flavor</div>
+            <div class="card-carousel-caption">Chocolate Chip Cookie</div>
         </div>
     
-            <div class="card-category-tag">Chips &amp; Crunchy</div>
-            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
+            <div class="card-category-tag">Bars</div>
+            <div class='pack-pill'><span class='pack-count'>20</span> <span class='pack-unit'>bars</span></div>
             <div class='badge badge-protein'>💪 Strong</div>
         </div>
         <div class="card-content">
             <div class="card-pricing">
-                <span class='old-price'>$9.48</span>
-                <span class="new-price">$8.00</span>
+                <span class='old-price'>$14.49</span>
+                <span class="new-price">$12.21</span>
                 <span class="percent-off">16% OFF</span>
             </div>
-            <div class="card-title">Quest Protein Chips</div>
+            <div class="card-title">Larabar Minis</div>
             
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
             </div>
-            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Quest-Tortilla-Style-Protein-Chips-with-19g-of-Protein-Pizza-Flavor-4-Count/15780952775" target="_blank" rel="noopener noreferrer">
+            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Larabar-Chocolate-Chip-Cookie-Dough-Mini-Bars-Gluten-Free-Vegan-Bar-20-ct/415045248?classType=VARIANT&amp;from=/search" target="_blank" rel="noopener noreferrer">
                 View on Walmart.com
             </a>
         </div>
@@ -3641,49 +3903,6 @@
             </div>
             <a class="view-button view-kroger" href="https://www.kroger.com/p/pure-protein-chocolate-peanut-butter-protein-bars/0074982613887" target="_blank" rel="noopener noreferrer">
                 View on Kroger.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card card-tier-strong"
-         data-section="food"
-         data-category="bars"
-         data-retailer="walmart"
-         data-brand="rxbar"
-         data-price="22.85"
-         data-percent="15.0"
-         data-deal-count="1"
-         data-tier="strong">
-        
-        <div class="card-image-wrap">
-            
-        <div class="card-carousel card-carousel--single" data-slide-count="1">
-            <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Vanilla Almond"><a href="https://www.walmart.com/ip/RXBAR-Gluten-Free-Vanilla-Almond-Chewy-Protein-Bars-Gluten-Free-Ready-to-Eat-Protein-Snack-9-15-oz-5-Count/15346073814" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/3-pack-RXBAR-Gluten-Free-Vanilla-Almond-Chewy-Protein-Bars-Gluten-Free-Ready-to-Eat-Protein-Snack-9-15-oz-5-Count_6948c078-a6ec-4319-be34-e338dfbb6543.a8ddd75c5619cba5bc2de60e084ac50d.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Vanilla Almond" class="card-image" loading="lazy"/></a></div>
-            </div>
-            
-            <div class="card-carousel-caption">Vanilla Almond</div>
-        </div>
-    
-            <div class="card-category-tag">Bars</div>
-            <div class='pack-pill'><span class='pack-count'>15</span> <span class='pack-unit'>bars</span></div>
-            <div class='badge badge-protein'>💪 Strong</div>
-        </div>
-        <div class="card-content">
-            <div class="card-pricing">
-                <span class='old-price'>$26.88</span>
-                <span class="new-price">$22.85</span>
-                <span class="percent-off">15% OFF</span>
-            </div>
-            <div class="card-title">RXBAR</div>
-            
-            <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
-                
-            </div>
-            <a class="view-button view-walmart" href="https://www.walmart.com/ip/RXBAR-Gluten-Free-Vanilla-Almond-Chewy-Protein-Bars-Gluten-Free-Ready-to-Eat-Protein-Snack-9-15-oz-5-Count/15346073814" target="_blank" rel="noopener noreferrer">
-                View on Walmart.com
             </a>
         </div>
     </div>
@@ -4754,6 +4973,49 @@
     <div class="card card-tier-strong"
          data-section="food"
          data-category="bars"
+         data-retailer="walmart"
+         data-brand="quest"
+         data-price="8.49"
+         data-percent="10.3"
+         data-deal-count="1"
+         data-tier="strong">
+        
+        <div class="card-image-wrap">
+            
+        <div class="card-carousel card-carousel--single" data-slide-count="1">
+            <div class="card-carousel-stage">
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Birthday Cake"><a href="https://www.walmart.com/ip/Quest-Crispy-Hero-Protein-Bar-Birthday-Cake-Flavor-Low-Sugar-4-Count/5727669028" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/Quest-Crispy-Hero-Protein-Bar-Birthday-Cake-Flavor-Low-Sugar-4-Count_1979f8c2-7c0c-4730-9e87-134ba4576451.5c7d50baac593be030f702c6e7b71557.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Birthday Cake" class="card-image" loading="lazy"/></a></div>
+            </div>
+            
+            <div class="card-carousel-caption">Birthday Cake</div>
+        </div>
+    
+            <div class="card-category-tag">Bars</div>
+            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
+            <div class='badge badge-protein'>💪 Strong</div>
+        </div>
+        <div class="card-content">
+            <div class="card-pricing">
+                <span class='old-price'>$9.47</span>
+                <span class="new-price">$8.49</span>
+                <span class="percent-off">10% OFF</span>
+            </div>
+            <div class="card-title">Quest Hero Protein Bar</div>
+            
+            <div class="card-footer">
+                <div class='availability both'>In-store & online</div>
+                
+            </div>
+            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Quest-Crispy-Hero-Protein-Bar-Birthday-Cake-Flavor-Low-Sugar-4-Count/5727669028" target="_blank" rel="noopener noreferrer">
+                View on Walmart.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card card-tier-strong"
+         data-section="food"
+         data-category="bars"
          data-retailer="kroger"
          data-brand="kind"
          data-price="6.29"
@@ -4893,20 +5155,20 @@
          data-brand="kind"
          data-price="6.73"
          data-percent="10.0"
-         data-deal-count="6"
+         data-deal-count="5"
          data-tier="strong">
         
         <div class="card-image-wrap">
             
-        <div class="card-carousel" data-slide-count="6">
+        <div class="card-carousel" data-slide-count="5">
             <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Blueberry Almond Pecan"><a href="https://www.walmart.com/ip/KIND-Milkolate-Peanut-Butter-Core-Bars-8-4-OZ/18237911406?classType=REGULAR&amp;athbdg=L1300&amp;from=/search" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/KIND-Milkolate-Peanut-Butter-Core-Bars-8-4-OZ_cda23f90-705b-4e0b-87db-695b62e413e8.440ef6a910e99560b68ad3d6cc8dfad9.png?odnHeight=576&amp;odnWidth=576&amp;odnBg=FFFFFF" alt="Blueberry Almond Pecan" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Caramel Almond &amp; Sea Salt"><a href="https://www.walmart.com/ip/KIND-Gluten-Free-Caramel-Almond-Sea-Salt-Snack-Bars-1-4-oz-6-Count/326476583?classType=VARIANT&amp;athbdg=L1300&amp;from=/search" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/KIND-Gluten-Free-Caramel-Almond-Sea-Salt-Snack-Bars-1-4-oz-6-Count_391140a4-5c1a-4fa5-906b-bdebc2c7f2be.dc0d9a6663ed85a03d3b3a575cde885e.jpeg?odnHeight=576&amp;odnWidth=576&amp;odnBg=FFFFFF" alt="Caramel Almond &amp; Sea Salt" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="2" data-flavor-name="Cranberry Almond"><a href="https://www.walmart.com/ip/KIND-Gluten-Free-Cranberry-Almond-Snack-Bars-1-4-oz-6-Count/957100723?classType=VARIANT&amp;athbdg=L1300&amp;from=/search" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/KIND-Gluten-Free-Cranberry-Almond-Snack-Bars-1-4-oz-6-Count_dbaec517-d71b-43c4-90c0-22f97914b5d1.747ad6cca8581d5b40795161a2fa7ad2.jpeg?odnHeight=576&amp;odnWidth=576&amp;odnBg=FFFFFF" alt="Cranberry Almond" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="3" data-flavor-name="Dark Chocolate Cherry Cashew"><a href="https://www.walmart.com/ip/KIND-Gluten-Free-Dark-Chocolate-Cherry-Cashew-Snack-Bars-1-4-oz-6-Count/156925359?classType=VARIANT&amp;athbdg=L1300&amp;from=/search" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/KIND-Gluten-Free-Dark-Chocolate-Cherry-Cashew-Snack-Bars-1-4-oz-6-Count_2e0e7755-536e-47c0-9d9a-ce378b7f24bf.14f8a436d79bec344883b7d46235b1c5.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Dark Chocolate Cherry Cashew" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="4" data-flavor-name="Mango Pineapple"><a href="https://www.walmart.com/ip/KIND-Mango-Pineapple-Nut-Core-Bars-8-4-OZ/16243821344?classType=VARIANT&amp;athbdg=L1300&amp;from=/search" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/KIND-Mango-Pineapple-Nut-Core-Bars-8-4-OZ_d57e58b1-6d86-4179-a13c-1fff34016d2d.fdea48c50ffa5a4e3ada01094c907f5a.jpeg?odnHeight=576&amp;odnWidth=576&amp;odnBg=FFFFFF" alt="Mango Pineapple" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="5" data-flavor-name="Peanut Butter Dark Chocolate"><a href="https://www.walmart.com/ip/KIND-Gluten-Free-Peanut-Butter-Dark-Chocolate-Snack-Bars-1-4-oz-6-Count/594246325?classType=VARIANT&amp;from=/search" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/KIND-Gluten-Free-Peanut-Butter-Dark-Chocolate-Snack-Bars-1-4-oz-6-Count_113643ec-bd58-4193-bc52-15ebba3804dc.f6641423789c7576ed6eef68d954c928.jpeg?odnHeight=576&amp;odnWidth=576&amp;odnBg=FFFFFF" alt="Peanut Butter Dark Chocolate" class="card-image" loading="lazy"/></a></div>
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Caramel Almond &amp; Sea Salt"><a href="https://www.walmart.com/ip/KIND-Gluten-Free-Caramel-Almond-Sea-Salt-Snack-Bars-1-4-oz-6-Count/326476583?classType=VARIANT&amp;athbdg=L1300&amp;from=/search" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/KIND-Gluten-Free-Caramel-Almond-Sea-Salt-Snack-Bars-1-4-oz-6-Count_391140a4-5c1a-4fa5-906b-bdebc2c7f2be.dc0d9a6663ed85a03d3b3a575cde885e.jpeg?odnHeight=576&amp;odnWidth=576&amp;odnBg=FFFFFF" alt="Caramel Almond &amp; Sea Salt" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Cranberry Almond"><a href="https://www.walmart.com/ip/KIND-Gluten-Free-Cranberry-Almond-Snack-Bars-1-4-oz-6-Count/957100723?classType=VARIANT&amp;athbdg=L1300&amp;from=/search" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/KIND-Gluten-Free-Cranberry-Almond-Snack-Bars-1-4-oz-6-Count_dbaec517-d71b-43c4-90c0-22f97914b5d1.747ad6cca8581d5b40795161a2fa7ad2.jpeg?odnHeight=576&amp;odnWidth=576&amp;odnBg=FFFFFF" alt="Cranberry Almond" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="2" data-flavor-name="Dark Chocolate Cherry Cashew"><a href="https://www.walmart.com/ip/KIND-Gluten-Free-Dark-Chocolate-Cherry-Cashew-Snack-Bars-1-4-oz-6-Count/156925359?classType=VARIANT&amp;athbdg=L1300&amp;from=/search" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/KIND-Gluten-Free-Dark-Chocolate-Cherry-Cashew-Snack-Bars-1-4-oz-6-Count_2e0e7755-536e-47c0-9d9a-ce378b7f24bf.14f8a436d79bec344883b7d46235b1c5.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Dark Chocolate Cherry Cashew" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="3" data-flavor-name="Mango Pineapple"><a href="https://www.walmart.com/ip/KIND-Mango-Pineapple-Nut-Core-Bars-8-4-OZ/16243821344?classType=VARIANT&amp;athbdg=L1300&amp;from=/search" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/KIND-Mango-Pineapple-Nut-Core-Bars-8-4-OZ_d57e58b1-6d86-4179-a13c-1fff34016d2d.fdea48c50ffa5a4e3ada01094c907f5a.jpeg?odnHeight=576&amp;odnWidth=576&amp;odnBg=FFFFFF" alt="Mango Pineapple" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="4" data-flavor-name="Peanut Butter Dark Chocolate"><a href="https://www.walmart.com/ip/KIND-Gluten-Free-Peanut-Butter-Dark-Chocolate-Snack-Bars-1-4-oz-6-Count/594246325?classType=VARIANT&amp;from=/search" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/KIND-Gluten-Free-Peanut-Butter-Dark-Chocolate-Snack-Bars-1-4-oz-6-Count_113643ec-bd58-4193-bc52-15ebba3804dc.f6641423789c7576ed6eef68d954c928.jpeg?odnHeight=576&amp;odnWidth=576&amp;odnBg=FFFFFF" alt="Peanut Butter Dark Chocolate" class="card-image" loading="lazy"/></a></div>
             </div>
             
             <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
             <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
         
-            <div class="card-carousel-caption">Blueberry Almond Pecan</div>
+            <div class="card-carousel-caption">Caramel Almond &amp; Sea Salt</div>
         </div>
     
             <div class="card-category-tag">Bars</div>
@@ -5114,6 +5376,52 @@
          data-section="drinks"
          data-category="rtd protein shake"
          data-retailer="walmart"
+         data-brand="core power"
+         data-price="19.01"
+         data-percent="10.0"
+         data-deal-count="2"
+         data-tier="strong">
+        
+        <div class="card-image-wrap">
+            
+        <div class="card-carousel" data-slide-count="2">
+            <div class="card-carousel-stage">
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Strawberry"><a href="https://www.walmart.com/ip/Core-Power-Elite-High-Protein-Strawberry-Protein-Shake-Single-Serve-14-fl-oz-Bottle/16932700238" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/4-pack-Core-Power-Elite-High-Protein-Strawberry-Protein-Shake-Single-Serve-14-fl-oz-Bottle_b829d41a-b0b0-4ee8-a6f0-50a667fb18f8.d7082c02349e3756d13af157ee32b131.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Strawberry" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Vanilla"><a href="https://www.walmart.com/ip/Core-Power-Elite-High-Protein-Shake-with-42g-Protein-by-fairlife-Milk-Vanilla-14-fl-oz/16932700254" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/4-pack-Core-Power-Elite-High-Protein-Shake-with-42g-Protein-by-fairlife-Milk-Vanilla-14-fl-oz_bae86cd3-61bf-40d9-ada1-153b98e3b4ce.4240ce23cbf918c63c734b32aa63eccc.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Vanilla" class="card-image" loading="lazy"/></a></div>
+            </div>
+            
+            <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
+            <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
+        
+            <div class="card-carousel-caption">Strawberry</div>
+        </div>
+    
+            <div class="card-category-tag">RTD Protein Shake</div>
+            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-protein'>💪 Strong</div>
+        </div>
+        <div class="card-content">
+            <div class="card-pricing">
+                <span class='old-price'>$21.12</span>
+                <span class="new-price">$19.01</span>
+                <span class="percent-off">10% OFF</span>
+            </div>
+            <div class="card-title">Core Power Elite Protein Shake</div>
+            
+            <div class="card-footer">
+                <div class='availability both'>In-store & online</div>
+                
+            </div>
+            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Core-Power-Elite-High-Protein-Shake-with-42g-Protein-by-fairlife-Milk-Vanilla-14-fl-oz/16932700254" target="_blank" rel="noopener noreferrer">
+                View on Walmart.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card card-tier-strong"
+         data-section="drinks"
+         data-category="rtd protein shake"
+         data-retailer="walmart"
          data-brand="pure protein"
          data-price="22.87"
          data-percent="10.0"
@@ -5160,16 +5468,19 @@
          data-brand="rxbar"
          data-price="24.19"
          data-percent="10.0"
-         data-deal-count="1"
+         data-deal-count="2"
          data-tier="strong">
         
         <div class="card-image-wrap">
             
-        <div class="card-carousel card-carousel--single" data-slide-count="1">
+        <div class="card-carousel" data-slide-count="2">
             <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Chocolate Sea Salt"><a href="https://www.walmart.com/ip/RXBAR-Gluten-Free-Chocolate-Sea-Salt-Chewy-Protein-Bars-Ready-to-Eat-Protein-Snack-9-1-oz-5-Count/15353971782" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/3-pack-RXBAR-Gluten-Free-Chocolate-Sea-Salt-Chewy-Protein-Bars-Ready-to-Eat-Protein-Snack-9-1-oz-5-Count_b80ae2bd-701f-4775-aaf9-1e6811132d7a.27e936615bb096942f15ebc8b5581eea.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Chocolate Sea Salt" class="card-image" loading="lazy"/></a></div>
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Chocolate Sea Salt"><a href="https://www.walmart.com/ip/RXBAR-Gluten-Free-Chocolate-Sea-Salt-Chewy-Protein-Bars-Ready-to-Eat-Protein-Snack-9-1-oz-5-Count/15353971782" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/3-pack-RXBAR-Gluten-Free-Chocolate-Sea-Salt-Chewy-Protein-Bars-Ready-to-Eat-Protein-Snack-9-1-oz-5-Count_b80ae2bd-701f-4775-aaf9-1e6811132d7a.27e936615bb096942f15ebc8b5581eea.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Chocolate Sea Salt" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Vanilla Almond"><a href="https://www.walmart.com/ip/RXBAR-Gluten-Free-Vanilla-Almond-Chewy-Protein-Bars-Gluten-Free-Ready-to-Eat-Protein-Snack-9-15-oz-5-Count/15346073814" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/3-pack-RXBAR-Gluten-Free-Vanilla-Almond-Chewy-Protein-Bars-Gluten-Free-Ready-to-Eat-Protein-Snack-9-15-oz-5-Count_6948c078-a6ec-4319-be34-e338dfbb6543.a8ddd75c5619cba5bc2de60e084ac50d.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Vanilla Almond" class="card-image" loading="lazy"/></a></div>
             </div>
             
+            <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
+            <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
+        
             <div class="card-carousel-caption">Chocolate Sea Salt</div>
         </div>
     
@@ -5236,49 +5547,6 @@
                 
             </div>
             <a class="view-button view-walmart" href="https://www.walmart.com/ip/Aloha-Peanut-Butter-Cup-Protein-Bars-5-Pk/15320016567" target="_blank" rel="noopener noreferrer">
-                View on Walmart.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card card-tier-strong"
-         data-section="food"
-         data-category="protein powder"
-         data-retailer="walmart"
-         data-brand="dymatize"
-         data-price="38.22"
-         data-percent="10.0"
-         data-deal-count="1"
-         data-tier="strong">
-        
-        <div class="card-image-wrap">
-            
-        <div class="card-carousel card-carousel--single" data-slide-count="1">
-            <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Cinnamon Cereal"><a href="https://www.walmart.com/ip/Dymatize-ISO100-Hydrolyzed-Whey-Isolate-Protein-Powder-Cookies-Cream-20-Servings/7983463398" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/Dymatize-ISO100-Hydrolyzed-Whey-Isolate-Protein-Powder-25g-Protein-Cinnamon-Cereal-20-Servings_6926bda8-b9e8-4f51-bb67-4472a4189cd7.5a8127644783a44678df6fbfae8d8ca4.jpeg?odnHeight=573&amp;odnWidth=573&amp;odnBg=FFFFFF" alt="Cinnamon Cereal" class="card-image" loading="lazy"/></a></div>
-            </div>
-            
-            <div class="card-carousel-caption">Cinnamon Cereal</div>
-        </div>
-    
-            <div class="card-category-tag">Protein Powder</div>
-            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-protein'>💪 Strong</div>
-        </div>
-        <div class="card-content">
-            <div class="card-pricing">
-                <span class='old-price'>$42.48</span>
-                <span class="new-price">$38.22</span>
-                <span class="percent-off">10% OFF</span>
-            </div>
-            <div class="card-title">Dymatize ISO100 Whey Isolate Protein Powder</div>
-            
-            <div class="card-footer">
-                <div class='availability in-store'>In-store</div>
-                
-            </div>
-            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Dymatize-ISO100-Hydrolyzed-Whey-Isolate-Protein-Powder-Cookies-Cream-20-Servings/7983463398" target="_blank" rel="noopener noreferrer">
                 View on Walmart.com
             </a>
         </div>
@@ -5694,20 +5962,20 @@
          data-brand="chomps"
          data-price="16.99"
          data-percent="8.1"
-         data-deal-count="5"
+         data-deal-count="6"
          data-tier="sale">
         
         <div class="card-image-wrap">
             
-        <div class="card-carousel" data-slide-count="5">
+        <div class="card-carousel" data-slide-count="6">
             <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Original Beef"><a href="https://www.target.com/p/chomps-original-beef-8ct-9-2oz/-/A-87802842#lnk=sametab" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_901cb0e0-c0d8-435b-8e21-45a9f2ff2666?wid=1200&amp;hei=1200&amp;qlt=80" alt="Original Beef" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Original Turkey"><a href="https://www.target.com/p/chomps-original-turkey-sticks-8ct-9-2oz/-/A-90142217#lnk=sametab" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_90891466-e663-4c67-ae9b-d6c49bba5845?wid=1200&amp;hei=1200&amp;qlt=80" alt="Original Turkey" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="2" data-flavor-name="Sea Salt"><a href="https://www.target.com/p/chomps-sea-salt-beef-sticks-8ct-9-2oz/-/A-90142216#lnk=sametab" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_5d66c6a7-15e5-4a94-9ce1-87bbdabb554a?wid=1200&amp;hei=1200&amp;qlt=80" alt="Sea Salt" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="3" data-flavor-name="Smoky BBQ"><a href="https://www.target.com/p/chomps-snack-sticks-smoky-bbq-beef-sticks-9-2oz-8ct/-/A-93922915#lnk=sametab" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_68f8a966-4192-4fb6-b5d2-66dbed7f141f?wid=1200&amp;hei=1200&amp;qlt=80" alt="Smoky BBQ" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="4" data-flavor-name="Taco"><a href="https://www.target.com/p/chomps-snack-sticks-taco-beef-sticks-9-2oz-8ct/-/A-93612504#lnk=sametab" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_a3f62e48-bca6-4652-a33c-aac019df2664?wid=1200&amp;hei=1200&amp;qlt=80" alt="Taco" class="card-image" loading="lazy"/></a></div>
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Jalapeno Beef"><a href="https://www.target.com/p/chomps-jalapeno-beef-8ct-9-2oz/-/A-87802843#lnk=sametab" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_74ee330a-7d87-4219-b452-7fd5bed099f2?wid=1200&amp;hei=1200&amp;qlt=80" alt="Jalapeno Beef" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Original Beef"><a href="https://www.target.com/p/chomps-original-beef-8ct-9-2oz/-/A-87802842#lnk=sametab" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_901cb0e0-c0d8-435b-8e21-45a9f2ff2666?wid=1200&amp;hei=1200&amp;qlt=80" alt="Original Beef" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="2" data-flavor-name="Original Turkey"><a href="https://www.target.com/p/chomps-original-turkey-sticks-8ct-9-2oz/-/A-90142217#lnk=sametab" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_90891466-e663-4c67-ae9b-d6c49bba5845?wid=1200&amp;hei=1200&amp;qlt=80" alt="Original Turkey" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="3" data-flavor-name="Sea Salt"><a href="https://www.target.com/p/chomps-sea-salt-beef-sticks-8ct-9-2oz/-/A-90142216#lnk=sametab" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_5d66c6a7-15e5-4a94-9ce1-87bbdabb554a?wid=1200&amp;hei=1200&amp;qlt=80" alt="Sea Salt" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="4" data-flavor-name="Smoky BBQ"><a href="https://www.target.com/p/chomps-snack-sticks-smoky-bbq-beef-sticks-9-2oz-8ct/-/A-93922915#lnk=sametab" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_68f8a966-4192-4fb6-b5d2-66dbed7f141f?wid=1200&amp;hei=1200&amp;qlt=80" alt="Smoky BBQ" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="5" data-flavor-name="Taco"><a href="https://www.target.com/p/chomps-snack-sticks-taco-beef-sticks-9-2oz-8ct/-/A-93612504#lnk=sametab" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_a3f62e48-bca6-4652-a33c-aac019df2664?wid=1200&amp;hei=1200&amp;qlt=80" alt="Taco" class="card-image" loading="lazy"/></a></div>
             </div>
             
             <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
             <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
         
-            <div class="card-carousel-caption">Original Beef</div>
+            <div class="card-carousel-caption">Jalapeno Beef</div>
         </div>
     
             <div class="card-category-tag">Meat Snack</div>
@@ -6355,6 +6623,49 @@
 
     <div class="card card-tier-sale"
          data-section="food"
+         data-category="bars"
+         data-retailer="walmart"
+         data-brand="quest"
+         data-price="8.89"
+         data-percent="6.1"
+         data-deal-count="1"
+         data-tier="sale">
+        
+        <div class="card-image-wrap">
+            
+        <div class="card-carousel card-carousel--single" data-slide-count="1">
+            <div class="card-carousel-stage">
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Strawberry Shortcake"><a href="https://www.walmart.com/ip/Quest-Nutrition-20g-nbsp-Protein-Bar-Strawberry-Shortcake-4pk-2-12oz/14941900761" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/asr/07880d75-36f5-44ca-a9e5-52ebcd8d94b9.568164c64cea53d360853c36b09199b0.png?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Strawberry Shortcake" class="card-image" loading="lazy"/></a></div>
+            </div>
+            
+            <div class="card-carousel-caption">Strawberry Shortcake</div>
+        </div>
+    
+            <div class="card-category-tag">Bars</div>
+            <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
+            <div class='badge badge-everyday'>🏷️ On Sale</div>
+        </div>
+        <div class="card-content">
+            <div class="card-pricing">
+                <span class='old-price'>$9.47</span>
+                <span class="new-price">$8.89</span>
+                <span class="percent-off">6% OFF</span>
+            </div>
+            <div class="card-title">Quest Protein Bar</div>
+            
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Quest-Nutrition-20g-nbsp-Protein-Bar-Strawberry-Shortcake-4pk-2-12oz/14941900761" target="_blank" rel="noopener noreferrer">
+                View on Walmart.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card card-tier-sale"
+         data-section="food"
          data-category="meat snack"
          data-retailer="kroger"
          data-brand="chomps"
@@ -6506,7 +6817,7 @@
                 </p>
                 <p class="sb-info-text" style="margin-top: 8px;">
                     So I built SnackBuddy to do one simple thing:
-                    <strong>track the snacks and drinks people already buy and call out real price drops</strong> —
+                    <strong>track the snacks and drinks people already buy and call out real price drops</strong>,
                     so you can stock up at the right time or try something new when it’s cheaper.
                 </p>
             </div>
@@ -6523,11 +6834,11 @@
                 </p>
                 <p class="sb-info-text" style="margin-top: 8px;">
                     At its core, it’s pretty simple: we keep an eye on specific product pages and pay attention when prices move.
-                    When something drops, it shows up here so more people can take advantage of it — without having to constantly
+                    When something drops, it shows up here so more people can take advantage of it, without having to constantly
                     check themselves.
                 </p>
                 <p class="sb-info-text" style="margin-top: 8px;">
-                    Don’t see a product or retailer you want tracked yet? Let me know — the list is expanding over time.
+                    Don’t see a product or retailer you want tracked yet? Let me know, the list is expanding over time.
                 </p>
                 <p class="sb-note">
                     Note: Prices and availability can vary by location, especially for in-store items.
@@ -6542,21 +6853,21 @@
             <div class="sb-info-card">
                 <h2 class="sb-info-title">How We Pick Snacks</h2>
                 <p class="sb-info-text">
-                    Not everything that calls itself healthy earns a spot here. Every product is manually reviewed — we&apos;re looking for real protein content relative to calories, low added sugar, and meaningful fiber where it applies.
+                    Not everything that calls itself healthy earns a spot here. Every product is manually reviewed, we&apos;re looking for real protein content relative to calories, low added sugar, and meaningful fiber where it applies.
                 </p>
                 <p class="sb-info-text" style="margin-top: 8px;">
-                    We&apos;re not here to be perfect. SnackBuddy isn&apos;t about finding the most aggressive diet food on the shelf. It&apos;s about finding things that are genuinely better than the default — snacks people actually want to eat, at a price worth buying them.
+                    We&apos;re not here to be perfect. SnackBuddy isn&apos;t about finding the most aggressive diet food on the shelf. It&apos;s about finding things that are genuinely better than the default, snacks people actually want to eat, at a price worth buying them.
                 </p>
                 <p class="sb-info-text" style="margin-top: 8px;">
-                    Don&apos;t see something you think belongs here? Let us know — the list is always growing.
+                    Don&apos;t see something you think belongs here? Let us know, the list is always growing.
                 </p>
             </div>
         </section>
 
             <div class="sb-info-card" id="subscribe">
-                <h2 class="sb-info-title">Get Daily Deal Emails</h2>
+                <h2 class="sb-info-title">Don’t miss the ones worth a trip</h2>
                 <p class="sb-info-text">
-                    Want a quick digest of the best finds? Drop your email below.
+                    We’ll email when the good stuff drops. Your filters stay either way.
                 </p>
 
                 <form class="sb-subscribe-form" id="sb-subscribe-form" novalidate>
@@ -6569,7 +6880,7 @@
                         placeholder="you@email.com"
                         required
                     />
-                    <button type="submit" class="sb-subscribe-btn">Get Daily Deal Emails</button>
+                    <button type="submit" class="sb-subscribe-btn">Keep me posted</button>
                 </form>
                 <p class="sb-subscribe-status" id="sb-subscribe-status" aria-live="polite"></p>
 
@@ -6579,7 +6890,7 @@
                 </a>
 
                 <div class="sb-note">
-                    You’ll get a quick daily digest when the best deals are worth grabbing. No spam—ever.
+                    No spam. Unsubscribe anytime.
                 </div>
             </div>
         </section>
@@ -7153,7 +7464,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const body = new URLSearchParams();
     body.append("email", cleaned);
     body.append("utm_source", "snackbuddy");
-    body.append("utm_medium", "welcome");
+    body.append("utm_medium", (meta && meta.medium) ? String(meta.medium) : "welcome");
     const otherStore = meta && meta.otherStore ? String(meta.otherStore).trim() : "";
     if (otherStore) {
       // Shows up in beehiiv subscriber attribution; not a full tally dashboard.
@@ -7184,7 +7495,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       try {
         const prefs = loadWelcomePrefs() || {};
-        await subscribeBeehiiv(email, { otherStore: prefs.otherStore || "" });
+        await subscribeBeehiiv(email, { otherStore: prefs.otherStore || "", medium: "footer" });
         if (statusEl) statusEl.textContent = "You're in — check your inbox for a confirm email.";
         if (input) input.value = "";
         const next = Object.assign({ completed: true, retailers: [], categories: [] }, prefs);

@@ -378,13 +378,16 @@ def fire_pill_flames_svg() -> str:
 
 
 def build_diamond_sparkles_html(seed_key: str) -> str:
-    """Per-card randomized ✦ sparkles — stable layout for a given deal, varied across cards."""
+    """Per-card randomized ✦ sparkles — denser + faster so diamonds always shimmer."""
     rng = random.Random(seed_key)
-    count = rng.randint(5, 9)
+    count = rng.randint(10, 16)
+    # Weight multi-flash patterns so something is usually twinkling
     twinkle_anims = (
         "diamond-twinkle-a",
         "diamond-twinkle-b",
+        "diamond-twinkle-b",
         "diamond-twinkle-c",
+        "diamond-twinkle-d",
         "diamond-twinkle-d",
     )
     timing_fns = ("linear",)
@@ -395,18 +398,18 @@ def build_diamond_sparkles_html(seed_key: str) -> str:
 
     stars = []
     for _ in range(count):
-        width, height = sparkle_size(rng.randint(14, 30))
+        width, height = sparkle_size(rng.randint(12, 28))
 
-        top = rng.uniform(5, 86)
+        top = rng.uniform(4, 88)
         if rng.random() < 0.5:
-            horizontal = f"left:{rng.uniform(3, 84):.1f}%;"
+            horizontal = f"left:{rng.uniform(2, 86):.1f}%;"
         else:
-            horizontal = f"right:{rng.uniform(3, 84):.1f}%;left:auto;"
+            horizontal = f"right:{rng.uniform(2, 86):.1f}%;left:auto;"
 
         anim = rng.choice(twinkle_anims)
-        duration = rng.uniform(5.0, 11.5)
-        delay = rng.uniform(0, 9.5)
-        peak = rng.uniform(0.75, 1.2)
+        duration = rng.uniform(2.86, 5.28)  # ~10% slower than 2.6–4.8
+        delay = rng.uniform(0, 3.1)
+        peak = rng.uniform(0.85, 1.35)
 
         style = (
             f"width:{width:.0f}px;height:{height:.0f}px;"
@@ -638,7 +641,7 @@ def build_card_html(deal):
             import hashlib
             flicker_seed = f"{retailer_raw}|{name}|{new_price_val}"
             flicker_delay = (
-                int(hashlib.md5(flicker_seed.encode()).hexdigest()[:4], 16) % 80
+                int(hashlib.md5(flicker_seed.encode()).hexdigest()[:4], 16) % 75
             ) / 10.0
             badge_html = (
                 f"<div class='{badge_class} badge-fire-pill'>"
@@ -650,9 +653,26 @@ def build_card_html(deal):
             badge_html = f"<div class='{badge_class}'>{badge_label}</div>"
 
     diamond_sparkles_html = ""
+    diamond_style_attr = ""
     if tier_name == "diamond":
+        import hashlib
         sparkle_seed = f"{retailer_raw}|{name}|{new_price_val}|{deal_count}"
         diamond_sparkles_html = build_diamond_sparkles_html(sparkle_seed)
+        # Unique sheen phase + duration per card so sweeps rarely align
+        h = int(
+            hashlib.md5(
+                f"{retailer_raw}|{name}|{new_price_val}|{deal_count}|sheen".encode()
+            ).hexdigest()[:8],
+            16,
+        )
+        sheen_duration = 4.4 + (h % 23) / 10.0  # 4.4–6.6s, drift apart over time
+        sheen_delay = ((h >> 8) % 1000) / 1000.0 * sheen_duration
+        badge_delay = ((h >> 16) % 1000) / 1000.0 * 2.8
+        diamond_style_attr = (
+            f' style="--diamond-sheen-delay:{sheen_delay:.3f}s;'
+            f'--diamond-sheen-duration:{sheen_duration:.2f}s;'
+            f'--diamond-badge-delay:{badge_delay:.3f}s"'
+        )
 
     category_tag_html = ""
     if category:
@@ -675,7 +695,7 @@ def build_card_html(deal):
             """
 
     return f"""
-    <div class="card {tier_class}"
+    <div class="card {tier_class}"{diamond_style_attr}
          data-section="{section_attr}"
          data-category="{category_attr}"
          data-retailer="{retailer_attr}"
@@ -940,7 +960,7 @@ def build_page_html(deals):
 .sb-filter-bar-section {{
   max-width: 1100px;
   margin: 10px auto 12px;
-  padding: 0 16px;
+  padding: 0 8px 0 4px;
   position: relative;
   z-index: 30;
 }}
@@ -948,7 +968,7 @@ def build_page_html(deals):
 .sb-filter-bar {{
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   min-width: 0;
 }}
 
@@ -958,8 +978,8 @@ def build_page_html(deals):
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   padding: 0;
   border: 1px solid #111827;
   border-radius: 999px;
@@ -973,8 +993,8 @@ def build_page_html(deals):
 }}
 
 .sb-filter-master-icon {{
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   display: block;
   color: #111827;
 }}
@@ -1005,21 +1025,30 @@ def build_page_html(deals):
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 3;
+  z-index: 4;
   flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  border: 1px solid var(--border-subtle);
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid #cbd5e1;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.96);
-  color: var(--text-main);
-  font-size: 20px;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 16px;
+  font-weight: 700;
   line-height: 1;
   cursor: pointer;
   display: none;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.14);
+  opacity: 1;
+}}
+
+.sb-filter-scroll-btn:hover,
+.sb-filter-scroll-btn:focus-visible {{
+  border-color: #94a3b8;
+  background: #f8fafc;
 }}
 
 .sb-filter-scroll-btn.is-visible {{
@@ -1027,11 +1056,11 @@ def build_page_html(deals):
 }}
 
 .sb-filter-scroll-prev {{
-  left: 0;
+  left: 2px;
 }}
 
 .sb-filter-scroll-next {{
-  right: 0;
+  right: 2px;
 }}
 
 .sb-filter-bar-scroll {{
@@ -1042,12 +1071,43 @@ def build_page_html(deals):
   align-items: center;
 }}
 
+/* Soft fade instead of hard cut-off when more pills sit off-screen */
+.sb-filter-bar-scroll.has-scroll-prev::before,
+.sb-filter-bar-scroll.has-scroll-next::after {{
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 20px;
+  z-index: 2;
+  pointer-events: none;
+}}
+
+.sb-filter-bar-scroll.has-scroll-prev::before {{
+  left: 0;
+  background: linear-gradient(to right, var(--bg) 15%, rgba(243, 244, 246, 0));
+}}
+
+.sb-filter-bar-scroll.has-scroll-next::after {{
+  right: 0;
+  background: linear-gradient(to left, var(--bg) 15%, rgba(243, 244, 246, 0));
+}}
+
 .sb-filter-bar-scroll.has-scroll-prev .sb-filter-bar-track {{
-  padding-left: 38px;
+  mask-image: linear-gradient(to right, transparent 0, #000 16px);
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 16px);
+  padding-left: 26px;
 }}
 
 .sb-filter-bar-scroll.has-scroll-next .sb-filter-bar-track {{
-  padding-right: 38px;
+  mask-image: linear-gradient(to left, transparent 0, #000 16px);
+  -webkit-mask-image: linear-gradient(to left, transparent 0, #000 16px);
+  padding-right: 26px;
+}}
+
+.sb-filter-bar-scroll.has-scroll-prev.has-scroll-next .sb-filter-bar-track {{
+  mask-image: linear-gradient(to right, transparent 0, #000 16px, #000 calc(100% - 16px), transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 16px, #000 calc(100% - 16px), transparent);
 }}
 
 .sb-filter-bar-track {{
@@ -1068,9 +1128,29 @@ def build_page_html(deals):
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
-  gap: 8px;
-  padding: 4px 2px;
+  gap: 6px;
+  padding: 4px 0;
   min-width: min-content;
+}}
+
+@media (max-width: 640px) {{
+  .sb-filter-bar-section {{
+    padding: 0 6px 0 2px;
+  }}
+
+  .sb-filter-bar {{
+    gap: 4px;
+  }}
+
+  .sb-filter-master {{
+    width: 38px;
+    height: 38px;
+  }}
+
+  .sb-filter-pill {{
+    padding: 9px 12px;
+    font-size: 13px;
+  }}
 }}
 
 .sb-filter-pill-wrap {{
@@ -1308,31 +1388,36 @@ def build_page_html(deals):
             padding: 18px 18px 14px;
             position: relative;
             overflow: hidden;
-            background: #ffffff;
+            background: linear-gradient(145deg, #e8f6ee 0%, #fafcfa 48%, #eef7f1 100%);
             color: #111827;
-            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
-            border: 1px solid #e5e7eb;
+            box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+            border: 1px solid #d8ebe0;
         }}
 
         /* wallpaper brand texture */
         .sb-hero-pattern {{
             position: absolute;
             inset: 0;
-            opacity: 0.16;
+            opacity: 0.30;
             background-image: url("assets/hero-wallpaper.png");
             background-repeat: repeat;
             background-size: 360px auto;
             background-position: top left;
-            filter: brightness(1.18) contrast(0.85);
+            /* Push muted grey doodles toward brand green */
+            filter: brightness(1.08) contrast(1.05) sepia(0.48) saturate(2.4) hue-rotate(68deg);
             pointer-events: none;
         }}
 
-        /* soft white wash so text stays high-contrast */
+        /* soft wash so text stays readable without killing the green */
         .sb-hero-bg::after {{
             content: "";
             position: absolute;
             inset: 0;
-            background: rgba(255, 255, 255, 0.44);
+            background: linear-gradient(
+                180deg,
+                rgba(255, 255, 255, 0.38) 0%,
+                rgba(247, 252, 249, 0.22) 100%
+            );
             pointer-events: none;
         }}
 
@@ -1363,6 +1448,38 @@ def build_page_html(deals):
             font-size: 14px;
             margin: 4px 0 10px;
             color: #374151;
+        }}
+
+        .sb-hero-tiers {{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 12px;
+            margin-top: 10px;
+            align-items: center;
+        }}
+
+        .sb-hero-tiers-label {{
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #64748b;
+            margin-right: 2px;
+        }}
+
+        .sb-hero-tier {{
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #475569;
+            letter-spacing: 0.01em;
+        }}
+
+        .sb-hero-tier-icon {{
+            font-size: 13px;
+            line-height: 1;
         }}
 
         .sb-hero-cta {{
@@ -1412,8 +1529,55 @@ def build_page_html(deals):
         .card-tier-diamond {{
             position: relative;
             overflow: hidden;
-            background-color: #eff6ff;
-            border-color: #93c5fd;
+            background: linear-gradient(165deg, #dbeafe 0%, #eff6ff 42%, #f8fbff 100%);
+            border-color: #60a5fa;
+            box-shadow:
+                0 0 0 1px rgba(59, 130, 246, 0.22),
+                0 10px 28px rgba(37, 99, 235, 0.16);
+        }}
+
+        /* Soft light sweep — unique delay + duration per card */
+        .card-tier-diamond::before {{
+            content: "";
+            position: absolute;
+            top: -30%;
+            bottom: -30%;
+            left: -40%;
+            width: 52%;
+            z-index: 4;
+            pointer-events: none;
+            background: linear-gradient(
+                105deg,
+                transparent 0%,
+                rgba(255, 255, 255, 0.03) 38%,
+                rgba(255, 255, 255, 0.16) 50%,
+                rgba(147, 197, 253, 0.08) 58%,
+                transparent 78%
+            );
+            transform: translateX(0) skewX(-14deg);
+            animation: diamond-sheen var(--diamond-sheen-duration, 5s) ease-in-out infinite;
+            animation-delay: var(--diamond-sheen-delay, 0s);
+        }}
+
+        @keyframes diamond-sheen {{
+            0% {{
+                transform: translateX(-30%) skewX(-14deg);
+                opacity: 0;
+            }}
+            8% {{
+                opacity: 0.85;
+            }}
+            28% {{
+                opacity: 0.85;
+            }}
+            40% {{
+                transform: translateX(280%) skewX(-14deg);
+                opacity: 0;
+            }}
+            100% {{
+                transform: translateX(280%) skewX(-14deg);
+                opacity: 0;
+            }}
         }}
 
         .diamond-sparkles {{
@@ -1429,7 +1593,7 @@ def build_page_html(deals):
             transform: scale(0.1);
             display: block;
             line-height: 0;
-            animation: diamond-twinkle-a 4s linear infinite;
+            animation: diamond-twinkle-a 3.5s linear infinite;
         }}
 
         .sparkle-svg {{
@@ -1446,7 +1610,7 @@ def build_page_html(deals):
             stroke-linejoin: miter;
             stroke-miterlimit: 8;
             paint-order: stroke fill;
-            filter: drop-shadow(0 0 3px rgba(37, 99, 235, 0.75));
+            filter: drop-shadow(0 0 4px rgba(37, 99, 235, 0.9));
         }}
 
         @keyframes diamond-twinkle-a {{
@@ -1454,19 +1618,35 @@ def build_page_html(deals):
                 opacity: 0;
                 transform: scale(0.05);
             }}
-            7% {{
-                opacity: 0.45;
+            8% {{
+                opacity: 0.55;
                 transform: scale(calc(var(--sparkle-peak, 1.15) * 0.45));
             }}
-            11% {{
+            14% {{
                 opacity: 1;
                 transform: scale(var(--sparkle-peak, 1.15));
             }}
-            15% {{
-                opacity: 0.45;
+            20% {{
+                opacity: 0.5;
                 transform: scale(calc(var(--sparkle-peak, 1.15) * 0.45));
             }}
-            19% {{
+            28% {{
+                opacity: 0;
+                transform: scale(0.05);
+            }}
+            55% {{
+                opacity: 0;
+                transform: scale(0.05);
+            }}
+            62% {{
+                opacity: 0.7;
+                transform: scale(calc(var(--sparkle-peak, 1.15) * 0.5));
+            }}
+            68% {{
+                opacity: 1;
+                transform: scale(calc(var(--sparkle-peak, 1.15) * 0.95));
+            }}
+            74% {{
                 opacity: 0;
                 transform: scale(0.05);
             }}
@@ -1477,39 +1657,51 @@ def build_page_html(deals):
                 opacity: 0;
                 transform: scale(0.05);
             }}
-            6% {{
-                opacity: 0.45;
+            5% {{
+                opacity: 0.5;
                 transform: scale(calc(var(--sparkle-peak, 1.1) * 0.45));
             }}
             10% {{
                 opacity: 1;
                 transform: scale(var(--sparkle-peak, 1.1));
             }}
-            14% {{
+            15% {{
                 opacity: 0.45;
                 transform: scale(calc(var(--sparkle-peak, 1.1) * 0.45));
             }}
-            18% {{
+            20% {{
                 opacity: 0;
                 transform: scale(0.05);
+            }}
+            40% {{
+                opacity: 0;
+                transform: scale(0.05);
+            }}
+            46% {{
+                opacity: 0.55;
+                transform: scale(calc(var(--sparkle-peak, 1.1) * 0.45));
+            }}
+            52% {{
+                opacity: 1;
+                transform: scale(calc(var(--sparkle-peak, 1.1) * 0.95));
             }}
             58% {{
                 opacity: 0;
                 transform: scale(0.05);
             }}
-            64% {{
-                opacity: 0.45;
-                transform: scale(calc(var(--sparkle-peak, 1.1) * 0.45));
+            78% {{
+                opacity: 0;
+                transform: scale(0.05);
             }}
-            68% {{
+            84% {{
+                opacity: 0.65;
+                transform: scale(calc(var(--sparkle-peak, 1.1) * 0.5));
+            }}
+            90% {{
                 opacity: 1;
-                transform: scale(calc(var(--sparkle-peak, 1.1) * 0.92));
+                transform: scale(calc(var(--sparkle-peak, 1.1) * 0.9));
             }}
-            72% {{
-                opacity: 0.45;
-                transform: scale(calc(var(--sparkle-peak, 1.1) * 0.45));
-            }}
-            76% {{
+            96% {{
                 opacity: 0;
                 transform: scale(0.05);
             }}
@@ -1520,23 +1712,39 @@ def build_page_html(deals):
                 opacity: 0;
                 transform: scale(0.05);
             }}
-            38% {{
+            18% {{
                 opacity: 0;
                 transform: scale(0.05);
             }}
-            44% {{
-                opacity: 0.45;
+            24% {{
+                opacity: 0.55;
                 transform: scale(calc(var(--sparkle-peak, 1.2) * 0.45));
             }}
-            48% {{
+            30% {{
                 opacity: 1;
                 transform: scale(var(--sparkle-peak, 1.2));
             }}
-            52% {{
+            36% {{
                 opacity: 0.45;
                 transform: scale(calc(var(--sparkle-peak, 1.2) * 0.45));
             }}
-            56% {{
+            42% {{
+                opacity: 0;
+                transform: scale(0.05);
+            }}
+            68% {{
+                opacity: 0;
+                transform: scale(0.05);
+            }}
+            74% {{
+                opacity: 0.7;
+                transform: scale(calc(var(--sparkle-peak, 1.2) * 0.5));
+            }}
+            80% {{
+                opacity: 1;
+                transform: scale(calc(var(--sparkle-peak, 1.2) * 0.92));
+            }}
+            86% {{
                 opacity: 0;
                 transform: scale(0.05);
             }}
@@ -1548,46 +1756,62 @@ def build_page_html(deals):
                 transform: scale(0.05);
             }}
             4% {{
-                opacity: 0.4;
+                opacity: 0.5;
                 transform: scale(calc(var(--sparkle-peak, 1) * 0.4));
             }}
-            7% {{
-                opacity: 0.95;
-                transform: scale(calc(var(--sparkle-peak, 1) * 0.88));
+            8% {{
+                opacity: 1;
+                transform: scale(calc(var(--sparkle-peak, 1) * 0.95));
             }}
-            10% {{
+            12% {{
                 opacity: 0;
                 transform: scale(0.05);
             }}
-            30% {{
+            28% {{
                 opacity: 0;
                 transform: scale(0.05);
             }}
-            33% {{
-                opacity: 0.4;
+            32% {{
+                opacity: 0.55;
                 transform: scale(calc(var(--sparkle-peak, 1) * 0.4));
             }}
             36% {{
-                opacity: 0.95;
-                transform: scale(calc(var(--sparkle-peak, 1) * 0.88));
+                opacity: 1;
+                transform: scale(calc(var(--sparkle-peak, 1) * 0.9));
             }}
-            39% {{
+            40% {{
                 opacity: 0;
                 transform: scale(0.05);
             }}
-            68% {{
+            58% {{
                 opacity: 0;
                 transform: scale(0.05);
             }}
-            71% {{
-                opacity: 0.4;
+            62% {{
+                opacity: 0.6;
                 transform: scale(calc(var(--sparkle-peak, 1) * 0.4));
             }}
-            74% {{
-                opacity: 0.95;
+            66% {{
+                opacity: 1;
+                transform: scale(calc(var(--sparkle-peak, 1) * 0.92));
+            }}
+            70% {{
+                opacity: 0;
+                transform: scale(0.05);
+            }}
+            86% {{
+                opacity: 0;
+                transform: scale(0.05);
+            }}
+            90% {{
+                opacity: 0.65;
+                transform: scale(calc(var(--sparkle-peak, 1) * 0.45));
+            }}
+            94% {{
+                opacity: 1;
                 transform: scale(calc(var(--sparkle-peak, 1) * 0.88));
             }}
-            77% {{
+            98% {{
                 opacity: 0;
                 transform: scale(0.05);
             }}
@@ -1596,6 +1820,10 @@ def build_page_html(deals):
         @media (prefers-reduced-motion: reduce) {{
             .diamond-sparkles {{
                 display: none;
+            }}
+            .card-tier-diamond::before {{
+                animation: none;
+                opacity: 0;
             }}
         }}
 
@@ -1844,7 +2072,7 @@ def build_page_html(deals):
             opacity: 0;
             transform: scaleY(0.15) translateY(3px);
             transform-origin: center bottom;
-            animation: fire-pill-flames-rise 10s linear infinite;
+            animation: fire-pill-flames-rise 9s linear infinite;
         }}
 
         .fire-pill-flames-svg {{
@@ -1856,51 +2084,59 @@ def build_page_html(deals):
         .fire-pill-spark {{
             opacity: 0;
             transform-origin: center center;
-            animation: fire-pill-spark-pop 10s linear infinite;
+            animation: fire-pill-spark-pop 9s linear infinite;
             animation-delay: inherit;
         }}
 
         @keyframes fire-pill-flames-rise {{
-            0%, 78%, 100% {{
+            0%, 48%, 100% {{
                 opacity: 0;
                 transform: scaleY(0.12) translateY(4px);
             }}
-            82% {{
-                opacity: 0.65;
-                transform: scaleY(0.55) translateY(2px);
+            54% {{
+                opacity: 0.55;
+                transform: scaleY(0.5) translateY(2px);
             }}
-            86% {{
+            60% {{
                 opacity: 1;
                 transform: scaleY(0.95) translateY(0);
             }}
-            90% {{
+            72% {{
                 opacity: 1;
                 transform: scaleY(1.08) translateY(-1px);
             }}
-            94% {{
-                opacity: 0.8;
-                transform: scaleY(0.72) translateY(1px);
+            84% {{
+                opacity: 0.85;
+                transform: scaleY(0.85) translateY(0);
             }}
-            98% {{
+            92% {{
+                opacity: 0.45;
+                transform: scaleY(0.45) translateY(2px);
+            }}
+            97% {{
                 opacity: 0;
                 transform: scaleY(0.1) translateY(4px);
             }}
         }}
 
         @keyframes fire-pill-spark-pop {{
-            0%, 84%, 100% {{
+            0%, 56%, 100% {{
                 opacity: 0;
                 transform: translateY(6px) scale(0.4);
             }}
-            88% {{
-                opacity: 0.9;
+            62% {{
+                opacity: 0.85;
                 transform: translateY(0) scale(1);
             }}
-            92% {{
-                opacity: 0.55;
-                transform: translateY(-3px) scale(0.85);
+            74% {{
+                opacity: 0.7;
+                transform: translateY(-2px) scale(0.95);
             }}
-            96% {{
+            86% {{
+                opacity: 0.35;
+                transform: translateY(-5px) scale(0.7);
+            }}
+            94% {{
                 opacity: 0;
                 transform: translateY(-7px) scale(0.35);
             }}
@@ -1921,8 +2157,21 @@ def build_page_html(deals):
         }}
 
         .badge-elite {{
-            color: #1e40af;
-            border-color: #93c5fd;
+            color: #1e3a8a;
+            border-color: #60a5fa;
+            background: linear-gradient(180deg, #ffffff 0%, #dbeafe 100%);
+            box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.2), 0 2px 8px rgba(37, 99, 235, 0.2);
+            animation: diamond-badge-glow 2.8s ease-in-out infinite;
+            animation-delay: var(--diamond-badge-delay, 0s);
+        }}
+
+        @keyframes diamond-badge-glow {{
+            0%, 100% {{
+                box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.2), 0 2px 8px rgba(37, 99, 235, 0.18);
+            }}
+            50% {{
+                box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.45), 0 3px 12px rgba(37, 99, 235, 0.35);
+            }}
         }}
 
         .badge-protein {{
@@ -2561,7 +2810,7 @@ def build_page_html(deals):
     <a href="#about" class="sb-nav-link">About SnackBuddy</a>
     <a href="#how-it-works" class="sb-nav-link">How SnackBuddy Works</a>
     <a href="#how-we-pick-snacks" class="sb-nav-link">How We Pick Snacks</a>
-    <a href="#subscribe" class="sb-nav-link">Get Daily Deal Emails</a>
+    <a href="#subscribe" class="sb-nav-link">Don’t miss the ones worth a trip</a>
 
     <div class="sb-nav-footer">
       SnackBuddy helps you spot better-for-you snack deals.
@@ -2595,6 +2844,13 @@ def build_page_html(deals):
                         SnackBuddy • Last updated: {last_updated} (local time)
                     </div>
                     <h1 class="sb-hero-title">Don&apos;t overpay for the snacks you already buy.</h1>
+                    <div class="sb-hero-tiers" aria-label="Deal strength key">
+                        <span class="sb-hero-tiers-label">Deal strength</span>
+                        <span class="sb-hero-tier"><span class="sb-hero-tier-icon" aria-hidden="true">💎</span> 25%+</span>
+                        <span class="sb-hero-tier"><span class="sb-hero-tier-icon" aria-hidden="true">🔥</span> 20–24%</span>
+                        <span class="sb-hero-tier"><span class="sb-hero-tier-icon" aria-hidden="true">💪</span> 10–19%</span>
+                        <span class="sb-hero-tier"><span class="sb-hero-tier-icon" aria-hidden="true">🏷️</span> under 10%</span>
+                    </div>
                 </div>
             </div>
         </section>
@@ -2657,7 +2913,7 @@ def build_page_html(deals):
                 </p>
                 <p class="sb-info-text" style="margin-top: 8px;">
                     So I built SnackBuddy to do one simple thing:
-                    <strong>track the snacks and drinks people already buy and call out real price drops</strong> —
+                    <strong>track the snacks and drinks people already buy and call out real price drops</strong>,
                     so you can stock up at the right time or try something new when it’s cheaper.
                 </p>
             </div>
@@ -2674,11 +2930,11 @@ def build_page_html(deals):
                 </p>
                 <p class="sb-info-text" style="margin-top: 8px;">
                     At its core, it’s pretty simple: we keep an eye on specific product pages and pay attention when prices move.
-                    When something drops, it shows up here so more people can take advantage of it — without having to constantly
+                    When something drops, it shows up here so more people can take advantage of it, without having to constantly
                     check themselves.
                 </p>
                 <p class="sb-info-text" style="margin-top: 8px;">
-                    Don’t see a product or retailer you want tracked yet? Let me know — the list is expanding over time.
+                    Don’t see a product or retailer you want tracked yet? Let me know, the list is expanding over time.
                 </p>
                 <p class="sb-note">
                     Note: Prices and availability can vary by location, especially for in-store items.
@@ -2693,21 +2949,21 @@ def build_page_html(deals):
             <div class="sb-info-card">
                 <h2 class="sb-info-title">How We Pick Snacks</h2>
                 <p class="sb-info-text">
-                    Not everything that calls itself healthy earns a spot here. Every product is manually reviewed — we&apos;re looking for real protein content relative to calories, low added sugar, and meaningful fiber where it applies.
+                    Not everything that calls itself healthy earns a spot here. Every product is manually reviewed, we&apos;re looking for real protein content relative to calories, low added sugar, and meaningful fiber where it applies.
                 </p>
                 <p class="sb-info-text" style="margin-top: 8px;">
-                    We&apos;re not here to be perfect. SnackBuddy isn&apos;t about finding the most aggressive diet food on the shelf. It&apos;s about finding things that are genuinely better than the default — snacks people actually want to eat, at a price worth buying them.
+                    We&apos;re not here to be perfect. SnackBuddy isn&apos;t about finding the most aggressive diet food on the shelf. It&apos;s about finding things that are genuinely better than the default, snacks people actually want to eat, at a price worth buying them.
                 </p>
                 <p class="sb-info-text" style="margin-top: 8px;">
-                    Don&apos;t see something you think belongs here? Let us know — the list is always growing.
+                    Don&apos;t see something you think belongs here? Let us know, the list is always growing.
                 </p>
             </div>
         </section>
 
             <div class="sb-info-card" id="subscribe">
-                <h2 class="sb-info-title">Get Daily Deal Emails</h2>
+                <h2 class="sb-info-title">Don’t miss the ones worth a trip</h2>
                 <p class="sb-info-text">
-                    Want a quick digest of the best finds? Drop your email below.
+                    We’ll email when the good stuff drops. Your filters stay either way.
                 </p>
 
                 <form class="sb-subscribe-form" id="sb-subscribe-form" novalidate>
@@ -2720,7 +2976,7 @@ def build_page_html(deals):
                         placeholder="you@email.com"
                         required
                     />
-                    <button type="submit" class="sb-subscribe-btn">Get Daily Deal Emails</button>
+                    <button type="submit" class="sb-subscribe-btn">Keep me posted</button>
                 </form>
                 <p class="sb-subscribe-status" id="sb-subscribe-status" aria-live="polite"></p>
 
@@ -2730,7 +2986,7 @@ def build_page_html(deals):
                 </a>
 
                 <div class="sb-note">
-                    You’ll get a quick daily digest when the best deals are worth grabbing. No spam—ever.
+                    No spam. Unsubscribe anytime.
                 </div>
             </div>
         </section>
@@ -3304,7 +3560,7 @@ document.addEventListener("DOMContentLoaded", function () {{
     const body = new URLSearchParams();
     body.append("email", cleaned);
     body.append("utm_source", "snackbuddy");
-    body.append("utm_medium", "welcome");
+    body.append("utm_medium", (meta && meta.medium) ? String(meta.medium) : "welcome");
     const otherStore = meta && meta.otherStore ? String(meta.otherStore).trim() : "";
     if (otherStore) {{
       // Shows up in beehiiv subscriber attribution; not a full tally dashboard.
@@ -3335,7 +3591,7 @@ document.addEventListener("DOMContentLoaded", function () {{
       }}
       try {{
         const prefs = loadWelcomePrefs() || {{}};
-        await subscribeBeehiiv(email, {{ otherStore: prefs.otherStore || "" }});
+        await subscribeBeehiiv(email, {{ otherStore: prefs.otherStore || "", medium: "footer" }});
         if (statusEl) statusEl.textContent = "You're in — check your inbox for a confirm email.";
         if (input) input.value = "";
         const next = Object.assign({{ completed: true, retailers: [], categories: [] }}, prefs);
