@@ -3005,7 +3005,7 @@ def build_page_html(deals):
         <section class="sb-welcome-step is-active" data-step="0">
           <div class="sb-welcome-kicker">Better snacks. Smarter buys.</div>
           <h1 class="sb-welcome-brand" id="sb-welcome-brand">Snack<span>Buddy</span></h1>
-          <p class="sb-welcome-lead">Your better-for-you deals — cut down to the stores and snacks you actually buy.</p>
+          <p class="sb-welcome-lead">Your better-for-you deals, cut down to the stores and snacks you actually buy.</p>
           <div class="sb-welcome-actions">
             <button type="button" class="sb-welcome-btn" data-welcome-next>Personalize my deals</button>
             <button type="button" class="sb-welcome-btn sb-welcome-btn-ghost" data-welcome-skip>Just show everything</button>
@@ -3014,7 +3014,7 @@ def build_page_html(deals):
 
         <section class="sb-welcome-step" data-step="1">
           <h2 class="sb-welcome-step-title">Where do you shop?</h2>
-          <p class="sb-welcome-step-text">Pick any stores to narrow the list — or leave them all off to keep every store.</p>
+          <p class="sb-welcome-step-text">Pick any stores to narrow the list, or leave them all off to keep every store.</p>
           <div class="sb-welcome-chips" id="sb-welcome-retailers"></div>
           <div class="sb-welcome-other" id="sb-welcome-other-wrap" hidden>
             <label class="sb-welcome-other-label" for="sb-welcome-other-store">Which store?</label>
@@ -3037,7 +3037,7 @@ def build_page_html(deals):
 
         <section class="sb-welcome-step" data-step="2">
           <h2 class="sb-welcome-step-title">What’s usually in your pantry?</h2>
-          <p class="sb-welcome-step-text">Pick the categories you restock most — or leave them off to keep everything.</p>
+          <p class="sb-welcome-step-text">Pick the categories you restock most, or leave them off to keep everything.</p>
           <div class="sb-welcome-chips" id="sb-welcome-categories"></div>
           <p class="sb-welcome-preview" id="sb-welcome-preview-categories"></p>
           <div class="sb-welcome-actions">
@@ -3048,7 +3048,7 @@ def build_page_html(deals):
 
         <section class="sb-welcome-step" data-step="3">
           <h2 class="sb-welcome-step-title">Don’t miss the ones worth a trip</h2>
-          <p class="sb-welcome-step-text">Optional. We’ll email when the good stuff drops — your filters stay either way.</p>
+          <p class="sb-welcome-step-text">Optional. We’ll email when the good stuff drops, your filters stay either way.</p>
           <form id="sb-welcome-email-form" novalidate>
             <div class="sb-welcome-email-row">
               <input class="sb-welcome-email" id="sb-welcome-email" type="email" name="email" autocomplete="email" placeholder="you@email.com" />
