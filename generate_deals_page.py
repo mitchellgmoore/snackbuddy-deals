@@ -3557,13 +3557,16 @@ document.addEventListener("DOMContentLoaded", function () {{
   }}
 
   function mountBeehiivForm(container) {{
-    if (!container || !BEEHIIV_FORM_ID || container.dataset.beehiivMounted === "1") return;
-    container.dataset.beehiivMounted = "1";
-    const script = document.createElement("script");
-    script.async = true;
-    script.src = "https://subscribe-forms.beehiiv.com/v3/loader.js";
-    script.setAttribute("data-beehiiv-form", BEEHIIV_FORM_ID);
-    container.appendChild(script);
+    // Use a direct iframe so welcome signup works even when the footer
+    // already loaded the same form via beehiiv's loader script.
+    if (!container || !BEEHIIV_FORM_ID) return;
+    container.innerHTML = "";
+    const iframe = document.createElement("iframe");
+    iframe.src = "https://subscribe-forms.beehiiv.com/v3/forms/" + encodeURIComponent(BEEHIIV_FORM_ID);
+    iframe.title = "Subscribe to SnackBuddy emails";
+    iframe.setAttribute("loading", "eager");
+    iframe.style.cssText = "width:100%;min-height:240px;border:0;border-radius:12px;background:#ffffff;";
+    container.appendChild(iframe);
   }}
 
   function initWelcomeFlow() {{
@@ -3733,7 +3736,8 @@ document.addEventListener("DOMContentLoaded", function () {{
         updateLivePreview();
       }}
       if (step === 3) {{
-        mountBeehiivForm(welcomeBeehiiv);
+        // Wait a tick so the step is visible before sizing the iframe.
+        window.setTimeout(function() {{ mountBeehiivForm(welcomeBeehiiv); }}, 50);
       }}
     }}
 
