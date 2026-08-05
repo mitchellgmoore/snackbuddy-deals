@@ -11,10 +11,10 @@ JSON_PATH = ROOT / "deals_today.json"
 DOCS_DIR = ROOT / "docs"
 OUTPUT_PATH = DOCS_DIR / "index.html"
 
-# Beehiiv publication ID (pub_…) — from beehiiv Settings → Integrations.
-# Prefer env / sibling snack-buddy .env so the secret-ish ID isn't hardcoded.
-def _load_beehiiv_publication_id() -> str:
-    for key in ("BEEHIIV_PUBLICATION_ID", "BEEHIIV_PUB_ID"):
+# Beehiiv IDs — from beehiiv Settings / Subscribe forms.
+# Prefer env / sibling snack-buddy .env so IDs aren't hardcoded.
+def _load_env_value(*keys: str) -> str:
+    for key in keys:
         val = os.environ.get(key, "").strip()
         if val:
             return val
@@ -27,7 +27,7 @@ def _load_beehiiv_publication_id() -> str:
                 if not line or line.startswith("#") or "=" not in line:
                     continue
                 k, _, v = line.partition("=")
-                if k.strip() in ("BEEHIIV_PUBLICATION_ID", "BEEHIIV_PUB_ID"):
+                if k.strip() in keys:
                     val = v.strip().strip('"').strip("'")
                     if val:
                         return val
@@ -36,7 +36,9 @@ def _load_beehiiv_publication_id() -> str:
     return ""
 
 
-BEEHIIV_PUBLICATION_ID = _load_beehiiv_publication_id()
+BEEHIIV_PUBLICATION_ID = _load_env_value("BEEHIIV_PUBLICATION_ID", "BEEHIIV_PUB_ID")
+# Official v3 subscribe form (Audience → Subscribe forms → Get embed code)
+BEEHIIV_FORM_ID = _load_env_value("BEEHIIV_FORM_ID") or "fe019cbd-c068-4f4a-a458-757e07b5460a"
 
 def load_deals():
     if not JSON_PATH.exists():
@@ -761,7 +763,13 @@ def build_page_html(deals):
 
     deals_sorted = sorted(grouped_deals, key=sort_key)
     cards_html = "\n".join(build_card_html(d) for d in deals_sorted)
-    beehiiv_pub_id = html.escape(BEEHIIV_PUBLICATION_ID)
+    beehiiv_form_id = html.escape(BEEHIIV_FORM_ID)
+    beehiiv_embed_script = (
+        f'<script async src="https://subscribe-forms.beehiiv.com/v3/loader.js" '
+        f'data-beehiiv-form="{beehiiv_form_id}"></script>'
+        if BEEHIIV_FORM_ID
+        else '<p class="sb-note">Email signup is almost ready.</p>'
+    )
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -2779,6 +2787,21 @@ def build_page_html(deals):
             flex: 1;
             min-width: 200px;
         }}
+        .sb-beehiiv-embed {{
+            margin-top: 10px;
+            width: 100%;
+            max-width: 520px;
+            min-height: 120px;
+        }}
+        .sb-beehiiv-embed iframe,
+        .sb-welcome-beehiiv iframe {{
+            max-width: 100% !important;
+        }}
+        .sb-welcome-beehiiv {{
+            margin: 8px 0 12px;
+            width: 100%;
+            min-height: 120px;
+        }}
         .sb-subscribe-status {{
             width: 100%;
             margin: 6px 0 0;
@@ -2966,19 +2989,9 @@ def build_page_html(deals):
                     We’ll email when the good stuff drops. Your filters stay either way.
                 </p>
 
-                <form class="sb-subscribe-form" id="sb-subscribe-form" novalidate>
-                    <input
-                        class="sb-email"
-                        id="sb-subscribe-email"
-                        type="email"
-                        name="email"
-                        autocomplete="email"
-                        placeholder="you@email.com"
-                        required
-                    />
-                    <button type="submit" class="sb-subscribe-btn">Keep me posted</button>
-                </form>
-                <p class="sb-subscribe-status" id="sb-subscribe-status" aria-live="polite"></p>
+                <div class="sb-beehiiv-embed" id="sb-beehiiv-footer">
+                    {beehiiv_embed_script}
+                </div>
 
                 <a class="sb-subscribe-alt"
                    href="mailto:savewithsnackbuddy@gmail.com?subject=SnackBuddy%20Daily%20Deals">
@@ -3049,15 +3062,10 @@ def build_page_html(deals):
         <section class="sb-welcome-step" data-step="3">
           <h2 class="sb-welcome-step-title">Don’t miss the ones worth a trip</h2>
           <p class="sb-welcome-step-text">Optional. We’ll email when the good stuff drops, your filters stay either way.</p>
-          <form id="sb-welcome-email-form" novalidate>
-            <div class="sb-welcome-email-row">
-              <input class="sb-welcome-email" id="sb-welcome-email" type="email" name="email" autocomplete="email" placeholder="you@email.com" />
-              <button type="submit" class="sb-welcome-btn">Keep me posted</button>
-            </div>
-          </form>
+          <div class="sb-welcome-beehiiv" id="sb-welcome-beehiiv"></div>
           <p class="sb-welcome-note">No spam. Unsubscribe anytime. Prefs stay on this device.</p>
-          <p class="sb-welcome-status" id="sb-welcome-email-status" aria-live="polite"></p>
           <div class="sb-welcome-actions">
+            <button type="button" class="sb-welcome-btn" data-welcome-next>See my deals</button>
             <button type="button" class="sb-welcome-btn sb-welcome-btn-ghost" data-welcome-skip>Skip for now</button>
           </div>
         </section>
@@ -3497,9 +3505,9 @@ document.addEventListener("DOMContentLoaded", function () {{
   applyFiltersAndSort();
 
   /* ============================
-     WELCOME PREFS + BEEHIIV
+     WELCOME PREFS + BEEHIIV EMBED
      ============================ */
-  const BEEHIIV_PUBLICATION_ID = "{beehiiv_pub_id}";
+  const BEEHIIV_FORM_ID = "{beehiiv_form_id}";
   const WELCOME_STORAGE_KEY = "sb_welcome_v2";
   const RETAILER_ORDER = ["walmart", "target", "kroger", "harris teeter", "meijer"];
 
@@ -3548,62 +3556,14 @@ document.addEventListener("DOMContentLoaded", function () {{
     }}
   }}
 
-  async function subscribeBeehiiv(email, meta) {{
-    const cleaned = String(email || "").trim();
-    if (!cleaned || cleaned.indexOf("@") < 1) {{
-      throw new Error("Enter a valid email.");
-    }}
-    if (!BEEHIIV_PUBLICATION_ID) {{
-      // Prefs still work; email waits until publication ID is configured.
-      throw new Error("Email signup is almost ready — prefs are saved. Try again soon, or email savewithsnackbuddy@gmail.com.");
-    }}
-    const body = new URLSearchParams();
-    body.append("email", cleaned);
-    body.append("utm_source", "snackbuddy");
-    body.append("utm_medium", (meta && meta.medium) ? String(meta.medium) : "welcome");
-    const otherStore = meta && meta.otherStore ? String(meta.otherStore).trim() : "";
-    if (otherStore) {{
-      // Shows up in beehiiv subscriber attribution; not a full tally dashboard.
-      body.append("utm_content", "other_store:" + otherStore.slice(0, 80));
-      body.append("utm_campaign", "store_request");
-    }}
-    // Public form endpoint (no API key in the browser). Opaque response under no-cors.
-    await fetch("https://subscribe-forms.beehiiv.com/" + encodeURIComponent(BEEHIIV_PUBLICATION_ID) + "/submissions", {{
-      method: "POST",
-      mode: "no-cors",
-      headers: {{ "Content-Type": "application/x-www-form-urlencoded" }},
-      body: body.toString(),
-    }});
-    return cleaned;
-  }}
-
-  function initSubscribeForm() {{
-    const form = document.getElementById("sb-subscribe-form");
-    const statusEl = document.getElementById("sb-subscribe-status");
-    if (!form) return;
-    form.addEventListener("submit", async function(ev) {{
-      ev.preventDefault();
-      const input = document.getElementById("sb-subscribe-email");
-      const email = input ? input.value : "";
-      if (statusEl) {{
-        statusEl.classList.remove("is-error");
-        statusEl.textContent = "Signing you up…";
-      }}
-      try {{
-        const prefs = loadWelcomePrefs() || {{}};
-        await subscribeBeehiiv(email, {{ otherStore: prefs.otherStore || "", medium: "footer" }});
-        if (statusEl) statusEl.textContent = "You're in — check your inbox for a confirm email.";
-        if (input) input.value = "";
-        const next = Object.assign({{ completed: true, retailers: [], categories: [] }}, prefs);
-        next.email = String(email).trim();
-        saveWelcomePrefs(next);
-      }} catch (err) {{
-        if (statusEl) {{
-          statusEl.classList.add("is-error");
-          statusEl.textContent = (err && err.message) ? err.message : "Couldn’t sign up — try again.";
-        }}
-      }}
-    }});
+  function mountBeehiivForm(container) {{
+    if (!container || !BEEHIIV_FORM_ID || container.dataset.beehiivMounted === "1") return;
+    container.dataset.beehiivMounted = "1";
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = "https://subscribe-forms.beehiiv.com/v3/loader.js";
+    script.setAttribute("data-beehiiv-form", BEEHIIV_FORM_ID);
+    container.appendChild(script);
   }}
 
   function initWelcomeFlow() {{
@@ -3613,7 +3573,6 @@ document.addEventListener("DOMContentLoaded", function () {{
     const existing = loadWelcomePrefs();
     if (existing && existing.completed) {{
       applyWelcomePrefs(existing);
-      initSubscribeForm();
       return;
     }}
 
@@ -3623,8 +3582,7 @@ document.addEventListener("DOMContentLoaded", function () {{
     const otherInput = document.getElementById("sb-welcome-other-store");
     const previewStores = document.getElementById("sb-welcome-preview-stores");
     const previewCategories = document.getElementById("sb-welcome-preview-categories");
-    const emailForm = document.getElementById("sb-welcome-email-form");
-    const emailStatus = document.getElementById("sb-welcome-email-status");
+    const welcomeBeehiiv = document.getElementById("sb-welcome-beehiiv");
     const dots = Array.from(root.querySelectorAll(".sb-welcome-dot"));
     const steps = Array.from(root.querySelectorAll(".sb-welcome-step"));
 
@@ -3774,6 +3732,9 @@ document.addEventListener("DOMContentLoaded", function () {{
         renderChips(categoryBox, availableCategories(), draft.categories);
         updateLivePreview();
       }}
+      if (step === 3) {{
+        mountBeehiivForm(welcomeBeehiiv);
+      }}
     }}
 
     if (otherInput) {{
@@ -3850,30 +3811,7 @@ document.addEventListener("DOMContentLoaded", function () {{
       }});
     }});
 
-    if (emailForm) {{
-      emailForm.addEventListener("submit", async function(ev) {{
-        ev.preventDefault();
-        const input = document.getElementById("sb-welcome-email");
-        const email = input ? input.value : "";
-        if (emailStatus) {{
-          emailStatus.classList.remove("is-error");
-          emailStatus.textContent = "Signing you up…";
-        }}
-        try {{
-          await subscribeBeehiiv(email, {{ otherStore: getOtherStore() }});
-          if (emailStatus) emailStatus.textContent = "You're in — check your inbox.";
-          closeWelcome({{ email: String(email).trim() }});
-        }} catch (err) {{
-          if (emailStatus) {{
-            emailStatus.classList.add("is-error");
-            emailStatus.textContent = (err && err.message) ? err.message : "Couldn’t sign up.";
-          }}
-        }}
-      }});
-    }}
-
     openWelcome();
-    initSubscribeForm();
   }}
 
   initWelcomeFlow();
@@ -4055,11 +3993,14 @@ def main():
     print("OUTPUT PATH:", OUTPUT_PATH.resolve())
     print("WROTE:", OUTPUT_PATH.resolve())
     print("DEALS:", len(deals))
+    form_id = BEEHIIV_FORM_ID
+    if form_id:
+        print("BEEHIIV FORM:", form_id[:8] + "…" if len(form_id) > 8 else form_id)
+    else:
+        print("BEEHIIV FORM: (not set)")
     pub = BEEHIIV_PUBLICATION_ID
     if pub:
-        print("BEEHIIV:", pub[:8] + "…" if len(pub) > 8 else pub)
-    else:
-        print("BEEHIIV: (not set — welcome prefs work; email signup waits for BEEHIIV_PUBLICATION_ID)")
+        print("BEEHIIV PUB:", pub[:8] + "…" if len(pub) > 8 else pub)
 
 if __name__ == "__main__":
     main()

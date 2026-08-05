@@ -2014,6 +2014,21 @@
             flex: 1;
             min-width: 200px;
         }
+        .sb-beehiiv-embed {
+            margin-top: 10px;
+            width: 100%;
+            max-width: 520px;
+            min-height: 120px;
+        }
+        .sb-beehiiv-embed iframe,
+        .sb-welcome-beehiiv iframe {
+            max-width: 100% !important;
+        }
+        .sb-welcome-beehiiv {
+            margin: 8px 0 12px;
+            width: 100%;
+            min-height: 120px;
+        }
         .sb-subscribe-status {
             width: 100%;
             margin: 6px 0 0;
@@ -6854,19 +6869,9 @@
                     We’ll email when the good stuff drops. Your filters stay either way.
                 </p>
 
-                <form class="sb-subscribe-form" id="sb-subscribe-form" novalidate>
-                    <input
-                        class="sb-email"
-                        id="sb-subscribe-email"
-                        type="email"
-                        name="email"
-                        autocomplete="email"
-                        placeholder="you@email.com"
-                        required
-                    />
-                    <button type="submit" class="sb-subscribe-btn">Keep me posted</button>
-                </form>
-                <p class="sb-subscribe-status" id="sb-subscribe-status" aria-live="polite"></p>
+                <div class="sb-beehiiv-embed" id="sb-beehiiv-footer">
+                    <script async src="https://subscribe-forms.beehiiv.com/v3/loader.js" data-beehiiv-form="fe019cbd-c068-4f4a-a458-757e07b5460a"></script>
+                </div>
 
                 <a class="sb-subscribe-alt"
                    href="mailto:savewithsnackbuddy@gmail.com?subject=SnackBuddy%20Daily%20Deals">
@@ -6937,15 +6942,10 @@
         <section class="sb-welcome-step" data-step="3">
           <h2 class="sb-welcome-step-title">Don’t miss the ones worth a trip</h2>
           <p class="sb-welcome-step-text">Optional. We’ll email when the good stuff drops, your filters stay either way.</p>
-          <form id="sb-welcome-email-form" novalidate>
-            <div class="sb-welcome-email-row">
-              <input class="sb-welcome-email" id="sb-welcome-email" type="email" name="email" autocomplete="email" placeholder="you@email.com" />
-              <button type="submit" class="sb-welcome-btn">Keep me posted</button>
-            </div>
-          </form>
+          <div class="sb-welcome-beehiiv" id="sb-welcome-beehiiv"></div>
           <p class="sb-welcome-note">No spam. Unsubscribe anytime. Prefs stay on this device.</p>
-          <p class="sb-welcome-status" id="sb-welcome-email-status" aria-live="polite"></p>
           <div class="sb-welcome-actions">
+            <button type="button" class="sb-welcome-btn" data-welcome-next>See my deals</button>
             <button type="button" class="sb-welcome-btn sb-welcome-btn-ghost" data-welcome-skip>Skip for now</button>
           </div>
         </section>
@@ -7385,9 +7385,9 @@ document.addEventListener("DOMContentLoaded", function () {
   applyFiltersAndSort();
 
   /* ============================
-     WELCOME PREFS + BEEHIIV
+     WELCOME PREFS + BEEHIIV EMBED
      ============================ */
-  const BEEHIIV_PUBLICATION_ID = "pub_70aabd3f-a46e-485d-b933-db4ee97aa6e3";
+  const BEEHIIV_FORM_ID = "fe019cbd-c068-4f4a-a458-757e07b5460a";
   const WELCOME_STORAGE_KEY = "sb_welcome_v2";
   const RETAILER_ORDER = ["walmart", "target", "kroger", "harris teeter", "meijer"];
 
@@ -7436,62 +7436,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  async function subscribeBeehiiv(email, meta) {
-    const cleaned = String(email || "").trim();
-    if (!cleaned || cleaned.indexOf("@") < 1) {
-      throw new Error("Enter a valid email.");
-    }
-    if (!BEEHIIV_PUBLICATION_ID) {
-      // Prefs still work; email waits until publication ID is configured.
-      throw new Error("Email signup is almost ready — prefs are saved. Try again soon, or email savewithsnackbuddy@gmail.com.");
-    }
-    const body = new URLSearchParams();
-    body.append("email", cleaned);
-    body.append("utm_source", "snackbuddy");
-    body.append("utm_medium", (meta && meta.medium) ? String(meta.medium) : "welcome");
-    const otherStore = meta && meta.otherStore ? String(meta.otherStore).trim() : "";
-    if (otherStore) {
-      // Shows up in beehiiv subscriber attribution; not a full tally dashboard.
-      body.append("utm_content", "other_store:" + otherStore.slice(0, 80));
-      body.append("utm_campaign", "store_request");
-    }
-    // Public form endpoint (no API key in the browser). Opaque response under no-cors.
-    await fetch("https://subscribe-forms.beehiiv.com/" + encodeURIComponent(BEEHIIV_PUBLICATION_ID) + "/submissions", {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: body.toString(),
-    });
-    return cleaned;
-  }
-
-  function initSubscribeForm() {
-    const form = document.getElementById("sb-subscribe-form");
-    const statusEl = document.getElementById("sb-subscribe-status");
-    if (!form) return;
-    form.addEventListener("submit", async function(ev) {
-      ev.preventDefault();
-      const input = document.getElementById("sb-subscribe-email");
-      const email = input ? input.value : "";
-      if (statusEl) {
-        statusEl.classList.remove("is-error");
-        statusEl.textContent = "Signing you up…";
-      }
-      try {
-        const prefs = loadWelcomePrefs() || {};
-        await subscribeBeehiiv(email, { otherStore: prefs.otherStore || "", medium: "footer" });
-        if (statusEl) statusEl.textContent = "You're in — check your inbox for a confirm email.";
-        if (input) input.value = "";
-        const next = Object.assign({ completed: true, retailers: [], categories: [] }, prefs);
-        next.email = String(email).trim();
-        saveWelcomePrefs(next);
-      } catch (err) {
-        if (statusEl) {
-          statusEl.classList.add("is-error");
-          statusEl.textContent = (err && err.message) ? err.message : "Couldn’t sign up — try again.";
-        }
-      }
-    });
+  function mountBeehiivForm(container) {
+    if (!container || !BEEHIIV_FORM_ID || container.dataset.beehiivMounted === "1") return;
+    container.dataset.beehiivMounted = "1";
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = "https://subscribe-forms.beehiiv.com/v3/loader.js";
+    script.setAttribute("data-beehiiv-form", BEEHIIV_FORM_ID);
+    container.appendChild(script);
   }
 
   function initWelcomeFlow() {
@@ -7501,7 +7453,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const existing = loadWelcomePrefs();
     if (existing && existing.completed) {
       applyWelcomePrefs(existing);
-      initSubscribeForm();
       return;
     }
 
@@ -7511,8 +7462,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const otherInput = document.getElementById("sb-welcome-other-store");
     const previewStores = document.getElementById("sb-welcome-preview-stores");
     const previewCategories = document.getElementById("sb-welcome-preview-categories");
-    const emailForm = document.getElementById("sb-welcome-email-form");
-    const emailStatus = document.getElementById("sb-welcome-email-status");
+    const welcomeBeehiiv = document.getElementById("sb-welcome-beehiiv");
     const dots = Array.from(root.querySelectorAll(".sb-welcome-dot"));
     const steps = Array.from(root.querySelectorAll(".sb-welcome-step"));
 
@@ -7662,6 +7612,9 @@ document.addEventListener("DOMContentLoaded", function () {
         renderChips(categoryBox, availableCategories(), draft.categories);
         updateLivePreview();
       }
+      if (step === 3) {
+        mountBeehiivForm(welcomeBeehiiv);
+      }
     }
 
     if (otherInput) {
@@ -7738,30 +7691,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
 
-    if (emailForm) {
-      emailForm.addEventListener("submit", async function(ev) {
-        ev.preventDefault();
-        const input = document.getElementById("sb-welcome-email");
-        const email = input ? input.value : "";
-        if (emailStatus) {
-          emailStatus.classList.remove("is-error");
-          emailStatus.textContent = "Signing you up…";
-        }
-        try {
-          await subscribeBeehiiv(email, { otherStore: getOtherStore() });
-          if (emailStatus) emailStatus.textContent = "You're in — check your inbox.";
-          closeWelcome({ email: String(email).trim() });
-        } catch (err) {
-          if (emailStatus) {
-            emailStatus.classList.add("is-error");
-            emailStatus.textContent = (err && err.message) ? err.message : "Couldn’t sign up.";
-          }
-        }
-      });
-    }
-
     openWelcome();
-    initSubscribeForm();
   }
 
   initWelcomeFlow();
