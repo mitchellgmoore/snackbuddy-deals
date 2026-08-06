@@ -1917,22 +1917,65 @@
         }
         .sb-welcome-email-row {
             display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 8px;
+            flex-direction: column;
+            gap: 10px;
+            margin: 4px 0 10px;
+            width: 100%;
         }
         .sb-welcome-email {
-            flex: 1;
-            min-width: 200px;
-            padding: 12px 14px;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 14px 16px;
             border-radius: 14px;
             border: 1.5px solid #cbd5e1;
             font: inherit;
-            font-size: 15px;
+            /* 16px+ avoids iOS zoom-on-focus that hides typed text */
+            font-size: 16px;
+            line-height: 1.35;
+            color: var(--navy);
+            background: #ffffff;
+            -webkit-appearance: none;
+            appearance: none;
         }
         .sb-welcome-email:focus {
             outline: 2px solid rgba(37, 99, 235, 0.35);
             border-color: var(--blue);
+        }
+        .sb-welcome-email-submit {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 14px 16px;
+            border: none;
+            border-radius: 14px;
+            background: #0f172a;
+            color: #ffffff;
+            font: inherit;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .sb-welcome-email-submit:hover {
+            background: #1e293b;
+        }
+        .sb-welcome-email-submit:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+        @media (min-width: 520px) {
+            .sb-welcome-email-row {
+                flex-direction: row;
+                align-items: stretch;
+            }
+            .sb-welcome-email {
+                flex: 1;
+                min-width: 0;
+            }
+            .sb-welcome-email-submit {
+                width: auto;
+                flex: 0 0 auto;
+                padding-left: 22px;
+                padding-right: 22px;
+            }
         }
         .sb-welcome-note {
             margin: 0 0 12px;
@@ -2020,14 +2063,20 @@
             max-width: 520px;
             min-height: 120px;
         }
-        .sb-beehiiv-embed iframe,
-        .sb-welcome-beehiiv iframe {
+        .sb-beehiiv-embed iframe {
             max-width: 100% !important;
         }
-        .sb-welcome-beehiiv {
-            margin: 8px 0 12px;
+        .sb-welcome-signup {
+            margin: 8px 0 4px;
             width: 100%;
-            min-height: 120px;
+        }
+        .sb-welcome-signup-frame {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border: 0;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
         }
         .sb-subscribe-status {
             width: 100%;
@@ -6942,7 +6991,31 @@
         <section class="sb-welcome-step" data-step="3">
           <h2 class="sb-welcome-step-title">Don’t miss the ones worth a trip</h2>
           <p class="sb-welcome-step-text">Optional. We’ll email when the good stuff drops, your filters stay either way.</p>
-          <div class="sb-welcome-beehiiv" id="sb-welcome-beehiiv"></div>
+          <form class="sb-welcome-signup" id="sb-welcome-signup" novalidate>
+            <div class="sb-welcome-email-row">
+              <input
+                class="sb-welcome-email"
+                id="sb-welcome-email"
+                type="email"
+                name="email"
+                autocomplete="email"
+                inputmode="email"
+                enterkeyhint="done"
+                placeholder="Email address"
+                aria-label="Email address"
+              />
+              <button type="submit" class="sb-welcome-email-submit" id="sb-welcome-email-submit">
+                Subscribe
+              </button>
+            </div>
+            <p class="sb-welcome-status" id="sb-welcome-email-status" aria-live="polite"></p>
+          </form>
+          <iframe
+            class="sb-welcome-signup-frame"
+            id="sb-welcome-signup-frame"
+            name="sb-welcome-signup-frame"
+            title="Subscribe helper"
+          ></iframe>
           <p class="sb-welcome-note">No spam. Unsubscribe anytime. Prefs stay on this device.</p>
           <div class="sb-welcome-actions">
             <button type="button" class="sb-welcome-btn" data-welcome-next>See my deals</button>
@@ -7388,6 +7461,7 @@ document.addEventListener("DOMContentLoaded", function () {
      WELCOME PREFS + BEEHIIV EMBED
      ============================ */
   const BEEHIIV_FORM_ID = "fe019cbd-c068-4f4a-a458-757e07b5460a";
+  const BEEHIIV_PUBLICATION_ID = "pub_70aabd3f-a46e-485d-b933-db4ee97aa6e3";
   const WELCOME_STORAGE_KEY = "sb_welcome_v2";
   const RETAILER_ORDER = ["walmart", "target", "kroger", "harris teeter", "meijer"];
 
@@ -7436,17 +7510,62 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  function mountBeehiivForm(container) {
-    // Use a direct iframe so welcome signup works even when the footer
-    // already loaded the same form via beehiiv's loader script.
-    if (!container || !BEEHIIV_FORM_ID) return;
-    container.innerHTML = "";
-    const iframe = document.createElement("iframe");
-    iframe.src = "https://subscribe-forms.beehiiv.com/v3/forms/" + encodeURIComponent(BEEHIIV_FORM_ID);
-    iframe.title = "Subscribe to SnackBuddy emails";
-    iframe.setAttribute("loading", "eager");
-    iframe.style.cssText = "width:100%;min-height:240px;border:0;border-radius:12px;background:#ffffff;";
-    container.appendChild(iframe);
+  function isValidEmail(value) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || "").trim());
+  }
+
+  function submitWelcomeEmail(email) {
+    // Hidden-iframe POST to beehiiv's public subscribe endpoint (same family as
+    // their embed). We can't read the cross-origin response; friend tests /
+    // Audience list confirm delivery.
+    if (!BEEHIIV_PUBLICATION_ID) {
+      return Promise.reject(new Error("missing publication id"));
+    }
+    return new Promise(function(resolve, reject) {
+      const frame = document.getElementById("sb-welcome-signup-frame");
+      if (!frame) {
+        reject(new Error("missing frame"));
+        return;
+      }
+
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.target = frame.name;
+      form.action = "https://subscribe-forms.beehiiv.com/" + encodeURIComponent(BEEHIIV_PUBLICATION_ID) + "/submissions";
+      form.style.display = "none";
+
+      function addField(name, value) {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
+      }
+      addField("email", email);
+      addField("reactivate_existing", "true");
+      addField("send_welcome_email", "true");
+      addField("utm_source", "snackbuddy_welcome");
+      if (BEEHIIV_FORM_ID) addField("form_id", BEEHIIV_FORM_ID);
+
+      let settled = false;
+      function done(ok) {
+        if (settled) return;
+        settled = true;
+        try { form.remove(); } catch (err) {}
+        if (ok) resolve();
+        else reject(new Error("subscribe failed"));
+      }
+
+      frame.onload = function() { done(true); };
+      document.body.appendChild(form);
+      try {
+        form.submit();
+      } catch (err) {
+        done(false);
+        return;
+      }
+      window.setTimeout(function() { done(true); }, 1200);
+    });
   }
 
   function initWelcomeFlow() {
@@ -7465,7 +7584,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const otherInput = document.getElementById("sb-welcome-other-store");
     const previewStores = document.getElementById("sb-welcome-preview-stores");
     const previewCategories = document.getElementById("sb-welcome-preview-categories");
-    const welcomeBeehiiv = document.getElementById("sb-welcome-beehiiv");
+    const welcomeSignup = document.getElementById("sb-welcome-signup");
+    const welcomeEmail = document.getElementById("sb-welcome-email");
+    const welcomeEmailSubmit = document.getElementById("sb-welcome-email-submit");
+    const welcomeEmailStatus = document.getElementById("sb-welcome-email-status");
     const dots = Array.from(root.querySelectorAll(".sb-welcome-dot"));
     const steps = Array.from(root.querySelectorAll(".sb-welcome-step"));
 
@@ -7474,6 +7596,8 @@ document.addEventListener("DOMContentLoaded", function () {
       categories: new Set(),
       otherOn: false,
       otherStore: "",
+      email: "",
+      subscribed: false,
     };
 
     let step = 0;
@@ -7492,6 +7616,45 @@ document.addEventListener("DOMContentLoaded", function () {
         if (ordered.indexOf(r) === -1) ordered.push(r);
       });
       return ordered;
+    }
+
+    function setEmailStatus(msg, isError) {
+      if (!welcomeEmailStatus) return;
+      welcomeEmailStatus.textContent = msg || "";
+      welcomeEmailStatus.classList.toggle("is-error", !!isError);
+    }
+
+    function wireWelcomeSignup() {
+      if (!welcomeSignup || welcomeSignup.dataset.wired === "1") return;
+      welcomeSignup.dataset.wired = "1";
+      welcomeSignup.addEventListener("submit", function(ev) {
+        ev.preventDefault();
+        if (draft.subscribed) {
+          setEmailStatus("You’re already on the list.");
+          return;
+        }
+        const email = welcomeEmail ? String(welcomeEmail.value || "").trim() : "";
+        if (!isValidEmail(email)) {
+          setEmailStatus("Enter a valid email address.", true);
+          if (welcomeEmail) welcomeEmail.focus();
+          return;
+        }
+        if (!BEEHIIV_PUBLICATION_ID) {
+          setEmailStatus("Signup is temporarily unavailable. Try the footer form.", true);
+          return;
+        }
+        if (welcomeEmailSubmit) welcomeEmailSubmit.disabled = true;
+        setEmailStatus("Subscribing…");
+        draft.email = email;
+        submitWelcomeEmail(email).then(function() {
+          draft.subscribed = true;
+          setEmailStatus("You’re in — watch for a welcome email from SnackBuddy.");
+          if (welcomeEmail) welcomeEmail.blur();
+        }).catch(function() {
+          setEmailStatus("Couldn’t subscribe. Try again or use the footer form.", true);
+          if (welcomeEmailSubmit) welcomeEmailSubmit.disabled = false;
+        });
+      });
     }
 
     function availableCategories() {
@@ -7616,8 +7779,15 @@ document.addEventListener("DOMContentLoaded", function () {
         updateLivePreview();
       }
       if (step === 3) {
-        // Wait a tick so the step is visible before sizing the iframe.
-        window.setTimeout(function() { mountBeehiivForm(welcomeBeehiiv); }, 50);
+        wireWelcomeSignup();
+        window.setTimeout(function() {
+          if (welcomeEmail) {
+            welcomeEmail.focus({ preventScroll: false });
+            try {
+              welcomeEmail.scrollIntoView({ behavior: "smooth", block: "center" });
+            } catch (err) {}
+          }
+        }, 80);
       }
     }
 
@@ -7656,6 +7826,8 @@ document.addEventListener("DOMContentLoaded", function () {
       payload.retailers = Array.from(draft.retailers);
       payload.categories = Array.from(draft.categories);
       payload.otherStore = getOtherStore();
+      if (draft.email) payload.email = draft.email;
+      if (draft.subscribed) payload.subscribed = true;
       saveWelcomePrefs(payload);
       applyWelcomePrefs(payload);
       root.classList.remove("open");
