@@ -7604,6 +7604,28 @@ document.addEventListener("DOMContentLoaded", function () {
     const root = document.getElementById("sb-welcome");
     if (!root) return;
 
+    // Email / digest CTAs use ?from=email so readers land on deals, not the
+    // subscribe onboarding sheet.
+    let fromEmail = false;
+    try {
+      const params = new URLSearchParams(window.location.search || "");
+      fromEmail = params.get("from") === "email" || params.get("skip_welcome") === "1";
+    } catch (err) {}
+    if (fromEmail) {
+      const existing = loadWelcomePrefs() || {};
+      if (!existing.completed) {
+        saveWelcomePrefs({
+          completed: true,
+          skipped: true,
+          fromEmail: true,
+          retailers: existing.retailers || [],
+          categories: existing.categories || [],
+        });
+      }
+      applyWelcomePrefs(loadWelcomePrefs() || {});
+      return;
+    }
+
     const existing = loadWelcomePrefs();
     if (existing && existing.completed) {
       applyWelcomePrefs(existing);
