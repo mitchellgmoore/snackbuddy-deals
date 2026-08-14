@@ -56,16 +56,19 @@ def parse_verified_at(deal):
         return None
 
 
-def get_last_updated_text(deals):
-    # Use the newest verified_at if available; otherwise now()
+def _latest_verified_at(deals):
     times = [t for t in (parse_verified_at(d) for d in deals) if t is not None]
-    if times:
-        latest = max(times)
-    else:
-        latest = datetime.now()
+    return max(times) if times else datetime.now()
 
+
+def get_last_updated_text(deals):
     # Example: December 07, 2025 at 11:20 AM
-    return latest.strftime("%B %d, %Y at %I:%M %p")
+    return _latest_verified_at(deals).strftime("%B %d, %Y at %I:%M %p")
+
+
+def get_last_updated_short(deals):
+    # Compact sticky-header stamp: Aug 14 · 09:50 AM
+    return _latest_verified_at(deals).strftime("%b %d · %I:%M %p")
 
 
 def retailer_classes(retailer: str):
@@ -594,6 +597,21 @@ def build_card_html(deal):
     tier_name = get_tier_name(percent_off)
     tier_class = f"card-tier-{tier_name}"
 
+    # Search blob: title + brand + flavors (client-side filter)
+    search_parts = [
+        product_name_cleaned or name,
+        brand_raw,
+        category_raw,
+        retailer_raw,
+    ]
+    for f in flavor_data:
+        search_parts.append(f.get("name") or "")
+    for f in flavor_extra_data:
+        search_parts.append(f.get("name") or "")
+    search_attr = html.escape(
+        " ".join(str(p).strip() for p in search_parts if str(p or "").strip()).lower()
+    )
+
     # Streak
     streak_text = format_streak(deal)
 
@@ -705,7 +723,8 @@ def build_card_html(deal):
          data-price="{new_price_val}"
          data-percent="{float(percent_off) if percent_off is not None else 0.0}"
          data-deal-count="{deal_count}"
-         data-tier="{tier_name}">
+         data-tier="{tier_name}"
+         data-search="{search_attr}">
         {diamond_sparkles_html}
         <div class="card-image-wrap">
             {image_carousel_html}
@@ -742,6 +761,7 @@ def build_page_html(deals):
         for g in grouped_deals
     )
     last_updated = get_last_updated_text(deals)
+    last_updated_short = get_last_updated_short(deals)
 
     # Sort: tier (diamond first, then fire, then strong, then sale) → best savings → price
     def sort_key(d):
@@ -805,6 +825,19 @@ def build_page_html(deals):
             --radius-lg: 16px;
             --radius-pill: 999px;
             --navy: #0f172a;
+            --page-max: 1320px;
+        }}
+
+        .visually-hidden {{
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
         }}
 
         * {{
@@ -820,7 +853,7 @@ def build_page_html(deals):
         }}
 
         .page {{
-            max-width: 1100px;
+            max-width: var(--page-max);
             margin: 0 auto 40px auto;
             padding: 0 16px 40px 16px;
         }}
@@ -838,33 +871,72 @@ def build_page_html(deals):
         }}
 
         .sb-header-inner {{
-            max-width: 1100px;
+            max-width: var(--page-max);
             margin: 0 auto;
             padding: 10px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 12px;
         }}
 
         .sb-header-left {{
             display: flex;
             align-items: center;
             gap: 8px;
+            min-width: 0;
         }}
 
         /* Logo image (replaces placeholder box) */
         .sb-logo {{
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
             object-fit: contain;
             display: block;
+            flex-shrink: 0;
         }}
 
         .sb-header-title {{
-            font-weight: 600;
-            font-size: 18px;
+            font-weight: 700;
+            font-size: 22px;
             color: var(--text-main);
+            letter-spacing: -0.02em;
+        }}
+
+        .sb-header-freshness {{
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 1px;
+            margin-left: auto;
+            margin-right: 8px;
+            min-width: 0;
+            text-align: right;
+        }}
+
+        .sb-header-freshness-label {{
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #15803d;
+            line-height: 1.2;
+        }}
+
+        .sb-header-freshness-time {{
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-main);
+            line-height: 1.2;
+            white-space: nowrap;
+        }}
+
+        @media (max-width: 520px) {{
+            .sb-header-freshness-time {{
+                font-size: 11px;
+                white-space: normal;
+            }}
         }}
 
         .sb-menu-button {{
@@ -872,6 +944,7 @@ def build_page_html(deals):
             background: transparent;
             font-size: 20px;
             cursor: pointer;
+            flex-shrink: 0;
         }}
 
         /* Slide-out nav drawer */
@@ -967,18 +1040,15 @@ def build_page_html(deals):
 /* ============================ */
 
 .sb-filter-bar-section {{
-  max-width: 1100px;
-  margin: 10px auto 12px;
+  max-width: var(--page-max);
+  margin: 4px auto 10px;
   padding: 0 8px 0 4px;
   position: relative;
   z-index: 30;
 }}
 
-.sb-filter-bar {{
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 0;
+.sb-filter-toggle-wrap {{
+  flex: 0 0 auto;
 }}
 
 .sb-filter-master {{
@@ -987,6 +1057,7 @@ def build_page_html(deals):
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   width: 40px;
   height: 40px;
   padding: 0;
@@ -995,6 +1066,171 @@ def build_page_html(deals):
   background: #ffffff;
   cursor: pointer;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+  color: #111827;
+  font-family: inherit;
+}}
+
+.sb-filter-master-label {{
+  display: none;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+}}
+
+.sb-results-count {{
+  display: none;
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+}}
+
+.sb-filter-sidebar {{
+  display: none;
+}}
+
+@media (min-width: 900px) {{
+  .sb-filter-bar-section {{
+    display: none;
+  }}
+
+  .sb-filter-master {{
+    width: auto;
+    padding: 0 14px 0 12px;
+  }}
+
+  .sb-filter-master-label {{
+    display: inline;
+  }}
+
+  .sb-results-count {{
+    display: inline;
+  }}
+
+  .sb-deals-shell {{
+    display: grid;
+    grid-template-columns: 250px minmax(0, 1fr);
+    gap: 22px;
+    align-items: start;
+  }}
+
+  .sb-deals-shell.is-filters-collapsed {{
+    grid-template-columns: minmax(0, 1fr);
+  }}
+
+  .sb-filter-sidebar {{
+    display: block;
+    position: sticky;
+    top: 72px;
+    max-height: calc(100vh - 88px);
+    overflow: auto;
+    background: #ffffff;
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    padding: 12px 12px 14px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  }}
+
+  .sb-deals-shell.is-filters-collapsed .sb-filter-sidebar {{
+    display: none;
+  }}
+}}
+
+.sb-filter-sidebar-head {{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-subtle);
+}}
+
+.sb-filter-sidebar-title {{
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+}}
+
+.sb-filter-sidebar-clear {{
+  border: none;
+  background: transparent;
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+}}
+
+.sb-filter-sidebar-clear:hover {{
+  text-decoration: underline;
+}}
+
+.sb-filter-acc {{
+  border-bottom: 1px solid #eef2f7;
+  padding: 4px 0 8px;
+}}
+
+.sb-filter-acc:last-child {{
+  border-bottom: none;
+}}
+
+.sb-filter-acc > summary {{
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 2px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+  user-select: none;
+}}
+
+.sb-filter-acc > summary::-webkit-details-marker {{
+  display: none;
+}}
+
+.sb-filter-acc > summary::after {{
+  content: "▾";
+  font-size: 12px;
+  color: #64748b;
+  transition: transform 0.15s ease;
+}}
+
+.sb-filter-acc[open] > summary::after {{
+  transform: rotate(180deg);
+}}
+
+.sb-filter-acc-body {{
+  padding: 0 2px 6px;
+  max-height: 220px;
+  overflow: auto;
+}}
+
+.sb-filter-acc-body .sb-filter-check {{
+  justify-content: space-between;
+  padding: 5px 0;
+  font-size: 13px;
+  color: #334155;
+}}
+
+.sb-filter-acc-count {{
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 8px;
+}}
+
+.sb-filter-bar {{
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
 }}
 
 .sb-filter-master:hover {{
@@ -1373,13 +1609,18 @@ def build_page_html(deals):
 }}
 
 .sb-deals-shell {{
-  max-width: 1100px;
+  max-width: var(--page-max);
   margin: 0 auto;
   padding: 0 16px;
 }}
 
 .sb-deals-main {{
   min-width: 0;
+}}
+
+.sb-deals-main .card-grid {{
+  max-width: none;
+  margin: 0;
 }}
 
         /* ============================ */
@@ -1391,7 +1632,7 @@ def build_page_html(deals):
         }}
 
         .sb-hero-bg {{
-            max-width: 1100px;
+            max-width: var(--page-max);
             margin: 0 auto;
             border-radius: 18px;
             padding: 18px 18px 14px;
@@ -1441,6 +1682,206 @@ def build_page_html(deals):
             margin-bottom: 4px;
         }}
 
+        .sb-hero-freshness {{
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin: 0 0 8px;
+            padding: 5px 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.82);
+            border: 1px solid #bbf7d0;
+            color: #14532d;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1.25;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+        }}
+
+        .sb-hero-freshness-dot {{
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #22c55e;
+            flex-shrink: 0;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.22);
+        }}
+
+        .sb-tools-bar {{
+            max-width: var(--page-max);
+            margin: 0 auto 8px;
+            padding: 0 8px 0 4px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }}
+
+        .sb-search-wrap {{
+            flex: 1 1 220px;
+            min-width: 0;
+            position: relative;
+        }}
+
+        .sb-search-input {{
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid var(--border-subtle);
+            background: #fff;
+            border-radius: 999px;
+            padding: 9px 36px 9px 14px;
+            font-size: 14px;
+            color: var(--text-main);
+            outline: none;
+        }}
+
+        .sb-search-input:focus {{
+            border-color: #86efac;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
+        }}
+
+        .sb-search-clear {{
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 18px;
+            line-height: 1;
+            cursor: pointer;
+            padding: 4px 6px;
+            display: none;
+        }}
+
+        .sb-search-wrap.has-value .sb-search-clear {{
+            display: block;
+        }}
+
+        .sb-sort-wrap {{
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }}
+
+        .sb-sort-label {{
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }}
+
+        .sb-sort-select {{
+            border: 1px solid var(--border-subtle);
+            background: #fff;
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+            max-width: 100%;
+        }}
+
+        .sb-deals-empty {{
+            display: none;
+            max-width: var(--page-max);
+            margin: 8px auto 18px;
+            padding: 18px 16px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            border: 1px dashed var(--border-subtle);
+            border-radius: 12px;
+            background: #fafafa;
+        }}
+
+        .sb-deals-empty.is-visible {{
+            display: block;
+        }}
+
+        .sb-tier-chips {{
+            max-width: var(--page-max);
+            margin: 0 auto 6px;
+            padding: 0 8px 0 4px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+        }}
+
+        .sb-tier-chips-label {{
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #64748b;
+            margin-right: 2px;
+        }}
+
+        .sb-tier-chip {{
+            border: 1px solid var(--border-subtle);
+            background: #fff;
+            color: #334155;
+            border-radius: 999px;
+            padding: 7px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            line-height: 1.2;
+            transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+        }}
+
+        .sb-tier-chip:hover {{
+            border-color: #cbd5e1;
+            background: #f8fafc;
+        }}
+
+        .sb-tier-chip.is-active {{
+            background: var(--navy);
+            border-color: var(--navy);
+            color: #fff;
+        }}
+
+        .sb-tier-chip[data-tier-filter="fireplus"].is-active {{
+            background: linear-gradient(135deg, #ea580c, #c2410c);
+            border-color: #c2410c;
+        }}
+
+        .sb-tier-chip[data-tier-filter="diamond"].is-active {{
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border-color: #1d4ed8;
+        }}
+
+        .sb-hero-tier {{
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #475569;
+            letter-spacing: 0.01em;
+            border: 1px solid transparent;
+            background: rgba(255, 255, 255, 0.55);
+            border-radius: 999px;
+            padding: 4px 9px;
+            cursor: pointer;
+            font-family: inherit;
+        }}
+
+        .sb-hero-tier:hover {{
+            border-color: #cbd5e1;
+            background: rgba(255, 255, 255, 0.9);
+        }}
+
+        .sb-hero-tier.is-active {{
+            border-color: var(--navy);
+            background: var(--navy);
+            color: #fff;
+        }}
+
         .sb-hero-title {{
             font-weight: 700;
             font-size: 20px;
@@ -1476,16 +1917,6 @@ def build_page_html(deals):
             margin-right: 2px;
         }}
 
-        .sb-hero-tier {{
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 12px;
-            font-weight: 600;
-            color: #475569;
-            letter-spacing: 0.01em;
-        }}
-
         .sb-hero-tier-icon {{
             font-size: 13px;
             line-height: 1;
@@ -1511,11 +1942,18 @@ def build_page_html(deals):
         /* ============================ */
 
         .card-grid {{
-            max-width: 1100px;
+            max-width: var(--page-max);
             margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
             gap: 14px;
+        }}
+
+        @media (min-width: 1100px) {{
+            .card-grid {{
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 16px;
+            }}
         }}
 
         @media (max-width: 640px) {{
@@ -2412,7 +2850,7 @@ def build_page_html(deals):
         /* ============================ */
 
         .sb-info {{
-            max-width: 1100px;
+            max-width: var(--page-max);
             margin: 18px auto 0;
         }}
 
@@ -2492,7 +2930,7 @@ def build_page_html(deals):
         }}
 
         .sb-site-footer {{
-            max-width: 1100px;
+            max-width: var(--page-max);
             margin: 0 auto;
             padding: 8px 16px 28px;
         }}
@@ -2901,6 +3339,10 @@ def build_page_html(deals):
                 <img src="assets/logo-transparent.png" alt="SnackBuddy logo" class="sb-logo" />
                 <span class="sb-header-title">SnackBuddy</span>
             </div>
+            <div class="sb-header-freshness" title="Prices logged {last_updated} (local time)">
+                <span class="sb-header-freshness-label">Prices checked</span>
+                <span class="sb-header-freshness-time">{last_updated_short}</span>
+            </div>
             <button class="sb-menu-button" aria-label="Menu" aria-expanded="false">☰</button>
         </div>
     </header>
@@ -2913,29 +3355,60 @@ def build_page_html(deals):
             <div class="sb-hero-bg">
                 <div class="sb-hero-pattern"></div>
                 <div class="sb-hero-content">
-                    <div class="sb-hero-kicker">
-                        SnackBuddy • Last updated: {last_updated} (local time)
+                    <div class="sb-hero-freshness" title="Prices logged {last_updated} (local time)">
+                        <span class="sb-hero-freshness-dot" aria-hidden="true"></span>
+                        <span>Prices checked {last_updated_short} · may vary by location at checkout</span>
                     </div>
                     <h1 class="sb-hero-title">Don&apos;t overpay for the snacks you already buy.</h1>
-                    <div class="sb-hero-tiers" aria-label="Deal strength key">
-                        <span class="sb-hero-tiers-label">Deal strength</span>
-                        <span class="sb-hero-tier"><span class="sb-hero-tier-icon" aria-hidden="true">💎</span> 25%+</span>
-                        <span class="sb-hero-tier"><span class="sb-hero-tier-icon" aria-hidden="true">🔥</span> 20–24%</span>
-                        <span class="sb-hero-tier"><span class="sb-hero-tier-icon" aria-hidden="true">💪</span> 10–19%</span>
-                        <span class="sb-hero-tier"><span class="sb-hero-tier-icon" aria-hidden="true">🏷️</span> under 10%</span>
-                    </div>
                 </div>
             </div>
         </section>
 
-        <section class="sb-filter-bar-section" aria-label="Deal filters">
-            <div class="sb-filter-bar">
-                <button type="button" class="sb-filter-master" id="sb-filter-master" aria-label="All filters" aria-expanded="false">
+        <section class="sb-tools-bar" aria-label="Search and sort deals">
+            <div class="sb-filter-toggle-wrap">
+                <button type="button" class="sb-filter-master" id="sb-filter-master" aria-label="Filters" aria-expanded="true" aria-controls="sb-filter-sidebar">
                     <svg class="sb-filter-master-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                         <path fill="currentColor" d="M4.5 5.75c0-.69.56-1.25 1.25-1.25h12.5c.69 0 1.25.56 1.25 1.25v.51c0 .24-.07.47-.2.67l-5.2 7.28v5.04c0 .41-.25.78-.63.92l-2.45 1.02c-.77.32-1.63-.24-1.63-1.08v-6.9L4.7 6.93c-.13-.2-.2-.43-.2-.67v-.51z"/>
                     </svg>
+                    <span class="sb-filter-master-label" id="sb-filter-master-label">Hide Filters</span>
                     <span class="sb-filter-master-badge" id="sb-filter-master-count" hidden>0</span>
                 </button>
+            </div>
+            <div class="sb-search-wrap" id="sb-search-wrap">
+                <label class="visually-hidden" for="sb-search-input">Search deals</label>
+                <input
+                    type="search"
+                    id="sb-search-input"
+                    class="sb-search-input"
+                    placeholder="Search brand, product, or flavor…"
+                    autocomplete="off"
+                    enterkeyhint="search"
+                />
+                <button type="button" class="sb-search-clear" id="sb-search-clear" aria-label="Clear search">&times;</button>
+            </div>
+            <div class="sb-results-count" id="sb-results-count" aria-live="polite"></div>
+            <div class="sb-sort-wrap">
+                <label class="sb-sort-label" for="sb-sort-select">Sort</label>
+                <select id="sb-sort-select" class="sb-sort-select" aria-label="Sort deals">
+                    <option value="best" selected>Best discount</option>
+                    <option value="pct-desc">% off: high to low</option>
+                    <option value="price-asc">Price: low to high</option>
+                    <option value="price-desc">Price: high to low</option>
+                </select>
+            </div>
+        </section>
+
+        <section class="sb-tier-chips" aria-label="Filter by deal strength">
+            <span class="sb-tier-chips-label">Show</span>
+            <button type="button" class="sb-tier-chip is-active" data-tier-filter="all" aria-pressed="true">All</button>
+            <button type="button" class="sb-tier-chip" data-tier-filter="fireplus" aria-pressed="false" title="20% off and up">🔥 Fire+</button>
+            <button type="button" class="sb-tier-chip" data-tier-filter="diamond" aria-pressed="false" title="25% off and up">💎 Diamond</button>
+            <button type="button" class="sb-tier-chip" data-tier-filter="fire" aria-pressed="false" title="20–24% off">🔥 Fire</button>
+            <button type="button" class="sb-tier-chip" data-tier-filter="strong" aria-pressed="false" title="10–19% off">💪 Strong</button>
+        </section>
+
+        <section class="sb-filter-bar-section" aria-label="Deal filters">
+            <div class="sb-filter-bar">
                 <div class="sb-filter-bar-scroll" id="sb-filter-bar-scroll">
                     <button type="button" class="sb-filter-scroll-btn sb-filter-scroll-prev" id="sb-filter-scroll-prev" aria-label="Scroll filters left">&#8249;</button>
                     <div class="sb-filter-bar-track" id="sb-filter-bar-track">
@@ -2960,11 +3433,21 @@ def build_page_html(deals):
             </div>
         </aside>
 
-        <div class="sb-deals-shell">
+        <div class="sb-deals-shell" id="sb-deals-shell">
+        <aside class="sb-filter-sidebar" id="sb-filter-sidebar" aria-label="Deal filters">
+            <div class="sb-filter-sidebar-head">
+                <div class="sb-filter-sidebar-title">Filters</div>
+                <button type="button" class="sb-filter-sidebar-clear" id="sb-filter-sidebar-clear">Clear all</button>
+            </div>
+            <div id="sb-filter-sidebar-body"></div>
+        </aside>
         <div class="sb-deals-main">
         <section class="card-grid" id="deals-list">
             {cards_html}
         </section>
+        <div class="sb-deals-empty" id="sb-deals-empty" role="status" aria-live="polite">
+            No deals match your search or filters. Try clearing search or filters.
+        </div>
 
         </div>
         </div>
@@ -3160,11 +3643,22 @@ def build_page_html(deals):
 document.addEventListener("DOMContentLoaded", function () {{
   const grid = document.getElementById("deals-list");
   const cards = Array.from(document.querySelectorAll(".card"));
+  const searchInput = document.getElementById("sb-search-input");
+  const searchWrap = document.getElementById("sb-search-wrap");
+  const searchClear = document.getElementById("sb-search-clear");
+  const sortSelect = document.getElementById("sb-sort-select");
+  const dealsEmpty = document.getElementById("sb-deals-empty");
 
   const filterBarInner = document.getElementById("sb-filter-bar-inner");
   const filterSheetBody = document.getElementById("sb-filter-sheet-body");
   const filterMasterBtn = document.getElementById("sb-filter-master");
+  const filterMasterLabel = document.getElementById("sb-filter-master-label");
   const filterMasterCount = document.getElementById("sb-filter-master-count");
+  const dealsShell = document.getElementById("sb-deals-shell");
+  const filterSidebar = document.getElementById("sb-filter-sidebar");
+  const filterSidebarBody = document.getElementById("sb-filter-sidebar-body");
+  const filterSidebarClear = document.getElementById("sb-filter-sidebar-clear");
+  const resultsCount = document.getElementById("sb-results-count");
   const filterDropdownBackdrop = document.getElementById("sb-filter-dropdown-backdrop");
   const filterDropdownPanel = document.getElementById("sb-filter-dropdown-panel");
   const filterSheet = document.getElementById("sb-filter-sheet");
@@ -3176,6 +3670,22 @@ document.addEventListener("DOMContentLoaded", function () {{
   const filterBarScroll = document.getElementById("sb-filter-bar-scroll");
   const filterScrollPrev = document.getElementById("sb-filter-scroll-prev");
   const filterScrollNext = document.getElementById("sb-filter-scroll-next");
+
+  function isDesktopSidebar() {{
+    return window.matchMedia("(min-width: 900px)").matches;
+  }}
+
+  function updateFilterToggleLabel() {{
+    if (!filterMasterLabel) return;
+    if (!isDesktopSidebar()) {{
+      filterMasterLabel.textContent = "Filters";
+      filterMasterBtn?.setAttribute("aria-expanded", filterSheet?.classList.contains("open") ? "true" : "false");
+      return;
+    }}
+    const collapsed = !!dealsShell?.classList.contains("is-filters-collapsed");
+    filterMasterLabel.textContent = collapsed ? "Show Filters" : "Hide Filters";
+    filterMasterBtn?.setAttribute("aria-expanded", collapsed ? "false" : "true");
+  }}
 
   /* ============================
      NAV DRAWER (RIGHT)
@@ -3266,9 +3776,27 @@ document.addEventListener("DOMContentLoaded", function () {{
     category: new Set(),
     brand: new Set(),
   }};
+  let tierMode = "all";
 
   const pillWraps = {{}};
   let openDropdownKey = null;
+
+  function cardMatchesTier(card) {{
+    const t = card.dataset.tier || "sale";
+    if (tierMode === "all") return true;
+    if (tierMode === "fireplus") return t === "diamond" || t === "fire";
+    return t === tierMode;
+  }}
+
+  function setTierMode(mode) {{
+    tierMode = mode || "all";
+    document.querySelectorAll("[data-tier-filter]").forEach(function(el) {{
+      const active = el.getAttribute("data-tier-filter") === tierMode;
+      el.classList.toggle("is-active", active);
+      if (el.hasAttribute("aria-pressed")) el.setAttribute("aria-pressed", active ? "true" : "false");
+    }});
+    applyFiltersAndSort();
+  }}
 
   function cardMatchesSelected(card, excludeKey) {{
     const r = card.dataset.retailer;
@@ -3276,6 +3804,7 @@ document.addEventListener("DOMContentLoaded", function () {{
     const c = card.dataset.category;
     const b = card.dataset.brand;
 
+    if (!cardMatchesTier(card)) return false;
     if (excludeKey !== "retailer" && selected.retailer.size > 0 && !selected.retailer.has(r)) return false;
     if (excludeKey !== "section" && selected.section.size > 0 && !selected.section.has(s)) return false;
     if (excludeKey !== "category" && selected.category.size > 0 && !selected.category.has(c)) return false;
@@ -3388,6 +3917,7 @@ document.addEventListener("DOMContentLoaded", function () {{
   }}
 
   function openFilterSheet() {{
+    buildFilterSheet();
     filterSheet?.classList.add("open");
     filterSheetBackdrop?.classList.add("open");
     filterMasterBtn?.setAttribute("aria-expanded", "true");
@@ -3397,7 +3927,7 @@ document.addEventListener("DOMContentLoaded", function () {{
   function closeFilterSheet() {{
     filterSheet?.classList.remove("open");
     filterSheetBackdrop?.classList.remove("open");
-    filterMasterBtn?.setAttribute("aria-expanded", "false");
+    updateFilterToggleLabel();
   }}
 
   function onFilterChange(key, value, checked) {{
@@ -3442,6 +3972,9 @@ document.addEventListener("DOMContentLoaded", function () {{
   function refreshFilterOptionLists() {{
     if (filterSheet?.classList.contains("open")) {{
       buildFilterSheet();
+    }}
+    if (isDesktopSidebar()) {{
+      buildFilterSidebar();
     }}
     if (openDropdownKey && filterDropdownPanel && !filterDropdownPanel.hidden) {{
       const wrap = pillWraps[openDropdownKey];
@@ -3498,6 +4031,72 @@ document.addEventListener("DOMContentLoaded", function () {{
     }});
   }}
 
+  function optionCountForKey(key, value) {{
+    let n = 0;
+    cards.forEach(function(card) {{
+      if (!cardMatchesSelected(card, key)) return;
+      if ((card.dataset[key] || "") === value) n += 1;
+    }});
+    return n;
+  }}
+
+  function buildFilterSidebar() {{
+    if (!filterSidebarBody) return;
+    const openState = {{}};
+    filterSidebarBody.querySelectorAll("details.sb-filter-acc").forEach(function(d) {{
+      openState[d.dataset.filterKey || ""] = d.open;
+    }});
+    filterSidebarBody.innerHTML = "";
+    FILTER_DEFS.forEach(function(def) {{
+      const details = document.createElement("details");
+      details.className = "sb-filter-acc";
+      details.dataset.filterKey = def.key;
+      details.open = openState[def.key] !== false;
+      const summary = document.createElement("summary");
+      summary.textContent = def.label;
+      const body = document.createElement("div");
+      body.className = "sb-filter-acc-body";
+      const options = getSmartOptionsForKey(def.key);
+      if (!options.length) {{
+        const empty = document.createElement("div");
+        empty.className = "sb-filter-dropdown-empty";
+        empty.textContent = "No options match.";
+        body.appendChild(empty);
+      }} else {{
+        options.forEach(function(opt) {{
+          const label = document.createElement("label");
+          label.className = "sb-filter-check";
+          const left = document.createElement("span");
+          left.style.display = "inline-flex";
+          left.style.alignItems = "center";
+          left.style.gap = "10px";
+          left.style.minWidth = "0";
+          const cb = document.createElement("input");
+          cb.type = "checkbox";
+          cb.value = opt.value;
+          cb.dataset.filterKey = def.key;
+          cb.checked = selected[def.key].has(opt.value);
+          cb.addEventListener("change", function() {{
+            onFilterChange(def.key, opt.value, cb.checked);
+          }});
+          const span = document.createElement("span");
+          span.textContent = opt.label;
+          const count = document.createElement("span");
+          count.className = "sb-filter-acc-count";
+          count.textContent = String(optionCountForKey(def.key, opt.value));
+          left.appendChild(cb);
+          left.appendChild(span);
+          label.appendChild(left);
+          label.appendChild(count);
+          body.appendChild(label);
+        }});
+      }}
+      details.appendChild(summary);
+      details.appendChild(body);
+      filterSidebarBody.appendChild(details);
+    }});
+  }}
+
   function updateScrollButtons() {{
     if (!filterTrack || !filterScrollPrev || !filterScrollNext) return;
     const maxScroll = filterTrack.scrollWidth - filterTrack.clientWidth;
@@ -3516,20 +4115,27 @@ document.addEventListener("DOMContentLoaded", function () {{
     const selS = selected.section;
     const selC = selected.category;
     const selB = selected.brand;
+    const q = (searchInput?.value || "").trim().toLowerCase();
+    const sortMode = (sortSelect?.value || "best");
     let shown = [];
+
+    if (searchWrap) searchWrap.classList.toggle("has-value", !!q);
 
     cards.forEach(function(card) {{
       const r = card.dataset.retailer;
       const s = card.dataset.section;
       const c = card.dataset.category;
       const b = card.dataset.brand;
+      const hay = (card.dataset.search || "").toLowerCase();
 
       const matchR = selR.size === 0 || selR.has(r);
       const matchS = selS.size === 0 || selS.has(s);
       const matchC = selC.size === 0 || selC.has(c);
       const matchB = selB.size === 0 || selB.has(b);
+      const matchQ = !q || hay.indexOf(q) !== -1;
+      const matchT = cardMatchesTier(card);
 
-      if (matchR && matchS && matchC && matchB) {{
+      if (matchR && matchS && matchC && matchB && matchQ && matchT) {{
         card.style.display = "";
         shown.push(card);
       }} else {{
@@ -3537,29 +4143,45 @@ document.addEventListener("DOMContentLoaded", function () {{
       }}
     }});
 
+    function getTierPriority(tier) {{
+      if (tier === "diamond") return 4;
+      if (tier === "fire") return 3;
+      if (tier === "strong") return 2;
+      return 1;
+    }}
+
     shown.sort(function(a, b) {{
       const aPrice = parseFloat(a.dataset.price || "0");
       const bPrice = parseFloat(b.dataset.price || "0");
       const aPct = parseFloat(a.dataset.percent || "0");
       const bPct = parseFloat(b.dataset.percent || "0");
-      const aTier = a.dataset.tier || "sale";
-      const bTier = b.dataset.tier || "sale";
 
-      function getTierPriority(tier) {{
-        if (tier === "diamond") return 4;
-        if (tier === "fire") return 3;
-        if (tier === "strong") return 2;
-        return 1;
+      if (sortMode === "pct-desc") {{
+        if (aPct !== bPct) return bPct - aPct;
+        return aPrice - bPrice;
+      }}
+      if (sortMode === "price-asc") {{
+        if (aPrice !== bPrice) return aPrice - bPrice;
+        return bPct - aPct;
+      }}
+      if (sortMode === "price-desc") {{
+        if (aPrice !== bPrice) return bPrice - aPrice;
+        return bPct - aPct;
       }}
 
-      const aTierPriority = getTierPriority(aTier);
-      const bTierPriority = getTierPriority(bTier);
+      // Default: best discount (tier → % off → price)
+      const aTierPriority = getTierPriority(a.dataset.tier || "sale");
+      const bTierPriority = getTierPriority(b.dataset.tier || "sale");
       if (aTierPriority !== bTierPriority) return bTierPriority - aTierPriority;
       if (aPct !== bPct) return bPct - aPct;
       return aPrice - bPrice;
     }});
 
     shown.forEach(function(card) {{ grid.appendChild(card); }});
+    if (dealsEmpty) dealsEmpty.classList.toggle("is-visible", shown.length === 0);
+    if (resultsCount) {{
+      resultsCount.textContent = shown.length + (shown.length === 1 ? " deal" : " deals");
+    }}
   }}
 
   function clearAllFilters() {{
@@ -3567,15 +4189,52 @@ document.addEventListener("DOMContentLoaded", function () {{
     selected.section.clear();
     selected.category.clear();
     selected.brand.clear();
+    if (searchInput) searchInput.value = "";
+    tierMode = "all";
+    document.querySelectorAll("[data-tier-filter]").forEach(function(el) {{
+      const active = el.getAttribute("data-tier-filter") === "all";
+      el.classList.toggle("is-active", active);
+      if (el.hasAttribute("aria-pressed")) el.setAttribute("aria-pressed", active ? "true" : "false");
+    }});
     syncAllCheckboxes();
     updateBadges();
     applyFiltersAndSort();
     refreshFilterOptionLists();
   }}
 
+  let searchTimer = null;
+  if (searchInput) {{
+    searchInput.addEventListener("input", function() {{
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(applyFiltersAndSort, 120);
+    }});
+  }}
+  if (searchClear) {{
+    searchClear.addEventListener("click", function() {{
+      if (!searchInput) return;
+      searchInput.value = "";
+      searchInput.focus();
+      applyFiltersAndSort();
+    }});
+  }}
+  if (sortSelect) {{
+    sortSelect.addEventListener("change", applyFiltersAndSort);
+  }}
+
+  document.querySelectorAll("[data-tier-filter]").forEach(function(el) {{
+    el.addEventListener("click", function() {{
+      const mode = el.getAttribute("data-tier-filter") || "all";
+      // Clicking an already-active specific tier returns to All
+      if (mode !== "all" && tierMode === mode) setTierMode("all");
+      else setTierMode(mode);
+    }});
+  }});
+
   buildFilterBar();
   buildFilterSheet();
+  buildFilterSidebar();
   updateBadges();
+  updateFilterToggleLabel();
   applyFiltersAndSort();
 
   /* ============================
@@ -3587,17 +4246,21 @@ document.addEventListener("DOMContentLoaded", function () {{
   const RETAILER_ORDER = ["walmart", "target", "kroger", "harris teeter", "meijer"];
 
   function countMatchingCards() {{
+    const q = (searchInput?.value || "").trim().toLowerCase();
     let n = 0;
     cards.forEach(function(card) {{
       const r = card.dataset.retailer;
       const s = card.dataset.section;
       const c = card.dataset.category;
       const b = card.dataset.brand;
+      const hay = (card.dataset.search || "").toLowerCase();
       const matchR = selected.retailer.size === 0 || selected.retailer.has(r);
       const matchS = selected.section.size === 0 || selected.section.has(s);
       const matchC = selected.category.size === 0 || selected.category.has(c);
       const matchB = selected.brand.size === 0 || selected.brand.has(b);
-      if (matchR && matchS && matchC && matchB) n += 1;
+      const matchQ = !q || hay.indexOf(q) !== -1;
+      const matchT = cardMatchesTier(card);
+      if (matchR && matchS && matchC && matchB && matchQ && matchT) n += 1;
     }});
     return n;
   }}
@@ -3993,10 +4656,18 @@ document.addEventListener("DOMContentLoaded", function () {{
 
   initWelcomeFlow();
 
-  filterMasterBtn?.addEventListener("click", function() {{
+  filterMasterBtn?.addEventListener("click", function(e) {{
+    e.stopPropagation();
+    if (isDesktopSidebar()) {{
+      dealsShell?.classList.toggle("is-filters-collapsed");
+      updateFilterToggleLabel();
+      return;
+    }}
     if (filterSheet?.classList.contains("open")) closeFilterSheet();
     else openFilterSheet();
   }});
+
+  filterSidebarClear?.addEventListener("click", clearAllFilters);
   filterSheetClose?.addEventListener("click", closeFilterSheet);
   filterSheetDone?.addEventListener("click", closeFilterSheet);
   filterSheetClear?.addEventListener("click", clearAllFilters);
@@ -4018,12 +4689,15 @@ document.addEventListener("DOMContentLoaded", function () {{
   }});
   window.addEventListener("resize", function() {{
     updateScrollButtons();
+    updateFilterToggleLabel();
+    if (isDesktopSidebar()) buildFilterSidebar();
     if (openDropdownKey) {{
       const btn = pillWraps[openDropdownKey]?.querySelector(".sb-filter-pill");
       if (btn && filterDropdownPanel && !filterDropdownPanel.hidden) positionDropdownPanel(btn);
     }}
   }});
   updateScrollButtons();
+  updateFilterToggleLabel();
 
   document.addEventListener("keydown", function(ev) {{
     if (ev.key === "Escape") {{
