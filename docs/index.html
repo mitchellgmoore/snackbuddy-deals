@@ -1051,7 +1051,7 @@
             color: #fff;
         }
 
-        .sb-tier-chip[data-tier-filter="fireplus"].is-active {
+        .sb-tier-chip[data-tier-filter="fire"].is-active {
             background: linear-gradient(135deg, #ea580c, #c2410c);
             border-color: #c2410c;
         }
@@ -2607,7 +2607,6 @@
         <section class="sb-tier-chips" aria-label="Filter by deal strength">
             <span class="sb-tier-chips-label">Show</span>
             <button type="button" class="sb-tier-chip is-active" data-tier-filter="all" aria-pressed="true">All</button>
-            <button type="button" class="sb-tier-chip" data-tier-filter="fireplus" aria-pressed="false" title="20% off and up">🔥 Fire+</button>
             <button type="button" class="sb-tier-chip" data-tier-filter="diamond" aria-pressed="false" title="25% off and up">💎 Diamond</button>
             <button type="button" class="sb-tier-chip" data-tier-filter="fire" aria-pressed="false" title="20–24% off">🔥 Fire</button>
             <button type="button" class="sb-tier-chip" data-tier-filter="strong" aria-pressed="false" title="10–19% off">💪 Strong</button>
@@ -8110,25 +8109,36 @@ document.addEventListener("DOMContentLoaded", function () {
     category: new Set(),
     brand: new Set(),
   };
-  let tierMode = "all";
+  let selectedTiers = new Set();
 
   const pillWraps = {};
   let openDropdownKey = null;
 
   function cardMatchesTier(card) {
+    if (selectedTiers.size === 0) return true;
     const t = card.dataset.tier || "sale";
-    if (tierMode === "all") return true;
-    if (tierMode === "fireplus") return t === "diamond" || t === "fire";
-    return t === tierMode;
+    return selectedTiers.has(t);
   }
 
-  function setTierMode(mode) {
-    tierMode = mode || "all";
-    document.querySelectorAll("[data-tier-filter]").forEach(function(el) {
-      const active = el.getAttribute("data-tier-filter") === tierMode;
+  function syncTierChips() {
+    const none = selectedTiers.size === 0;
+    document.querySelectorAll(".sb-tier-chip[data-tier-filter]").forEach(function(el) {
+      const mode = el.getAttribute("data-tier-filter") || "all";
+      const active = mode === "all" ? none : selectedTiers.has(mode);
       el.classList.toggle("is-active", active);
       if (el.hasAttribute("aria-pressed")) el.setAttribute("aria-pressed", active ? "true" : "false");
     });
+  }
+
+  function setTierSelection(mode) {
+    if (mode === "all") {
+      selectedTiers.clear();
+    } else if (selectedTiers.has(mode)) {
+      selectedTiers.delete(mode);
+    } else {
+      selectedTiers.add(mode);
+    }
+    syncTierChips();
     applyFiltersAndSort();
   }
 
@@ -8524,12 +8534,8 @@ document.addEventListener("DOMContentLoaded", function () {
     selected.category.clear();
     selected.brand.clear();
     if (searchInput) searchInput.value = "";
-    tierMode = "all";
-    document.querySelectorAll("[data-tier-filter]").forEach(function(el) {
-      const active = el.getAttribute("data-tier-filter") === "all";
-      el.classList.toggle("is-active", active);
-      if (el.hasAttribute("aria-pressed")) el.setAttribute("aria-pressed", active ? "true" : "false");
-    });
+    selectedTiers.clear();
+    syncTierChips();
     syncAllCheckboxes();
     updateBadges();
     applyFiltersAndSort();
@@ -8555,12 +8561,10 @@ document.addEventListener("DOMContentLoaded", function () {
     sortSelect.addEventListener("change", applyFiltersAndSort);
   }
 
-  document.querySelectorAll("[data-tier-filter]").forEach(function(el) {
+  document.querySelectorAll(".sb-tier-chip[data-tier-filter]").forEach(function(el) {
     el.addEventListener("click", function() {
       const mode = el.getAttribute("data-tier-filter") || "all";
-      // Clicking an already-active specific tier returns to All
-      if (mode !== "all" && tierMode === mode) setTierMode("all");
-      else setTierMode(mode);
+      setTierSelection(mode);
     });
   });
 
