@@ -120,7 +120,7 @@ def normalise_availability(raw):
     if val == "both":
         return "In-store & online", "availability both"
     if val == "online_only":
-        return "Online only", "availability online-only"
+        return "Shipping only", "availability online-only"
     # Unknown / blank / other → generic helpful message
     return "Check store availability", "availability check"
 
