@@ -2983,9 +2983,9 @@ def build_page_html(deals):
         .sb-welcome-panel {{
             position: relative;
             z-index: 1;
-            width: min(560px, 100%);
+            width: min(620px, 100%);
             margin: auto 16px;
-            max-height: min(92vh, 720px);
+            max-height: min(92vh, 780px);
             overflow: auto;
             padding: 28px 24px 22px;
             border-radius: 24px;
@@ -3052,33 +3052,126 @@ def build_page_html(deals):
             line-height: 1.4;
         }}
         .sb-welcome-chips {{
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
             margin-bottom: 18px;
+        }}
+        @media (min-width: 560px) {{
+            .sb-welcome-chips {{
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }}
         }}
         .sb-welcome-chip {{
             appearance: none;
             border: 1.5px solid #cbd5e1;
             background: #fff;
             color: var(--navy);
-            border-radius: 999px;
-            padding: 10px 14px;
+            border-radius: 16px;
+            padding: 12px 8px 10px;
             font: inherit;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 12px;
+            line-height: 1.2;
             cursor: pointer;
-            transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 8px;
+            min-height: 108px;
+            text-align: center;
+            transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
         }}
         .sb-welcome-chip:hover {{
-            transform: translateY(-1px);
+            transform: translateY(-2px);
             border-color: var(--blue);
-            color: var(--blue);
+            box-shadow: 0 8px 18px rgba(37, 99, 235, 0.12);
         }}
         .sb-welcome-chip.is-on {{
-            background: var(--blue);
+            background: rgba(37, 99, 235, 0.08);
             border-color: var(--blue);
-            color: #fff;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.22);
+            color: var(--navy);
+        }}
+        .sb-welcome-chip-icon {{
+            width: 52px;
+            height: 52px;
+            flex: 0 0 auto;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #fff;
+        }}
+        .sb-welcome-chip-icon.is-logo {{
+            width: 100%;
+            height: 52px;
+            border: 1px solid #e2e8f0;
+        }}
+        .sb-welcome-chip-icon.is-logo.is-kroger {{
+            background: #0055A5;
+            border-color: #00478a;
+        }}
+        .sb-welcome-chip-icon.is-logo.is-walmart {{
+            background: #0071CE;
+            border-color: #005da8;
+            width: 52px;
+            height: 52px;
+        }}
+        .sb-welcome-chip-icon.is-logo.is-kroger img,
+        .sb-welcome-chip-icon.is-logo.is-meijer img,
+        .sb-welcome-chip-icon.is-logo.is-walmart img {{
+            width: auto;
+            height: auto;
+            max-width: 78%;
+            max-height: 70%;
+            padding: 0;
+            margin: auto;
+        }}
+        .sb-welcome-chip-icon.is-logo.is-kroger img {{
+            mix-blend-mode: screen;
+            max-width: 76%;
+            max-height: 68%;
+        }}
+        .sb-welcome-chip-icon.is-logo.is-walmart img {{
+            max-width: 68%;
+            max-height: 68%;
+        }}
+        .sb-welcome-chip-icon.is-logo.is-category {{
+            width: 52px;
+            height: 52px;
+            background: #fff;
+            border-color: #e2e8f0;
+        }}
+        .sb-welcome-chip-icon.is-logo.is-category img {{
+            width: auto;
+            height: auto;
+            max-width: 88%;
+            max-height: 88%;
+            padding: 0;
+            margin: auto;
+        }}
+        .sb-welcome-chip-icon svg {{
+            width: 52px;
+            height: 52px;
+            display: block;
+        }}
+        .sb-welcome-chip-icon img {{
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: contain;
+            padding: 5px 8px;
+            box-sizing: border-box;
+        }}
+        .sb-welcome-chip-label {{
+            display: block;
+            max-width: 100%;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            color: inherit;
         }}
         .sb-welcome-preview {{
             min-height: 1.25em;
@@ -4246,7 +4339,7 @@ document.addEventListener("DOMContentLoaded", function () {{
      ============================ */
   const BEEHIIV_FORM_ID = "{beehiiv_form_id}";
   const BEEHIIV_PUBLICATION_ID = "{beehiiv_pub_id}";
-  const WELCOME_STORAGE_KEY = "sb_welcome_v2";
+  const WELCOME_STORAGE_KEY = "sb_welcome_v3";
   const RETAILER_ORDER = ["walmart", "target", "kroger", "harris teeter", "meijer"];
 
   function countMatchingCards() {{
@@ -4471,37 +4564,119 @@ document.addEventListener("DOMContentLoaded", function () {{
       }}
     }}
 
+    function welcomeCategoryLabel(val) {{
+      const map = {{
+        "bars": "Protein Bars",
+        "chips & crunchy": "Chips & Crunchy",
+        "cookies & sweets": "Cookies & Sweets",
+        "meat snack": "Meat Stick",
+        "wraps": "Wraps",
+        "energy drink": "Energy Drink",
+        "rtd protein shake": "RTD Shake",
+        "protein powder": "Protein Powder",
+      }};
+      return map[String(val || "").toLowerCase()] || titleize(val);
+    }}
+
+    function welcomeRetailerIcon(val) {{
+      const key = String(val || "").toLowerCase();
+      const icons = {{
+        walmart: '<img class="sb-welcome-logo" src="assets/walmart-logo.png" alt="" width="64" height="64" loading="lazy" />',
+        target: '<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#CC0000"/><circle cx="32" cy="32" r="18" fill="#fff"/><circle cx="32" cy="32" r="11.5" fill="#CC0000"/><circle cx="32" cy="32" r="5" fill="#fff"/></svg>',
+        kroger: '<img class="sb-welcome-logo" src="assets/kroger-logo.png" alt="" width="120" height="48" loading="lazy" />',
+        "harris teeter": '<img class="sb-welcome-logo" src="assets/harris-teeter-logo.png" alt="" width="120" height="48" loading="lazy" />',
+        meijer: '<img class="sb-welcome-logo" src="assets/meijer-logo.png" alt="" width="120" height="48" loading="lazy" />',
+        other: '<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#F1F5F9" stroke="#94A3B8" stroke-width="2"/><path d="M32 18v28M18 32h28" stroke="#475569" stroke-width="4" stroke-linecap="round"/></svg>',
+      }};
+      return icons[key] || icons.other;
+    }}
+
+    function welcomeRetailerLabel(val) {{
+      const key = String(val || "").toLowerCase();
+      const map = {{
+        walmart: "Walmart®",
+        target: "Target®",
+        kroger: "Kroger®",
+        "harris teeter": "Harris Teeter®",
+        meijer: "Meijer®",
+        other: "Other",
+      }};
+      return map[key] || (titleize(val) + "®");
+    }}
+
+    function welcomeCategoryIcon(val) {{
+      const key = String(val || "").toLowerCase();
+      const icons = {{
+        bars: '<img class="sb-welcome-logo" src="assets/category-bars.png" alt="" width="64" height="64" loading="lazy" />',
+        "chips & crunchy": '<img class="sb-welcome-logo" src="assets/category-chips.png" alt="" width="64" height="64" loading="lazy" />',
+        "cookies & sweets": '<img class="sb-welcome-logo" src="assets/category-cookies.png" alt="" width="64" height="64" loading="lazy" />',
+        "energy drink": '<img class="sb-welcome-logo" src="assets/category-energy.png" alt="" width="64" height="64" loading="lazy" />',
+        "meat snack": '<img class="sb-welcome-logo" src="assets/category-meat.png" alt="" width="64" height="64" loading="lazy" />',
+        wraps: '<img class="sb-welcome-logo" src="assets/category-wraps.png" alt="" width="64" height="64" loading="lazy" />',
+        "rtd protein shake": '<img class="sb-welcome-logo" src="assets/category-rtd.png" alt="" width="64" height="64" loading="lazy" />',
+        "protein powder": '<img class="sb-welcome-logo" src="assets/category-powder.png" alt="" width="64" height="64" loading="lazy" />',
+      }};
+      return icons[key] || '<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#F1F5F9"/><circle cx="32" cy="32" r="12" fill="#94A3B8"/></svg>';
+    }}
+
+    function makeWelcomeTile(opts) {{
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "sb-welcome-chip" + (opts.on ? " is-on" : "");
+      btn.setAttribute("aria-pressed", opts.on ? "true" : "false");
+      btn.setAttribute("aria-label", opts.label);
+      const icon = document.createElement("span");
+      const html = opts.iconHtml || "";
+      icon.className = "sb-welcome-chip-icon";
+      if (/<img\\b/i.test(html)) icon.classList.add("is-logo");
+      if (/kroger-logo/i.test(html)) icon.classList.add("is-kroger");
+      if (/meijer-logo/i.test(html)) icon.classList.add("is-meijer");
+      if (/walmart-logo/i.test(html)) icon.classList.add("is-walmart");
+      if (/category-/i.test(html)) icon.classList.add("is-category");
+      icon.innerHTML = html;
+      const label = document.createElement("span");
+      label.className = "sb-welcome-chip-label";
+      label.textContent = opts.label;
+      btn.appendChild(icon);
+      btn.appendChild(label);
+      btn.addEventListener("click", function() {{
+        const next = opts.onToggle();
+        btn.classList.toggle("is-on", !!next);
+        btn.setAttribute("aria-pressed", next ? "true" : "false");
+        updateLivePreview();
+      }});
+      return btn;
+    }}
+
     function renderRetailerChips() {{
       if (!retailerBox) return;
       retailerBox.innerHTML = "";
       availableRetailers().forEach(function(val) {{
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "sb-welcome-chip" + (draft.retailers.has(val) ? " is-on" : "");
-        btn.textContent = titleize(val);
-        btn.addEventListener("click", function() {{
-          if (draft.retailers.has(val)) draft.retailers.delete(val);
-          else draft.retailers.add(val);
-          btn.classList.toggle("is-on", draft.retailers.has(val));
-          updateLivePreview();
-        }});
-        retailerBox.appendChild(btn);
+        retailerBox.appendChild(makeWelcomeTile({{
+          label: welcomeRetailerLabel(val),
+          iconHtml: welcomeRetailerIcon(val),
+          on: draft.retailers.has(val),
+          onToggle: function() {{
+            if (draft.retailers.has(val)) draft.retailers.delete(val);
+            else draft.retailers.add(val);
+            return draft.retailers.has(val);
+          }},
+        }}));
       }});
-      const otherBtn = document.createElement("button");
-      otherBtn.type = "button";
-      otherBtn.className = "sb-welcome-chip" + (draft.otherOn ? " is-on" : "");
-      otherBtn.textContent = "Other";
-      otherBtn.addEventListener("click", function() {{
-        draft.otherOn = !draft.otherOn;
-        otherBtn.classList.toggle("is-on", draft.otherOn);
-        if (!draft.otherOn) {{
-          draft.otherStore = "";
-          if (otherInput) otherInput.value = "";
-        }}
-        syncOtherUi();
-        updateLivePreview();
-      }});
-      retailerBox.appendChild(otherBtn);
+      retailerBox.appendChild(makeWelcomeTile({{
+        label: welcomeRetailerLabel("other"),
+        iconHtml: welcomeRetailerIcon("other"),
+        on: draft.otherOn,
+        onToggle: function() {{
+          draft.otherOn = !draft.otherOn;
+          if (!draft.otherOn) {{
+            draft.otherStore = "";
+            if (otherInput) otherInput.value = "";
+          }}
+          syncOtherUi();
+          return draft.otherOn;
+        }},
+      }}));
       syncOtherUi();
     }}
 
@@ -4509,17 +4684,16 @@ document.addEventListener("DOMContentLoaded", function () {{
       if (!container) return;
       container.innerHTML = "";
       values.forEach(function(val) {{
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "sb-welcome-chip" + (setRef.has(val) ? " is-on" : "");
-        btn.textContent = titleize(val);
-        btn.addEventListener("click", function() {{
-          if (setRef.has(val)) setRef.delete(val);
-          else setRef.add(val);
-          btn.classList.toggle("is-on", setRef.has(val));
-          updateLivePreview();
-        }});
-        container.appendChild(btn);
+        container.appendChild(makeWelcomeTile({{
+          label: welcomeCategoryLabel(val),
+          iconHtml: welcomeCategoryIcon(val),
+          on: setRef.has(val),
+          onToggle: function() {{
+            if (setRef.has(val)) setRef.delete(val);
+            else setRef.add(val);
+            return setRef.has(val);
+          }},
+        }}));
       }});
     }}
 
