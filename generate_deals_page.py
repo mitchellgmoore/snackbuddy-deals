@@ -3741,6 +3741,36 @@ document.addEventListener("DOMContentLoaded", function () {{
   const sortSelect = document.getElementById("sb-sort-select");
   const dealsEmpty = document.getElementById("sb-deals-empty");
 
+  function trackEvent(name, params) {{
+    try {{
+      if (typeof gtag === "function") {{
+        gtag("event", name, params || {{}});
+      }}
+    }} catch (err) {{}}
+  }}
+
+  if (grid) {{
+    grid.addEventListener("click", function(ev) {{
+      const link = ev.target && ev.target.closest
+        ? ev.target.closest("a.view-button, a.card-carousel-link")
+        : null;
+      if (!link || !grid.contains(link)) return;
+      const card = link.closest(".card");
+      if (!card) return;
+      const titleEl = card.querySelector(".card-title");
+      const itemName = titleEl ? String(titleEl.textContent || "").trim() : "";
+      trackEvent("retailer_click", {{
+        retailer: card.dataset.retailer || "",
+        item_name: itemName,
+        brand: card.dataset.brand || "",
+        deal_tier: card.dataset.tier || "",
+        percent_off: parseFloat(card.dataset.percent || "0") || 0,
+        price: parseFloat(card.dataset.price || "0") || 0,
+        link_type: link.classList.contains("view-button") ? "view_button" : "image"
+      }});
+    }});
+  }}
+
   const filterBarInner = document.getElementById("sb-filter-bar-inner");
   const filterSheetBody = document.getElementById("sb-filter-sheet-body");
   const filterMasterBtn = document.getElementById("sb-filter-master");
@@ -3896,6 +3926,10 @@ document.addEventListener("DOMContentLoaded", function () {{
       selectedTiers.delete(mode);
     }} else {{
       selectedTiers.add(mode);
+      trackEvent("filter_apply", {{
+        filter_type: "tier",
+        filter_value: mode
+      }});
     }}
     syncTierChips();
     applyFiltersAndSort();
@@ -4036,6 +4070,12 @@ document.addEventListener("DOMContentLoaded", function () {{
   function onFilterChange(key, value, checked) {{
     if (checked) selected[key].add(value);
     else selected[key].delete(value);
+    if (checked) {{
+      trackEvent("filter_apply", {{
+        filter_type: key,
+        filter_value: value
+      }});
+    }}
     pruneInvalidSelections();
     syncAllCheckboxes();
     updateBadges();
@@ -4302,10 +4342,19 @@ document.addEventListener("DOMContentLoaded", function () {{
   }}
 
   let searchTimer = null;
+  let searchAnalyticsTimer = null;
+  let lastTrackedSearch = "";
   if (searchInput) {{
     searchInput.addEventListener("input", function() {{
       clearTimeout(searchTimer);
       searchTimer = setTimeout(applyFiltersAndSort, 120);
+      clearTimeout(searchAnalyticsTimer);
+      searchAnalyticsTimer = setTimeout(function() {{
+        const term = (searchInput.value || "").trim().toLowerCase();
+        if (term.length < 2 || term === lastTrackedSearch) return;
+        lastTrackedSearch = term;
+        trackEvent("search", {{ search_term: term }});
+      }}, 800);
     }});
   }}
   if (searchClear) {{
@@ -4313,6 +4362,8 @@ document.addEventListener("DOMContentLoaded", function () {{
       if (!searchInput) return;
       searchInput.value = "";
       searchInput.focus();
+      lastTrackedSearch = "";
+      clearTimeout(searchAnalyticsTimer);
       applyFiltersAndSort();
     }});
   }}
@@ -4529,6 +4580,7 @@ document.addEventListener("DOMContentLoaded", function () {{
         draft.email = email;
         submitWelcomeEmail(email).then(function() {{
           draft.subscribed = true;
+          trackEvent("generate_lead", {{ method: "welcome_flow" }});
           setEmailStatus("You’re in — watch for a welcome email from SnackBuddy.");
           if (welcomeEmail) welcomeEmail.blur();
         }}).catch(function() {{

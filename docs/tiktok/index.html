@@ -1,0 +1,25 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Redirecting…</title>
+  <meta name="robots" content="noindex" />
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      params.set("utm_source", "tiktok");
+      params.set("utm_medium", "social");
+      params.set("utm_campaign", "bio");
+      var qs = params.toString();
+      var target = "/" + (qs ? "?" + qs : "");
+      if (window.location.hash) target += window.location.hash;
+      window.location.replace(target);
+    })();
+  </script>
+  <meta http-equiv="refresh" content="0;url=/?utm_source=tiktok&utm_medium=social&utm_campaign=bio" />
+  <link rel="canonical" href="/?utm_source=tiktok&utm_medium=social&utm_campaign=bio" />
+</head>
+<body>
+  <p>Redirecting to <a href="/?utm_source=tiktok&utm_medium=social&utm_campaign=bio">SnackBuddy</a>…</p>
+</body>
+</html>
