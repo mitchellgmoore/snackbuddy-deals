@@ -1950,6 +1950,79 @@ def build_page_html(deals):
             font-size: 14px;
             font-weight: 600;
         }}
+        .sb-my-items-notify {{
+            margin: 0 0 14px 0;
+            padding: 14px 16px;
+            border-radius: 12px;
+            background: #ffffff;
+            border: 1px solid var(--border-subtle);
+            box-shadow: var(--shadow-soft);
+        }}
+        .sb-my-items-notify-title {{
+            margin: 0 0 4px 0;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-main);
+        }}
+        .sb-my-items-notify-text {{
+            margin: 0 0 10px 0;
+            font-size: 13px;
+            line-height: 1.45;
+            color: var(--text-muted);
+        }}
+        .sb-my-items-notify-row {{
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }}
+        .sb-my-items-notify-email {{
+            flex: 1 1 200px;
+            min-width: 0;
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 14px;
+            font-family: inherit;
+        }}
+        .sb-my-items-notify-email:focus {{
+            outline: 2px solid #f59e0b;
+            outline-offset: 1px;
+            border-color: #f59e0b;
+        }}
+        .sb-my-items-notify-submit {{
+            border: none;
+            border-radius: 10px;
+            padding: 10px 14px;
+            background: #0f172a;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }}
+        .sb-my-items-notify-submit:hover {{
+            filter: brightness(1.08);
+        }}
+        .sb-my-items-notify-submit:disabled {{
+            opacity: 0.6;
+            cursor: default;
+        }}
+        .sb-my-items-notify-status {{
+            margin: 8px 0 0 0;
+            font-size: 13px;
+            color: #15803d;
+            min-height: 1.2em;
+        }}
+        .sb-my-items-notify-status.is-error {{
+            color: #b91c1c;
+        }}
+        .sb-my-items-notify-frame {{
+            position: absolute;
+            width: 0;
+            height: 0;
+            border: 0;
+            overflow: hidden;
+        }}
         .sb-my-items-empty {{
             display: none;
             margin: 24px auto;
@@ -3609,6 +3682,37 @@ def build_page_html(deals):
             <button type="button" class="sb-tier-chip sb-my-items-chip" id="sb-my-items-chip" data-tier-filter="my-items" aria-pressed="false" title="Starred items">★ My Items</button>
         </section>
         <div class="sb-my-items-summary" id="sb-my-items-summary" hidden></div>
+        <div class="sb-my-items-notify" id="sb-my-items-notify" hidden>
+            <p class="sb-my-items-notify-title">Get notified when these go on sale</p>
+            <p class="sb-my-items-notify-text">
+                Want a heads-up when your starred items drop? Enter your email and we&apos;ll include them in SnackBuddy alerts.
+            </p>
+            <form class="sb-my-items-notify-form" id="sb-my-items-notify-form" novalidate>
+                <div class="sb-my-items-notify-row">
+                    <label class="visually-hidden" for="sb-my-items-notify-email">Email address</label>
+                    <input
+                        class="sb-my-items-notify-email"
+                        id="sb-my-items-notify-email"
+                        type="email"
+                        name="email"
+                        autocomplete="email"
+                        inputmode="email"
+                        enterkeyhint="done"
+                        placeholder="Email address"
+                    />
+                    <button type="submit" class="sb-my-items-notify-submit" id="sb-my-items-notify-submit">
+                        Notify me
+                    </button>
+                </div>
+                <p class="sb-my-items-notify-status" id="sb-my-items-notify-status" aria-live="polite"></p>
+            </form>
+            <iframe
+                class="sb-my-items-notify-frame"
+                id="sb-my-items-notify-frame"
+                name="sb-my-items-notify-frame"
+                title="Subscribe helper"
+            ></iframe>
+        </div>
 
         <section class="sb-filter-bar-section" aria-label="Deal filters">
             <div class="sb-filter-bar">
@@ -4015,10 +4119,30 @@ document.addEventListener("DOMContentLoaded", function () {{
   let selectedTiers = new Set();
   let myItemsView = false;
   const MY_ITEMS_KEY = "sb_my_items_v1";
+  const EMAIL_SUB_KEY = "sb_email_subscribed_v1";
   const myItemsSummary = document.getElementById("sb-my-items-summary");
+  const myItemsNotify = document.getElementById("sb-my-items-notify");
   const myItemsEmpty = document.getElementById("sb-my-items-empty");
   const offSaleCards = new Map();
   let lastSaleItems = {{}};
+
+  function hasEmailSubscription() {{
+    try {{
+      return localStorage.getItem(EMAIL_SUB_KEY) === "1";
+    }} catch (err) {{
+      return false;
+    }}
+  }}
+  function markEmailSubscribed() {{
+    try {{
+      localStorage.setItem(EMAIL_SUB_KEY, "1");
+    }} catch (err) {{}}
+  }}
+  function syncMyItemsNotifyVisibility() {{
+    if (!myItemsNotify) return;
+    const show = myItemsView && !hasEmailSubscription();
+    myItemsNotify.hidden = !show;
+  }}
 
   function loadStarredIds() {{
     try {{
@@ -4555,6 +4679,7 @@ document.addEventListener("DOMContentLoaded", function () {{
 
     if (searchWrap) searchWrap.classList.toggle("has-value", !!q);
     if (myItemsSummary) myItemsSummary.hidden = !myItemsView;
+    syncMyItemsNotifyVisibility();
     if (myItemsEmpty) myItemsEmpty.classList.remove("is-visible");
 
     // Hide synthetic off-sale cards unless My Items view is on
@@ -4823,7 +4948,7 @@ document.addEventListener("DOMContentLoaded", function () {{
     return /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(String(value || "").trim());
   }}
 
-  function submitWelcomeEmail(email) {{
+  function submitWelcomeEmail(email, utmSource) {{
     // Hidden-iframe POST to beehiiv's public subscribe endpoint (same family as
     // their embed). We can't read the cross-origin response; friend tests /
     // Audience list confirm delivery.
@@ -4831,7 +4956,9 @@ document.addEventListener("DOMContentLoaded", function () {{
       return Promise.reject(new Error("missing publication id"));
     }}
     return new Promise(function(resolve, reject) {{
-      const frame = document.getElementById("sb-welcome-signup-frame");
+      const frame =
+        document.getElementById("sb-welcome-signup-frame") ||
+        document.getElementById("sb-my-items-notify-frame");
       if (!frame) {{
         reject(new Error("missing frame"));
         return;
@@ -4853,7 +4980,7 @@ document.addEventListener("DOMContentLoaded", function () {{
       addField("email", email);
       addField("reactivate_existing", "true");
       addField("send_welcome_email", "true");
-      addField("utm_source", "snackbuddy_welcome");
+      addField("utm_source", utmSource || "snackbuddy_welcome");
       if (BEEHIIV_FORM_ID) addField("form_id", BEEHIIV_FORM_ID);
 
       let settled = false;
@@ -4955,8 +5082,10 @@ document.addEventListener("DOMContentLoaded", function () {{
         if (welcomeEmailSubmit) welcomeEmailSubmit.disabled = true;
         setEmailStatus("Subscribing…");
         draft.email = email;
-        submitWelcomeEmail(email).then(function() {{
+        submitWelcomeEmail(email, "snackbuddy_welcome").then(function() {{
           draft.subscribed = true;
+          markEmailSubscribed();
+          syncMyItemsNotifyVisibility();
           trackEvent("generate_lead", {{ method: "welcome_flow" }});
           setEmailStatus("You’re in — watch for a welcome email from SnackBuddy.");
           if (welcomeEmail) welcomeEmail.blur();
@@ -5261,7 +5390,54 @@ document.addEventListener("DOMContentLoaded", function () {{
     openWelcome();
   }}
 
+  function wireMyItemsNotifySignup() {{
+    const form = document.getElementById("sb-my-items-notify-form");
+    const emailInput = document.getElementById("sb-my-items-notify-email");
+    const submitBtn = document.getElementById("sb-my-items-notify-submit");
+    const statusEl = document.getElementById("sb-my-items-notify-status");
+    if (!form || form.dataset.wired === "1") return;
+    form.dataset.wired = "1";
+
+    function setNotifyStatus(msg, isError) {{
+      if (!statusEl) return;
+      statusEl.textContent = msg || "";
+      statusEl.classList.toggle("is-error", !!isError);
+    }}
+
+    form.addEventListener("submit", function(ev) {{
+      ev.preventDefault();
+      if (hasEmailSubscription()) {{
+        setNotifyStatus("You’re already on the list.");
+        syncMyItemsNotifyVisibility();
+        return;
+      }}
+      const email = emailInput ? String(emailInput.value || "").trim() : "";
+      if (!isValidEmail(email)) {{
+        setNotifyStatus("Enter a valid email address.", true);
+        if (emailInput) emailInput.focus();
+        return;
+      }}
+      if (!BEEHIIV_PUBLICATION_ID) {{
+        setNotifyStatus("Signup is temporarily unavailable. Try the footer form.", true);
+        return;
+      }}
+      if (submitBtn) submitBtn.disabled = true;
+      setNotifyStatus("Subscribing…");
+      submitWelcomeEmail(email, "my_items_notify").then(function() {{
+        markEmailSubscribed();
+        trackEvent("generate_lead", {{ method: "my_items_notify" }});
+        setNotifyStatus("You’re in — we’ll email when the good stuff drops.");
+        if (emailInput) emailInput.blur();
+        window.setTimeout(syncMyItemsNotifyVisibility, 1200);
+      }}).catch(function() {{
+        setNotifyStatus("Couldn’t subscribe. Try again or use the footer form.", true);
+        if (submitBtn) submitBtn.disabled = false;
+      }});
+    }});
+  }}
+
   initWelcomeFlow();
+  wireMyItemsNotifySignup();
 
   filterMasterBtn?.addEventListener("click", function(e) {{
     e.stopPropagation();
