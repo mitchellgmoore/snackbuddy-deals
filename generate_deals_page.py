@@ -232,6 +232,17 @@ def extract_base_product_name(product_name: str) -> str:
     return name_part
 
 
+def make_item_id(brand, product_name, pack_size) -> str:
+    """Stable cross-retailer id for My Items starring (must match build_last_sale_json)."""
+    b = " ".join(str(brand or "").strip().lower().split())
+    p = " ".join(str(product_name or "").strip().lower().split())
+    try:
+        pack = str(int(float(pack_size)))
+    except (TypeError, ValueError):
+        pack = "0"
+    return f"{b}|{p}|{pack}"
+
+
 def remove_pack_size_from_name(product_name: str) -> str:
     """
     Remove pack size indicators like (1ct), (8ct), etc. from product name.
@@ -576,6 +587,9 @@ def build_card_html(deal):
     category_raw = (deal.get("category") or "").strip().lower()
     retailer_raw = normalize_retailer_value(deal.get("retailer") or "")
     brand_raw = (_norm_str(deal.get("brand")) or extract_brand_from_product_name(product_name)).lower()
+    pack_count_for_id = deal.get("pack_count")
+    item_id = make_item_id(brand_raw, product_name, pack_count_for_id)
+    item_id_attr = html.escape(item_id)
 
     section_attr = html.escape(section_raw)
     category_attr = html.escape(category_raw)
@@ -716,6 +730,7 @@ def build_card_html(deal):
 
     return f"""
     <div class="card {tier_class}"{diamond_style_attr}
+         data-item-id="{item_id_attr}"
          data-section="{section_attr}"
          data-category="{category_attr}"
          data-retailer="{retailer_attr}"
@@ -724,7 +739,13 @@ def build_card_html(deal):
          data-percent="{float(percent_off) if percent_off is not None else 0.0}"
          data-deal-count="{deal_count}"
          data-tier="{tier_name}"
-         data-search="{search_attr}">
+         data-search="{search_attr}"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         {diamond_sparkles_html}
         <div class="card-image-wrap">
             {image_carousel_html}
@@ -740,6 +761,7 @@ def build_card_html(deal):
             </div>
             <div class="card-title">{name}</div>
             {flavor_html}
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 {availability_html}
                 {streak_html}
@@ -1855,6 +1877,92 @@ def build_page_html(deals):
             border-color: #1d4ed8;
         }}
 
+        .sb-tier-chip.sb-my-items-chip.is-active {{
+            border-color: #f59e0b;
+            background: #fffbeb;
+            color: #b45309;
+        }}
+
+        .sb-star-btn {{
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 5;
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.92);
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #94a3b8;
+            padding: 0;
+        }}
+        .sb-star-btn:hover {{
+            color: #f59e0b;
+        }}
+        .sb-star-btn.is-starred {{
+            color: #f59e0b;
+        }}
+        .sb-star-icon {{
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linejoin: round;
+        }}
+        .sb-star-btn.is-starred .sb-star-icon {{
+            fill: currentColor;
+            stroke: currentColor;
+        }}
+        .card.card-off-sale {{
+            opacity: 0.92;
+            background: #f8fafc;
+        }}
+        .card.card-off-sale .card-pricing .new-price {{
+            color: var(--text-muted);
+        }}
+        .sb-last-sale-lines {{
+            margin: 8px 0 0 0;
+            display: grid;
+            gap: 4px;
+        }}
+        .sb-last-sale-line {{
+            font-size: 12px;
+            line-height: 1.35;
+            color: var(--text-muted);
+        }}
+        .sb-last-sale-line.is-now {{
+            color: #15803d;
+            font-weight: 600;
+        }}
+        .sb-my-items-summary {{
+            margin: 0 0 12px 0;
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            color: #92400e;
+            font-size: 14px;
+            font-weight: 600;
+        }}
+        .sb-my-items-empty {{
+            display: none;
+            margin: 24px auto;
+            max-width: 420px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 15px;
+            line-height: 1.5;
+        }}
+        .sb-my-items-empty.is-visible {{
+            display: block;
+        }}
+
         .sb-hero-tier {{
             display: inline-flex;
             align-items: center;
@@ -1964,6 +2072,7 @@ def build_page_html(deals):
         }}
 
         .card {{
+            position: relative;
             background-color: var(--card-bg);
             border-radius: var(--radius-lg);
             border: 1px solid var(--border-subtle);
@@ -3497,7 +3606,9 @@ def build_page_html(deals):
             <button type="button" class="sb-tier-chip" data-tier-filter="diamond" aria-pressed="false" title="25% off and up">💎 Diamond</button>
             <button type="button" class="sb-tier-chip" data-tier-filter="fire" aria-pressed="false" title="20–24% off">🔥 Fire</button>
             <button type="button" class="sb-tier-chip" data-tier-filter="strong" aria-pressed="false" title="10–19% off">💪 Strong</button>
+            <button type="button" class="sb-tier-chip sb-my-items-chip" id="sb-my-items-chip" data-tier-filter="my-items" aria-pressed="false" title="Starred items">★ My Items</button>
         </section>
+        <div class="sb-my-items-summary" id="sb-my-items-summary" hidden></div>
 
         <section class="sb-filter-bar-section" aria-label="Deal filters">
             <div class="sb-filter-bar">
@@ -3539,6 +3650,9 @@ def build_page_html(deals):
         </section>
         <div class="sb-deals-empty" id="sb-deals-empty" role="status" aria-live="polite">
             No deals match your search or filters. Try clearing search or filters.
+        </div>
+        <div class="sb-my-items-empty" id="sb-my-items-empty" role="status" aria-live="polite">
+            No saved items yet. Tap the ★ on any deal card to save it here — we’ll track when it goes on sale at each store.
         </div>
 
         </div>
@@ -3899,27 +4013,204 @@ document.addEventListener("DOMContentLoaded", function () {{
     brand: new Set(),
   }};
   let selectedTiers = new Set();
+  let myItemsView = false;
+  const MY_ITEMS_KEY = "sb_my_items_v1";
+  const myItemsSummary = document.getElementById("sb-my-items-summary");
+  const myItemsEmpty = document.getElementById("sb-my-items-empty");
+  const offSaleCards = new Map();
+  let lastSaleItems = {{}};
+
+  function loadStarredIds() {{
+    try {{
+      const raw = localStorage.getItem(MY_ITEMS_KEY);
+      const arr = raw ? JSON.parse(raw) : [];
+      return new Set(Array.isArray(arr) ? arr.filter(Boolean).map(String) : []);
+    }} catch (err) {{
+      return new Set();
+    }}
+  }}
+  let starredIds = loadStarredIds();
+
+  function saveStarredIds() {{
+    try {{
+      localStorage.setItem(MY_ITEMS_KEY, JSON.stringify(Array.from(starredIds)));
+    }} catch (err) {{}}
+  }}
+
+  function titleRetailer(name) {{
+    return titleize(String(name || ""));
+  }}
+
+  function daysAgoLabel(iso) {{
+    if (!iso) return "";
+    const d = new Date(String(iso).slice(0, 10) + "T12:00:00");
+    if (isNaN(d.getTime())) return String(iso);
+    const today = new Date();
+    today.setHours(12, 0, 0, 0);
+    const diff = Math.round((today.getTime() - d.getTime()) / 86400000);
+    if (diff <= 0) return "today";
+    if (diff === 1) return "1 day ago";
+    return diff + " days ago";
+  }}
+
+  function money(n) {{
+    const v = Number(n);
+    if (!isFinite(v)) return "";
+    return "$" + v.toFixed(2);
+  }}
+
+  function buildLastSaleLinesHtml(itemId, onSaleRetailers) {{
+    const meta = lastSaleItems[itemId];
+    const retailers = (meta && meta.retailers) || {{}};
+    const keys = Object.keys(retailers);
+    const onSale = onSaleRetailers || new Set();
+    if (!keys.length && !onSale.size) {{
+      return '<div class="sb-last-sale-line">No sale seen since we started tracking.</div>';
+    }}
+    const allKeys = Array.from(new Set(keys.concat(Array.from(onSale)))).sort();
+    return allKeys.map(function(ret) {{
+      const label = titleRetailer(ret);
+      if (onSale.has(ret)) {{
+        return '<div class="sb-last-sale-line is-now">On sale now at ' + label + '</div>';
+      }}
+      const rec = retailers[ret] || {{}};
+      if (rec.last_sale_date) {{
+        const priceBit = rec.sale_price != null ? " (" + money(rec.sale_price) + ")" : "";
+        return '<div class="sb-last-sale-line">Last on sale at ' + label + " " +
+          daysAgoLabel(rec.last_sale_date) + priceBit + "</div>";
+      }}
+      return '<div class="sb-last-sale-line">No sale seen at ' + label + " since we started tracking.</div>";
+    }}).join("");
+  }}
+
+  function syncStarButtons() {{
+    document.querySelectorAll(".card[data-item-id] .sb-star-btn").forEach(function(btn) {{
+      const card = btn.closest(".card");
+      const id = card && card.dataset.itemId;
+      const on = !!(id && starredIds.has(id));
+      btn.classList.toggle("is-starred", on);
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+      btn.setAttribute("aria-label", on ? "Remove from My Items" : "Save to My Items");
+      btn.title = on ? "Remove from My Items" : "Save to My Items";
+    }});
+  }}
+
+  function fillLastSaleLines(card) {{
+    const box = card.querySelector(".sb-last-sale-lines");
+    if (!box) return;
+    if (!myItemsView) {{
+      box.hidden = true;
+      box.innerHTML = "";
+      return;
+    }}
+    const id = card.dataset.itemId || "";
+    const onSale = new Set();
+    if (card.dataset.onSale === "1" && card.dataset.retailer) {{
+      onSale.add(card.dataset.retailer);
+    }}
+    // Also mark other live cards with same item id
+    cards.forEach(function(c) {{
+      if (c.dataset.itemId === id && c.dataset.onSale === "1" && c.dataset.retailer) {{
+        onSale.add(c.dataset.retailer);
+      }}
+    }});
+    box.innerHTML = buildLastSaleLinesHtml(id, onSale);
+    box.hidden = false;
+  }}
+
+  function ensureOffSaleCard(itemId) {{
+    if (offSaleCards.has(itemId)) return offSaleCards.get(itemId);
+    const meta = lastSaleItems[itemId];
+    if (!meta) return null;
+    const card = document.createElement("div");
+    card.className = "card card-off-sale";
+    card.dataset.itemId = itemId;
+    card.dataset.onSale = "0";
+    card.dataset.tier = "sale";
+    card.dataset.price = "0";
+    card.dataset.percent = "0";
+    card.dataset.brand = String(meta.brand || "").toLowerCase();
+    card.dataset.retailer = "";
+    card.dataset.section = "";
+    card.dataset.category = "";
+    card.dataset.search = [meta.brand, meta.product_name].filter(Boolean).join(" ").toLowerCase();
+    card.innerHTML =
+      '<button type="button" class="sb-star-btn is-starred" aria-label="Remove from My Items" aria-pressed="true" title="Remove from My Items">' +
+      '<svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+      '<path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/></svg></button>' +
+      '<div class="card-image-wrap"></div>' +
+      '<div class="card-content">' +
+      '<div class="card-pricing"><span class="new-price">Not on sale</span></div>' +
+      '<div class="card-title"></div>' +
+      '<div class="sb-last-sale-lines"></div>' +
+      '</div>';
+    card.querySelector(".card-title").textContent = meta.product_name || meta.brand || "Saved item";
+    offSaleCards.set(itemId, card);
+    return card;
+  }}
+
+  function toggleStar(itemId, itemName) {{
+    if (!itemId) return;
+    if (starredIds.has(itemId)) {{
+      starredIds.delete(itemId);
+      trackEvent("star_remove", {{ item_id: itemId, item_name: itemName || "" }});
+    }} else {{
+      starredIds.add(itemId);
+      trackEvent("star_add", {{ item_id: itemId, item_name: itemName || "" }});
+    }}
+    saveStarredIds();
+    syncStarButtons();
+    if (myItemsView) applyFiltersAndSort();
+  }}
+
+  if (grid) {{
+    grid.addEventListener("click", function(ev) {{
+      const btn = ev.target && ev.target.closest ? ev.target.closest(".sb-star-btn") : null;
+      if (!btn || !grid.contains(btn)) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      const card = btn.closest(".card");
+      if (!card) return;
+      const titleEl = card.querySelector(".card-title");
+      toggleStar(card.dataset.itemId || "", titleEl ? titleEl.textContent.trim() : "");
+    }});
+  }}
 
   const pillWraps = {{}};
   let openDropdownKey = null;
 
   function cardMatchesTier(card) {{
+    if (myItemsView) return true;
     if (selectedTiers.size === 0) return true;
     const t = card.dataset.tier || "sale";
     return selectedTiers.has(t);
   }}
 
   function syncTierChips() {{
-    const none = selectedTiers.size === 0;
     document.querySelectorAll(".sb-tier-chip[data-tier-filter]").forEach(function(el) {{
       const mode = el.getAttribute("data-tier-filter") || "all";
-      const active = mode === "all" ? none : selectedTiers.has(mode);
+      let active = false;
+      if (mode === "my-items") active = myItemsView;
+      else if (myItemsView) active = false;
+      else if (mode === "all") active = selectedTiers.size === 0;
+      else active = selectedTiers.has(mode);
       el.classList.toggle("is-active", active);
       if (el.hasAttribute("aria-pressed")) el.setAttribute("aria-pressed", active ? "true" : "false");
     }});
   }}
 
   function setTierSelection(mode) {{
+    if (mode === "my-items") {{
+      myItemsView = !myItemsView;
+      if (myItemsView) {{
+        selectedTiers.clear();
+        trackEvent("my_items_open", {{}});
+      }}
+      syncTierChips();
+      applyFiltersAndSort();
+      return;
+    }}
+    myItemsView = false;
     if (mode === "all") {{
       selectedTiers.clear();
     }} else if (selectedTiers.has(mode)) {{
@@ -4263,6 +4554,22 @@ document.addEventListener("DOMContentLoaded", function () {{
     let shown = [];
 
     if (searchWrap) searchWrap.classList.toggle("has-value", !!q);
+    if (myItemsSummary) myItemsSummary.hidden = !myItemsView;
+    if (myItemsEmpty) myItemsEmpty.classList.remove("is-visible");
+
+    // Hide synthetic off-sale cards unless My Items view is on
+    offSaleCards.forEach(function(card) {{
+      card.style.display = "none";
+      if (card.parentNode) card.parentNode.removeChild(card);
+    }});
+
+    const liveOnSaleIds = new Set();
+    cards.forEach(function(card) {{
+      if (card.dataset.itemId) liveOnSaleIds.add(card.dataset.itemId);
+    }});
+
+    // Dedupe live cards by item id in My Items (prefer first/highest already sorted later)
+    const seenItemIds = new Set();
 
     cards.forEach(function(card) {{
       const r = card.dataset.retailer;
@@ -4270,6 +4577,7 @@ document.addEventListener("DOMContentLoaded", function () {{
       const c = card.dataset.category;
       const b = card.dataset.brand;
       const hay = (card.dataset.search || "").toLowerCase();
+      const itemId = card.dataset.itemId || "";
 
       const matchR = selR.size === 0 || selR.has(r);
       const matchS = selS.size === 0 || selS.has(s);
@@ -4277,14 +4585,56 @@ document.addEventListener("DOMContentLoaded", function () {{
       const matchB = selB.size === 0 || selB.has(b);
       const matchQ = !q || hay.indexOf(q) !== -1;
       const matchT = cardMatchesTier(card);
+      const matchStar = !myItemsView || (itemId && starredIds.has(itemId));
 
-      if (matchR && matchS && matchC && matchB && matchQ && matchT) {{
+      if (myItemsView && itemId && seenItemIds.has(itemId)) {{
+        card.style.display = "none";
+        return;
+      }}
+
+      if (matchR && matchS && matchC && matchB && matchQ && matchT && matchStar) {{
         card.style.display = "";
+        if (myItemsView && itemId) seenItemIds.add(itemId);
+        fillLastSaleLines(card);
         shown.push(card);
       }} else {{
         card.style.display = "none";
+        const box = card.querySelector(".sb-last-sale-lines");
+        if (box) {{ box.hidden = true; box.innerHTML = ""; }}
       }}
     }});
+
+    if (myItemsView) {{
+      Array.from(starredIds).forEach(function(itemId) {{
+        if (seenItemIds.has(itemId)) return;
+        if (liveOnSaleIds.has(itemId)) return; // shown via live card path (or filtered out)
+        // Skip ids with no last_sale metadata and not on page
+        if (!lastSaleItems[itemId] && !liveOnSaleIds.has(itemId)) return;
+        const meta = lastSaleItems[itemId];
+        if (!meta) return;
+        const hay = [meta.brand, meta.product_name].join(" ").toLowerCase();
+        if (q && hay.indexOf(q) === -1) return;
+        const card = ensureOffSaleCard(itemId);
+        if (!card) return;
+        fillLastSaleLines(card);
+        card.style.display = "";
+        shown.push(card);
+        seenItemIds.add(itemId);
+      }});
+
+      const totalStarred = starredIds.size;
+      let onSaleCount = 0;
+      starredIds.forEach(function(id) {{
+        if (liveOnSaleIds.has(id)) onSaleCount += 1;
+      }});
+      if (myItemsSummary) {{
+        myItemsSummary.hidden = false;
+        myItemsSummary.textContent =
+          onSaleCount + " of your " + totalStarred +
+          (totalStarred === 1 ? " item is" : " items are") +
+          " on sale right now.";
+      }}
+    }}
 
     function getTierPriority(tier) {{
       if (tier === "diamond") return 4;
@@ -4294,6 +4644,10 @@ document.addEventListener("DOMContentLoaded", function () {{
     }}
 
     shown.sort(function(a, b) {{
+      const aOn = a.dataset.onSale === "1" ? 1 : 0;
+      const bOn = b.dataset.onSale === "1" ? 1 : 0;
+      if (myItemsView && aOn !== bOn) return bOn - aOn;
+
       const aPrice = parseFloat(a.dataset.price || "0");
       const bPrice = parseFloat(b.dataset.price || "0");
       const aPct = parseFloat(a.dataset.percent || "0");
@@ -4312,7 +4666,6 @@ document.addEventListener("DOMContentLoaded", function () {{
         return bPct - aPct;
       }}
 
-      // Default: best discount (tier → % off → price)
       const aTierPriority = getTierPriority(a.dataset.tier || "sale");
       const bTierPriority = getTierPriority(b.dataset.tier || "sale");
       if (aTierPriority !== bTierPriority) return bTierPriority - aTierPriority;
@@ -4321,9 +4674,23 @@ document.addEventListener("DOMContentLoaded", function () {{
     }});
 
     shown.forEach(function(card) {{ grid.appendChild(card); }});
-    if (dealsEmpty) dealsEmpty.classList.toggle("is-visible", shown.length === 0);
+
+    const emptyMyItems = myItemsView && starredIds.size === 0;
+    const emptyFiltered = shown.length === 0 && !emptyMyItems;
+    if (dealsEmpty) dealsEmpty.classList.toggle("is-visible", emptyFiltered && !myItemsView);
+    if (myItemsEmpty) myItemsEmpty.classList.toggle("is-visible", emptyMyItems || (myItemsView && shown.length === 0 && starredIds.size > 0));
+    if (myItemsView && shown.length === 0 && starredIds.size > 0 && myItemsEmpty) {{
+      myItemsEmpty.textContent = "None of your saved items match the current search or filters.";
+      myItemsEmpty.classList.add("is-visible");
+    }} else if (myItemsEmpty && emptyMyItems) {{
+      myItemsEmpty.textContent = "No saved items yet. Tap the ★ on any deal card to save it here — we’ll track when it goes on sale at each store.";
+    }}
     if (resultsCount) {{
-      resultsCount.textContent = shown.length + (shown.length === 1 ? " deal" : " deals");
+      if (myItemsView) {{
+        resultsCount.textContent = shown.length + (shown.length === 1 ? " saved item" : " saved items");
+      }} else {{
+        resultsCount.textContent = shown.length + (shown.length === 1 ? " deal" : " deals");
+      }}
     }}
   }}
 
@@ -4334,6 +4701,7 @@ document.addEventListener("DOMContentLoaded", function () {{
     selected.brand.clear();
     if (searchInput) searchInput.value = "";
     selectedTiers.clear();
+    myItemsView = false;
     syncTierChips();
     syncAllCheckboxes();
     updateBadges();
@@ -4383,7 +4751,16 @@ document.addEventListener("DOMContentLoaded", function () {{
   buildFilterSidebar();
   updateBadges();
   updateFilterToggleLabel();
+  syncStarButtons();
   applyFiltersAndSort();
+
+  fetch("last_sale.json", {{ cache: "no-store" }})
+    .then(function(r) {{ return r.ok ? r.json() : null; }})
+    .then(function(data) {{
+      if (data && data.items) lastSaleItems = data.items;
+      if (myItemsView) applyFiltersAndSort();
+    }})
+    .catch(function() {{}});
 
   /* ============================
      WELCOME PREFS + BEEHIIV EMBED

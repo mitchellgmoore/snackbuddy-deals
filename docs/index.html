@@ -1061,6 +1061,92 @@
             border-color: #1d4ed8;
         }
 
+        .sb-tier-chip.sb-my-items-chip.is-active {
+            border-color: #f59e0b;
+            background: #fffbeb;
+            color: #b45309;
+        }
+
+        .sb-star-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 5;
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.92);
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #94a3b8;
+            padding: 0;
+        }
+        .sb-star-btn:hover {
+            color: #f59e0b;
+        }
+        .sb-star-btn.is-starred {
+            color: #f59e0b;
+        }
+        .sb-star-icon {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linejoin: round;
+        }
+        .sb-star-btn.is-starred .sb-star-icon {
+            fill: currentColor;
+            stroke: currentColor;
+        }
+        .card.card-off-sale {
+            opacity: 0.92;
+            background: #f8fafc;
+        }
+        .card.card-off-sale .card-pricing .new-price {
+            color: var(--text-muted);
+        }
+        .sb-last-sale-lines {
+            margin: 8px 0 0 0;
+            display: grid;
+            gap: 4px;
+        }
+        .sb-last-sale-line {
+            font-size: 12px;
+            line-height: 1.35;
+            color: var(--text-muted);
+        }
+        .sb-last-sale-line.is-now {
+            color: #15803d;
+            font-weight: 600;
+        }
+        .sb-my-items-summary {
+            margin: 0 0 12px 0;
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            color: #92400e;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .sb-my-items-empty {
+            display: none;
+            margin: 24px auto;
+            max-width: 420px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 15px;
+            line-height: 1.5;
+        }
+        .sb-my-items-empty.is-visible {
+            display: block;
+        }
+
         .sb-hero-tier {
             display: inline-flex;
             align-items: center;
@@ -1170,6 +1256,7 @@
         }
 
         .card {
+            position: relative;
             background-color: var(--card-bg);
             border-radius: var(--radius-lg);
             border: 1px solid var(--border-subtle);
@@ -2638,9 +2725,9 @@
                 <img src="assets/logo-transparent.png" alt="SnackBuddy logo" class="sb-logo" />
                 <span class="sb-header-title">SnackBuddy</span>
             </div>
-            <div class="sb-header-freshness" title="Prices logged October 19, 2026 at 04:07 PM (local time)">
+            <div class="sb-header-freshness" title="Prices logged October 20, 2026 at 04:03 PM (local time)">
                 <span class="sb-header-freshness-label">Prices checked</span>
-                <span class="sb-header-freshness-time">Oct 19 · 04:07 PM</span>
+                <span class="sb-header-freshness-time">Oct 20 · 04:03 PM</span>
             </div>
             <button class="sb-menu-button" aria-label="Menu" aria-expanded="false">☰</button>
         </div>
@@ -2654,9 +2741,9 @@
             <div class="sb-hero-bg">
                 <div class="sb-hero-pattern"></div>
                 <div class="sb-hero-content">
-                    <div class="sb-hero-freshness" title="Prices logged October 19, 2026 at 04:07 PM (local time)">
+                    <div class="sb-hero-freshness" title="Prices logged October 20, 2026 at 04:03 PM (local time)">
                         <span class="sb-hero-freshness-dot" aria-hidden="true"></span>
-                        <span>Prices checked Oct 19 · 04:07 PM · may vary by location at checkout</span>
+                        <span>Prices checked Oct 20 · 04:03 PM · may vary by location at checkout</span>
                     </div>
                     <h1 class="sb-hero-title">Don&apos;t overpay for the snacks you already buy.</h1>
                 </div>
@@ -2703,7 +2790,9 @@
             <button type="button" class="sb-tier-chip" data-tier-filter="diamond" aria-pressed="false" title="25% off and up">💎 Diamond</button>
             <button type="button" class="sb-tier-chip" data-tier-filter="fire" aria-pressed="false" title="20–24% off">🔥 Fire</button>
             <button type="button" class="sb-tier-chip" data-tier-filter="strong" aria-pressed="false" title="10–19% off">💪 Strong</button>
+            <button type="button" class="sb-tier-chip sb-my-items-chip" id="sb-my-items-chip" data-tier-filter="my-items" aria-pressed="false" title="Starred items">★ My Items</button>
         </section>
+        <div class="sb-my-items-summary" id="sb-my-items-summary" hidden></div>
 
         <section class="sb-filter-bar-section" aria-label="Deal filters">
             <div class="sb-filter-bar">
@@ -2743,6 +2832,7 @@
         <section class="card-grid" id="deals-list">
             
     <div class="card card-tier-fire"
+         data-item-id="catalina crunch|catalina crunch cookie bars|4"
          data-section="food"
          data-category="cookies &amp; sweets"
          data-retailer="harris teeter"
@@ -2751,7 +2841,13 @@
          data-percent="22.2"
          data-deal-count="2"
          data-tier="fire"
-         data-search="catalina crunch cookie bars catalina crunch cookies &amp; sweets harris teeter chocolate with caramel peanut butter">
+         data-search="catalina crunch cookie bars catalina crunch cookies &amp; sweets harris teeter chocolate with caramel peanut butter"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -2784,6 +2880,7 @@
             </div>
             <div class="card-title">Catalina Crunch Cookie Bars</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -2796,6 +2893,7 @@
     
 
     <div class="card card-tier-fire"
+         data-item-id="quest|quest protein chips|4"
          data-section="food"
          data-category="chips &amp; crunchy"
          data-retailer="harris teeter"
@@ -2804,7 +2902,13 @@
          data-percent="21.8"
          data-deal-count="4"
          data-tier="fire"
-         data-search="quest protein chips quest chips &amp; crunchy harris teeter bbq loaded taco nacho cheese ranch">
+         data-search="quest protein chips quest chips &amp; crunchy harris teeter bbq loaded taco nacho cheese ranch"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -2837,6 +2941,7 @@
             </div>
             <div class="card-title">Quest Protein Chips</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -2849,6 +2954,7 @@
     
 
     <div class="card card-tier-fire"
+         data-item-id="alani nu|alani nu energy drink|1"
          data-section="drinks"
          data-category="energy drink"
          data-retailer="harris teeter"
@@ -2857,7 +2963,13 @@
          data-percent="21.6"
          data-deal-count="6"
          data-tier="fire"
-         data-search="alani nu energy drink alani nu energy drink harris teeter breezeberry cherry slush cosmic stardust hawaiian shaved ice juicy peach orange kiss">
+         data-search="alani nu energy drink alani nu energy drink harris teeter breezeberry cherry slush cosmic stardust hawaiian shaved ice juicy peach orange kiss"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -2890,6 +3002,7 @@
             </div>
             <div class="card-title">Alani Nu Energy Drink</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -2902,6 +3015,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="larabar|larabar|6"
          data-section="food"
          data-category="bars"
          data-retailer="walmart"
@@ -2910,7 +3024,13 @@
          data-percent="18.9"
          data-deal-count="1"
          data-tier="strong"
-         data-search="larabar larabar bars walmart cashew cookie">
+         data-search="larabar larabar bars walmart cashew cookie"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -2934,6 +3054,7 @@
             </div>
             <div class="card-title">Larabar</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -2946,6 +3067,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="pure protein|pure protein rtd protein shake|4"
          data-section="drinks"
          data-category="rtd protein shake"
          data-retailer="kroger"
@@ -2954,7 +3076,13 @@
          data-percent="18.2"
          data-deal-count="5"
          data-tier="strong"
-         data-search="pure protein rtd protein shake pure protein rtd protein shake kroger chocolate peanut butter rich chocolate salted caramel strawberry vanilla">
+         data-search="pure protein rtd protein shake pure protein rtd protein shake kroger chocolate peanut butter rich chocolate salted caramel strawberry vanilla"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -2981,6 +3109,7 @@
             </div>
             <div class="card-title">Pure Protein RTD Protein Shake</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -2993,6 +3122,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="optimum nutrition|optimum nutrition whey protein powder|1"
          data-section="food"
          data-category="protein powder"
          data-retailer="walmart"
@@ -3001,7 +3131,13 @@
          data-percent="17.8"
          data-deal-count="1"
          data-tier="strong"
-         data-search="optimum nutrition whey protein powder optimum nutrition protein powder walmart vanilla">
+         data-search="optimum nutrition whey protein powder optimum nutrition protein powder walmart vanilla"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -3025,6 +3161,7 @@
             </div>
             <div class="card-title">Optimum Nutrition Whey Protein Powder</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability in-store'>In-store</div>
                 
@@ -3037,6 +3174,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="larabar|larabar|18"
          data-section="food"
          data-category="bars"
          data-retailer="harris teeter"
@@ -3045,7 +3183,13 @@
          data-percent="17.4"
          data-deal-count="1"
          data-tier="strong"
-         data-search="larabar larabar bars harris teeter variety - fruity">
+         data-search="larabar larabar bars harris teeter variety - fruity"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -3069,6 +3213,7 @@
             </div>
             <div class="card-title">Larabar</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -3081,6 +3226,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="aloha|aloha vegan protein bar|5"
          data-section="food"
          data-category="bars"
          data-retailer="kroger"
@@ -3089,7 +3235,13 @@
          data-percent="16.7"
          data-deal-count="2"
          data-tier="strong"
-         data-search="aloha vegan protein bar aloha bars kroger chocolate chip cookie dough peanut butter chocolate">
+         data-search="aloha vegan protein bar aloha bars kroger chocolate chip cookie dough peanut butter chocolate"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -3116,6 +3268,7 @@
             </div>
             <div class="card-title">ALOHA Vegan Protein Bar</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -3128,6 +3281,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="clif builders|clif builders|12"
          data-section="food"
          data-category="bars"
          data-retailer="kroger"
@@ -3136,7 +3290,13 @@
          data-percent="16.7"
          data-deal-count="2"
          data-tier="strong"
-         data-search="clif builders clif builders bars kroger chocolate mint chocolate peanut butter">
+         data-search="clif builders clif builders bars kroger chocolate mint chocolate peanut butter"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -3163,6 +3323,7 @@
             </div>
             <div class="card-title">Clif Builders</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -3175,6 +3336,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="alani nu|alani nu energy drink|1"
          data-section="drinks"
          data-category="energy drink"
          data-retailer="kroger"
@@ -3183,7 +3345,13 @@
          data-percent="16.4"
          data-deal-count="12"
          data-tier="strong"
-         data-search="alani nu energy drink alani nu energy drink kroger cherry slush cherry twist cosmic stardust cotton candy dream float hawaiian shaved ice juicy peach orange kiss purple cotton candy sherbet swirl strawberry sunrise watermelon">
+         data-search="alani nu energy drink alani nu energy drink kroger cherry slush cherry twist cosmic stardust cotton candy dream float hawaiian shaved ice juicy peach orange kiss purple cotton candy sherbet swirl strawberry sunrise watermelon"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -3210,6 +3378,7 @@
             </div>
             <div class="card-title">Alani Nu Energy Drink</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -3222,6 +3391,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="celsius|celsius energy drink|1"
          data-section="drinks"
          data-category="energy drink"
          data-retailer="harris teeter"
@@ -3230,7 +3400,13 @@
          data-percent="16.4"
          data-deal-count="12"
          data-tier="strong"
-         data-search="celsius energy drink celsius energy drink harris teeter arctic vibe (frozen berry) blue razz lemonade cosmic vibe (fruit punch) fuji apple pear kiwi guava mango lemonade orange peach vibe playa vibe (pina colada) retro vibe (sherbert slush) watermelon wild berry">
+         data-search="celsius energy drink celsius energy drink harris teeter arctic vibe (frozen berry) blue razz lemonade cosmic vibe (fruit punch) fuji apple pear kiwi guava mango lemonade orange peach vibe playa vibe (pina colada) retro vibe (sherbert slush) watermelon wild berry"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -3257,6 +3433,7 @@
             </div>
             <div class="card-title">Celsius Energy Drink</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -3269,6 +3446,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="barebells|barebells protein bar|4"
          data-section="food"
          data-category="bars"
          data-retailer="target"
@@ -3277,7 +3455,13 @@
          data-percent="15.8"
          data-deal-count="1"
          data-tier="strong"
-         data-search="barebells protein bar barebells bars target birthday cake">
+         data-search="barebells protein bar barebells bars target birthday cake"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -3301,6 +3485,7 @@
             </div>
             <div class="card-title">Barebells Protein Bar</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability check'>Check store availability</div>
                 
@@ -3313,6 +3498,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="quest|quest protein bar|4"
          data-section="food"
          data-category="bars"
          data-retailer="harris teeter"
@@ -3321,7 +3507,13 @@
          data-percent="15.4"
          data-deal-count="2"
          data-tier="strong"
-         data-search="quest protein bar quest bars harris teeter chocolate chip cookie dough cookies &amp; cream">
+         data-search="quest protein bar quest bars harris teeter chocolate chip cookie dough cookies &amp; cream"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -3348,6 +3540,7 @@
             </div>
             <div class="card-title">Quest Protein Bar</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -3360,6 +3553,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="larabar|larabar minis|20"
          data-section="food"
          data-category="bars"
          data-retailer="walmart"
@@ -3368,7 +3562,13 @@
          data-percent="15.2"
          data-deal-count="1"
          data-tier="strong"
-         data-search="larabar minis larabar bars walmart chocolate chip cookie">
+         data-search="larabar minis larabar bars walmart chocolate chip cookie"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -3392,6 +3592,7 @@
             </div>
             <div class="card-title">Larabar Minis</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -3404,6 +3605,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="one|one protein bar|4"
          data-section="food"
          data-category="bars"
          data-retailer="target"
@@ -3412,7 +3614,13 @@
          data-percent="15.0"
          data-deal-count="3"
          data-tier="strong"
-         data-search="one protein bar one bars target hershey&#x27;s cookies &#x27;n&#x27; crème hershey&#x27;s double chocolate reese&#x27;s peanut butter lovers">
+         data-search="one protein bar one bars target hershey&#x27;s cookies &#x27;n&#x27; crème hershey&#x27;s double chocolate reese&#x27;s peanut butter lovers"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -3439,6 +3647,7 @@
             </div>
             <div class="card-title">ONE Protein Bar</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability check'>Check store availability</div>
                 
@@ -3451,6 +3660,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="pure protein|pure protein bar|12"
          data-section="food"
          data-category="bars"
          data-retailer="target"
@@ -3459,7 +3669,13 @@
          data-percent="15.0"
          data-deal-count="1"
          data-tier="strong"
-         data-search="pure protein bar pure protein bars target chewy chocolate chip">
+         data-search="pure protein bar pure protein bars target chewy chocolate chip"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -3483,6 +3699,7 @@
             </div>
             <div class="card-title">Pure Protein Bar</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability check'>Check store availability</div>
                 
@@ -3495,6 +3712,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="power crunch|power crunch bar|5"
          data-section="food"
          data-category="bars"
          data-retailer="target"
@@ -3503,7 +3721,13 @@
          data-percent="14.9"
          data-deal-count="1"
          data-tier="strong"
-         data-search="power crunch bar power crunch bars target lemon meringue">
+         data-search="power crunch bar power crunch bars target lemon meringue"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -3527,6 +3751,7 @@
             </div>
             <div class="card-title">Power Crunch Bar</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability check'>Check store availability</div>
                 
@@ -3539,6 +3764,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="one bar|one reese&#x27;s peanut butter lovers flavored protein bars 2.12 oz title|4"
          data-section="food"
          data-category="bars"
          data-retailer="harris teeter"
@@ -3547,7 +3773,13 @@
          data-percent="14.4"
          data-deal-count="1"
          data-tier="strong"
-         data-search="one reese&#x27;s peanut butter lovers flavored protein bars 2.12 oz title one bar bars harris teeter reese&#x27;s peanut butter">
+         data-search="one reese&#x27;s peanut butter lovers flavored protein bars 2.12 oz title one bar bars harris teeter reese&#x27;s peanut butter"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -3571,6 +3803,7 @@
             </div>
             <div class="card-title">ONE REESE&#x27;S Peanut Butter Lovers Flavored Protein Bars 2.12 oz title</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -3583,6 +3816,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="one bar|one maple glazed doughnut flavored protein bars 2.12 oz title|4"
          data-section="food"
          data-category="bars"
          data-retailer="harris teeter"
@@ -3591,7 +3825,13 @@
          data-percent="14.4"
          data-deal-count="1"
          data-tier="strong"
-         data-search="one maple glazed doughnut flavored protein bars 2.12 oz title one bar bars harris teeter maple glazed doughnut">
+         data-search="one maple glazed doughnut flavored protein bars 2.12 oz title one bar bars harris teeter maple glazed doughnut"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -3615,6 +3855,7 @@
             </div>
             <div class="card-title">ONE Maple Glazed Doughnut Flavored Protein Bars 2.12 oz title</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -3627,6 +3868,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="one bar|hershey&#x27;s one double chocolate protein bars 4 ct / 2.12 oz title|4"
          data-section="food"
          data-category="bars"
          data-retailer="harris teeter"
@@ -3635,7 +3877,13 @@
          data-percent="14.4"
          data-deal-count="1"
          data-tier="strong"
-         data-search="hershey&#x27;s one double chocolate protein bars 4 ct / 2.12 oz title one bar bars harris teeter chocolate chip cookie dough">
+         data-search="hershey&#x27;s one double chocolate protein bars 4 ct / 2.12 oz title one bar bars harris teeter chocolate chip cookie dough"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -3659,6 +3907,7 @@
             </div>
             <div class="card-title">Hershey&#x27;s ONE Double Chocolate Protein Bars 4 ct / 2.12 oz title</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -3671,6 +3920,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="catalina crunch|catalina crunch snack mix|1"
          data-section="food"
          data-category="cookies &amp; sweets"
          data-retailer="harris teeter"
@@ -3679,7 +3929,13 @@
          data-percent="14.3"
          data-deal-count="5"
          data-tier="strong"
-         data-search="catalina crunch snack mix catalina crunch cookies &amp; sweets harris teeter cheddar creamy ranch honey mustard spicy traditional">
+         data-search="catalina crunch snack mix catalina crunch cookies &amp; sweets harris teeter cheddar creamy ranch honey mustard spicy traditional"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -3706,6 +3962,7 @@
             </div>
             <div class="card-title">Catalina Crunch Snack Mix</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -3718,6 +3975,59 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="premier protein|premier protein whey protein|1"
+         data-section="food"
+         data-category="protein powder"
+         data-retailer="walmart"
+         data-brand="premier protein"
+         data-price="29.99"
+         data-percent="13.3"
+         data-deal-count="1"
+         data-tier="strong"
+         data-search="premier protein whey protein premier protein protein powder walmart vanilla milkshake"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
+        
+        <div class="card-image-wrap">
+            
+        <div class="card-carousel card-carousel--single" data-slide-count="1">
+            <div class="card-carousel-stage">
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Vanilla Milkshake"><a href="https://www.walmart.com/ip/Premier-Protein-100-Whey-Protein-Powder-Chocolate-Milkshake-30g-Protein-24-5-oz-1-5-lb/945235241" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/Premier-Protein-100-Whey-Protein-Powder-Vanilla-Milkshake-30g-Protein-23-3-oz-1-7-lb_d6ed3fe0-f7ce-4a23-b83a-42fba8ff83a1.de3b484d3bbe67a5fa7df9d9d632b91e.png?odnHeight=573&amp;odnWidth=573&amp;odnBg=FFFFFF" alt="Vanilla Milkshake" class="card-image" loading="lazy"/></a></div>
+            </div>
+            
+            <div class="card-carousel-caption">Vanilla Milkshake</div>
+        </div>
+    
+            <div class="card-category-tag">Protein Powder</div>
+            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
+            <div class='badge badge-protein'>💪 Strong</div>
+        </div>
+        <div class="card-content">
+            <div class="card-pricing">
+                <span class='old-price'>$34.58</span>
+                <span class="new-price">$29.99</span>
+                <span class="percent-off">13% OFF</span>
+            </div>
+            <div class="card-title">Premier Protein Whey Protein</div>
+            
+            <div class="sb-last-sale-lines" hidden></div>
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Premier-Protein-100-Whey-Protein-Powder-Chocolate-Milkshake-30g-Protein-24-5-oz-1-5-lb/945235241" target="_blank" rel="noopener noreferrer">
+                View on Walmart.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card card-tier-strong"
+         data-item-id="clif|clif zbar|5"
          data-section="food"
          data-category="bars"
          data-retailer="meijer"
@@ -3726,7 +4036,13 @@
          data-percent="12.7"
          data-deal-count="3"
          data-tier="strong"
-         data-search="clif zbar clif bars meijer chocolate chip chocolate flavored mint cookies &#x27;n crème">
+         data-search="clif zbar clif bars meijer chocolate chip chocolate flavored mint cookies &#x27;n crème"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -3753,6 +4069,7 @@
             </div>
             <div class="card-title">Clif Zbar</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability in-store'>In-store</div>
                 
@@ -3765,6 +4082,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="ymmy|ymmy protein bar|4"
          data-section="food"
          data-category="bars"
          data-retailer="walmart"
@@ -3773,7 +4091,13 @@
          data-percent="12.7"
          data-deal-count="3"
          data-tier="strong"
-         data-search="ymmy protein bar ymmy bars walmart chocolate caramel pecan chocolate peanut caramel cookie dough">
+         data-search="ymmy protein bar ymmy bars walmart chocolate caramel pecan chocolate peanut caramel cookie dough"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -3800,6 +4124,7 @@
             </div>
             <div class="card-title">YMMY Protein Bar</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -3812,6 +4137,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="quest|quest protein chips|12"
          data-section="food"
          data-category="chips &amp; crunchy"
          data-retailer="walmart"
@@ -3820,7 +4146,13 @@
          data-percent="12.6"
          data-deal-count="1"
          data-tier="strong"
-         data-search="quest protein chips quest chips &amp; crunchy walmart nacho cheese">
+         data-search="quest protein chips quest chips &amp; crunchy walmart nacho cheese"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -3844,8 +4176,9 @@
             </div>
             <div class="card-title">Quest Protein Chips</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability in-store'>In-store</div>
+                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-walmart" href="https://www.walmart.com/ip/QUEST-NACHO-FLAVORED-PROTEIN-CHIP/14439908414" target="_blank" rel="noopener noreferrer">
@@ -3856,6 +4189,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="larabar|larabar|6"
          data-section="food"
          data-category="bars"
          data-retailer="kroger"
@@ -3864,7 +4198,13 @@
          data-percent="12.5"
          data-deal-count="11"
          data-tier="strong"
-         data-search="larabar larabar bars kroger apple pie blueberry muffin cashew cookie cherry pie chocolate chip cookie dough chocolate raspberry truffle dark chocolate truffle lemon bar peanut butter chocolate chip peanut butter cookie peanut cocoa crunch">
+         data-search="larabar larabar bars kroger apple pie blueberry muffin cashew cookie cherry pie chocolate chip cookie dough chocolate raspberry truffle dark chocolate truffle lemon bar peanut butter chocolate chip peanut butter cookie peanut cocoa crunch"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -3891,6 +4231,7 @@
             </div>
             <div class="card-title">Larabar</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -3903,6 +4244,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="larabar|larabar|18"
          data-section="food"
          data-category="bars"
          data-retailer="walmart"
@@ -3911,7 +4253,13 @@
          data-percent="12.0"
          data-deal-count="1"
          data-tier="strong"
-         data-search="larabar larabar bars walmart variety - fruit">
+         data-search="larabar larabar bars walmart variety - fruit"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -3935,6 +4283,7 @@
             </div>
             <div class="card-title">Larabar</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -3947,6 +4296,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="owyn|owyn protein powder|1"
          data-section="food"
          data-category="protein powder"
          data-retailer="walmart"
@@ -3955,7 +4305,13 @@
          data-percent="11.4"
          data-deal-count="1"
          data-tier="strong"
-         data-search="owyn protein powder owyn protein powder walmart vanilla">
+         data-search="owyn protein powder owyn protein powder walmart vanilla"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -3979,6 +4335,7 @@
             </div>
             <div class="card-title">OWYN Protein Powder</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -3991,6 +4348,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="larabar|larabar|6"
          data-section="food"
          data-category="bars"
          data-retailer="walmart"
@@ -3999,7 +4357,13 @@
          data-percent="11.3"
          data-deal-count="1"
          data-tier="strong"
-         data-search="larabar larabar bars walmart peanut butter cookie">
+         data-search="larabar larabar bars walmart peanut butter cookie"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -4023,6 +4387,7 @@
             </div>
             <div class="card-title">Larabar</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -4035,6 +4400,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="ghost|ghost protein bar|4"
          data-section="food"
          data-category="bars"
          data-retailer="target"
@@ -4043,7 +4409,13 @@
          data-percent="11.2"
          data-deal-count="3"
          data-tier="strong"
-         data-search="ghost protein bar ghost bars target chocolate caramel chocolate chip cookie dough chocolate peanut butter">
+         data-search="ghost protein bar ghost bars target chocolate caramel chocolate chip cookie dough chocolate peanut butter"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -4070,6 +4442,7 @@
             </div>
             <div class="card-title">Ghost Protein Bar</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability online-only'>Shipping only</div>
                 
@@ -4082,6 +4455,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="fairlife|core power protein shake|1"
          data-section="drinks"
          data-category="rtd protein shake"
          data-retailer="kroger"
@@ -4090,7 +4464,13 @@
          data-percent="11.1"
          data-deal-count="2"
          data-tier="strong"
-         data-search="core power protein shake fairlife rtd protein shake kroger chocolate vanilla">
+         data-search="core power protein shake fairlife rtd protein shake kroger chocolate vanilla"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -4117,6 +4497,7 @@
             </div>
             <div class="card-title">Core Power Protein Shake</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -4129,6 +4510,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="quest|quest crackers|4"
          data-section="food"
          data-category="chips &amp; crunchy"
          data-retailer="harris teeter"
@@ -4137,7 +4519,13 @@
          data-percent="11.1"
          data-deal-count="2"
          data-tier="strong"
-         data-search="quest crackers quest chips &amp; crunchy harris teeter cheddar spicy cheddar">
+         data-search="quest crackers quest chips &amp; crunchy harris teeter cheddar spicy cheddar"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -4161,6 +4549,7 @@
             </div>
             <div class="card-title">Quest Crackers</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -4173,6 +4562,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="built|built puff|4"
          data-section="food"
          data-category="bars"
          data-retailer="meijer"
@@ -4181,7 +4571,13 @@
          data-percent="10.5"
          data-deal-count="2"
          data-tier="strong"
-         data-search="built puff built bars meijer brownie batter coconut">
+         data-search="built puff built bars meijer brownie batter coconut"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -4208,6 +4604,7 @@
             </div>
             <div class="card-title">Built Puff</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability in-store'>In-store</div>
                 
@@ -4220,6 +4617,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="ghost|ghost energy drink|1"
          data-section="drinks"
          data-category="energy drink"
          data-retailer="walmart"
@@ -4228,7 +4626,13 @@
          data-percent="10.4"
          data-deal-count="4"
          data-tier="strong"
-         data-search="ghost energy drink ghost energy drink walmart cherry limeade sour pink lemonade strawbango welch&#x27;s grape">
+         data-search="ghost energy drink ghost energy drink walmart cherry limeade sour pink lemonade strawbango welch&#x27;s grape"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -4255,6 +4659,7 @@
             </div>
             <div class="card-title">Ghost Energy Drink</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -4267,6 +4672,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="catalina crunch|catalina crunch cereal|1"
          data-section="food"
          data-category="cookies &amp; sweets"
          data-retailer="walmart"
@@ -4275,7 +4681,13 @@
          data-percent="10.4"
          data-deal-count="3"
          data-tier="strong"
-         data-search="catalina crunch cereal catalina crunch cookies &amp; sweets walmart cinnamon toast dark chocolate honey graham">
+         data-search="catalina crunch cereal catalina crunch cookies &amp; sweets walmart cinnamon toast dark chocolate honey graham"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -4302,6 +4714,7 @@
             </div>
             <div class="card-title">Catalina Crunch Cereal</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -4314,6 +4727,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="aloha|aloga vegan protein bar|5"
          data-section="food"
          data-category="bars"
          data-retailer="target"
@@ -4322,7 +4736,13 @@
          data-percent="10.4"
          data-deal-count="4"
          data-tier="strong"
-         data-search="aloga vegan protein bar aloha bars target chocolate chip cookie dough coconut chocolate almond peanut butter chocolate chip peanut butter cup">
+         data-search="aloga vegan protein bar aloha bars target chocolate chip cookie dough coconut chocolate almond peanut butter chocolate chip peanut butter cup"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -4349,6 +4769,7 @@
             </div>
             <div class="card-title">ALOGA Vegan Protein Bar</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -4361,6 +4782,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="pure protein|pure protein bar|4"
          data-section="food"
          data-category="bars"
          data-retailer="walmart"
@@ -4369,7 +4791,13 @@
          data-percent="10.2"
          data-deal-count="1"
          data-tier="strong"
-         data-search="pure protein bar pure protein bars walmart chocolate peanut butter">
+         data-search="pure protein bar pure protein bars walmart chocolate peanut butter"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -4393,6 +4821,7 @@
             </div>
             <div class="card-title">Pure Protein Bar</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability in-store'>In-store</div>
                 
@@ -4405,6 +4834,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="kind|kind bar|6"
          data-section="food"
          data-category="bars"
          data-retailer="walmart"
@@ -4413,7 +4843,13 @@
          data-percent="10.0"
          data-deal-count="2"
          data-tier="strong"
-         data-search="kind bar kind bars walmart caramel almond &amp; sea salt peanut butter dark chocolate">
+         data-search="kind bar kind bars walmart caramel almond &amp; sea salt peanut butter dark chocolate"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -4440,6 +4876,7 @@
             </div>
             <div class="card-title">KIND Bar</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -4452,6 +4889,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="core power|core power protein shake|4"
          data-section="drinks"
          data-category="rtd protein shake"
          data-retailer="walmart"
@@ -4460,7 +4898,13 @@
          data-percent="10.0"
          data-deal-count="2"
          data-tier="strong"
-         data-search="core power protein shake core power rtd protein shake walmart chocolate strawberry banana">
+         data-search="core power protein shake core power rtd protein shake walmart chocolate strawberry banana"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -4487,6 +4931,7 @@
             </div>
             <div class="card-title">Core Power Protein Shake</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -4499,6 +4944,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="quest|quest protein chips|8"
          data-section="food"
          data-category="chips &amp; crunchy"
          data-retailer="walmart"
@@ -4507,7 +4953,13 @@
          data-percent="10.0"
          data-deal-count="1"
          data-tier="strong"
-         data-search="quest protein chips quest chips &amp; crunchy walmart nacho cheese">
+         data-search="quest protein chips quest chips &amp; crunchy walmart nacho cheese"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -4531,6 +4983,7 @@
             </div>
             <div class="card-title">Quest Protein Chips</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -4543,6 +4996,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="core power|core power elite protein shake|4"
          data-section="drinks"
          data-category="rtd protein shake"
          data-retailer="walmart"
@@ -4551,7 +5005,13 @@
          data-percent="10.0"
          data-deal-count="2"
          data-tier="strong"
-         data-search="core power elite protein shake core power rtd protein shake walmart strawberry vanilla">
+         data-search="core power elite protein shake core power rtd protein shake walmart strawberry vanilla"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -4578,6 +5038,7 @@
             </div>
             <div class="card-title">Core Power Elite Protein Shake</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -4590,6 +5051,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="rxbar|rxbar|15"
          data-section="food"
          data-category="bars"
          data-retailer="walmart"
@@ -4598,7 +5060,13 @@
          data-percent="10.0"
          data-deal-count="2"
          data-tier="strong"
-         data-search="rxbar rxbar bars walmart chocolate sea salt vanilla almond">
+         data-search="rxbar rxbar bars walmart chocolate sea salt vanilla almond"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -4625,6 +5093,7 @@
             </div>
             <div class="card-title">RXBAR</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -4637,6 +5106,7 @@
     
 
     <div class="card card-tier-strong"
+         data-item-id="aloha|aloga vegan protein bar|15"
          data-section="food"
          data-category="bars"
          data-retailer="walmart"
@@ -4645,7 +5115,13 @@
          data-percent="10.0"
          data-deal-count="2"
          data-tier="strong"
-         data-search="aloga vegan protein bar aloha bars walmart chocolate chip cookie dough peanut butter cup">
+         data-search="aloga vegan protein bar aloha bars walmart chocolate chip cookie dough peanut butter cup"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -4672,6 +5148,7 @@
             </div>
             <div class="card-title">ALOGA Vegan Protein Bar</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -4684,6 +5161,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="fairlife|core power protein shake|1"
          data-section="drinks"
          data-category="rtd protein shake"
          data-retailer="harris teeter"
@@ -4692,7 +5170,13 @@
          data-percent="9.6"
          data-deal-count="2"
          data-tier="sale"
-         data-search="core power protein shake fairlife rtd protein shake harris teeter chocolate vanilla">
+         data-search="core power protein shake fairlife rtd protein shake harris teeter chocolate vanilla"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -4719,6 +5203,7 @@
             </div>
             <div class="card-title">Core Power Protein Shake</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -4731,6 +5216,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="legendary foods|legendary sweet roll|4"
          data-section="food"
          data-category="cookies &amp; sweets"
          data-retailer="meijer"
@@ -4739,7 +5225,13 @@
          data-percent="9.5"
          data-deal-count="1"
          data-tier="sale"
-         data-search="legendary sweet roll legendary foods cookies &amp; sweets meijer sweet roll - cinnamon">
+         data-search="legendary sweet roll legendary foods cookies &amp; sweets meijer sweet roll - cinnamon"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -4763,6 +5255,7 @@
             </div>
             <div class="card-title">Legendary Sweet Roll</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability in-store'>In-store</div>
                 
@@ -4775,6 +5268,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="legendary foods|legendary protein pastry|4"
          data-section="food"
          data-category="cookies &amp; sweets"
          data-retailer="meijer"
@@ -4783,7 +5277,13 @@
          data-percent="9.5"
          data-deal-count="4"
          data-tier="sale"
-         data-search="legendary protein pastry legendary foods cookies &amp; sweets meijer blueberry brown sugar cinnamon chocolate cake strawberry">
+         data-search="legendary protein pastry legendary foods cookies &amp; sweets meijer blueberry brown sugar cinnamon chocolate cake strawberry"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -4810,6 +5310,7 @@
             </div>
             <div class="card-title">Legendary Protein Pastry</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability in-store'>In-store</div>
                 
@@ -4822,6 +5323,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="prime bites|prime bites protein brownie|4"
          data-section="food"
          data-category="cookies &amp; sweets"
          data-retailer="meijer"
@@ -4830,7 +5332,13 @@
          data-percent="9.5"
          data-deal-count="2"
          data-tier="sale"
-         data-search="prime bites protein brownie prime bites cookies &amp; sweets meijer cookie dough bites® glazed chocolate donut">
+         data-search="prime bites protein brownie prime bites cookies &amp; sweets meijer cookie dough bites® glazed chocolate donut"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -4857,6 +5365,7 @@
             </div>
             <div class="card-title">Prime Bites Protein Brownie</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability in-store'>In-store</div>
                 
@@ -4869,6 +5378,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="core power|core power elite protein shake|1"
          data-section="drinks"
          data-category="rtd protein shake"
          data-retailer="harris teeter"
@@ -4877,7 +5387,13 @@
          data-percent="9.4"
          data-deal-count="3"
          data-tier="sale"
-         data-search="core power elite protein shake core power rtd protein shake harris teeter chocolate strawberry vanilla">
+         data-search="core power elite protein shake core power rtd protein shake harris teeter chocolate strawberry vanilla"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -4904,6 +5420,7 @@
             </div>
             <div class="card-title">Core Power Elite Protein Shake</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -4916,6 +5433,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="orgain|orgain organic vegan protein powder|1"
          data-section="food"
          data-category="protein powder"
          data-retailer="walmart"
@@ -4924,7 +5442,13 @@
          data-percent="9.3"
          data-deal-count="2"
          data-tier="sale"
-         data-search="orgain organic vegan protein powder orgain protein powder walmart chocolate strawberries &amp; cream">
+         data-search="orgain organic vegan protein powder orgain protein powder walmart chocolate strawberries &amp; cream"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -4951,6 +5475,7 @@
             </div>
             <div class="card-title">Orgain Organic Vegan Protein Powder</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -4963,6 +5488,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="mission|mission carb balance|8"
          data-section="food"
          data-category="wraps"
          data-retailer="kroger"
@@ -4971,7 +5497,13 @@
          data-percent="9.1"
          data-deal-count="4"
          data-tier="sale"
-         data-search="mission carb balance mission wraps kroger flour - taco size spinach herb - taco size sundried tomato basil - taco size whole wheat flour - taco size">
+         data-search="mission carb balance mission wraps kroger flour - taco size spinach herb - taco size sundried tomato basil - taco size whole wheat flour - taco size"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -4998,6 +5530,7 @@
             </div>
             <div class="card-title">Mission Carb Balance</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -5010,6 +5543,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="mission|mission carb balance|6"
          data-section="food"
          data-category="wraps"
          data-retailer="kroger"
@@ -5018,7 +5552,13 @@
          data-percent="9.1"
          data-deal-count="1"
          data-tier="sale"
-         data-search="mission carb balance mission wraps kroger flour probiotictaco size">
+         data-search="mission carb balance mission wraps kroger flour probiotictaco size"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -5042,6 +5582,7 @@
             </div>
             <div class="card-title">Mission Carb Balance</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -5054,6 +5595,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="built|built puff|4"
          data-section="food"
          data-category="bars"
          data-retailer="kroger"
@@ -5062,7 +5604,13 @@
          data-percent="9.1"
          data-deal-count="5"
          data-tier="sale"
-         data-search="built puff built bars kroger brownie batter coconut cookie dough cookies n cream 17g salted caramel">
+         data-search="built puff built bars kroger brownie batter coconut cookie dough cookies n cream 17g salted caramel"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -5089,6 +5637,7 @@
             </div>
             <div class="card-title">Built Puff</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -5101,6 +5650,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="clif builders|clif builders|6"
          data-section="food"
          data-category="bars"
          data-retailer="kroger"
@@ -5109,7 +5659,13 @@
          data-percent="9.1"
          data-deal-count="4"
          data-tier="sale"
-         data-search="clif builders clif builders bars kroger chocolate mint chocolate peanut butter oreo-flavored vanilla almond">
+         data-search="clif builders clif builders bars kroger chocolate mint chocolate peanut butter oreo-flavored vanilla almond"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -5136,6 +5692,7 @@
             </div>
             <div class="card-title">Clif Builders</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -5148,6 +5705,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="built|built puff|1"
          data-section="food"
          data-category="bars"
          data-retailer="kroger"
@@ -5156,7 +5714,13 @@
          data-percent="9.1"
          data-deal-count="1"
          data-tier="sale"
-         data-search="built puff built bars kroger peanut butter cup">
+         data-search="built puff built bars kroger peanut butter cup"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -5180,6 +5744,7 @@
             </div>
             <div class="card-title">Built Puff</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -5192,6 +5757,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="clif|clif builders|6"
          data-section="food"
          data-category="bars"
          data-retailer="meijer"
@@ -5200,7 +5766,13 @@
          data-percent="9.1"
          data-deal-count="7"
          data-tier="sale"
-         data-search="clif builders clif bars meijer chocolate chip cookie dough chocolate flavor chocolate mint chocolatey peanut butter oreo vanilla almond white fudge oreo">
+         data-search="clif builders clif bars meijer chocolate chip cookie dough chocolate flavor chocolate mint chocolatey peanut butter oreo vanilla almond white fudge oreo"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -5227,6 +5799,7 @@
             </div>
             <div class="card-title">Clif Builders</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability in-store'>In-store</div>
                 
@@ -5239,6 +5812,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="power crunch|power crunch bar|5"
          data-section="food"
          data-category="bars"
          data-retailer="harris teeter"
@@ -5247,7 +5821,13 @@
          data-percent="8.0"
          data-deal-count="4"
          data-tier="sale"
-         data-search="power crunch bar power crunch bars harris teeter chocolate mint peanut butter peanut butter fudge triple chocolate">
+         data-search="power crunch bar power crunch bars harris teeter chocolate mint peanut butter peanut butter fudge triple chocolate"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -5274,6 +5854,7 @@
             </div>
             <div class="card-title">Power Crunch Bar</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -5286,6 +5867,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="clif|clif bar|15"
          data-section="food"
          data-category="bars"
          data-retailer="target"
@@ -5294,7 +5876,13 @@
          data-percent="7.8"
          data-deal-count="3"
          data-tier="sale"
-         data-search="clif bar clif bars target chocolate chip chocolate chip &amp; chocolate brownie crunchy peanut butter">
+         data-search="clif bar clif bars target chocolate chip chocolate chip &amp; chocolate brownie crunchy peanut butter"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -5321,6 +5909,7 @@
             </div>
             <div class="card-title">Clif Bar</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -5333,6 +5922,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="alani nu|alani nu energy drink|6"
          data-section="drinks"
          data-category="energy drink"
          data-retailer="meijer"
@@ -5341,7 +5931,13 @@
          data-percent="7.7"
          data-deal-count="1"
          data-tier="sale"
-         data-search="alani nu energy drink alani nu energy drink meijer cherry slush">
+         data-search="alani nu energy drink alani nu energy drink meijer cherry slush"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -5365,6 +5961,7 @@
             </div>
             <div class="card-title">Alani Nu Energy Drink</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability in-store'>In-store</div>
                 
@@ -5377,6 +5974,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="celsius|celsius energy drink|12"
          data-section="drinks"
          data-category="energy drink"
          data-retailer="kroger"
@@ -5385,7 +5983,13 @@
          data-percent="7.7"
          data-deal-count="1"
          data-tier="sale"
-         data-search="celsius energy drink celsius energy drink kroger vibe variety">
+         data-search="celsius energy drink celsius energy drink kroger vibe variety"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -5409,6 +6013,7 @@
             </div>
             <div class="card-title">Celsius Energy Drink</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -5421,6 +6026,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="celsius|celsius energy drink|12"
          data-section="drinks"
          data-category="energy drink"
          data-retailer="harris teeter"
@@ -5429,7 +6035,13 @@
          data-percent="7.7"
          data-deal-count="1"
          data-tier="sale"
-         data-search="celsius energy drink celsius energy drink harris teeter vibe variety">
+         data-search="celsius energy drink celsius energy drink harris teeter vibe variety"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -5453,6 +6065,7 @@
             </div>
             <div class="card-title">Celsius Energy Drink</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -5465,6 +6078,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="celsius|celsius energy drink|4"
          data-section="drinks"
          data-category="energy drink"
          data-retailer="kroger"
@@ -5473,7 +6087,13 @@
          data-percent="7.4"
          data-deal-count="3"
          data-tier="sale"
-         data-search="celsius energy drink celsius energy drink kroger orange peach vibe wild berry">
+         data-search="celsius energy drink celsius energy drink kroger orange peach vibe wild berry"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -5500,6 +6120,7 @@
             </div>
             <div class="card-title">Celsius Energy Drink</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -5512,6 +6133,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="mission|mission carb balance|8"
          data-section="food"
          data-category="wraps"
          data-retailer="target"
@@ -5520,7 +6142,13 @@
          data-percent="7.0"
          data-deal-count="2"
          data-tier="sale"
-         data-search="mission carb balance mission wraps target flour - fajita size whole wheat - fajita size">
+         data-search="mission carb balance mission wraps target flour - fajita size whole wheat - fajita size"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -5547,6 +6175,7 @@
             </div>
             <div class="card-title">Mission Carb Balance</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability check'>Check store availability</div>
                 
@@ -5559,6 +6188,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="larabar|larabar|6"
          data-section="food"
          data-category="bars"
          data-retailer="meijer"
@@ -5567,7 +6197,13 @@
          data-percent="6.7"
          data-deal-count="6"
          data-tier="sale"
-         data-search="larabar larabar bars meijer blueberry muffin cashew cookie cherry pie chocolate chip cookie dough peanut butter chocolate chip peanut cocoa crunch">
+         data-search="larabar larabar bars meijer blueberry muffin cashew cookie cherry pie chocolate chip cookie dough peanut butter chocolate chip peanut cocoa crunch"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -5594,6 +6230,7 @@
             </div>
             <div class="card-title">Larabar</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability in-store'>In-store</div>
                 
@@ -5606,6 +6243,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="larabar|larabar|5"
          data-section="food"
          data-category="bars"
          data-retailer="meijer"
@@ -5614,7 +6252,13 @@
          data-percent="6.7"
          data-deal-count="2"
          data-tier="sale"
-         data-search="larabar larabar bars meijer cinnamon peanut butter chocolate">
+         data-search="larabar larabar bars meijer cinnamon peanut butter chocolate"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -5641,6 +6285,7 @@
             </div>
             <div class="card-title">Larabar</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability in-store'>In-store</div>
                 
@@ -5653,6 +6298,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="barebells|barebells protein bar|12"
          data-section="food"
          data-category="bars"
          data-retailer="target"
@@ -5661,7 +6307,13 @@
          data-percent="6.7"
          data-deal-count="3"
          data-tier="sale"
-         data-search="barebells protein bar barebells bars target caramel cashew cookies &amp; cream salty peanut">
+         data-search="barebells protein bar barebells bars target caramel cashew cookies &amp; cream salty peanut"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -5688,6 +6340,7 @@
             </div>
             <div class="card-title">Barebells Protein Bar</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability check'>Check store availability</div>
                 
@@ -5700,6 +6353,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="clif|clif zbar|6"
          data-section="food"
          data-category="bars"
          data-retailer="meijer"
@@ -5708,7 +6362,13 @@
          data-percent="6.4"
          data-deal-count="6"
          data-tier="sale"
-         data-search="clif zbar clif bars meijer chocolate brownie chocolate chip cinnamon roll cookies &#x27;n crème iced oatmeal cookie s&#x27;mores">
+         data-search="clif zbar clif bars meijer chocolate brownie chocolate chip cinnamon roll cookies &#x27;n crème iced oatmeal cookie s&#x27;mores"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -5735,6 +6395,7 @@
             </div>
             <div class="card-title">Clif Zbar</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability in-store'>In-store</div>
                 
@@ -5747,6 +6408,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="clif|clif nut butter bar|5"
          data-section="food"
          data-category="bars"
          data-retailer="meijer"
@@ -5755,7 +6417,13 @@
          data-percent="6.3"
          data-deal-count="3"
          data-tier="sale"
-         data-search="clif nut butter bar clif bars meijer chocolate chip &amp; peanut butter chocolate peanut butter peanut butter">
+         data-search="clif nut butter bar clif bars meijer chocolate chip &amp; peanut butter chocolate peanut butter peanut butter"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -5782,6 +6450,7 @@
             </div>
             <div class="card-title">Clif Nut Butter Bar</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability in-store'>In-store</div>
                 
@@ -5794,6 +6463,59 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="rxbar|rxbar high protein|5"
+         data-section="food"
+         data-category="bars"
+         data-retailer="target"
+         data-brand="rxbar"
+         data-price="8.99"
+         data-percent="6.3"
+         data-deal-count="1"
+         data-tier="sale"
+         data-search="rxbar high protein rxbar bars target chocolate chip peanut butter"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
+        
+        <div class="card-image-wrap">
+            
+        <div class="card-carousel card-carousel--single" data-slide-count="1">
+            <div class="card-carousel-stage">
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Chocolate Chip Peanut Butter"><a href="https://www.target.com/p/rxbar-high-protein-chocolate-chip-peanut-butter-protein-bars-19g-protein-10-5oz-5ct/-/A-95116618#lnk=sametab" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_037a5075-6963-4b9c-add4-5afafee36a3f?wid=1200&amp;hei=1200&amp;qlt=80" alt="Chocolate Chip Peanut Butter" class="card-image" loading="lazy"/></a></div>
+            </div>
+            
+            <div class="card-carousel-caption">Chocolate Chip Peanut Butter</div>
+        </div>
+    
+            <div class="card-category-tag">Bars</div>
+            <div class='pack-pill'><span class='pack-count'>5</span> <span class='pack-unit'>bars</span></div>
+            <div class='badge badge-everyday'>🏷️ On Sale</div>
+        </div>
+        <div class="card-content">
+            <div class="card-pricing">
+                <span class='old-price'>$9.59</span>
+                <span class="new-price">$8.99</span>
+                <span class="percent-off">6% OFF</span>
+            </div>
+            <div class="card-title">RXBAR High Protein</div>
+            
+            <div class="sb-last-sale-lines" hidden></div>
+            <div class="card-footer">
+                <div class='availability online-only'>Shipping only</div>
+                
+            </div>
+            <a class="view-button view-target" href="https://www.target.com/p/rxbar-high-protein-chocolate-chip-peanut-butter-protein-bars-19g-protein-10-5oz-5ct/-/A-95116618#lnk=sametab" target="_blank" rel="noopener noreferrer">
+                View on Target.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card card-tier-sale"
+         data-item-id="isopure|isopure whey protein isolate|1"
          data-section="food"
          data-category="protein powder"
          data-retailer="walmart"
@@ -5802,7 +6524,13 @@
          data-percent="6.2"
          data-deal-count="1"
          data-tier="sale"
-         data-search="isopure whey protein isolate isopure protein powder walmart chocolate">
+         data-search="isopure whey protein isolate isopure protein powder walmart chocolate"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -5826,6 +6554,7 @@
             </div>
             <div class="card-title">Isopure Whey Protein Isolate</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -5838,6 +6567,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="quest|quest protein bar|4"
          data-section="food"
          data-category="bars"
          data-retailer="walmart"
@@ -5846,7 +6576,13 @@
          data-percent="6.1"
          data-deal-count="1"
          data-tier="sale"
-         data-search="quest protein bar quest bars walmart strawberry shortcake">
+         data-search="quest protein bar quest bars walmart strawberry shortcake"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -5870,6 +6606,7 @@
             </div>
             <div class="card-title">Quest Protein Bar</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -5882,6 +6619,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="la banderita|la banderita carb counter|8"
          data-section="food"
          data-category="wraps"
          data-retailer="target"
@@ -5890,7 +6628,13 @@
          data-percent="6.0"
          data-deal-count="1"
          data-tier="sale"
-         data-search="la banderita carb counter la banderita wraps target flour tortilla wraps">
+         data-search="la banderita carb counter la banderita wraps target flour tortilla wraps"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -5914,6 +6658,7 @@
             </div>
             <div class="card-title">La Banderita Carb Counter</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability check'>Check store availability</div>
                 
@@ -5926,6 +6671,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="one|one protein bar|12"
          data-section="food"
          data-category="bars"
          data-retailer="target"
@@ -5934,7 +6680,13 @@
          data-percent="6.0"
          data-deal-count="1"
          data-tier="sale"
-         data-search="one protein bar one bars target blueberry cobbler">
+         data-search="one protein bar one bars target blueberry cobbler"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -5958,6 +6710,7 @@
             </div>
             <div class="card-title">ONE Protein Bar</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability online-only'>Shipping only</div>
                 
@@ -5970,50 +6723,7 @@
     
 
     <div class="card card-tier-sale"
-         data-section="food"
-         data-category="protein powder"
-         data-retailer="walmart"
-         data-brand="premier protein"
-         data-price="32.49"
-         data-percent="6.0"
-         data-deal-count="1"
-         data-tier="sale"
-         data-search="premier protein whey protein premier protein protein powder walmart vanilla milkshake">
-        
-        <div class="card-image-wrap">
-            
-        <div class="card-carousel card-carousel--single" data-slide-count="1">
-            <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Vanilla Milkshake"><a href="https://www.walmart.com/ip/Premier-Protein-100-Whey-Protein-Powder-Chocolate-Milkshake-30g-Protein-24-5-oz-1-5-lb/945235241" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/Premier-Protein-100-Whey-Protein-Powder-Vanilla-Milkshake-30g-Protein-23-3-oz-1-7-lb_d6ed3fe0-f7ce-4a23-b83a-42fba8ff83a1.de3b484d3bbe67a5fa7df9d9d632b91e.png?odnHeight=573&amp;odnWidth=573&amp;odnBg=FFFFFF" alt="Vanilla Milkshake" class="card-image" loading="lazy"/></a></div>
-            </div>
-            
-            <div class="card-carousel-caption">Vanilla Milkshake</div>
-        </div>
-    
-            <div class="card-category-tag">Protein Powder</div>
-            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-            <div class='badge badge-everyday'>🏷️ On Sale</div>
-        </div>
-        <div class="card-content">
-            <div class="card-pricing">
-                <span class='old-price'>$34.58</span>
-                <span class="new-price">$32.49</span>
-                <span class="percent-off">6% OFF</span>
-            </div>
-            <div class="card-title">Premier Protein Whey Protein</div>
-            
-            <div class="card-footer">
-                <div class='availability in-store'>In-store</div>
-                
-            </div>
-            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Premier-Protein-100-Whey-Protein-Powder-Chocolate-Milkshake-30g-Protein-24-5-oz-1-5-lb/945235241" target="_blank" rel="noopener noreferrer">
-                View on Walmart.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card card-tier-sale"
+         data-item-id="ole|ole xtreme wellness|8"
          data-section="food"
          data-category="wraps"
          data-retailer="target"
@@ -6022,7 +6732,13 @@
          data-percent="5.8"
          data-deal-count="1"
          data-tier="sale"
-         data-search="ole xtreme wellness ole wraps target xtreme wellness high fiber tortilla wrap">
+         data-search="ole xtreme wellness ole wraps target xtreme wellness high fiber tortilla wrap"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -6046,6 +6762,7 @@
             </div>
             <div class="card-title">Ole Xtreme Wellness</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability check'>Check store availability</div>
                 
@@ -6058,6 +6775,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="clif|clif bar|5"
          data-section="food"
          data-category="bars"
          data-retailer="meijer"
@@ -6066,7 +6784,13 @@
          data-percent="5.8"
          data-deal-count="8"
          data-tier="sale"
-         data-search="clif bar clif bars meijer blueberry almond crisp chocolate brownie chocolate chip chocolate chip peanut crunch cookies &amp; crème cool mint chocolate crunchy peanut butter white chocolate macadamia nut">
+         data-search="clif bar clif bars meijer blueberry almond crisp chocolate brownie chocolate chip chocolate chip peanut crunch cookies &amp; crème cool mint chocolate crunchy peanut butter white chocolate macadamia nut"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -6093,6 +6817,7 @@
             </div>
             <div class="card-title">Clif Bar</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability in-store'>In-store</div>
                 
@@ -6105,6 +6830,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="quest|quest protein chips|1"
          data-section="food"
          data-category="chips &amp; crunchy"
          data-retailer="meijer"
@@ -6113,7 +6839,13 @@
          data-percent="5.7"
          data-deal-count="1"
          data-tier="sale"
-         data-search="quest protein chips quest chips &amp; crunchy meijer bbq">
+         data-search="quest protein chips quest chips &amp; crunchy meijer bbq"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -6137,6 +6869,7 @@
             </div>
             <div class="card-title">Quest Protein Chips</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability in-store'>In-store</div>
                 
@@ -6149,6 +6882,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="rxbar|rxbar protein bars variety pack - 18.3oz/10ct|10"
          data-section="food"
          data-category="bars"
          data-retailer="target"
@@ -6157,7 +6891,13 @@
          data-percent="5.7"
          data-deal-count="1"
          data-tier="sale"
-         data-search="rxbar protein bars variety pack - 18.3oz/10ct rxbar bars target variety pack">
+         data-search="rxbar protein bars variety pack - 18.3oz/10ct rxbar bars target variety pack"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -6181,6 +6921,7 @@
             </div>
             <div class="card-title">RXBAR Protein Bars Variety Pack - 18.3oz/10ct</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -6193,6 +6934,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="rxbar|rxbar blueberry protein bars - 12g protein - 18.3oz/10ct|10"
          data-section="food"
          data-category="bars"
          data-retailer="target"
@@ -6201,7 +6943,13 @@
          data-percent="5.7"
          data-deal-count="1"
          data-tier="sale"
-         data-search="rxbar blueberry protein bars - 12g protein - 18.3oz/10ct rxbar bars target blueberry">
+         data-search="rxbar blueberry protein bars - 12g protein - 18.3oz/10ct rxbar bars target blueberry"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -6225,6 +6973,7 @@
             </div>
             <div class="card-title">RXBAR Blueberry Protein Bars - 12g Protein - 18.3oz/10ct</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability online-only'>Shipping only</div>
                 
@@ -6237,6 +6986,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="pure protein|pure protein bars|12"
          data-section="food"
          data-category="bars"
          data-retailer="meijer"
@@ -6245,7 +6995,13 @@
          data-percent="5.3"
          data-deal-count="2"
          data-tier="sale"
-         data-search="pure protein bars pure protein bars meijer chocolate salted caramel galactic brownie">
+         data-search="pure protein bars pure protein bars meijer chocolate salted caramel galactic brownie"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -6272,6 +7028,7 @@
             </div>
             <div class="card-title">Pure Protein Bars</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability check'>Check store availability</div>
                 
@@ -6284,6 +7041,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="quest|quest protein chips|12"
          data-section="food"
          data-category="chips &amp; crunchy"
          data-retailer="walmart"
@@ -6292,7 +7050,13 @@
          data-percent="5.1"
          data-deal-count="1"
          data-tier="sale"
-         data-search="quest protein chips quest chips &amp; crunchy walmart chili lime">
+         data-search="quest protein chips quest chips &amp; crunchy walmart chili lime"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -6316,6 +7080,7 @@
             </div>
             <div class="card-title">Quest Protein Chips</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -6328,6 +7093,7 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="la banderita|la banderita carb counter|8"
          data-section="food"
          data-category="wraps"
          data-retailer="walmart"
@@ -6336,7 +7102,13 @@
          data-percent="5.0"
          data-deal-count="1"
          data-tier="sale"
-         data-search="la banderita carb counter la banderita wraps walmart snack size flour tortilla">
+         data-search="la banderita carb counter la banderita wraps walmart snack size flour tortilla"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
         
         <div class="card-image-wrap">
             
@@ -6360,6 +7132,7 @@
             </div>
             <div class="card-title">La Banderita Carb Counter</div>
             
+            <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
                 <div class='availability both'>In-store & online</div>
                 
@@ -6373,6 +7146,9 @@
         </section>
         <div class="sb-deals-empty" id="sb-deals-empty" role="status" aria-live="polite">
             No deals match your search or filters. Try clearing search or filters.
+        </div>
+        <div class="sb-my-items-empty" id="sb-my-items-empty" role="status" aria-live="polite">
+            No saved items yet. Tap the ★ on any deal card to save it here — we’ll track when it goes on sale at each store.
         </div>
 
         </div>
@@ -6733,27 +7509,204 @@ document.addEventListener("DOMContentLoaded", function () {
     brand: new Set(),
   };
   let selectedTiers = new Set();
+  let myItemsView = false;
+  const MY_ITEMS_KEY = "sb_my_items_v1";
+  const myItemsSummary = document.getElementById("sb-my-items-summary");
+  const myItemsEmpty = document.getElementById("sb-my-items-empty");
+  const offSaleCards = new Map();
+  let lastSaleItems = {};
+
+  function loadStarredIds() {
+    try {
+      const raw = localStorage.getItem(MY_ITEMS_KEY);
+      const arr = raw ? JSON.parse(raw) : [];
+      return new Set(Array.isArray(arr) ? arr.filter(Boolean).map(String) : []);
+    } catch (err) {
+      return new Set();
+    }
+  }
+  let starredIds = loadStarredIds();
+
+  function saveStarredIds() {
+    try {
+      localStorage.setItem(MY_ITEMS_KEY, JSON.stringify(Array.from(starredIds)));
+    } catch (err) {}
+  }
+
+  function titleRetailer(name) {
+    return titleize(String(name || ""));
+  }
+
+  function daysAgoLabel(iso) {
+    if (!iso) return "";
+    const d = new Date(String(iso).slice(0, 10) + "T12:00:00");
+    if (isNaN(d.getTime())) return String(iso);
+    const today = new Date();
+    today.setHours(12, 0, 0, 0);
+    const diff = Math.round((today.getTime() - d.getTime()) / 86400000);
+    if (diff <= 0) return "today";
+    if (diff === 1) return "1 day ago";
+    return diff + " days ago";
+  }
+
+  function money(n) {
+    const v = Number(n);
+    if (!isFinite(v)) return "";
+    return "$" + v.toFixed(2);
+  }
+
+  function buildLastSaleLinesHtml(itemId, onSaleRetailers) {
+    const meta = lastSaleItems[itemId];
+    const retailers = (meta && meta.retailers) || {};
+    const keys = Object.keys(retailers);
+    const onSale = onSaleRetailers || new Set();
+    if (!keys.length && !onSale.size) {
+      return '<div class="sb-last-sale-line">No sale seen since we started tracking.</div>';
+    }
+    const allKeys = Array.from(new Set(keys.concat(Array.from(onSale)))).sort();
+    return allKeys.map(function(ret) {
+      const label = titleRetailer(ret);
+      if (onSale.has(ret)) {
+        return '<div class="sb-last-sale-line is-now">On sale now at ' + label + '</div>';
+      }
+      const rec = retailers[ret] || {};
+      if (rec.last_sale_date) {
+        const priceBit = rec.sale_price != null ? " (" + money(rec.sale_price) + ")" : "";
+        return '<div class="sb-last-sale-line">Last on sale at ' + label + " " +
+          daysAgoLabel(rec.last_sale_date) + priceBit + "</div>";
+      }
+      return '<div class="sb-last-sale-line">No sale seen at ' + label + " since we started tracking.</div>";
+    }).join("");
+  }
+
+  function syncStarButtons() {
+    document.querySelectorAll(".card[data-item-id] .sb-star-btn").forEach(function(btn) {
+      const card = btn.closest(".card");
+      const id = card && card.dataset.itemId;
+      const on = !!(id && starredIds.has(id));
+      btn.classList.toggle("is-starred", on);
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+      btn.setAttribute("aria-label", on ? "Remove from My Items" : "Save to My Items");
+      btn.title = on ? "Remove from My Items" : "Save to My Items";
+    });
+  }
+
+  function fillLastSaleLines(card) {
+    const box = card.querySelector(".sb-last-sale-lines");
+    if (!box) return;
+    if (!myItemsView) {
+      box.hidden = true;
+      box.innerHTML = "";
+      return;
+    }
+    const id = card.dataset.itemId || "";
+    const onSale = new Set();
+    if (card.dataset.onSale === "1" && card.dataset.retailer) {
+      onSale.add(card.dataset.retailer);
+    }
+    // Also mark other live cards with same item id
+    cards.forEach(function(c) {
+      if (c.dataset.itemId === id && c.dataset.onSale === "1" && c.dataset.retailer) {
+        onSale.add(c.dataset.retailer);
+      }
+    });
+    box.innerHTML = buildLastSaleLinesHtml(id, onSale);
+    box.hidden = false;
+  }
+
+  function ensureOffSaleCard(itemId) {
+    if (offSaleCards.has(itemId)) return offSaleCards.get(itemId);
+    const meta = lastSaleItems[itemId];
+    if (!meta) return null;
+    const card = document.createElement("div");
+    card.className = "card card-off-sale";
+    card.dataset.itemId = itemId;
+    card.dataset.onSale = "0";
+    card.dataset.tier = "sale";
+    card.dataset.price = "0";
+    card.dataset.percent = "0";
+    card.dataset.brand = String(meta.brand || "").toLowerCase();
+    card.dataset.retailer = "";
+    card.dataset.section = "";
+    card.dataset.category = "";
+    card.dataset.search = [meta.brand, meta.product_name].filter(Boolean).join(" ").toLowerCase();
+    card.innerHTML =
+      '<button type="button" class="sb-star-btn is-starred" aria-label="Remove from My Items" aria-pressed="true" title="Remove from My Items">' +
+      '<svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+      '<path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/></svg></button>' +
+      '<div class="card-image-wrap"></div>' +
+      '<div class="card-content">' +
+      '<div class="card-pricing"><span class="new-price">Not on sale</span></div>' +
+      '<div class="card-title"></div>' +
+      '<div class="sb-last-sale-lines"></div>' +
+      '</div>';
+    card.querySelector(".card-title").textContent = meta.product_name || meta.brand || "Saved item";
+    offSaleCards.set(itemId, card);
+    return card;
+  }
+
+  function toggleStar(itemId, itemName) {
+    if (!itemId) return;
+    if (starredIds.has(itemId)) {
+      starredIds.delete(itemId);
+      trackEvent("star_remove", { item_id: itemId, item_name: itemName || "" });
+    } else {
+      starredIds.add(itemId);
+      trackEvent("star_add", { item_id: itemId, item_name: itemName || "" });
+    }
+    saveStarredIds();
+    syncStarButtons();
+    if (myItemsView) applyFiltersAndSort();
+  }
+
+  if (grid) {
+    grid.addEventListener("click", function(ev) {
+      const btn = ev.target && ev.target.closest ? ev.target.closest(".sb-star-btn") : null;
+      if (!btn || !grid.contains(btn)) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      const card = btn.closest(".card");
+      if (!card) return;
+      const titleEl = card.querySelector(".card-title");
+      toggleStar(card.dataset.itemId || "", titleEl ? titleEl.textContent.trim() : "");
+    });
+  }
 
   const pillWraps = {};
   let openDropdownKey = null;
 
   function cardMatchesTier(card) {
+    if (myItemsView) return true;
     if (selectedTiers.size === 0) return true;
     const t = card.dataset.tier || "sale";
     return selectedTiers.has(t);
   }
 
   function syncTierChips() {
-    const none = selectedTiers.size === 0;
     document.querySelectorAll(".sb-tier-chip[data-tier-filter]").forEach(function(el) {
       const mode = el.getAttribute("data-tier-filter") || "all";
-      const active = mode === "all" ? none : selectedTiers.has(mode);
+      let active = false;
+      if (mode === "my-items") active = myItemsView;
+      else if (myItemsView) active = false;
+      else if (mode === "all") active = selectedTiers.size === 0;
+      else active = selectedTiers.has(mode);
       el.classList.toggle("is-active", active);
       if (el.hasAttribute("aria-pressed")) el.setAttribute("aria-pressed", active ? "true" : "false");
     });
   }
 
   function setTierSelection(mode) {
+    if (mode === "my-items") {
+      myItemsView = !myItemsView;
+      if (myItemsView) {
+        selectedTiers.clear();
+        trackEvent("my_items_open", {});
+      }
+      syncTierChips();
+      applyFiltersAndSort();
+      return;
+    }
+    myItemsView = false;
     if (mode === "all") {
       selectedTiers.clear();
     } else if (selectedTiers.has(mode)) {
@@ -7097,6 +8050,22 @@ document.addEventListener("DOMContentLoaded", function () {
     let shown = [];
 
     if (searchWrap) searchWrap.classList.toggle("has-value", !!q);
+    if (myItemsSummary) myItemsSummary.hidden = !myItemsView;
+    if (myItemsEmpty) myItemsEmpty.classList.remove("is-visible");
+
+    // Hide synthetic off-sale cards unless My Items view is on
+    offSaleCards.forEach(function(card) {
+      card.style.display = "none";
+      if (card.parentNode) card.parentNode.removeChild(card);
+    });
+
+    const liveOnSaleIds = new Set();
+    cards.forEach(function(card) {
+      if (card.dataset.itemId) liveOnSaleIds.add(card.dataset.itemId);
+    });
+
+    // Dedupe live cards by item id in My Items (prefer first/highest already sorted later)
+    const seenItemIds = new Set();
 
     cards.forEach(function(card) {
       const r = card.dataset.retailer;
@@ -7104,6 +8073,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const c = card.dataset.category;
       const b = card.dataset.brand;
       const hay = (card.dataset.search || "").toLowerCase();
+      const itemId = card.dataset.itemId || "";
 
       const matchR = selR.size === 0 || selR.has(r);
       const matchS = selS.size === 0 || selS.has(s);
@@ -7111,14 +8081,56 @@ document.addEventListener("DOMContentLoaded", function () {
       const matchB = selB.size === 0 || selB.has(b);
       const matchQ = !q || hay.indexOf(q) !== -1;
       const matchT = cardMatchesTier(card);
+      const matchStar = !myItemsView || (itemId && starredIds.has(itemId));
 
-      if (matchR && matchS && matchC && matchB && matchQ && matchT) {
+      if (myItemsView && itemId && seenItemIds.has(itemId)) {
+        card.style.display = "none";
+        return;
+      }
+
+      if (matchR && matchS && matchC && matchB && matchQ && matchT && matchStar) {
         card.style.display = "";
+        if (myItemsView && itemId) seenItemIds.add(itemId);
+        fillLastSaleLines(card);
         shown.push(card);
       } else {
         card.style.display = "none";
+        const box = card.querySelector(".sb-last-sale-lines");
+        if (box) { box.hidden = true; box.innerHTML = ""; }
       }
     });
+
+    if (myItemsView) {
+      Array.from(starredIds).forEach(function(itemId) {
+        if (seenItemIds.has(itemId)) return;
+        if (liveOnSaleIds.has(itemId)) return; // shown via live card path (or filtered out)
+        // Skip ids with no last_sale metadata and not on page
+        if (!lastSaleItems[itemId] && !liveOnSaleIds.has(itemId)) return;
+        const meta = lastSaleItems[itemId];
+        if (!meta) return;
+        const hay = [meta.brand, meta.product_name].join(" ").toLowerCase();
+        if (q && hay.indexOf(q) === -1) return;
+        const card = ensureOffSaleCard(itemId);
+        if (!card) return;
+        fillLastSaleLines(card);
+        card.style.display = "";
+        shown.push(card);
+        seenItemIds.add(itemId);
+      });
+
+      const totalStarred = starredIds.size;
+      let onSaleCount = 0;
+      starredIds.forEach(function(id) {
+        if (liveOnSaleIds.has(id)) onSaleCount += 1;
+      });
+      if (myItemsSummary) {
+        myItemsSummary.hidden = false;
+        myItemsSummary.textContent =
+          onSaleCount + " of your " + totalStarred +
+          (totalStarred === 1 ? " item is" : " items are") +
+          " on sale right now.";
+      }
+    }
 
     function getTierPriority(tier) {
       if (tier === "diamond") return 4;
@@ -7128,6 +8140,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     shown.sort(function(a, b) {
+      const aOn = a.dataset.onSale === "1" ? 1 : 0;
+      const bOn = b.dataset.onSale === "1" ? 1 : 0;
+      if (myItemsView && aOn !== bOn) return bOn - aOn;
+
       const aPrice = parseFloat(a.dataset.price || "0");
       const bPrice = parseFloat(b.dataset.price || "0");
       const aPct = parseFloat(a.dataset.percent || "0");
@@ -7146,7 +8162,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return bPct - aPct;
       }
 
-      // Default: best discount (tier → % off → price)
       const aTierPriority = getTierPriority(a.dataset.tier || "sale");
       const bTierPriority = getTierPriority(b.dataset.tier || "sale");
       if (aTierPriority !== bTierPriority) return bTierPriority - aTierPriority;
@@ -7155,9 +8170,23 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     shown.forEach(function(card) { grid.appendChild(card); });
-    if (dealsEmpty) dealsEmpty.classList.toggle("is-visible", shown.length === 0);
+
+    const emptyMyItems = myItemsView && starredIds.size === 0;
+    const emptyFiltered = shown.length === 0 && !emptyMyItems;
+    if (dealsEmpty) dealsEmpty.classList.toggle("is-visible", emptyFiltered && !myItemsView);
+    if (myItemsEmpty) myItemsEmpty.classList.toggle("is-visible", emptyMyItems || (myItemsView && shown.length === 0 && starredIds.size > 0));
+    if (myItemsView && shown.length === 0 && starredIds.size > 0 && myItemsEmpty) {
+      myItemsEmpty.textContent = "None of your saved items match the current search or filters.";
+      myItemsEmpty.classList.add("is-visible");
+    } else if (myItemsEmpty && emptyMyItems) {
+      myItemsEmpty.textContent = "No saved items yet. Tap the ★ on any deal card to save it here — we’ll track when it goes on sale at each store.";
+    }
     if (resultsCount) {
-      resultsCount.textContent = shown.length + (shown.length === 1 ? " deal" : " deals");
+      if (myItemsView) {
+        resultsCount.textContent = shown.length + (shown.length === 1 ? " saved item" : " saved items");
+      } else {
+        resultsCount.textContent = shown.length + (shown.length === 1 ? " deal" : " deals");
+      }
     }
   }
 
@@ -7168,6 +8197,7 @@ document.addEventListener("DOMContentLoaded", function () {
     selected.brand.clear();
     if (searchInput) searchInput.value = "";
     selectedTiers.clear();
+    myItemsView = false;
     syncTierChips();
     syncAllCheckboxes();
     updateBadges();
@@ -7217,7 +8247,16 @@ document.addEventListener("DOMContentLoaded", function () {
   buildFilterSidebar();
   updateBadges();
   updateFilterToggleLabel();
+  syncStarButtons();
   applyFiltersAndSort();
+
+  fetch("last_sale.json", { cache: "no-store" })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(data) {
+      if (data && data.items) lastSaleItems = data.items;
+      if (myItemsView) applyFiltersAndSort();
+    })
+    .catch(function() {});
 
   /* ============================
      WELCOME PREFS + BEEHIIV EMBED
