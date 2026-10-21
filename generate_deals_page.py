@@ -741,11 +741,11 @@ def build_card_html(deal):
             <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
           </svg>
         </button>
+        {badge_html}
         {diamond_sparkles_html}
         <div class="card-image-wrap">
             {image_carousel_html}
             {pack_pill_html}
-            {badge_html}
         </div>
         <div class="card-content">
             <div class="card-pricing">
@@ -2790,9 +2790,9 @@ def build_page_html(deals):
 
         .badge {{
             position: absolute;
-            top: 8px;
-            left: 8px;
-            z-index: 12;
+            top: 10px;
+            left: 10px;
+            z-index: 13;
             border-radius: var(--radius-pill);
             padding: 5px 12px;
             font-size: 13px;
