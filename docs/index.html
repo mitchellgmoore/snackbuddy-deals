@@ -1010,19 +1010,79 @@
 
         .sb-tier-chips-section {
             max-width: var(--page-max);
-            margin: 4px auto 10px;
+            margin: 4px auto 6px;
             padding: 0 8px 0 4px;
             position: relative;
             z-index: 29;
         }
 
+        .sb-tier-chips-scroll {
+            position: relative;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .sb-tier-chips-scroll.has-scroll-prev::before,
+        .sb-tier-chips-scroll.has-scroll-next::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 20px;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .sb-tier-chips-scroll.has-scroll-prev::before {
+            left: 0;
+            background: linear-gradient(to right, var(--bg) 15%, rgba(243, 244, 246, 0));
+        }
+
+        .sb-tier-chips-scroll.has-scroll-next::after {
+            right: 0;
+            background: linear-gradient(to left, var(--bg) 15%, rgba(243, 244, 246, 0));
+        }
+
+        .sb-tier-chips-track {
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .sb-tier-chips-track::-webkit-scrollbar {
+            display: none;
+        }
+
+        .sb-tier-chips-scroll.has-scroll-prev .sb-tier-chips-track {
+            mask-image: linear-gradient(to right, transparent 0, #000 16px);
+            -webkit-mask-image: linear-gradient(to right, transparent 0, #000 16px);
+            padding-left: 26px;
+        }
+
+        .sb-tier-chips-scroll.has-scroll-next .sb-tier-chips-track {
+            mask-image: linear-gradient(to left, transparent 0, #000 16px);
+            -webkit-mask-image: linear-gradient(to left, transparent 0, #000 16px);
+            padding-right: 26px;
+        }
+
+        .sb-tier-chips-scroll.has-scroll-prev.has-scroll-next .sb-tier-chips-track {
+            mask-image: linear-gradient(to right, transparent 0, #000 16px, #000 calc(100% - 16px), transparent);
+            -webkit-mask-image: linear-gradient(to right, transparent 0, #000 16px, #000 calc(100% - 16px), transparent);
+        }
+
         .sb-tier-chips {
             display: flex;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             gap: 6px;
             align-items: center;
             padding: 4px 0;
             margin: 0;
+            min-width: min-content;
         }
 
         .sb-tier-chips-label {
@@ -1086,6 +1146,10 @@
         }
 
         @media (max-width: 640px) {
+            .sb-tier-chips-section {
+                padding: 0 6px 0 2px;
+            }
+
             .sb-tier-chip {
                 padding: 9px 12px;
                 font-size: 13px;
@@ -2883,13 +2947,19 @@
         </section>
 
         <section class="sb-tier-chips-section" aria-label="Filter by deal strength">
-            <div class="sb-tier-chips">
-                <span class="sb-tier-chips-label">Show</span>
-                <button type="button" class="sb-tier-chip is-active" data-tier-filter="all" aria-pressed="true">All</button>
-                <button type="button" class="sb-tier-chip" data-tier-filter="diamond" aria-pressed="false" title="25% off and up">💎 Diamond</button>
-                <button type="button" class="sb-tier-chip" data-tier-filter="fire" aria-pressed="false" title="20–24% off">🔥 Fire</button>
-                <button type="button" class="sb-tier-chip" data-tier-filter="strong" aria-pressed="false" title="10–19% off">💪 Strong</button>
-                <button type="button" class="sb-tier-chip sb-my-items-chip" id="sb-my-items-chip" data-tier-filter="my-items" aria-pressed="false" title="Starred items">★ My Items</button>
+            <div class="sb-tier-chips-scroll" id="sb-tier-chips-scroll">
+                <button type="button" class="sb-filter-scroll-btn sb-filter-scroll-prev" id="sb-tier-scroll-prev" aria-label="Scroll deal tiers left">&#8249;</button>
+                <div class="sb-tier-chips-track" id="sb-tier-chips-track">
+                    <div class="sb-tier-chips">
+                        <span class="sb-tier-chips-label">Show</span>
+                        <button type="button" class="sb-tier-chip is-active" data-tier-filter="all" aria-pressed="true">All</button>
+                        <button type="button" class="sb-tier-chip" data-tier-filter="diamond" aria-pressed="false" title="25% off and up">💎 Diamond</button>
+                        <button type="button" class="sb-tier-chip" data-tier-filter="fire" aria-pressed="false" title="20–24% off">🔥 Fire</button>
+                        <button type="button" class="sb-tier-chip" data-tier-filter="strong" aria-pressed="false" title="10–19% off">💪 Strong</button>
+                        <button type="button" class="sb-tier-chip sb-my-items-chip" id="sb-my-items-chip" data-tier-filter="my-items" aria-pressed="false" title="Starred items">★ My Items</button>
+                    </div>
+                </div>
+                <button type="button" class="sb-filter-scroll-btn sb-filter-scroll-next" id="sb-tier-scroll-next" aria-label="Scroll deal tiers right">&#8250;</button>
             </div>
         </section>
         <div class="sb-my-items-summary" id="sb-my-items-summary" hidden></div>
@@ -7533,6 +7603,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const filterBarScroll = document.getElementById("sb-filter-bar-scroll");
   const filterScrollPrev = document.getElementById("sb-filter-scroll-prev");
   const filterScrollNext = document.getElementById("sb-filter-scroll-next");
+  const tierTrack = document.getElementById("sb-tier-chips-track");
+  const tierBarScroll = document.getElementById("sb-tier-chips-scroll");
+  const tierScrollPrev = document.getElementById("sb-tier-scroll-prev");
+  const tierScrollNext = document.getElementById("sb-tier-scroll-next");
 
   function isDesktopSidebar() {
     return window.matchMedia("(min-width: 900px)").matches;
@@ -8178,16 +8252,21 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  function updateScrollButtons() {
-    if (!filterTrack || !filterScrollPrev || !filterScrollNext) return;
-    const maxScroll = filterTrack.scrollWidth - filterTrack.clientWidth;
+  function updateScrollButtonsFor(track, prevBtn, nextBtn, scrollWrap) {
+    if (!track || !prevBtn || !nextBtn) return;
+    const maxScroll = track.scrollWidth - track.clientWidth;
     const show = maxScroll > 4;
-    const hasPrev = show && filterTrack.scrollLeft > 4;
-    const hasNext = show && filterTrack.scrollLeft < maxScroll - 4;
-    filterScrollPrev.classList.toggle("is-visible", hasPrev);
-    filterScrollNext.classList.toggle("is-visible", hasNext);
-    filterBarScroll?.classList.toggle("has-scroll-prev", hasPrev);
-    filterBarScroll?.classList.toggle("has-scroll-next", hasNext);
+    const hasPrev = show && track.scrollLeft > 4;
+    const hasNext = show && track.scrollLeft < maxScroll - 4;
+    prevBtn.classList.toggle("is-visible", hasPrev);
+    nextBtn.classList.toggle("is-visible", hasNext);
+    scrollWrap?.classList.toggle("has-scroll-prev", hasPrev);
+    scrollWrap?.classList.toggle("has-scroll-next", hasNext);
+  }
+
+  function updateScrollButtons() {
+    updateScrollButtonsFor(filterTrack, filterScrollPrev, filterScrollNext, filterBarScroll);
+    updateScrollButtonsFor(tierTrack, tierScrollPrev, tierScrollNext, tierBarScroll);
   }
 
   function applyFiltersAndSort() {
@@ -8986,6 +9065,12 @@ document.addEventListener("DOMContentLoaded", function () {
   filterScrollNext?.addEventListener("click", function() {
     filterTrack.scrollBy({ left: 180, behavior: "smooth" });
   });
+  tierScrollPrev?.addEventListener("click", function() {
+    tierTrack.scrollBy({ left: -180, behavior: "smooth" });
+  });
+  tierScrollNext?.addEventListener("click", function() {
+    tierTrack.scrollBy({ left: 180, behavior: "smooth" });
+  });
   filterTrack?.addEventListener("scroll", function() {
     updateScrollButtons();
     if (openDropdownKey) {
@@ -8993,6 +9078,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (btn && filterDropdownPanel && !filterDropdownPanel.hidden) positionDropdownPanel(btn);
     }
   });
+  tierTrack?.addEventListener("scroll", updateScrollButtons);
   window.addEventListener("resize", function() {
     updateScrollButtons();
     updateFilterToggleLabel();
