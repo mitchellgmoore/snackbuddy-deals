@@ -42,7 +42,22 @@ HISTORY_CANDIDATES = [
     _SNACK_BUDDY / "data" / "historical_master_prices.csv",
 ]
 
-SALE_PCT_MIN = 5.0
+# Canonical pct_off is a 0–1 fraction (0.05 = 5% off). Legacy history may still
+# mix in percent points (5 = 5% off); normalize_pct_off() handles both.
+SALE_PCT_MIN = 0.05
+
+
+def normalize_pct_off(raw) -> float | None:
+    """Return pct_off as a 0–1 fraction (abs>1 treated as percent points)."""
+    if raw is None:
+        return None
+    try:
+        v = float(raw)
+    except (TypeError, ValueError):
+        return None
+    if abs(v) > 1.0:
+        v = v / 100.0
+    return v
 
 
 def make_item_id(brand, product_name, pack_size) -> str:
@@ -88,7 +103,7 @@ def main() -> None:
     df = df[status.eq("ok") | status.eq("nan") | status.eq("") | df["status"].isna()].copy()
 
     df["price"] = pd.to_numeric(df["price"], errors="coerce")
-    df["pct_off"] = pd.to_numeric(df["pct_off"], errors="coerce")
+    df["pct_off"] = pd.to_numeric(df["pct_off"], errors="coerce").map(normalize_pct_off)
     df = df[df["price"].notna() & (df["price"] > 0)].copy()
 
     df["date"] = df["date"].astype(str).str.slice(0, 10)
