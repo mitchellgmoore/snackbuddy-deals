@@ -568,7 +568,6 @@ def build_card_html(deal):
     product_name_cleaned = remove_pack_size_from_name(product_name)
     name = html.escape(product_name_cleaned)
     retailer = html.escape(deal.get("retailer", ""))
-    category = html.escape(deal.get("category", ""))
     old_price = deal.get("old_price")
     new_price = deal.get("new_price")
     percent_off = float(deal.get("percent_off", 0.0))
@@ -708,10 +707,6 @@ def build_card_html(deal):
             f'--diamond-badge-delay:{badge_delay:.3f}s"'
         )
 
-    category_tag_html = ""
-    if category:
-        category_tag_html = f'<div class="card-category-tag">{category}</div>'
-
     # Text list only for flavors beyond the 4 shown as images
     flavor_html = ""
     if flavor_extra_count > 0:
@@ -749,7 +744,6 @@ def build_card_html(deal):
         {diamond_sparkles_html}
         <div class="card-image-wrap">
             {image_carousel_html}
-            {category_tag_html}
             {pack_pill_html}
             {badge_html}
         </div>
@@ -2766,19 +2760,6 @@ def build_page_html(deals):
             .card-carousel-slide.is-next {{
                 transform: translate(calc(-50% + 48%), -50%) scale(0.78);
             }}
-        }}
-
-        .card-category-tag {{
-            position: absolute;
-            top: 6px;
-            right: 8px;
-            font-size: 11px;
-            color: var(--text-muted);
-            z-index: 12;
-            max-width: 48%;
-            text-align: right;
-            line-height: 1.25;
-            pointer-events: none;
         }}
 
         .pack-pill {{
