@@ -1947,20 +1947,20 @@ def build_page_html(deals):
         .sb-tier-chips {{
             display: flex;
             flex-wrap: nowrap;
-            gap: 8px;
+            gap: 6px;
             align-items: center;
-            padding: 6px 0;
+            padding: 4px 0;
             margin: 0;
             min-width: min-content;
         }}
 
         .sb-tier-chips-label {{
-            font-size: 12px;
-            font-weight: 800;
-            letter-spacing: 0.05em;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
             text-transform: uppercase;
-            color: #475569;
-            margin-right: 4px;
+            color: #64748b;
+            margin-right: 2px;
             flex: 0 0 auto;
         }}
 
@@ -1968,14 +1968,14 @@ def build_page_html(deals):
             position: relative;
             display: inline-flex;
             align-items: center;
-            gap: 7px;
-            border: 1.5px solid #111827;
+            gap: 6px;
+            border: 1px solid #111827;
             background: #ffffff;
             color: #111827;
             border-radius: 999px;
-            padding: 12px 18px;
-            font-size: 15px;
-            font-weight: 700;
+            padding: 10px 14px;
+            font-size: 14px;
+            font-weight: 600;
             font-family: inherit;
             cursor: pointer;
             line-height: 1.2;
@@ -2019,13 +2019,9 @@ def build_page_html(deals):
                 padding: 0 6px 0 2px;
             }}
 
-            .sb-tier-chips {{
-                gap: 7px;
-            }}
-
             .sb-tier-chip {{
-                padding: 11px 16px;
-                font-size: 14px;
+                padding: 9px 12px;
+                font-size: 13px;
             }}
         }}
 
@@ -2794,19 +2790,20 @@ def build_page_html(deals):
 
         .badge {{
             position: absolute;
-            top: 6px;
+            top: 8px;
             left: 8px;
             z-index: 12;
             border-radius: var(--radius-pill);
-            padding: 2px 8px;
-            font-size: 11px;
-            font-weight: 600;
+            padding: 5px 12px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.01em;
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 5px;
             background-color: #ffffff;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+            border: 1.5px solid #e5e7eb;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
         }}
 
         .badge-strong {{
@@ -2828,7 +2825,7 @@ def build_page_html(deals):
             left: 0;
             right: 0;
             bottom: 0;
-            height: 13px;
+            height: 16px;
             pointer-events: none;
             z-index: 1;
             opacity: 0;
