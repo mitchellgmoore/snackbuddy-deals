@@ -1705,19 +1705,7 @@ def build_page_html(deals):
         }}
 
         .sb-hero-freshness {{
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            margin: 0 0 8px;
-            padding: 5px 10px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.82);
-            border: 1px solid #bbf7d0;
-            color: #14532d;
-            font-size: 12px;
-            font-weight: 600;
-            line-height: 1.25;
-            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+            display: none; /* header already shows prices-checked */
         }}
 
         .sb-hero-freshness-dot {{
@@ -1734,13 +1722,13 @@ def build_page_html(deals):
             margin: 0 auto 8px;
             padding: 0 8px 0 4px;
             display: flex;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             gap: 8px;
             align-items: center;
         }}
 
         .sb-search-wrap {{
-            flex: 1 1 220px;
+            flex: 1 1 auto;
             min-width: 0;
             position: relative;
         }}
@@ -1783,28 +1771,99 @@ def build_page_html(deals):
 
         .sb-sort-wrap {{
             flex: 0 0 auto;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            position: relative;
         }}
 
-        .sb-sort-label {{
-            font-size: 12px;
+        .sb-sort-pill {{
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #111827;
+            background: #ffffff;
+            color: #111827;
+            border-radius: 999px;
+            padding: 10px 14px;
+            font-size: 14px;
             font-weight: 600;
-            color: var(--text-muted);
+            font-family: inherit;
+            line-height: 1.2;
+            cursor: pointer;
             white-space: nowrap;
         }}
 
-        .sb-sort-select {{
+        .sb-sort-pill:hover {{
+            background: #f9fafb;
+        }}
+
+        .sb-sort-pill[aria-expanded="true"] {{
+            background: #f3f4f6;
+            box-shadow: inset 0 0 0 1px #111827;
+        }}
+
+        .sb-sort-menu {{
+            position: absolute;
+            right: 0;
+            top: calc(100% + 6px);
+            z-index: 45;
+            min-width: 220px;
+            padding: 6px;
             border: 1px solid var(--border-subtle);
-            background: #fff;
-            border-radius: 999px;
-            padding: 8px 12px;
+            border-radius: 12px;
+            background: #ffffff;
+            box-shadow: 0 10px 28px rgba(15, 23, 42, 0.14);
+        }}
+
+        .sb-sort-menu[hidden] {{
+            display: none;
+        }}
+
+        .sb-sort-option {{
+            display: block;
+            width: 100%;
+            text-align: left;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            padding: 10px 12px;
             font-size: 13px;
             font-weight: 600;
-            color: var(--text-main);
+            font-family: inherit;
+            color: #111827;
             cursor: pointer;
-            max-width: 100%;
+        }}
+
+        .sb-sort-option:hover {{
+            background: #f3f4f6;
+        }}
+
+        .sb-sort-option.is-selected {{
+            background: #111827;
+            color: #ffffff;
+        }}
+
+        .sb-sort-select {{
+            /* Kept for JS; UI is the Sort pill + menu */
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
+        }}
+
+        @media (max-width: 640px) {{
+            .sb-tools-bar {{
+                padding: 0 6px 0 2px;
+                gap: 6px;
+            }}
+
+            .sb-sort-pill {{
+                padding: 9px 12px;
+                font-size: 13px;
+            }}
+
+            .sb-hero-bg {{
+                padding: 14px 14px 12px;
+            }}
         }}
 
         .sb-deals-empty {{
@@ -3752,9 +3811,17 @@ def build_page_html(deals):
             </div>
             <div class="sb-results-count" id="sb-results-count" aria-live="polite"></div>
             <div class="sb-sort-wrap">
-                <label class="sb-sort-label" for="sb-sort-select">Sort</label>
-                <select id="sb-sort-select" class="sb-sort-select" aria-label="Sort deals">
-                    <option value="best" selected>Best discount</option>
+                <button type="button" class="sb-sort-pill" id="sb-sort-pill" aria-haspopup="listbox" aria-expanded="false" aria-controls="sb-sort-menu">
+                    Sort <span class="sb-filter-pill-chevron" aria-hidden="true">▾</span>
+                </button>
+                <div class="sb-sort-menu" id="sb-sort-menu" role="listbox" aria-label="Sort deals" hidden>
+                    <button type="button" class="sb-sort-option is-selected" role="option" data-sort="best" aria-selected="true">Best discount (default)</button>
+                    <button type="button" class="sb-sort-option" role="option" data-sort="pct-desc" aria-selected="false">% off: high to low</button>
+                    <button type="button" class="sb-sort-option" role="option" data-sort="price-asc" aria-selected="false">Price: low to high</button>
+                    <button type="button" class="sb-sort-option" role="option" data-sort="price-desc" aria-selected="false">Price: high to low</button>
+                </div>
+                <select id="sb-sort-select" class="sb-sort-select" aria-hidden="true" tabindex="-1">
+                    <option value="best" selected>Best discount (default)</option>
                     <option value="pct-desc">% off: high to low</option>
                     <option value="price-asc">Price: low to high</option>
                     <option value="price-desc">Price: high to low</option>
@@ -3768,11 +3835,11 @@ def build_page_html(deals):
                 <div class="sb-tier-chips-track" id="sb-tier-chips-track">
                     <div class="sb-tier-chips">
                         <span class="sb-tier-chips-label">Show</span>
+                        <button type="button" class="sb-tier-chip sb-my-items-chip" id="sb-my-items-chip" data-tier-filter="my-items" aria-pressed="false" title="Starred items">★ My Items</button>
                         <button type="button" class="sb-tier-chip is-active" data-tier-filter="all" aria-pressed="true">All</button>
                         <button type="button" class="sb-tier-chip" data-tier-filter="diamond" aria-pressed="false" title="25% off and up">💎 Diamond</button>
                         <button type="button" class="sb-tier-chip" data-tier-filter="fire" aria-pressed="false" title="20–24% off">🔥 Fire</button>
                         <button type="button" class="sb-tier-chip" data-tier-filter="strong" aria-pressed="false" title="10–19% off">💪 Strong</button>
-                        <button type="button" class="sb-tier-chip sb-my-items-chip" id="sb-my-items-chip" data-tier-filter="my-items" aria-pressed="false" title="Starred items">★ My Items</button>
                     </div>
                 </div>
                 <button type="button" class="sb-filter-scroll-btn sb-filter-scroll-next" id="sb-tier-scroll-next" aria-label="Scroll deal tiers right">&#8250;</button>
@@ -4554,6 +4621,7 @@ document.addEventListener("DOMContentLoaded", function () {{
 
   function openDropdown(key) {{
     closeAllDropdowns();
+    if (typeof closeSortMenu === "function") closeSortMenu();
     const wrap = pillWraps[key];
     if (!wrap || !filterDropdownPanel) return;
     const btn = wrap.querySelector(".sb-filter-pill");
@@ -4575,6 +4643,7 @@ document.addEventListener("DOMContentLoaded", function () {{
     filterSheetBackdrop?.classList.add("open");
     filterMasterBtn?.setAttribute("aria-expanded", "true");
     closeAllDropdowns();
+    if (typeof closeSortMenu === "function") closeSortMenu();
   }}
 
   function closeFilterSheet() {{
@@ -4968,6 +5037,57 @@ document.addEventListener("DOMContentLoaded", function () {{
   }}
   if (sortSelect) {{
     sortSelect.addEventListener("change", applyFiltersAndSort);
+  }}
+
+  const sortPill = document.getElementById("sb-sort-pill");
+  const sortMenu = document.getElementById("sb-sort-menu");
+
+  function closeSortMenu() {{
+    if (!sortMenu || !sortPill) return;
+    sortMenu.hidden = true;
+    sortPill.setAttribute("aria-expanded", "false");
+  }}
+
+  function syncSortMenuSelection() {{
+    if (!sortMenu || !sortSelect) return;
+    const current = sortSelect.value || "best";
+    sortMenu.querySelectorAll(".sb-sort-option").forEach(function(btn) {{
+      const on = btn.getAttribute("data-sort") === current;
+      btn.classList.toggle("is-selected", on);
+      btn.setAttribute("aria-selected", on ? "true" : "false");
+    }});
+  }}
+
+  function openSortMenu() {{
+    if (!sortMenu || !sortPill) return;
+    closeAllDropdowns();
+    syncSortMenuSelection();
+    sortMenu.hidden = false;
+    sortPill.setAttribute("aria-expanded", "true");
+  }}
+
+  if (sortPill && sortMenu) {{
+    sortPill.addEventListener("click", function(ev) {{
+      ev.stopPropagation();
+      if (sortMenu.hidden) openSortMenu();
+      else closeSortMenu();
+    }});
+    sortMenu.addEventListener("click", function(ev) {{
+      const opt = ev.target && ev.target.closest ? ev.target.closest(".sb-sort-option") : null;
+      if (!opt) return;
+      const value = opt.getAttribute("data-sort") || "best";
+      if (sortSelect) {{
+        sortSelect.value = value;
+        sortSelect.dispatchEvent(new Event("change", {{ bubbles: true }}));
+      }}
+      syncSortMenuSelection();
+      closeSortMenu();
+    }});
+    document.addEventListener("click", function(ev) {{
+      if (!sortMenu.hidden && sortPill && !sortPill.contains(ev.target) && !sortMenu.contains(ev.target)) {{
+        closeSortMenu();
+      }}
+    }});
   }}
 
   document.querySelectorAll(".sb-tier-chip[data-tier-filter]").forEach(function(el) {{
@@ -5598,6 +5718,7 @@ document.addEventListener("DOMContentLoaded", function () {{
   document.addEventListener("keydown", function(ev) {{
     if (ev.key === "Escape") {{
       closeAllDropdowns();
+      closeSortMenu();
       closeFilterSheet();
     }}
   }});
