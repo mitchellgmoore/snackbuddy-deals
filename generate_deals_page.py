@@ -1824,14 +1824,21 @@ def build_page_html(deals):
             display: block;
         }}
 
-        .sb-tier-chips {{
+        .sb-tier-chips-section {{
             max-width: var(--page-max);
-            margin: 0 auto 6px;
+            margin: 4px auto 10px;
             padding: 0 8px 0 4px;
+            position: relative;
+            z-index: 29;
+        }}
+
+        .sb-tier-chips {{
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
             align-items: center;
+            padding: 4px 0;
+            margin: 0;
         }}
 
         .sb-tier-chips-label {{
@@ -1841,46 +1848,64 @@ def build_page_html(deals):
             text-transform: uppercase;
             color: #64748b;
             margin-right: 2px;
+            flex: 0 0 auto;
         }}
 
         .sb-tier-chip {{
-            border: 1px solid var(--border-subtle);
-            background: #fff;
-            color: #334155;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #111827;
+            background: #ffffff;
+            color: #111827;
             border-radius: 999px;
-            padding: 7px 12px;
-            font-size: 13px;
+            padding: 10px 14px;
+            font-size: 14px;
             font-weight: 600;
+            font-family: inherit;
             cursor: pointer;
             line-height: 1.2;
-            transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+            white-space: nowrap;
+            flex: 0 0 auto;
+            transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease, box-shadow 0.12s ease;
         }}
 
         .sb-tier-chip:hover {{
-            border-color: #cbd5e1;
-            background: #f8fafc;
+            background: #f9fafb;
         }}
 
         .sb-tier-chip.is-active {{
-            background: var(--navy);
-            border-color: var(--navy);
+            background: #111827;
+            border-color: #111827;
             color: #fff;
+            box-shadow: inset 0 0 0 1px #111827;
         }}
 
         .sb-tier-chip[data-tier-filter="fire"].is-active {{
             background: linear-gradient(135deg, #ea580c, #c2410c);
             border-color: #c2410c;
+            box-shadow: none;
         }}
 
         .sb-tier-chip[data-tier-filter="diamond"].is-active {{
             background: linear-gradient(135deg, #2563eb, #1d4ed8);
             border-color: #1d4ed8;
+            box-shadow: none;
         }}
 
         .sb-tier-chip.sb-my-items-chip.is-active {{
             border-color: #f59e0b;
             background: #fffbeb;
             color: #b45309;
+            box-shadow: inset 0 0 0 1px #f59e0b;
+        }}
+
+        @media (max-width: 640px) {{
+            .sb-tier-chip {{
+                padding: 9px 12px;
+                font-size: 13px;
+            }}
         }}
 
         .sb-star-btn {{
@@ -3673,13 +3698,15 @@ def build_page_html(deals):
             </div>
         </section>
 
-        <section class="sb-tier-chips" aria-label="Filter by deal strength">
-            <span class="sb-tier-chips-label">Show</span>
-            <button type="button" class="sb-tier-chip is-active" data-tier-filter="all" aria-pressed="true">All</button>
-            <button type="button" class="sb-tier-chip" data-tier-filter="diamond" aria-pressed="false" title="25% off and up">💎 Diamond</button>
-            <button type="button" class="sb-tier-chip" data-tier-filter="fire" aria-pressed="false" title="20–24% off">🔥 Fire</button>
-            <button type="button" class="sb-tier-chip" data-tier-filter="strong" aria-pressed="false" title="10–19% off">💪 Strong</button>
-            <button type="button" class="sb-tier-chip sb-my-items-chip" id="sb-my-items-chip" data-tier-filter="my-items" aria-pressed="false" title="Starred items">★ My Items</button>
+        <section class="sb-tier-chips-section" aria-label="Filter by deal strength">
+            <div class="sb-tier-chips">
+                <span class="sb-tier-chips-label">Show</span>
+                <button type="button" class="sb-tier-chip is-active" data-tier-filter="all" aria-pressed="true">All</button>
+                <button type="button" class="sb-tier-chip" data-tier-filter="diamond" aria-pressed="false" title="25% off and up">💎 Diamond</button>
+                <button type="button" class="sb-tier-chip" data-tier-filter="fire" aria-pressed="false" title="20–24% off">🔥 Fire</button>
+                <button type="button" class="sb-tier-chip" data-tier-filter="strong" aria-pressed="false" title="10–19% off">💪 Strong</button>
+                <button type="button" class="sb-tier-chip sb-my-items-chip" id="sb-my-items-chip" data-tier-filter="my-items" aria-pressed="false" title="Starred items">★ My Items</button>
+            </div>
         </section>
         <div class="sb-my-items-summary" id="sb-my-items-summary" hidden></div>
         <div class="sb-my-items-notify" id="sb-my-items-notify" hidden>
