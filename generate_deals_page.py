@@ -3,7 +3,10 @@ import html
 import os
 import random
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
+
+US_CENTRAL = ZoneInfo("America/Chicago")
 
 
 ROOT = Path(__file__).parent
@@ -58,17 +61,25 @@ def parse_verified_at(deal):
 
 def _latest_verified_at(deals):
     times = [t for t in (parse_verified_at(d) for d in deals) if t is not None]
-    return max(times) if times else datetime.now()
+    return max(times) if times else datetime.now(timezone.utc)
+
+
+def _as_us_central(dt: datetime) -> datetime:
+    """Display scrape timestamps in US Central (not UTC)."""
+    if dt.tzinfo is None:
+        # Naive values are treated as UTC (ISO scrapes / pipeline clock).
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(US_CENTRAL)
 
 
 def get_last_updated_text(deals):
-    # Example: December 07, 2025 at 11:20 AM
-    return _latest_verified_at(deals).strftime("%B %d, %Y at %I:%M %p")
+    # Example: December 07, 2025 at 11:20 AM (US Central)
+    return _as_us_central(_latest_verified_at(deals)).strftime("%B %d, %Y at %I:%M %p")
 
 
 def get_last_updated_short(deals):
-    # Compact sticky-header stamp: Aug 14 · 09:50 AM
-    return _latest_verified_at(deals).strftime("%b %d · %I:%M %p")
+    # Compact sticky-header stamp: Aug 14 · 09:50 AM (US Central)
+    return _as_us_central(_latest_verified_at(deals)).strftime("%b %d · %I:%M %p")
 
 
 def retailer_classes(retailer: str):
@@ -3744,7 +3755,7 @@ def build_page_html(deals):
                 <img src="assets/logo-transparent.png" alt="SnackBuddy logo" class="sb-logo" />
                 <span class="sb-header-title">SnackBuddy</span>
             </div>
-            <div class="sb-header-freshness" title="Prices logged {last_updated} (local time)">
+            <div class="sb-header-freshness" title="Prices from Bowling Green, KY stores · checked {last_updated} Central · your store may differ">
                 <span class="sb-header-freshness-label">Prices checked</span>
                 <span class="sb-header-freshness-time">{last_updated_short}</span>
             </div>
@@ -3760,9 +3771,9 @@ def build_page_html(deals):
             <div class="sb-hero-bg">
                 <div class="sb-hero-pattern"></div>
                 <div class="sb-hero-content">
-                    <div class="sb-hero-freshness" title="Prices logged {last_updated} (local time)">
+                    <div class="sb-hero-freshness" title="Prices from Bowling Green, KY stores · checked {last_updated} Central · your store may differ">
                         <span class="sb-hero-freshness-dot" aria-hidden="true"></span>
-                        <span>Prices checked {last_updated_short} · may vary by location at checkout</span>
+                        <span>Prices from Bowling Green, KY stores · checked {last_updated_short} · your store may differ</span>
                     </div>
                     <h1 class="sb-hero-title">Don&apos;t overpay for the snacks you already buy.</h1>
                 </div>
@@ -4311,8 +4322,17 @@ document.addEventListener("DOMContentLoaded", function () {{
     }} catch (err) {{}}
   }}
 
-  function titleRetailer(name) {{
+  function displayRetailerName(name) {{
+    // Visitor-facing label only — filter keys / data-retailer stay unchanged.
+    const key = String(name || "").toLowerCase().trim();
+    if (key === "harris teeter" || (key.indexOf("harris") !== -1 && key.indexOf("teeter") !== -1)) {{
+      return "Harris Teeter · Baltimore";
+    }}
     return titleize(String(name || ""));
+  }}
+
+  function titleRetailer(name) {{
+    return displayRetailerName(name);
   }}
 
   function daysAgoLabel(iso) {{
@@ -4518,7 +4538,10 @@ document.addEventListener("DOMContentLoaded", function () {{
     const matching = cards.filter(function(card) {{ return cardMatchesSelected(card, key); }});
 
     return uniq(matching.map(function(card) {{ return card.dataset[key]; }})).map(function(v) {{
-      return {{ value: v, label: titleize(v) }};
+      return {{
+        value: v,
+        label: key === "retailer" ? displayRetailerName(v) : titleize(v),
+      }};
     }});
   }}
 
@@ -5363,7 +5386,7 @@ document.addEventListener("DOMContentLoaded", function () {{
         walmart: "Walmart®",
         target: "Target®",
         kroger: "Kroger®",
-        "harris teeter": "Harris Teeter®",
+        "harris teeter": "Harris Teeter · Baltimore",
         meijer: "Meijer®",
         other: "Other",
       }};
