@@ -108,6 +108,15 @@ def retailer_cta_label(retailer: str) -> str:
     return (retailer or "Retailer").strip()
 
 
+def display_retailer_label(retailer: str) -> str:
+    """Visitor-facing store name (Harris Teeter shows city)."""
+    r = (retailer or "").strip()
+    rl = r.lower()
+    if "harris" in rl and "teeter" in rl:
+        return "Harris Teeter · Baltimore"
+    return r or "Store"
+
+
 def normalize_retailer_value(raw: str) -> str:
     r = (raw or "").strip().lower()
     if "walmart" in r:
@@ -660,6 +669,7 @@ def build_card_html(deal):
     except Exception:
         new_price_val = 0.0
 
+    old_price_val = None
     old_price_html = ""
     if old_price is not None:
         try:
@@ -668,8 +678,15 @@ def build_card_html(deal):
                 old_price_html = (
                     f"<span class='old-price'>${old_price_val:.2f}</span>"
                 )
+            else:
+                old_price_val = None
         except Exception:
+            old_price_val = None
             old_price_html = ""
+
+    dollars_saved = (
+        (old_price_val - new_price_val) if old_price_val is not None else 0.0
+    )
 
     availability_html = ""
     if availability_text:
@@ -742,6 +759,7 @@ def build_card_html(deal):
          data-retailer="{retailer_attr}"
          data-brand="{brand_attr}"
          data-price="{new_price_val}"
+         data-saved="{dollars_saved:.4f}"
          data-percent="{float(percent_off) if percent_off is not None else 0.0}"
          data-deal-count="{deal_count}"
          data-tier="{tier_name}"
@@ -779,6 +797,113 @@ def build_card_html(deal):
     """
 
 
+def pick_best_savings_deals(deals: list[dict], limit: int = 6) -> list[dict]:
+    """
+    Top dollar-savings deals (≥10% off) from today's published set.
+    Quarantined / safety-held deals are already absent from deals_today.json.
+    One product family (brand + product + pack) only — best flavor/store wins.
+    """
+    ranked: list[tuple[float, float, dict]] = []
+    for row in deals:
+        try:
+            pct = float(row.get("percent_off") or 0.0)
+            old_p = float(row.get("old_price"))
+            new_p = float(row.get("new_price"))
+        except (TypeError, ValueError):
+            continue
+        if pct < 10.0 or old_p <= new_p:
+            continue
+        product_name = _norm_str(row.get("product_name"))
+        brand = _norm_str(row.get("brand")) or extract_brand_from_product_name(product_name)
+        item_id = make_item_id(brand, product_name, row.get("pack_count"))
+        saved = old_p - new_p
+        enriched = dict(row)
+        enriched["_saved"] = saved
+        enriched["_item_id"] = item_id
+        enriched["_brand"] = brand
+        ranked.append((saved, pct, enriched))
+
+    ranked.sort(key=lambda t: (-t[0], -t[1]))
+    out: list[dict] = []
+    seen_families: set[str] = set()
+    for _saved, _pct, row in ranked:
+        fam = row["_item_id"]
+        if fam in seen_families:
+            continue
+        seen_families.add(fam)
+        out.append(row)
+        if len(out) >= limit:
+            break
+    return out
+
+
+def build_best_savings_html(deals: list[dict]) -> str:
+    picks = pick_best_savings_deals(deals, limit=6)
+    if not picks:
+        return ""
+
+    tiles = []
+    for d in picks:
+        product_name = remove_pack_size_from_name(_norm_str(d.get("product_name")))
+        flavor = _norm_str(d.get("flavor"))
+        title = f"{product_name} — {flavor}" if flavor else product_name
+        store = display_retailer_label(d.get("retailer", ""))
+        img = _norm_str(d.get("image_url") or "")
+        url = _norm_str(d.get("retailer_url") or d.get("canonical_url") or "#")
+        try:
+            new_p = float(d.get("new_price"))
+            old_p = float(d.get("old_price"))
+            pct = float(d.get("percent_off") or 0.0)
+            saved = float(d.get("_saved") or (old_p - new_p))
+        except (TypeError, ValueError):
+            continue
+        item_id = html.escape(d.get("_item_id") or "")
+        img_html = (
+            f'<img src="{html.escape(img)}" alt="{html.escape(title)}" loading="lazy" decoding="async" />'
+            if img
+            else '<div class="sb-savings-tile-img-ph" aria-hidden="true"></div>'
+        )
+        tiles.append(
+            f"""
+            <article class="sb-savings-tile" data-item-id="{item_id}" data-url="{html.escape(url)}" tabindex="0" role="link" aria-label="{html.escape(title)} at {html.escape(store)}">
+              <button type="button" class="sb-star-btn sb-savings-star" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+                <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+                </svg>
+              </button>
+              <div class="sb-savings-tile-img">{img_html}</div>
+              <div class="sb-savings-tile-store">{html.escape(store)}</div>
+              <div class="sb-savings-tile-name">{html.escape(title)}</div>
+              <div class="sb-savings-tile-save">Save ${saved:.2f}</div>
+              <div class="card-pricing">
+                <span class="old-price">${old_p:.2f}</span>
+                <span class="new-price">${new_p:.2f}</span>
+                <span class="percent-off">{pct:.0f}% OFF</span>
+              </div>
+            </article>
+            """
+        )
+
+    tiles_html = "\n".join(tiles)
+    return f"""
+        <section class="sb-best-savings" id="sb-best-savings" aria-label="Best savings this week">
+            <div class="sb-best-savings-inner">
+                <div class="sb-best-savings-header">
+                    <div class="sb-best-savings-copy">
+                        <h2 class="sb-best-savings-title">Best savings this week</h2>
+                        <p class="sb-best-savings-subtitle">The biggest dollar savings at Bowling Green stores right now</p>
+                    </div>
+                    <div class="sb-best-savings-pill">☆ Star what you buy. We’ll track it for you.</div>
+                </div>
+                <div class="sb-best-savings-rail" id="sb-best-savings-rail">
+                    {tiles_html}
+                </div>
+                <a class="sb-best-savings-see-all" href="#deals-list">See all deals</a>
+            </div>
+        </section>
+    """
+
+
 def build_page_html(deals):
     # Group deals into deal families
     grouped_deals = group_deals(deals)
@@ -810,6 +935,7 @@ def build_page_html(deals):
 
     deals_sorted = sorted(grouped_deals, key=sort_key)
     cards_html = "\n".join(build_card_html(d) for d in deals_sorted)
+    best_savings_html = build_best_savings_html(deals)
     beehiiv_form_id = html.escape(BEEHIIV_FORM_ID)
     beehiiv_pub_id = html.escape(BEEHIIV_PUBLICATION_ID)
     beehiiv_embed_script = (
@@ -1720,6 +1846,172 @@ def build_page_html(deals):
             background: #22c55e;
             flex-shrink: 0;
             box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.22);
+        }}
+
+        .sb-best-savings {{
+            max-width: var(--page-max);
+            margin: 14px auto 0;
+            padding: 0 16px;
+        }}
+        .sb-best-savings-header {{
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px 16px;
+            margin-bottom: 12px;
+        }}
+        .sb-best-savings-title {{
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -0.02em;
+        }}
+        .sb-best-savings-subtitle {{
+            margin: 4px 0 0;
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.35;
+        }}
+        .sb-best-savings-pill {{
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: var(--radius-pill);
+            border: 1px solid var(--border-subtle);
+            background: #ffffff;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }}
+        .sb-best-savings-rail {{
+            display: grid;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 12px;
+        }}
+        .sb-savings-tile {{
+            position: relative;
+            background: var(--card-bg);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-soft);
+            padding: 10px 10px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+            color: inherit;
+            min-width: 0;
+            transition: transform 0.12s ease, box-shadow 0.12s ease;
+        }}
+        .sb-savings-tile:hover {{
+            transform: translateY(-1px);
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+        }}
+        .sb-savings-tile:focus-visible {{
+            outline: 2px solid var(--green);
+            outline-offset: 2px;
+        }}
+        .sb-savings-star {{
+            width: 44px;
+            height: 44px;
+            top: 8px;
+            right: 8px;
+        }}
+        .sb-savings-tile-img {{
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }}
+        .sb-savings-tile-img img {{
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }}
+        .sb-savings-tile-img-ph {{
+            width: 40%;
+            height: 40%;
+            border-radius: 8px;
+            background: #e5e7eb;
+        }}
+        .sb-savings-tile-store {{
+            margin-top: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 0.01em;
+        }}
+        .sb-savings-tile-name {{
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.25;
+            color: var(--text-main);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 2.5em;
+        }}
+        .sb-savings-tile-save {{
+            margin-top: 2px;
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--green);
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }}
+        .sb-savings-tile .card-pricing {{
+            flex-wrap: nowrap;
+            white-space: nowrap;
+        }}
+        .sb-best-savings-see-all {{
+            display: inline-block;
+            margin-top: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--blue);
+            text-decoration: none;
+        }}
+        .sb-best-savings-see-all:hover {{
+            text-decoration: underline;
+        }}
+        @media (max-width: 900px) {{
+            .sb-best-savings-rail {{
+                display: flex;
+                flex-wrap: nowrap;
+                gap: 12px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scroll-snap-type: x mandatory;
+                padding-bottom: 6px;
+            }}
+            .sb-savings-tile {{
+                flex: 0 0 200px;
+                width: 200px;
+                scroll-snap-align: start;
+            }}
+            .sb-savings-tile .card-pricing {{
+                font-size: 11px;
+                gap: 4px;
+            }}
+            .sb-savings-tile .card-pricing .percent-off {{
+                font-size: 14px;
+            }}
+            .sb-best-savings-title {{
+                font-size: 18px;
+            }}
+            .sb-best-savings-pill {{
+                white-space: normal;
+            }}
         }}
 
         .sb-tools-bar {{
@@ -3780,6 +4072,8 @@ def build_page_html(deals):
             </div>
         </section>
 
+        {best_savings_html}
+
         <section class="sb-tools-bar" aria-label="Search and sort deals">
             <div class="sb-filter-toggle-wrap">
                 <button type="button" class="sb-filter-master" id="sb-filter-master" aria-label="Filters" aria-expanded="true" aria-controls="sb-filter-sidebar">
@@ -3810,12 +4104,14 @@ def build_page_html(deals):
                 <div class="sb-sort-menu" id="sb-sort-menu" role="listbox" aria-label="Sort deals" hidden>
                     <button type="button" class="sb-sort-option is-selected" role="option" data-sort="best" aria-selected="true">Best discount (default)</button>
                     <button type="button" class="sb-sort-option" role="option" data-sort="pct-desc" aria-selected="false">% off: high to low</button>
+                    <button type="button" class="sb-sort-option" role="option" data-sort="saved-desc" aria-selected="false">Most $ saved</button>
                     <button type="button" class="sb-sort-option" role="option" data-sort="price-asc" aria-selected="false">Price: low to high</button>
                     <button type="button" class="sb-sort-option" role="option" data-sort="price-desc" aria-selected="false">Price: high to low</button>
                 </div>
                 <select id="sb-sort-select" class="sb-sort-select" aria-hidden="true" tabindex="-1">
                     <option value="best" selected>Best discount (default)</option>
                     <option value="pct-desc">% off: high to low</option>
+                    <option value="saved-desc">Most $ saved</option>
                     <option value="price-asc">Price: low to high</option>
                     <option value="price-desc">Price: high to low</option>
                 </select>
@@ -4378,9 +4674,9 @@ document.addEventListener("DOMContentLoaded", function () {{
   }}
 
   function syncStarButtons() {{
-    document.querySelectorAll(".card[data-item-id] .sb-star-btn").forEach(function(btn) {{
-      const card = btn.closest(".card");
-      const id = card && card.dataset.itemId;
+    document.querySelectorAll("[data-item-id] .sb-star-btn").forEach(function(btn) {{
+      const host = btn.closest("[data-item-id]");
+      const id = host && host.dataset.itemId;
       const on = !!(id && starredIds.has(id));
       btn.classList.toggle("is-starred", on);
       btn.setAttribute("aria-pressed", on ? "true" : "false");
@@ -4422,6 +4718,7 @@ document.addEventListener("DOMContentLoaded", function () {{
     card.dataset.onSale = "0";
     card.dataset.tier = "sale";
     card.dataset.price = "0";
+    card.dataset.saved = "0";
     card.dataset.percent = "0";
     card.dataset.brand = String(meta.brand || "").toLowerCase();
     card.dataset.retailer = "";
@@ -4457,16 +4754,37 @@ document.addEventListener("DOMContentLoaded", function () {{
     if (myItemsView) applyFiltersAndSort();
   }}
 
-  if (grid) {{
-    grid.addEventListener("click", function(ev) {{
+  function bindStarClicks(root) {{
+    if (!root) return;
+    root.addEventListener("click", function(ev) {{
       const btn = ev.target && ev.target.closest ? ev.target.closest(".sb-star-btn") : null;
-      if (!btn || !grid.contains(btn)) return;
+      if (!btn || !root.contains(btn)) return;
       ev.preventDefault();
       ev.stopPropagation();
-      const card = btn.closest(".card");
-      if (!card) return;
-      const titleEl = card.querySelector(".card-title");
-      toggleStar(card.dataset.itemId || "", titleEl ? titleEl.textContent.trim() : "");
+      const host = btn.closest("[data-item-id]");
+      if (!host) return;
+      const nameEl = host.querySelector(".card-title, .sb-savings-tile-name");
+      toggleStar(host.dataset.itemId || "", nameEl ? nameEl.textContent.trim() : "");
+    }});
+  }}
+  bindStarClicks(grid);
+  const bestSavings = document.getElementById("sb-best-savings");
+  bindStarClicks(bestSavings);
+  if (bestSavings) {{
+    bestSavings.addEventListener("click", function(ev) {{
+      if (ev.target && ev.target.closest && ev.target.closest(".sb-star-btn")) return;
+      const tile = ev.target && ev.target.closest ? ev.target.closest(".sb-savings-tile") : null;
+      if (!tile || !bestSavings.contains(tile)) return;
+      const url = tile.getAttribute("data-url") || "";
+      if (url) window.open(url, "_blank", "noopener,noreferrer");
+    }});
+    bestSavings.addEventListener("keydown", function(ev) {{
+      if (ev.key !== "Enter" && ev.key !== " ") return;
+      const tile = ev.target && ev.target.closest ? ev.target.closest(".sb-savings-tile") : null;
+      if (!tile || ev.target.closest(".sb-star-btn")) return;
+      ev.preventDefault();
+      const url = tile.getAttribute("data-url") || "";
+      if (url) window.open(url, "_blank", "noopener,noreferrer");
     }});
   }}
 
@@ -4957,8 +5275,15 @@ document.addEventListener("DOMContentLoaded", function () {{
       const bPrice = parseFloat(b.dataset.price || "0");
       const aPct = parseFloat(a.dataset.percent || "0");
       const bPct = parseFloat(b.dataset.percent || "0");
+      const aSaved = parseFloat(a.dataset.saved || "0");
+      const bSaved = parseFloat(b.dataset.saved || "0");
 
       if (sortMode === "pct-desc") {{
+        if (aPct !== bPct) return bPct - aPct;
+        return aPrice - bPrice;
+      }}
+      if (sortMode === "saved-desc") {{
+        if (aSaved !== bSaved) return bSaved - aSaved;
         if (aPct !== bPct) return bPct - aPct;
         return aPrice - bPrice;
       }}

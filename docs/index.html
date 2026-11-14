@@ -901,6 +901,172 @@
             box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.22);
         }
 
+        .sb-best-savings {
+            max-width: var(--page-max);
+            margin: 14px auto 0;
+            padding: 0 16px;
+        }
+        .sb-best-savings-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px 16px;
+            margin-bottom: 12px;
+        }
+        .sb-best-savings-title {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -0.02em;
+        }
+        .sb-best-savings-subtitle {
+            margin: 4px 0 0;
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.35;
+        }
+        .sb-best-savings-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: var(--radius-pill);
+            border: 1px solid var(--border-subtle);
+            background: #ffffff;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+        .sb-best-savings-rail {
+            display: grid;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 12px;
+        }
+        .sb-savings-tile {
+            position: relative;
+            background: var(--card-bg);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-soft);
+            padding: 10px 10px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+            color: inherit;
+            min-width: 0;
+            transition: transform 0.12s ease, box-shadow 0.12s ease;
+        }
+        .sb-savings-tile:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+        }
+        .sb-savings-tile:focus-visible {
+            outline: 2px solid var(--green);
+            outline-offset: 2px;
+        }
+        .sb-savings-star {
+            width: 44px;
+            height: 44px;
+            top: 8px;
+            right: 8px;
+        }
+        .sb-savings-tile-img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .sb-savings-tile-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+        .sb-savings-tile-img-ph {
+            width: 40%;
+            height: 40%;
+            border-radius: 8px;
+            background: #e5e7eb;
+        }
+        .sb-savings-tile-store {
+            margin-top: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 0.01em;
+        }
+        .sb-savings-tile-name {
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.25;
+            color: var(--text-main);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 2.5em;
+        }
+        .sb-savings-tile-save {
+            margin-top: 2px;
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--green);
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+        .sb-savings-tile .card-pricing {
+            flex-wrap: nowrap;
+            white-space: nowrap;
+        }
+        .sb-best-savings-see-all {
+            display: inline-block;
+            margin-top: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--blue);
+            text-decoration: none;
+        }
+        .sb-best-savings-see-all:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 900px) {
+            .sb-best-savings-rail {
+                display: flex;
+                flex-wrap: nowrap;
+                gap: 12px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scroll-snap-type: x mandatory;
+                padding-bottom: 6px;
+            }
+            .sb-savings-tile {
+                flex: 0 0 200px;
+                width: 200px;
+                scroll-snap-align: start;
+            }
+            .sb-savings-tile .card-pricing {
+                font-size: 11px;
+                gap: 4px;
+            }
+            .sb-savings-tile .card-pricing .percent-off {
+                font-size: 14px;
+            }
+            .sb-best-savings-title {
+                font-size: 18px;
+            }
+            .sb-best-savings-pill {
+                white-space: normal;
+            }
+        }
+
         .sb-tools-bar {
             max-width: var(--page-max);
             margin: 0 auto 8px;
@@ -2934,9 +3100,9 @@
                 <img src="assets/logo-transparent.png" alt="SnackBuddy logo" class="sb-logo" />
                 <span class="sb-header-title">SnackBuddy</span>
             </div>
-            <div class="sb-header-freshness" title="Prices from Bowling Green, KY stores · checked November 13, 2026 at 04:54 PM Central · your store may differ">
+            <div class="sb-header-freshness" title="Prices from Bowling Green, KY stores · checked November 14, 2026 at 03:59 PM Central · your store may differ">
                 <span class="sb-header-freshness-label">Prices checked</span>
-                <span class="sb-header-freshness-time">Nov 13 · 04:54 PM</span>
+                <span class="sb-header-freshness-time">Nov 14 · 03:59 PM</span>
             </div>
             <button class="sb-menu-button" aria-label="Menu" aria-expanded="false">☰</button>
         </div>
@@ -2950,14 +3116,139 @@
             <div class="sb-hero-bg">
                 <div class="sb-hero-pattern"></div>
                 <div class="sb-hero-content">
-                    <div class="sb-hero-freshness" title="Prices from Bowling Green, KY stores · checked November 13, 2026 at 04:54 PM Central · your store may differ">
+                    <div class="sb-hero-freshness" title="Prices from Bowling Green, KY stores · checked November 14, 2026 at 03:59 PM Central · your store may differ">
                         <span class="sb-hero-freshness-dot" aria-hidden="true"></span>
-                        <span>Prices from Bowling Green, KY stores · checked Nov 13 · 04:54 PM · your store may differ</span>
+                        <span>Prices from Bowling Green, KY stores · checked Nov 14 · 03:59 PM · your store may differ</span>
                     </div>
                     <h1 class="sb-hero-title">Don&apos;t overpay for the snacks you already buy.</h1>
                 </div>
             </div>
         </section>
+
+        
+        <section class="sb-best-savings" id="sb-best-savings" aria-label="Best savings this week">
+            <div class="sb-best-savings-inner">
+                <div class="sb-best-savings-header">
+                    <div class="sb-best-savings-copy">
+                        <h2 class="sb-best-savings-title">Best savings this week</h2>
+                        <p class="sb-best-savings-subtitle">The biggest dollar savings at Bowling Green stores right now</p>
+                    </div>
+                    <div class="sb-best-savings-pill">☆ Star what you buy. We’ll track it for you.</div>
+                </div>
+                <div class="sb-best-savings-rail" id="sb-best-savings-rail">
+                    
+            <article class="sb-savings-tile" data-item-id="optimum nutrition|optimum nutrition whey protein powder|1" data-url="https://www.walmart.com/ip/Optimum-Nutrition-Gold-Standard-100-Whey-Protein-Powder-Vanilla-Ice-Cream-1-5lb-Tub/8053802024?fulfillmentIntent=In-store&amp;filters=%5B%7B%22intent%22%3A%22fulfillmentIntent%22%2C%22values%22%3A%5B%22In-store%22%5D%7D%5D&amp;classType=VARIANT&amp;athbdg=L1102&amp;from=/search" tabindex="0" role="link" aria-label="Optimum Nutrition Whey Protein Powder — Vanilla at Walmart">
+              <button type="button" class="sb-star-btn sb-savings-star" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+                <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+                </svg>
+              </button>
+              <div class="sb-savings-tile-img"><img src="https://i5.walmartimages.com/seo/Optimum-Nutrition-Gold-Standard-100-Whey-Protein-Powder-Vanilla-Ice-Cream-1-5lb-Tub_3dcf92c7-ba5c-49f9-83fb-92786bf8b443.0e9a8a2cadcbc82ab471b1b84e4696c3.jpeg?odnHeight=573&amp;odnWidth=573&amp;odnBg=FFFFFF" alt="Optimum Nutrition Whey Protein Powder — Vanilla" loading="lazy" decoding="async" /></div>
+              <div class="sb-savings-tile-store">Walmart</div>
+              <div class="sb-savings-tile-name">Optimum Nutrition Whey Protein Powder — Vanilla</div>
+              <div class="sb-savings-tile-save">Save $6.03</div>
+              <div class="card-pricing">
+                <span class="old-price">$33.97</span>
+                <span class="new-price">$27.94</span>
+                <span class="percent-off">18% OFF</span>
+              </div>
+            </article>
+            
+
+            <article class="sb-savings-tile" data-item-id="celsius|celsius energy drink|12" data-url="https://www.meijer.com/shopping/product/-/88939200095.html" tabindex="0" role="link" aria-label="Celsius Energy Drink — Vibe Variety at Meijer">
+              <button type="button" class="sb-star-btn sb-savings-star" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+                <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+                </svg>
+              </button>
+              <div class="sb-savings-tile-img"><img src="https://www.kroger.com/product/images/xlarge/front/0088939200095" alt="Celsius Energy Drink — Vibe Variety" loading="lazy" decoding="async" /></div>
+              <div class="sb-savings-tile-store">Meijer</div>
+              <div class="sb-savings-tile-name">Celsius Energy Drink — Vibe Variety</div>
+              <div class="sb-savings-tile-save">Save $4.00</div>
+              <div class="card-pricing">
+                <span class="old-price">$21.99</span>
+                <span class="new-price">$17.99</span>
+                <span class="percent-off">18% OFF</span>
+              </div>
+            </article>
+            
+
+            <article class="sb-savings-tile" data-item-id="larabar|larabar|18" data-url="https://www.harristeeter.com/p/larabar-fruit-lovers-variety-pack/0002190813296?fulfillment=PICKUP" tabindex="0" role="link" aria-label="Larabar — Variety - Fruity at Harris Teeter · Baltimore">
+              <button type="button" class="sb-star-btn sb-savings-star" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+                <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+                </svg>
+              </button>
+              <div class="sb-savings-tile-img"><img src="https://www.kroger.com/product/images/xlarge/front/0002190813296?banner=harristeeter" alt="Larabar — Variety - Fruity" loading="lazy" decoding="async" /></div>
+              <div class="sb-savings-tile-store">Harris Teeter · Baltimore</div>
+              <div class="sb-savings-tile-name">Larabar — Variety - Fruity</div>
+              <div class="sb-savings-tile-save">Save $4.00</div>
+              <div class="card-pricing">
+                <span class="old-price">$22.99</span>
+                <span class="new-price">$18.99</span>
+                <span class="percent-off">17% OFF</span>
+              </div>
+            </article>
+            
+
+            <article class="sb-savings-tile" data-item-id="aloha|aloga vegan protein bar|15" data-url="https://www.walmart.com/ip/Aloha-Peanut-Butter-Cup-Protein-Bars-5-Pk/15320016567" tabindex="0" role="link" aria-label="ALOGA Vegan Protein Bar — Peanut Butter Cup at Walmart">
+              <button type="button" class="sb-star-btn sb-savings-star" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+                <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+                </svg>
+              </button>
+              <div class="sb-savings-tile-img"><img src="https://i5.walmartimages.com/seo/3-pack-Aloha-Peanut-Butter-Cup-Protein-Bars-5-Pk_ad79ee27-7ce1-4634-bbc2-a6d6c4237b60.5a3c6cacf3da8baca0d6cf8d5b03b95e.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="ALOGA Vegan Protein Bar — Peanut Butter Cup" loading="lazy" decoding="async" /></div>
+              <div class="sb-savings-tile-store">Walmart</div>
+              <div class="sb-savings-tile-name">ALOGA Vegan Protein Bar — Peanut Butter Cup</div>
+              <div class="sb-savings-tile-save">Save $2.99</div>
+              <div class="card-pricing">
+                <span class="old-price">$29.94</span>
+                <span class="new-price">$26.95</span>
+                <span class="percent-off">10% OFF</span>
+              </div>
+            </article>
+            
+
+            <article class="sb-savings-tile" data-item-id="rxbar|rxbar|15" data-url="https://www.walmart.com/ip/RXBAR-Gluten-Free-Chocolate-Sea-Salt-Chewy-Protein-Bars-Ready-to-Eat-Protein-Snack-9-1-oz-5-Count/15353971782" tabindex="0" role="link" aria-label="RXBAR — Chocolate Sea Salt at Walmart">
+              <button type="button" class="sb-star-btn sb-savings-star" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+                <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+                </svg>
+              </button>
+              <div class="sb-savings-tile-img"><img src="https://i5.walmartimages.com/seo/3-pack-RXBAR-Gluten-Free-Chocolate-Sea-Salt-Chewy-Protein-Bars-Ready-to-Eat-Protein-Snack-9-1-oz-5-Count_b80ae2bd-701f-4775-aaf9-1e6811132d7a.27e936615bb096942f15ebc8b5581eea.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="RXBAR — Chocolate Sea Salt" loading="lazy" decoding="async" /></div>
+              <div class="sb-savings-tile-store">Walmart</div>
+              <div class="sb-savings-tile-name">RXBAR — Chocolate Sea Salt</div>
+              <div class="sb-savings-tile-save">Save $2.69</div>
+              <div class="card-pricing">
+                <span class="old-price">$26.88</span>
+                <span class="new-price">$24.19</span>
+                <span class="percent-off">10% OFF</span>
+              </div>
+            </article>
+            
+
+            <article class="sb-savings-tile" data-item-id="pure protein|pure protein bar|12" data-url="https://www.target.com/p/pure-protein-20g-protein-bar-chewy-chocolate-chip-12pk/-/A-50409156" tabindex="0" role="link" aria-label="Pure Protein Bar — Chewy Chocolate Chip at Target">
+              <button type="button" class="sb-star-btn sb-savings-star" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+                <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+                </svg>
+              </button>
+              <div class="sb-savings-tile-img"><img src="https://target.scene7.com/is/image/Target/GUEST_93b3242a-e6d2-45eb-ab46-f25e6957fb16?wid=600&amp;hei=600&amp;qlt=80" alt="Pure Protein Bar — Chewy Chocolate Chip" loading="lazy" decoding="async" /></div>
+              <div class="sb-savings-tile-store">Target</div>
+              <div class="sb-savings-tile-name">Pure Protein Bar — Chewy Chocolate Chip</div>
+              <div class="sb-savings-tile-save">Save $2.55</div>
+              <div class="card-pricing">
+                <span class="old-price">$16.99</span>
+                <span class="new-price">$14.44</span>
+                <span class="percent-off">15% OFF</span>
+              </div>
+            </article>
+            
+                </div>
+                <a class="sb-best-savings-see-all" href="#deals-list">See all deals</a>
+            </div>
+        </section>
+    
 
         <section class="sb-tools-bar" aria-label="Search and sort deals">
             <div class="sb-filter-toggle-wrap">
@@ -2989,12 +3280,14 @@
                 <div class="sb-sort-menu" id="sb-sort-menu" role="listbox" aria-label="Sort deals" hidden>
                     <button type="button" class="sb-sort-option is-selected" role="option" data-sort="best" aria-selected="true">Best discount (default)</button>
                     <button type="button" class="sb-sort-option" role="option" data-sort="pct-desc" aria-selected="false">% off: high to low</button>
+                    <button type="button" class="sb-sort-option" role="option" data-sort="saved-desc" aria-selected="false">Most $ saved</button>
                     <button type="button" class="sb-sort-option" role="option" data-sort="price-asc" aria-selected="false">Price: low to high</button>
                     <button type="button" class="sb-sort-option" role="option" data-sort="price-desc" aria-selected="false">Price: high to low</button>
                 </div>
                 <select id="sb-sort-select" class="sb-sort-select" aria-hidden="true" tabindex="-1">
                     <option value="best" selected>Best discount (default)</option>
                     <option value="pct-desc">% off: high to low</option>
+                    <option value="saved-desc">Most $ saved</option>
                     <option value="price-asc">Price: low to high</option>
                     <option value="price-desc">Price: high to low</option>
                 </select>
@@ -3094,6 +3387,7 @@
          data-retailer="harris teeter"
          data-brand="la banderita"
          data-price="4.49"
+         data-saved="1.5000"
          data-percent="25.0"
          data-deal-count="1"
          data-tier="diamond"
@@ -3155,6 +3449,7 @@
          data-retailer="kroger"
          data-brand="clif builders"
          data-price="1.67"
+         data-saved="0.5200"
          data-percent="23.7"
          data-deal-count="2"
          data-tier="fire"
@@ -3215,6 +3510,7 @@
          data-retailer="kroger"
          data-brand="clif bar"
          data-price="1.67"
+         data-saved="0.5200"
          data-percent="23.7"
          data-deal-count="1"
          data-tier="fire"
@@ -3272,6 +3568,7 @@
          data-retailer="harris teeter"
          data-brand="mission"
          data-price="4.99"
+         data-saved="1.5000"
          data-percent="23.1"
          data-deal-count="4"
          data-tier="fire"
@@ -3332,6 +3629,7 @@
          data-retailer="harris teeter"
          data-brand="alani nu"
          data-price="2.5"
+         data-saved="0.6900"
          data-percent="21.6"
          data-deal-count="6"
          data-tier="fire"
@@ -3392,6 +3690,7 @@
          data-retailer="harris teeter"
          data-brand="mission"
          data-price="4.99"
+         data-saved="1.3000"
          data-percent="20.7"
          data-deal-count="1"
          data-tier="fire"
@@ -3449,6 +3748,7 @@
          data-retailer="meijer"
          data-brand="magic spoon"
          data-price="7.99"
+         data-saved="2.0000"
          data-percent="20.0"
          data-deal-count="4"
          data-tier="fire"
@@ -3503,16 +3803,17 @@
     
 
     <div class="card card-tier-strong"
-         data-item-id="larabar|larabar|6"
+         data-item-id="ole|ole xtreme wellness|14"
          data-section="food"
-         data-category="bars"
+         data-category="wraps"
          data-retailer="walmart"
-         data-brand="larabar"
-         data-price="6.95"
-         data-percent="18.9"
+         data-brand="ole"
+         data-price="3.37"
+         data-saved="0.7900"
+         data-percent="19.0"
          data-deal-count="1"
          data-tier="strong"
-         data-search="larabar larabar bars walmart cashew cookie"
+         data-search="ole xtreme wellness ole wraps walmart xtreme wellness high fiber tortilla wrap street taco"
          data-on-sale="1">
         <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
           <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -3525,28 +3826,28 @@
             
         <div class="card-carousel card-carousel--single" data-slide-count="1">
             <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Cashew Cookie"><a href="https://www.walmart.com/ip/Larabar-Cashew-Cookie-Gluten-Free-Vegan-Fruit-Nut-Bar-1-7-oz-Bars-6-Ct/313403131?classType=REGULAR&amp;from=/search" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/Larabar-Cashew-Cookie-Gluten-Free-Vegan-Fruit-Nut-Bar-1-7-oz-Bars-6-Ct_a5e80a23-3de9-41f6-b554-bf06bea0d6b4.aa24357faaea8f90164743ca3610b357.jpeg?odnHeight=576&amp;odnWidth=576&amp;odnBg=FFFFFF" alt="Cashew Cookie" class="card-image" loading="lazy"/></a></div>
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Xtreme Wellness High Fiber Tortilla Wrap Street Taco"><a href="https://www.walmart.com/ip/Ole-Xtreme-Wellness-High-Fiber-Zero-Net-Carbs-Street-Taco-Flour-Tortillas-10-8-oz-14-Count/1821826517" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/Ole-Xtreme-Wellness-High-Fiber-Zero-Net-Carbs-Street-Taco-Flour-Tortillas-10-8-oz-14-Count_ab9c4177-c02a-4e7f-ac5f-81f2ffbdfdda.af307d64c53b5e2301b46f0b69993229.png" alt="Xtreme Wellness High Fiber Tortilla Wrap Street Taco" class="card-image" loading="lazy"/></a></div>
             </div>
             
-            <div class="card-carousel-caption">Cashew Cookie</div>
+            <div class="card-carousel-caption">Xtreme Wellness High Fiber Tortilla Wrap Street Taco</div>
         </div>
     
-            <div class='pack-pill'><span class='pack-count'>6</span> <span class='pack-unit'>bars</span></div>
+            <div class='pack-pill'><span class='pack-count'>14</span> <span class='pack-unit'>ct</span></div>
         </div>
         <div class="card-content">
             <div class="card-pricing">
-                <span class='old-price'>$8.57</span>
-                <span class="new-price">$6.95</span>
+                <span class='old-price'>$4.16</span>
+                <span class="new-price">$3.37</span>
                 <span class="percent-off">19% OFF</span>
             </div>
-            <div class="card-title">Larabar</div>
+            <div class="card-title">Ole Xtreme Wellness</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability in-store'>In-store</div>
+                <div class='availability both'>In-store & online</div>
                 
             </div>
-            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Larabar-Cashew-Cookie-Gluten-Free-Vegan-Fruit-Nut-Bar-1-7-oz-Bars-6-Ct/313403131?classType=REGULAR&amp;from=/search" target="_blank" rel="noopener noreferrer">
+            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Ole-Xtreme-Wellness-High-Fiber-Zero-Net-Carbs-Street-Taco-Flour-Tortillas-10-8-oz-14-Count/1821826517" target="_blank" rel="noopener noreferrer">
                 View on Walmart.com
             </a>
         </div>
@@ -3560,6 +3861,7 @@
          data-retailer="meijer"
          data-brand="celsius"
          data-price="17.99"
+         data-saved="4.0000"
          data-percent="18.2"
          data-deal-count="2"
          data-tier="strong"
@@ -3614,6 +3916,7 @@
          data-retailer="walmart"
          data-brand="optimum nutrition"
          data-price="27.94"
+         data-saved="6.0300"
          data-percent="17.8"
          data-deal-count="1"
          data-tier="strong"
@@ -3665,6 +3968,7 @@
          data-retailer="harris teeter"
          data-brand="larabar"
          data-price="18.99"
+         data-saved="4.0000"
          data-percent="17.4"
          data-deal-count="1"
          data-tier="strong"
@@ -3716,6 +4020,7 @@
          data-retailer="target"
          data-brand="barebells"
          data-price="8.07"
+         data-saved="1.5200"
          data-percent="15.8"
          data-deal-count="1"
          data-tier="strong"
@@ -3767,6 +4072,7 @@
          data-retailer="walmart"
          data-brand="larabar"
          data-price="12.29"
+         data-saved="2.2000"
          data-percent="15.2"
          data-deal-count="1"
          data-tier="strong"
@@ -3818,6 +4124,7 @@
          data-retailer="target"
          data-brand="one"
          data-price="6.79"
+         data-saved="1.2000"
          data-percent="15.0"
          data-deal-count="3"
          data-tier="strong"
@@ -3872,6 +4179,7 @@
          data-retailer="target"
          data-brand="pure protein"
          data-price="14.44"
+         data-saved="2.5500"
          data-percent="15.0"
          data-deal-count="1"
          data-tier="strong"
@@ -3923,6 +4231,7 @@
          data-retailer="target"
          data-brand="power crunch"
          data-price="5.86"
+         data-saved="1.0300"
          data-percent="14.9"
          data-deal-count="1"
          data-tier="strong"
@@ -3974,6 +4283,7 @@
          data-retailer="target"
          data-brand="larabar"
          data-price="4.49"
+         data-saved="0.7000"
          data-percent="13.5"
          data-deal-count="2"
          data-tier="strong"
@@ -4028,10 +4338,11 @@
          data-retailer="walmart"
          data-brand="ymmy"
          data-price="6.87"
+         data-saved="1.0000"
          data-percent="12.7"
          data-deal-count="3"
          data-tier="strong"
-         data-search="ymmy protein bar ymmy bars walmart chocolate caramel pecan chocolate peanut caramel cookie dough"
+         data-search="ymmy protein bar ymmy bars walmart chocolate caramel chocolate peanut caramel cookie dough"
          data-on-sale="1">
         <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
           <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -4044,13 +4355,13 @@
             
         <div class="card-carousel" data-slide-count="3">
             <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Chocolate Caramel Pecan"><a href="https://www.walmart.com/ip/YMMY-High-Protein-Bar-Chocolate-Caramel/17636816466?fulfillmentIntent=In-store&amp;filters=%5B%7B%22intent%22%3A%22fulfillmentIntent%22%2C%22values%22%3A%5B%22In-store%22%5D%7D%5D&amp;classType=REGULAR&amp;athbdg=L1300" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/YMMY-High-Protein-Bar-Chocolate-Caramel_aeaae316-cb0f-45f0-ac7a-8124d8d1806d.6475ac589e5fb8fec108c8411602d6a4.jpeg?odnHeight=573&amp;odnWidth=573&amp;odnBg=FFFFFF" alt="Chocolate Caramel Pecan" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Chocolate Peanut Caramel"><a href="https://www.walmart.com/ip/YMMY-High-Protein-Bar-Caramel-Peanut/17719514904?fulfillmentIntent=In-store&amp;filters=%5B%7B%22intent%22%3A%22fulfillmentIntent%22%2C%22values%22%3A%5B%22In-store%22%5D%7D%5D&amp;classType=REGULAR&amp;athbdg=L1300&amp;from=/search" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/YMMY-High-Protein-Bar-Caramel-Peanut_e3dc3867-200b-409d-96db-17ea1695024b.b7ed4716b1c24ef674964ffafaad4136.jpeg?odnHeight=573&amp;odnWidth=573&amp;odnBg=FFFFFF" alt="Chocolate Peanut Caramel" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="2" data-flavor-name="Cookie Dough"><a href="https://www.walmart.com/ip/YMMY-High-Protein-Bar-Cookie-Dough/17647973747?fulfillmentIntent=In-store&amp;filters=%5B%7B%22intent%22%3A%22fulfillmentIntent%22%2C%22values%22%3A%5B%22In-store%22%5D%7D%5D&amp;classType=REGULAR&amp;athbdg=L1300&amp;from=/search" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/YMMY-High-Protein-Bar-Cookie-Dough_641921ca-02b4-4e21-a0c2-594c707c25e9.b44af1cadfa97fad59b29eb3a4f35f18.jpeg?odnHeight=573&amp;odnWidth=573&amp;odnBg=FFFFFF" alt="Cookie Dough" class="card-image" loading="lazy"/></a></div>
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Chocolate Caramel"><a href="https://www.walmart.com/ip/YMMY-High-Protein-Bar-Chocolate-Caramel/17636816466?fulfillmentIntent=In-store&amp;filters=%5B%7B%22intent%22%3A%22fulfillmentIntent%22%2C%22values%22%3A%5B%22In-store%22%5D%7D%5D&amp;classType=REGULAR&amp;athbdg=L1300" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/YMMY-High-Protein-Bar-Chocolate-Caramel_aeaae316-cb0f-45f0-ac7a-8124d8d1806d.6475ac589e5fb8fec108c8411602d6a4.jpeg?odnHeight=573&amp;odnWidth=573&amp;odnBg=FFFFFF" alt="Chocolate Caramel" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Chocolate Peanut Caramel"><a href="https://www.walmart.com/ip/YMMY-High-Protein-Bar-Caramel-Peanut/17719514904?fulfillmentIntent=In-store&amp;filters=%5B%7B%22intent%22%3A%22fulfillmentIntent%22%2C%22values%22%3A%5B%22In-store%22%5D%7D%5D&amp;classType=REGULAR&amp;athbdg=L1300&amp;from=/search" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/YMMY-High-Protein-Bar-Caramel-Peanut_e3dc3867-200b-409d-96db-17ea1695024b.b7ed4716b1c24ef674964ffafaad4136.jpeg?odnHeight=573&amp;odnWidth=573&amp;odnBg=FFFFFF" alt="Chocolate Peanut Caramel" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="2" data-flavor-name="Cookie Dough"><a href="https://www.walmart.com/ip/YMMY-High-Protein-Bar-Cookie-Dough/17647973747?fulfillmentIntent=In-store&amp;filters=%5B%7B%22intent%22%3A%22fulfillmentIntent%22%2C%22values%22%3A%5B%22In-store%22%5D%7D%5D&amp;classType=REGULAR&amp;athbdg=L1300&amp;from=/search" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/YMMY-High-Protein-Bar-Cookie-Dough_641921ca-02b4-4e21-a0c2-594c707c25e9.b44af1cadfa97fad59b29eb3a4f35f18.jpeg?odnHeight=573&amp;odnWidth=573&amp;odnBg=FFFFFF" alt="Cookie Dough" class="card-image" loading="lazy"/></a></div>
             </div>
             
             <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
             <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
         
-            <div class="card-carousel-caption">Chocolate Caramel Pecan</div>
+            <div class="card-carousel-caption">Chocolate Caramel</div>
         </div>
     
             <div class='pack-pill'><span class='pack-count'>4</span> <span class='pack-unit'>bars</span></div>
@@ -4082,6 +4393,7 @@
          data-retailer="target"
          data-brand="catalina crunch"
          data-price="6.99"
+         data-saved="1.0000"
          data-percent="12.5"
          data-deal-count="1"
          data-tier="strong"
@@ -4133,6 +4445,7 @@
          data-retailer="target"
          data-brand="catalina crunch"
          data-price="6.99"
+         data-saved="1.0000"
          data-percent="12.5"
          data-deal-count="3"
          data-tier="strong"
@@ -4187,6 +4500,7 @@
          data-retailer="walmart"
          data-brand="larabar"
          data-price="18.91"
+         data-saved="2.5800"
          data-percent="12.0"
          data-deal-count="1"
          data-tier="strong"
@@ -4238,6 +4552,7 @@
          data-retailer="kroger"
          data-brand="clif bar"
          data-price="5.99"
+         data-saved="0.8000"
          data-percent="11.8"
          data-deal-count="2"
          data-tier="strong"
@@ -4292,6 +4607,7 @@
          data-retailer="walmart"
          data-brand="celsius"
          data-price="2.18"
+         data-saved="0.2900"
          data-percent="11.7"
          data-deal-count="1"
          data-tier="strong"
@@ -4343,6 +4659,7 @@
          data-retailer="walmart"
          data-brand="larabar"
          data-price="6.96"
+         data-saved="0.8900"
          data-percent="11.3"
          data-deal-count="1"
          data-tier="strong"
@@ -4394,6 +4711,7 @@
          data-retailer="target"
          data-brand="ghost"
          data-price="7.89"
+         data-saved="1.0000"
          data-percent="11.2"
          data-deal-count="3"
          data-tier="strong"
@@ -4448,6 +4766,7 @@
          data-retailer="kroger"
          data-brand="fairlife"
          data-price="3.99"
+         data-saved="0.5000"
          data-percent="11.1"
          data-deal-count="2"
          data-tier="strong"
@@ -4502,6 +4821,7 @@
          data-retailer="harris teeter"
          data-brand="chomps"
          data-price="16.49"
+         data-saved="2.0000"
          data-percent="10.8"
          data-deal-count="2"
          data-tier="strong"
@@ -4556,6 +4876,7 @@
          data-retailer="kroger"
          data-brand="alani nu"
          data-price="2.67"
+         data-saved="0.3200"
          data-percent="10.7"
          data-deal-count="12"
          data-tier="strong"
@@ -4610,6 +4931,7 @@
          data-retailer="walmart"
          data-brand="ghost"
          data-price="2.68"
+         data-saved="0.3100"
          data-percent="10.4"
          data-deal-count="4"
          data-tier="strong"
@@ -4664,6 +4986,7 @@
          data-retailer="walmart"
          data-brand="catalina crunch"
          data-price="6.97"
+         data-saved="0.8100"
          data-percent="10.4"
          data-deal-count="3"
          data-tier="strong"
@@ -4718,6 +5041,7 @@
          data-retailer="walmart"
          data-brand="pure protein"
          data-price="5.82"
+         data-saved="0.6600"
          data-percent="10.2"
          data-deal-count="1"
          data-tier="strong"
@@ -4769,6 +5093,7 @@
          data-retailer="target"
          data-brand="aloha"
          data-price="9.53"
+         data-saved="1.0600"
          data-percent="10.0"
          data-deal-count="4"
          data-tier="strong"
@@ -4823,6 +5148,7 @@
          data-retailer="kroger"
          data-brand="kind"
          data-price="13.49"
+         data-saved="1.5000"
          data-percent="10.0"
          data-deal-count="4"
          data-tier="strong"
@@ -4877,6 +5203,7 @@
          data-retailer="walmart"
          data-brand="core power"
          data-price="13.97"
+         data-saved="1.5500"
          data-percent="10.0"
          data-deal-count="2"
          data-tier="strong"
@@ -4931,6 +5258,7 @@
          data-retailer="walmart"
          data-brand="quest"
          data-price="17.06"
+         data-saved="1.9000"
          data-percent="10.0"
          data-deal-count="1"
          data-tier="strong"
@@ -4982,6 +5310,7 @@
          data-retailer="walmart"
          data-brand="core power"
          data-price="19.01"
+         data-saved="2.1100"
          data-percent="10.0"
          data-deal-count="2"
          data-tier="strong"
@@ -5036,6 +5365,7 @@
          data-retailer="walmart"
          data-brand="pure protein"
          data-price="22.87"
+         data-saved="2.5400"
          data-percent="10.0"
          data-deal-count="1"
          data-tier="strong"
@@ -5087,6 +5417,7 @@
          data-retailer="walmart"
          data-brand="rxbar"
          data-price="24.19"
+         data-saved="2.6900"
          data-percent="10.0"
          data-deal-count="2"
          data-tier="strong"
@@ -5135,63 +5466,13 @@
     
 
     <div class="card card-tier-strong"
-         data-item-id="quest|quest protein chips|12"
-         data-section="food"
-         data-category="chips &amp; crunchy"
-         data-retailer="walmart"
-         data-brand="quest"
-         data-price="25.59"
-         data-percent="10.0"
-         data-deal-count="1"
-         data-tier="strong"
-         data-search="quest protein chips quest chips &amp; crunchy walmart nacho cheese"
-         data-on-sale="1">
-        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
-          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
-          </svg>
-        </button>
-        <div class='badge badge-protein'>💪 Strong</div>
-        
-        <div class="card-image-wrap">
-            
-        <div class="card-carousel card-carousel--single" data-slide-count="1">
-            <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Nacho Cheese"><a href="https://www.walmart.com/ip/QUEST-NACHO-FLAVORED-PROTEIN-CHIP/14439908414" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/Quest-Tortilla-Style-Protein-Chips-Nacho-Cheese-Flavored-1-1oz-Bags-12-Count_1c7f0c80-e7f1-4303-be5f-941cc855cacf.a40152d6a2329d9f7fc01e3f53b36bbe.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Nacho Cheese" class="card-image" loading="lazy"/></a></div>
-            </div>
-            
-            <div class="card-carousel-caption">Nacho Cheese</div>
-        </div>
-    
-            <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>ct</span></div>
-        </div>
-        <div class="card-content">
-            <div class="card-pricing">
-                <span class='old-price'>$28.44</span>
-                <span class="new-price">$25.59</span>
-                <span class="percent-off">10% OFF</span>
-            </div>
-            <div class="card-title">Quest Protein Chips</div>
-            
-            <div class="sb-last-sale-lines" hidden></div>
-            <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
-                
-            </div>
-            <a class="view-button view-walmart" href="https://www.walmart.com/ip/QUEST-NACHO-FLAVORED-PROTEIN-CHIP/14439908414" target="_blank" rel="noopener noreferrer">
-                View on Walmart.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card card-tier-strong"
          data-item-id="aloha|aloga vegan protein bar|15"
          data-section="food"
          data-category="bars"
          data-retailer="walmart"
          data-brand="aloha"
          data-price="26.95"
+         data-saved="2.9900"
          data-percent="10.0"
          data-deal-count="2"
          data-tier="strong"
@@ -5240,12 +5521,65 @@
     
 
     <div class="card card-tier-sale"
+         data-item-id="quest|quest protein chips|12"
+         data-section="food"
+         data-category="chips &amp; crunchy"
+         data-retailer="walmart"
+         data-brand="quest"
+         data-price="25.65"
+         data-saved="2.7900"
+         data-percent="9.8"
+         data-deal-count="1"
+         data-tier="sale"
+         data-search="quest protein chips quest chips &amp; crunchy walmart nacho cheese"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
+        <div class='badge badge-everyday'>🏷️ On Sale</div>
+        
+        <div class="card-image-wrap">
+            
+        <div class="card-carousel card-carousel--single" data-slide-count="1">
+            <div class="card-carousel-stage">
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Nacho Cheese"><a href="https://www.walmart.com/ip/QUEST-NACHO-FLAVORED-PROTEIN-CHIP/14439908414" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/Quest-Tortilla-Style-Protein-Chips-Nacho-Cheese-Flavored-1-1oz-Bags-12-Count_1c7f0c80-e7f1-4303-be5f-941cc855cacf.a40152d6a2329d9f7fc01e3f53b36bbe.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Nacho Cheese" class="card-image" loading="lazy"/></a></div>
+            </div>
+            
+            <div class="card-carousel-caption">Nacho Cheese</div>
+        </div>
+    
+            <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>ct</span></div>
+        </div>
+        <div class="card-content">
+            <div class="card-pricing">
+                <span class='old-price'>$28.44</span>
+                <span class="new-price">$25.65</span>
+                <span class="percent-off">10% OFF</span>
+            </div>
+            <div class="card-title">Quest Protein Chips</div>
+            
+            <div class="sb-last-sale-lines" hidden></div>
+            <div class="card-footer">
+                <div class='availability in-store'>In-store</div>
+                
+            </div>
+            <a class="view-button view-walmart" href="https://www.walmart.com/ip/QUEST-NACHO-FLAVORED-PROTEIN-CHIP/14439908414" target="_blank" rel="noopener noreferrer">
+                View on Walmart.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card card-tier-sale"
          data-item-id="fairlife|core power protein shake|1"
          data-section="drinks"
          data-category="rtd protein shake"
          data-retailer="harris teeter"
          data-brand="fairlife"
          data-price="4.69"
+         data-saved="0.5000"
          data-percent="9.6"
          data-deal-count="2"
          data-tier="sale"
@@ -5300,6 +5634,7 @@
          data-retailer="harris teeter"
          data-brand="core power"
          data-price="5.79"
+         data-saved="0.6000"
          data-percent="9.4"
          data-deal-count="3"
          data-tier="sale"
@@ -5354,6 +5689,7 @@
          data-retailer="kroger"
          data-brand="core power"
          data-price="5.0"
+         data-saved="0.4900"
          data-percent="8.9"
          data-deal-count="3"
          data-tier="sale"
@@ -5408,6 +5744,7 @@
          data-retailer="walmart"
          data-brand="premier protein"
          data-price="31.6"
+         data-saved="2.9800"
          data-percent="8.6"
          data-deal-count="1"
          data-tier="sale"
@@ -5459,6 +5796,7 @@
          data-retailer="target"
          data-brand="catalina crunch"
          data-price="5.49"
+         data-saved="0.5000"
          data-percent="8.3"
          data-deal-count="1"
          data-tier="sale"
@@ -5510,6 +5848,7 @@
          data-retailer="harris teeter"
          data-brand="celsius"
          data-price="23.99"
+         data-saved="2.0000"
          data-percent="7.7"
          data-deal-count="1"
          data-tier="sale"
@@ -5561,6 +5900,7 @@
          data-retailer="meijer"
          data-brand="ghost"
          data-price="2.49"
+         data-saved="0.2000"
          data-percent="7.4"
          data-deal-count="6"
          data-tier="sale"
@@ -5615,6 +5955,7 @@
          data-retailer="target"
          data-brand="mission"
          data-price="3.99"
+         data-saved="0.3000"
          data-percent="7.0"
          data-deal-count="2"
          data-tier="sale"
@@ -5669,6 +6010,7 @@
          data-retailer="target"
          data-brand="clif"
          data-price="17.99"
+         data-saved="1.3000"
          data-percent="6.7"
          data-deal-count="3"
          data-tier="sale"
@@ -5723,6 +6065,7 @@
          data-retailer="target"
          data-brand="barebells"
          data-price="27.99"
+         data-saved="2.0000"
          data-percent="6.7"
          data-deal-count="3"
          data-tier="sale"
@@ -5777,6 +6120,7 @@
          data-retailer="target"
          data-brand="rxbar"
          data-price="8.99"
+         data-saved="0.6000"
          data-percent="6.3"
          data-deal-count="1"
          data-tier="sale"
@@ -5828,6 +6172,7 @@
          data-retailer="target"
          data-brand="rxbar"
          data-price="8.99"
+         data-saved="0.6000"
          data-percent="6.3"
          data-deal-count="1"
          data-tier="sale"
@@ -5879,6 +6224,7 @@
          data-retailer="walmart"
          data-brand="isopure"
          data-price="32.8"
+         data-saved="2.1700"
          data-percent="6.2"
          data-deal-count="1"
          data-tier="sale"
@@ -5930,6 +6276,7 @@
          data-retailer="walmart"
          data-brand="quest"
          data-price="8.89"
+         data-saved="0.5800"
          data-percent="6.1"
          data-deal-count="1"
          data-tier="sale"
@@ -5981,6 +6328,7 @@
          data-retailer="target"
          data-brand="la banderita"
          data-price="4.69"
+         data-saved="0.3000"
          data-percent="6.0"
          data-deal-count="1"
          data-tier="sale"
@@ -6032,6 +6380,7 @@
          data-retailer="target"
          data-brand="ole"
          data-price="4.89"
+         data-saved="0.3000"
          data-percent="5.8"
          data-deal-count="1"
          data-tier="sale"
@@ -6083,6 +6432,7 @@
          data-retailer="kroger"
          data-brand="chomps"
          data-price="8.99"
+         data-saved="0.5000"
          data-percent="5.3"
          data-deal-count="1"
          data-tier="sale"
@@ -6134,6 +6484,7 @@
          data-retailer="kroger"
          data-brand="chomps"
          data-price="8.99"
+         data-saved="0.5000"
          data-percent="5.3"
          data-deal-count="1"
          data-tier="sale"
@@ -6185,6 +6536,7 @@
          data-retailer="walmart"
          data-brand="la banderita"
          data-price="3.77"
+         data-saved="0.2000"
          data-percent="5.0"
          data-deal-count="1"
          data-tier="sale"
@@ -6236,6 +6588,7 @@
          data-retailer="meijer"
          data-brand="quest"
          data-price="9.49"
+         data-saved="0.5000"
          data-percent="5.0"
          data-deal-count="6"
          data-tier="sale"
@@ -6752,9 +7105,9 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function syncStarButtons() {
-    document.querySelectorAll(".card[data-item-id] .sb-star-btn").forEach(function(btn) {
-      const card = btn.closest(".card");
-      const id = card && card.dataset.itemId;
+    document.querySelectorAll("[data-item-id] .sb-star-btn").forEach(function(btn) {
+      const host = btn.closest("[data-item-id]");
+      const id = host && host.dataset.itemId;
       const on = !!(id && starredIds.has(id));
       btn.classList.toggle("is-starred", on);
       btn.setAttribute("aria-pressed", on ? "true" : "false");
@@ -6796,6 +7149,7 @@ document.addEventListener("DOMContentLoaded", function () {
     card.dataset.onSale = "0";
     card.dataset.tier = "sale";
     card.dataset.price = "0";
+    card.dataset.saved = "0";
     card.dataset.percent = "0";
     card.dataset.brand = String(meta.brand || "").toLowerCase();
     card.dataset.retailer = "";
@@ -6831,16 +7185,37 @@ document.addEventListener("DOMContentLoaded", function () {
     if (myItemsView) applyFiltersAndSort();
   }
 
-  if (grid) {
-    grid.addEventListener("click", function(ev) {
+  function bindStarClicks(root) {
+    if (!root) return;
+    root.addEventListener("click", function(ev) {
       const btn = ev.target && ev.target.closest ? ev.target.closest(".sb-star-btn") : null;
-      if (!btn || !grid.contains(btn)) return;
+      if (!btn || !root.contains(btn)) return;
       ev.preventDefault();
       ev.stopPropagation();
-      const card = btn.closest(".card");
-      if (!card) return;
-      const titleEl = card.querySelector(".card-title");
-      toggleStar(card.dataset.itemId || "", titleEl ? titleEl.textContent.trim() : "");
+      const host = btn.closest("[data-item-id]");
+      if (!host) return;
+      const nameEl = host.querySelector(".card-title, .sb-savings-tile-name");
+      toggleStar(host.dataset.itemId || "", nameEl ? nameEl.textContent.trim() : "");
+    });
+  }
+  bindStarClicks(grid);
+  const bestSavings = document.getElementById("sb-best-savings");
+  bindStarClicks(bestSavings);
+  if (bestSavings) {
+    bestSavings.addEventListener("click", function(ev) {
+      if (ev.target && ev.target.closest && ev.target.closest(".sb-star-btn")) return;
+      const tile = ev.target && ev.target.closest ? ev.target.closest(".sb-savings-tile") : null;
+      if (!tile || !bestSavings.contains(tile)) return;
+      const url = tile.getAttribute("data-url") || "";
+      if (url) window.open(url, "_blank", "noopener,noreferrer");
+    });
+    bestSavings.addEventListener("keydown", function(ev) {
+      if (ev.key !== "Enter" && ev.key !== " ") return;
+      const tile = ev.target && ev.target.closest ? ev.target.closest(".sb-savings-tile") : null;
+      if (!tile || ev.target.closest(".sb-star-btn")) return;
+      ev.preventDefault();
+      const url = tile.getAttribute("data-url") || "";
+      if (url) window.open(url, "_blank", "noopener,noreferrer");
     });
   }
 
@@ -7331,8 +7706,15 @@ document.addEventListener("DOMContentLoaded", function () {
       const bPrice = parseFloat(b.dataset.price || "0");
       const aPct = parseFloat(a.dataset.percent || "0");
       const bPct = parseFloat(b.dataset.percent || "0");
+      const aSaved = parseFloat(a.dataset.saved || "0");
+      const bSaved = parseFloat(b.dataset.saved || "0");
 
       if (sortMode === "pct-desc") {
+        if (aPct !== bPct) return bPct - aPct;
+        return aPrice - bPrice;
+      }
+      if (sortMode === "saved-desc") {
+        if (aSaved !== bSaved) return bSaved - aSaved;
         if (aPct !== bPct) return bPct - aPct;
         return aPrice - bPrice;
       }
