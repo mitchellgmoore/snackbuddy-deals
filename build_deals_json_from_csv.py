@@ -195,6 +195,8 @@ def main():
             "pack_count": pack_count,
             "pack_unit": pack_unit,
             "streak_days": streak_days,
+            "page_title": cell_str(row.get("page_title")),
+            "seller": cell_str(row.get("seller")),
         }
 
         deals.append(deal)

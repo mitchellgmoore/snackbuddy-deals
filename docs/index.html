@@ -2402,6 +2402,13 @@
             font-size: 11px;
         }
 
+        .card-content > .availability,
+        .sb-savings-tile > .availability {
+            font-size: 11px;
+            color: var(--text-muted);
+            line-height: 1.3;
+            margin-top: 2px;
+        }
         .availability.check {
             font-style: italic;
             color: var(--text-muted);
@@ -3100,9 +3107,9 @@
                 <img src="assets/logo-transparent.png" alt="SnackBuddy logo" class="sb-logo" />
                 <span class="sb-header-title">SnackBuddy</span>
             </div>
-            <div class="sb-header-freshness" title="Prices from Bowling Green, KY stores · checked November 14, 2026 at 03:59 PM Central · your store may differ">
+            <div class="sb-header-freshness" title="Prices from Bowling Green, KY stores · checked November 15, 2026 at 03:00 PM Central · your store may differ">
                 <span class="sb-header-freshness-label">Prices checked</span>
-                <span class="sb-header-freshness-time">Nov 14 · 03:59 PM</span>
+                <span class="sb-header-freshness-time">Nov 15 · 03:00 PM</span>
             </div>
             <button class="sb-menu-button" aria-label="Menu" aria-expanded="false">☰</button>
         </div>
@@ -3116,9 +3123,9 @@
             <div class="sb-hero-bg">
                 <div class="sb-hero-pattern"></div>
                 <div class="sb-hero-content">
-                    <div class="sb-hero-freshness" title="Prices from Bowling Green, KY stores · checked November 14, 2026 at 03:59 PM Central · your store may differ">
+                    <div class="sb-hero-freshness" title="Prices from Bowling Green, KY stores · checked November 15, 2026 at 03:00 PM Central · your store may differ">
                         <span class="sb-hero-freshness-dot" aria-hidden="true"></span>
-                        <span>Prices from Bowling Green, KY stores · checked Nov 14 · 03:59 PM · your store may differ</span>
+                        <span>Prices from Bowling Green, KY stores · checked Nov 15 · 03:00 PM · your store may differ</span>
                     </div>
                     <h1 class="sb-hero-title">Don&apos;t overpay for the snacks you already buy.</h1>
                 </div>
@@ -3152,24 +3159,7 @@
                 <span class="new-price">$27.94</span>
                 <span class="percent-off">18% OFF</span>
               </div>
-            </article>
-            
-
-            <article class="sb-savings-tile" data-item-id="celsius|celsius energy drink|12" data-url="https://www.meijer.com/shopping/product/-/88939200095.html" tabindex="0" role="link" aria-label="Celsius Energy Drink — Vibe Variety at Meijer">
-              <button type="button" class="sb-star-btn sb-savings-star" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
-                <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                  <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
-                </svg>
-              </button>
-              <div class="sb-savings-tile-img"><img src="https://www.kroger.com/product/images/xlarge/front/0088939200095" alt="Celsius Energy Drink — Vibe Variety" loading="lazy" decoding="async" /></div>
-              <div class="sb-savings-tile-store">Meijer</div>
-              <div class="sb-savings-tile-name">Celsius Energy Drink — Vibe Variety</div>
-              <div class="sb-savings-tile-save">Save $4.00</div>
-              <div class="card-pricing">
-                <span class="old-price">$21.99</span>
-                <span class="new-price">$17.99</span>
-                <span class="percent-off">18% OFF</span>
-              </div>
+              <div class='availability in-store'>In store only</div>
             </article>
             
 
@@ -3188,6 +3178,7 @@
                 <span class="new-price">$18.99</span>
                 <span class="percent-off">17% OFF</span>
               </div>
+              <div class='availability both'>In store &amp; online</div>
             </article>
             
 
@@ -3206,6 +3197,26 @@
                 <span class="new-price">$26.95</span>
                 <span class="percent-off">10% OFF</span>
               </div>
+              <div class='availability online-only'>Online 3-pack only · $9.98 each in store</div>
+            </article>
+            
+
+            <article class="sb-savings-tile" data-item-id="quest|quest protein chips|12" data-url="https://www.walmart.com/ip/QUEST-NACHO-FLAVORED-PROTEIN-CHIP/14439908414" tabindex="0" role="link" aria-label="Quest Protein Chips — Nacho Cheese at Walmart">
+              <button type="button" class="sb-star-btn sb-savings-star" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+                <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+                </svg>
+              </button>
+              <div class="sb-savings-tile-img"><img src="https://i5.walmartimages.com/seo/Quest-Tortilla-Style-Protein-Chips-Nacho-Cheese-Flavored-1-1oz-Bags-12-Count_1c7f0c80-e7f1-4303-be5f-941cc855cacf.a40152d6a2329d9f7fc01e3f53b36bbe.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Quest Protein Chips — Nacho Cheese" loading="lazy" decoding="async" /></div>
+              <div class="sb-savings-tile-store">Walmart</div>
+              <div class="sb-savings-tile-name">Quest Protein Chips — Nacho Cheese</div>
+              <div class="sb-savings-tile-save">Save $2.85</div>
+              <div class="card-pricing">
+                <span class="old-price">$28.44</span>
+                <span class="new-price">$25.59</span>
+                <span class="percent-off">10% OFF</span>
+              </div>
+              <div class='availability in-store'>In store only</div>
             </article>
             
 
@@ -3224,6 +3235,7 @@
                 <span class="new-price">$24.19</span>
                 <span class="percent-off">10% OFF</span>
               </div>
+              <div class='availability online-only'>Online 3-pack only · $8.96 each in store</div>
             </article>
             
 
@@ -3242,6 +3254,7 @@
                 <span class="new-price">$14.44</span>
                 <span class="percent-off">15% OFF</span>
               </div>
+              
             </article>
             
                 </div>
@@ -3428,11 +3441,11 @@
                 <span class="new-price">$4.49</span>
                 <span class="percent-off">25% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">La Banderita Carb Counter</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-harris-teeter" href="https://www.harristeeter.com/p/la-banderita-carb-counter-keto-certified-flour-tortillas/0002733100141" target="_blank" rel="noopener noreferrer">
@@ -3489,11 +3502,11 @@
                 <span class="new-price">$1.67</span>
                 <span class="percent-off">24% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">Clif Builders</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-kroger" href="https://www.kroger.com/p/clif-builders-chocolate-mint-20g-protein-bar/0072225260144" target="_blank" rel="noopener noreferrer">
@@ -3547,11 +3560,11 @@
                 <span class="new-price">$1.67</span>
                 <span class="percent-off">24% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">Clif Builders</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-kroger" href="https://www.kroger.com/p/clif-builders-chocolatey-peanut-butter-20g-protein-bar/0072225260141" target="_blank" rel="noopener noreferrer">
@@ -3608,11 +3621,11 @@
                 <span class="new-price">$4.99</span>
                 <span class="percent-off">23% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">Mission Carb Balance</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-harris-teeter" href="https://www.harristeeter.com/p/mission-carb-balance-soft-taco-size-whole-wheat-flour-tortillas/0007373100121" target="_blank" rel="noopener noreferrer">
@@ -3669,11 +3682,11 @@
                 <span class="new-price">$2.50</span>
                 <span class="percent-off">22% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">Alani Nu Energy Drink</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-harris-teeter" href="https://www.harristeeter.com/p/alani-nu-cherry-slush-sugar-free-energy-drink-can/0081003051225" target="_blank" rel="noopener noreferrer">
@@ -3727,11 +3740,11 @@
                 <span class="new-price">$4.99</span>
                 <span class="percent-off">21% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">Mission Carb Balance</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-harris-teeter" href="https://www.harristeeter.com/p/mission-probiotic-carb-balance-soft-taco-size-flour-tortillas/0007373107180" target="_blank" rel="noopener noreferrer">
@@ -3788,11 +3801,11 @@
                 <span class="new-price">$7.99</span>
                 <span class="percent-off">20% OFF</span>
             </div>
+            <div class='availability in-store'>In store only</div>
             <div class="card-title">Magic Spoon Protein Bar</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability in-store'>In-store</div>
                 
             </div>
             <a class="view-button view-meijer" href="https://www.meijer.com/shopping/product/magic-spoon-chocolate-peanut-butter-treats-4ct-5-6oz/81010446026.html" target="_blank" rel="noopener noreferrer">
@@ -3840,11 +3853,11 @@
                 <span class="new-price">$3.37</span>
                 <span class="percent-off">19% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">Ole Xtreme Wellness</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-walmart" href="https://www.walmart.com/ip/Ole-Xtreme-Wellness-High-Fiber-Zero-Net-Carbs-Street-Taco-Flour-Tortillas-10-8-oz-14-Count/1821826517" target="_blank" rel="noopener noreferrer">
@@ -3855,17 +3868,17 @@
     
 
     <div class="card card-tier-strong"
-         data-item-id="celsius|celsius energy drink|12"
-         data-section="drinks"
-         data-category="energy drink"
-         data-retailer="meijer"
-         data-brand="celsius"
-         data-price="17.99"
-         data-saved="4.0000"
-         data-percent="18.2"
-         data-deal-count="2"
+         data-item-id="larabar|larabar|6"
+         data-section="food"
+         data-category="bars"
+         data-retailer="walmart"
+         data-brand="larabar"
+         data-price="6.95"
+         data-saved="1.6200"
+         data-percent="18.9"
+         data-deal-count="1"
          data-tier="strong"
-         data-search="celsius energy drink celsius energy drink meijer original variety vibe variety"
+         data-search="larabar larabar bars walmart cashew cookie"
          data-on-sale="1">
         <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
           <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -3876,34 +3889,31 @@
         
         <div class="card-image-wrap">
             
-        <div class="card-carousel" data-slide-count="2">
+        <div class="card-carousel card-carousel--single" data-slide-count="1">
             <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Original Variety"><a href="https://www.meijer.com/shopping/product/-/88939200093.html" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088939200093" alt="Original Variety" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Vibe Variety"><a href="https://www.meijer.com/shopping/product/-/88939200095.html" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://www.kroger.com/product/images/xlarge/front/0088939200095" alt="Vibe Variety" class="card-image" loading="lazy"/></a></div>
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Cashew Cookie"><a href="https://www.walmart.com/ip/Larabar-Cashew-Cookie-Gluten-Free-Vegan-Fruit-Nut-Bar-1-7-oz-Bars-6-Ct/313403131?classType=REGULAR&amp;from=/search" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/Larabar-Cashew-Cookie-Gluten-Free-Vegan-Fruit-Nut-Bar-1-7-oz-Bars-6-Ct_a5e80a23-3de9-41f6-b554-bf06bea0d6b4.aa24357faaea8f90164743ca3610b357.jpeg?odnHeight=576&amp;odnWidth=576&amp;odnBg=FFFFFF" alt="Cashew Cookie" class="card-image" loading="lazy"/></a></div>
             </div>
             
-            <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
-            <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
-        
-            <div class="card-carousel-caption">Original Variety</div>
+            <div class="card-carousel-caption">Cashew Cookie</div>
         </div>
     
-            <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>ct</span></div>
+            <div class='pack-pill'><span class='pack-count'>6</span> <span class='pack-unit'>bars</span></div>
         </div>
         <div class="card-content">
             <div class="card-pricing">
-                <span class='old-price'>$21.99</span>
-                <span class="new-price">$17.99</span>
-                <span class="percent-off">18% OFF</span>
+                <span class='old-price'>$8.57</span>
+                <span class="new-price">$6.95</span>
+                <span class="percent-off">19% OFF</span>
             </div>
-            <div class="card-title">Celsius Energy Drink</div>
+            <div class='availability in-store'>In store only</div>
+            <div class="card-title">Larabar</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability in-store'>In-store</div>
                 
             </div>
-            <a class="view-button view-meijer" href="https://www.meijer.com/shopping/product/-/88939200095.html" target="_blank" rel="noopener noreferrer">
-                View on Meijer.com
+            <a class="view-button view-walmart" href="https://www.walmart.com/ip/Larabar-Cashew-Cookie-Gluten-Free-Vegan-Fruit-Nut-Bar-1-7-oz-Bars-6-Ct/313403131?classType=REGULAR&amp;from=/search" target="_blank" rel="noopener noreferrer">
+                View on Walmart.com
             </a>
         </div>
     </div>
@@ -3947,11 +3957,11 @@
                 <span class="new-price">$27.94</span>
                 <span class="percent-off">18% OFF</span>
             </div>
+            <div class='availability in-store'>In store only</div>
             <div class="card-title">Optimum Nutrition Whey Protein Powder</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability in-store'>In-store</div>
                 
             </div>
             <a class="view-button view-walmart" href="https://www.walmart.com/ip/Optimum-Nutrition-Gold-Standard-100-Whey-Protein-Powder-Vanilla-Ice-Cream-1-5lb-Tub/8053802024?fulfillmentIntent=In-store&amp;filters=%5B%7B%22intent%22%3A%22fulfillmentIntent%22%2C%22values%22%3A%5B%22In-store%22%5D%7D%5D&amp;classType=VARIANT&amp;athbdg=L1102&amp;from=/search" target="_blank" rel="noopener noreferrer">
@@ -3999,11 +4009,11 @@
                 <span class="new-price">$18.99</span>
                 <span class="percent-off">17% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">Larabar</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-harris-teeter" href="https://www.harristeeter.com/p/larabar-fruit-lovers-variety-pack/0002190813296?fulfillment=PICKUP" target="_blank" rel="noopener noreferrer">
@@ -4051,11 +4061,11 @@
                 <span class="new-price">$8.07</span>
                 <span class="percent-off">16% OFF</span>
             </div>
+            
             <div class="card-title">Barebells Protein Bar</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability check'>Check store availability</div>
                 
             </div>
             <a class="view-button view-target" href="https://www.target.com/p/barebells-nutrition-bars-birthday-cake-7-76oz-4pk/-/A-94299305" target="_blank" rel="noopener noreferrer">
@@ -4103,11 +4113,11 @@
                 <span class="new-price">$12.29</span>
                 <span class="percent-off">15% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">Larabar Minis</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-walmart" href="https://www.walmart.com/ip/Larabar-Chocolate-Chip-Cookie-Dough-Mini-Bars-Gluten-Free-Vegan-Bar-20-ct/415045248?classType=VARIANT&amp;from=/search" target="_blank" rel="noopener noreferrer">
@@ -4158,11 +4168,11 @@
                 <span class="new-price">$6.79</span>
                 <span class="percent-off">15% OFF</span>
             </div>
+            
             <div class="card-title">ONE Protein Bar</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability check'>Check store availability</div>
                 
             </div>
             <a class="view-button view-target" href="https://www.target.com/p/one-bar-reese-39-s-peanut-butter-lovers-flavored-protein-bars-8-48oz-4ct/-/A-91981096" target="_blank" rel="noopener noreferrer">
@@ -4210,11 +4220,11 @@
                 <span class="new-price">$14.44</span>
                 <span class="percent-off">15% OFF</span>
             </div>
+            
             <div class="card-title">Pure Protein Bar</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability check'>Check store availability</div>
                 
             </div>
             <a class="view-button view-target" href="https://www.target.com/p/pure-protein-20g-protein-bar-chewy-chocolate-chip-12pk/-/A-50409156" target="_blank" rel="noopener noreferrer">
@@ -4262,69 +4272,14 @@
                 <span class="new-price">$5.86</span>
                 <span class="percent-off">15% OFF</span>
             </div>
+            
             <div class="card-title">Power Crunch Bar</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability check'>Check store availability</div>
                 
             </div>
             <a class="view-button view-target" href="https://www.target.com/p/power-crunch-energy-lemon-meringue-protein-bar-5ct/-/A-94720134" target="_blank" rel="noopener noreferrer">
-                View on Target.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card card-tier-strong"
-         data-item-id="larabar|larabar kids|6"
-         data-section="food"
-         data-category="bars"
-         data-retailer="target"
-         data-brand="larabar"
-         data-price="4.49"
-         data-saved="0.7000"
-         data-percent="13.5"
-         data-deal-count="2"
-         data-tier="strong"
-         data-search="larabar kids larabar bars target chocolate brownies chocolate chip cookie"
-         data-on-sale="1">
-        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
-          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
-          </svg>
-        </button>
-        <div class='badge badge-protein'>💪 Strong</div>
-        
-        <div class="card-image-wrap">
-            
-        <div class="card-carousel" data-slide-count="2">
-            <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Chocolate Brownies"><a href="https://www.target.com/p/larabar-kid-chocolate-brownies-6ct-96oz/-/A-53141067#lnk=sametab" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_4e501c1d-7a51-4c71-9ba2-3162b8dee6dd?wid=600&amp;hei=600&amp;qlt=80" alt="Chocolate Brownies" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Chocolate Chip Cookie"><a href="https://www.target.com/p/larabar-kid-chocolate-chip-cookie-6ct/-/A-54155573" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_26c9696d-cd6d-4cda-a869-7e1fa3b2d0a0?wid=600&amp;hei=600&amp;qlt=80" alt="Chocolate Chip Cookie" class="card-image" loading="lazy"/></a></div>
-            </div>
-            
-            <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
-            <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
-        
-            <div class="card-carousel-caption">Chocolate Brownies</div>
-        </div>
-    
-            <div class='pack-pill'><span class='pack-count'>6</span> <span class='pack-unit'>bars</span></div>
-        </div>
-        <div class="card-content">
-            <div class="card-pricing">
-                <span class='old-price'>$5.19</span>
-                <span class="new-price">$4.49</span>
-                <span class="percent-off">14% OFF</span>
-            </div>
-            <div class="card-title">Larabar Kids</div>
-            
-            <div class="sb-last-sale-lines" hidden></div>
-            <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
-                
-            </div>
-            <a class="view-button view-target" href="https://www.target.com/p/larabar-kid-chocolate-chip-cookie-6ct/-/A-54155573" target="_blank" rel="noopener noreferrer">
                 View on Target.com
             </a>
         </div>
@@ -4372,67 +4327,15 @@
                 <span class="new-price">$6.87</span>
                 <span class="percent-off">13% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">YMMY Protein Bar</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-walmart" href="https://www.walmart.com/ip/YMMY-High-Protein-Bar-Cookie-Dough/17647973747?fulfillmentIntent=In-store&amp;filters=%5B%7B%22intent%22%3A%22fulfillmentIntent%22%2C%22values%22%3A%5B%22In-store%22%5D%7D%5D&amp;classType=REGULAR&amp;athbdg=L1300&amp;from=/search" target="_blank" rel="noopener noreferrer">
                 View on Walmart.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card card-tier-strong"
-         data-item-id="catalina crunch|catalina crunch snack mix|5"
-         data-section="food"
-         data-category="cookies &amp; sweets"
-         data-retailer="target"
-         data-brand="catalina crunch"
-         data-price="6.99"
-         data-saved="1.0000"
-         data-percent="12.5"
-         data-deal-count="1"
-         data-tier="strong"
-         data-search="catalina crunch snack mix catalina crunch cookies &amp; sweets target traditional"
-         data-on-sale="1">
-        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
-          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
-          </svg>
-        </button>
-        <div class='badge badge-protein'>💪 Strong</div>
-        
-        <div class="card-image-wrap">
-            
-        <div class="card-carousel card-carousel--single" data-slide-count="1">
-            <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Traditional"><a href="https://www.target.com/p/catalina-crunch-variety-pack-traditional-snack-mix-6-15oz-5ct/-/A-95114501#lnk=sametab" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_36ffe921-3360-45a6-a49e-d6580408d0e0?wid=1200&amp;hei=1200&amp;qlt=80" alt="Traditional" class="card-image" loading="lazy"/></a></div>
-            </div>
-            
-            <div class="card-carousel-caption">Traditional</div>
-        </div>
-    
-            <div class='pack-pill'><span class='pack-count'>5</span> <span class='pack-unit'>ct</span></div>
-        </div>
-        <div class="card-content">
-            <div class="card-pricing">
-                <span class='old-price'>$7.99</span>
-                <span class="new-price">$6.99</span>
-                <span class="percent-off">12% OFF</span>
-            </div>
-            <div class="card-title">Catalina Crunch Snack Mix</div>
-            
-            <div class="sb-last-sale-lines" hidden></div>
-            <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
-                
-            </div>
-            <a class="view-button view-target" href="https://www.target.com/p/catalina-crunch-variety-pack-traditional-snack-mix-6-15oz-5ct/-/A-95114501#lnk=sametab" target="_blank" rel="noopener noreferrer">
-                View on Target.com
             </a>
         </div>
     </div>
@@ -4479,11 +4382,11 @@
                 <span class="new-price">$6.99</span>
                 <span class="percent-off">12% OFF</span>
             </div>
+            <div class='availability online-only'>Online only · ships from Target</div>
             <div class="card-title">Catalina Crunch Cookie Bars</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability online-only'>Shipping only</div>
                 
             </div>
             <a class="view-button view-target" href="https://www.target.com/p/catalina-crunch-cookie-bar-raspberry-chocolate-4-6oz-4ct/-/A-94874118#lnk=sametab" target="_blank" rel="noopener noreferrer">
@@ -4531,11 +4434,11 @@
                 <span class="new-price">$18.91</span>
                 <span class="percent-off">12% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">Larabar</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-walmart" href="https://www.walmart.com/ip/Larabar-Variety-Pack-Blueberry-Muffin-Lemon-Bar-Apple-Pie-Fruit-Nut-Bars-18-ct/1079008896?classType=REGULAR&amp;from=/search" target="_blank" rel="noopener noreferrer">
@@ -4586,67 +4489,15 @@
                 <span class="new-price">$5.99</span>
                 <span class="percent-off">12% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">Clif Bar</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-kroger" href="https://www.kroger.com/p/clif-bar-cookies-creme-energy-protein-bars/0072225206946" target="_blank" rel="noopener noreferrer">
                 View on Kroger.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card card-tier-strong"
-         data-item-id="celsius|celsius energy drink|1"
-         data-section="drinks"
-         data-category="energy drink"
-         data-retailer="walmart"
-         data-brand="celsius"
-         data-price="2.18"
-         data-saved="0.2900"
-         data-percent="11.7"
-         data-deal-count="1"
-         data-tier="strong"
-         data-search="celsius energy drink celsius energy drink walmart cosmic vibe (fruit punch)"
-         data-on-sale="1">
-        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
-          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
-          </svg>
-        </button>
-        <div class='badge badge-protein'>💪 Strong</div>
-        
-        <div class="card-image-wrap">
-            
-        <div class="card-carousel card-carousel--single" data-slide-count="1">
-            <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Cosmic Vibe (Fruit Punch)"><a href="https://www.walmart.com/ip/CELSIUS-Sparkling-Cosmic-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/1699265356" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/CELSIUS-Sparkling-Cosmic-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can_49e9cb1f-cdd1-4292-9911-c93dcd9467dd.423d38dbd6920fe533d4a2ee96a4cf47.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Cosmic Vibe (Fruit Punch)" class="card-image" loading="lazy"/></a></div>
-            </div>
-            
-            <div class="card-carousel-caption">Cosmic Vibe (Fruit Punch)</div>
-        </div>
-    
-            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-        </div>
-        <div class="card-content">
-            <div class="card-pricing">
-                <span class='old-price'>$2.47</span>
-                <span class="new-price">$2.18</span>
-                <span class="percent-off">12% OFF</span>
-            </div>
-            <div class="card-title">Celsius Energy Drink</div>
-            
-            <div class="sb-last-sale-lines" hidden></div>
-            <div class="card-footer">
-                <div class='availability in-store'>In-store</div>
-                
-            </div>
-            <a class="view-button view-walmart" href="https://www.walmart.com/ip/CELSIUS-Sparkling-Cosmic-Vibe-Functional-Essential-Energy-Drink-12-fl-oz-Single-Can/1699265356" target="_blank" rel="noopener noreferrer">
-                View on Walmart.com
             </a>
         </div>
     </div>
@@ -4690,11 +4541,11 @@
                 <span class="new-price">$6.96</span>
                 <span class="percent-off">11% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">Larabar</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-walmart" href="https://www.walmart.com/ip/Larabar-Peanut-Butter-Cookie-Gluten-Free-Vegan-Fruit-Nut-Bars-6-ct/699033431?classType=VARIANT&amp;from=/search" target="_blank" rel="noopener noreferrer">
@@ -4745,11 +4596,11 @@
                 <span class="new-price">$7.89</span>
                 <span class="percent-off">11% OFF</span>
             </div>
+            <div class='availability online-only'>Online only · ships from Target</div>
             <div class="card-title">Ghost Protein Bar</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability online-only'>Shipping only</div>
                 
             </div>
             <a class="view-button view-target" href="https://www.target.com/p/ghost-chocolate-chip-cookie-dough-protein-bar-20g-protein-9-2oz-4pk/-/A-94949089#lnk=sametab" target="_blank" rel="noopener noreferrer">
@@ -4800,11 +4651,11 @@
                 <span class="new-price">$3.99</span>
                 <span class="percent-off">11% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">Core Power Protein Shake</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-kroger" href="https://www.kroger.com/p/core-power-chocolate-protein-shake/0081162002195" target="_blank" rel="noopener noreferrer">
@@ -4855,11 +4706,11 @@
                 <span class="new-price">$16.49</span>
                 <span class="percent-off">11% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">Chomps Meat Sticks</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-harris-teeter" href="https://www.harristeeter.com/p/chomps-original-flavor-beef-snack-sticks/0085001589252" target="_blank" rel="noopener noreferrer">
@@ -4910,11 +4761,11 @@
                 <span class="new-price">$2.67</span>
                 <span class="percent-off">11% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">Alani Nu Energy Drink</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-kroger" href="https://www.kroger.com/p/alani-nu-cherry-slush-sugar-free-energy-drink-can/0081003051225" target="_blank" rel="noopener noreferrer">
@@ -4965,11 +4816,11 @@
                 <span class="new-price">$2.68</span>
                 <span class="percent-off">10% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">Ghost Energy Drink</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-walmart" href="https://www.walmart.com/ip/GHOST-ENERGY-Zero-Sugars-Energy-Drink-Strawbango-16-fl-oz-Can/12894113883" target="_blank" rel="noopener noreferrer">
@@ -5020,11 +4871,11 @@
                 <span class="new-price">$6.97</span>
                 <span class="percent-off">10% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">Catalina Crunch Cereal</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-walmart" href="https://www.walmart.com/ip/Catalina-Crunch-Keto-Friendly-Cereal-Dark-Chocolate-9-oz-255-g/590919239?fulfillmentIntent=In-store&amp;filters=%5B%7B%22intent%22%3A%22fulfillmentIntent%22%2C%22values%22%3A%5B%22In-store%22%5D%7D%5D&amp;classType=VARIANT&amp;athbdg=L1100&amp;from=/search" target="_blank" rel="noopener noreferrer">
@@ -5072,70 +4923,15 @@
                 <span class="new-price">$5.82</span>
                 <span class="percent-off">10% OFF</span>
             </div>
+            <div class='availability in-store'>In store only</div>
             <div class="card-title">Pure Protein Bar</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability in-store'>In-store</div>
                 
             </div>
             <a class="view-button view-walmart" href="https://www.walmart.com/ip/Pure-Protein-Bars-Galactic-Brownie-20g-Protein-Gluten-Free-1-76-oz-4-Ct/2114852511" target="_blank" rel="noopener noreferrer">
                 View on Walmart.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card card-tier-strong"
-         data-item-id="aloha|aloga vegan protein bar|5"
-         data-section="food"
-         data-category="bars"
-         data-retailer="target"
-         data-brand="aloha"
-         data-price="9.53"
-         data-saved="1.0600"
-         data-percent="10.0"
-         data-deal-count="4"
-         data-tier="strong"
-         data-search="aloga vegan protein bar aloha bars target chocolate chip cookie dough coconut chocolate almond peanut butter chocolate chip peanut butter cup"
-         data-on-sale="1">
-        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
-          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
-          </svg>
-        </button>
-        <div class='badge badge-protein'>💪 Strong</div>
-        
-        <div class="card-image-wrap">
-            
-        <div class="card-carousel" data-slide-count="4">
-            <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Chocolate Chip Cookie Dough"><a href="https://www.target.com/p/aloha-chocolate-chip-cookie-dough-nutrition-bars-9-88oz/-/A-92167764" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_176b7560-e720-4ca3-936b-573c65b3d07d?wid=600&amp;hei=600&amp;qlt=80" alt="Chocolate Chip Cookie Dough" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="1" data-flavor-name="Coconut Chocolate Almond"><a href="https://www.target.com/p/aloha-coconut-chocolate-almond-9-88oz-5ct/-/A-92167766" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_a1a52b6e-8578-43a3-bab8-41105ca3ddf0?wid=600&amp;hei=600&amp;qlt=80" alt="Coconut Chocolate Almond" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="2" data-flavor-name="Peanut Butter Chocolate Chip"><a href="https://www.target.com/p/aloha-peanut-butter-chocolate-chip-nutrition-bars-9-88oz-5ct/-/A-92167765" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_1644e2a6-0f1d-468b-a851-c831c3f0b0ad?wid=600&amp;hei=600&amp;qlt=80" alt="Peanut Butter Chocolate Chip" class="card-image" loading="lazy"/></a></div><div class="card-carousel-slide" data-index="3" data-flavor-name="Peanut Butter Cup"><a href="https://www.target.com/p/aloha-peanut-butter-cup-nutrition-bars-9-88oz/-/A-92167763" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_2f89c052-ae06-4463-b89a-31e4a86e6225?wid=600&amp;hei=600&amp;qlt=80" alt="Peanut Butter Cup" class="card-image" loading="lazy"/></a></div>
-            </div>
-            
-            <button type="button" class="card-carousel-prev" aria-label="Previous flavor">&#8249;</button>
-            <button type="button" class="card-carousel-next" aria-label="Next flavor">&#8250;</button>
-        
-            <div class="card-carousel-caption">Chocolate Chip Cookie Dough</div>
-        </div>
-    
-            <div class='pack-pill'><span class='pack-count'>5</span> <span class='pack-unit'>bars</span></div>
-        </div>
-        <div class="card-content">
-            <div class="card-pricing">
-                <span class='old-price'>$10.59</span>
-                <span class="new-price">$9.53</span>
-                <span class="percent-off">10% OFF</span>
-            </div>
-            <div class="card-title">ALOGA Vegan Protein Bar</div>
-            
-            <div class="sb-last-sale-lines" hidden></div>
-            <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
-                
-            </div>
-            <a class="view-button view-target" href="https://www.target.com/p/aloha-peanut-butter-cup-nutrition-bars-9-88oz/-/A-92167763" target="_blank" rel="noopener noreferrer">
-                View on Target.com
             </a>
         </div>
     </div>
@@ -5182,11 +4978,11 @@
                 <span class="new-price">$13.49</span>
                 <span class="percent-off">10% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">KIND Bar</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-kroger" href="https://www.kroger.com/p/kind-dark-chocolate-nuts-sea-salt-nut-bars/0060265218665" target="_blank" rel="noopener noreferrer">
@@ -5237,11 +5033,11 @@
                 <span class="new-price">$13.97</span>
                 <span class="percent-off">10% OFF</span>
             </div>
+            <div class='availability online-only'>Online 4-pack only · $3.88 each in store</div>
             <div class="card-title">Core Power Protein Shake</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-walmart" href="https://www.walmart.com/ip/Core-Power-Protein-Shake-with-26g-Protein-by-fairlife-Milk-Chocolate-14-fl-oz/13095868765" target="_blank" rel="noopener noreferrer">
@@ -5289,11 +5085,11 @@
                 <span class="new-price">$17.06</span>
                 <span class="percent-off">10% OFF</span>
             </div>
+            <div class='availability online-only'>Online 2-pack only · $9.48 each in store</div>
             <div class="card-title">Quest Protein Chips</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-walmart" href="https://www.walmart.com/ip/QUEST-NACHO-FLAVORED-PROTEIN-CHIP/16347608147" target="_blank" rel="noopener noreferrer">
@@ -5344,11 +5140,11 @@
                 <span class="new-price">$19.01</span>
                 <span class="percent-off">10% OFF</span>
             </div>
+            <div class='availability online-only'>Online 4-pack only · $3.88 each in store</div>
             <div class="card-title">Core Power Elite Protein Shake</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-walmart" href="https://www.walmart.com/ip/Core-Power-Elite-High-Protein-Shake-with-42g-Protein-by-fairlife-Milk-Vanilla-14-fl-oz/16932700254" target="_blank" rel="noopener noreferrer">
@@ -5396,11 +5192,11 @@
                 <span class="new-price">$22.87</span>
                 <span class="percent-off">10% OFF</span>
             </div>
+            <div class='availability online-only'>Online 3-pack only · $8.47 each in store</div>
             <div class="card-title">Pure Protein Shake</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability in-store'>In-store</div>
                 
             </div>
             <a class="view-button view-walmart" href="https://www.walmart.com/ip/Pure-Protein-Galactic-Brownie-Batter-Complete-Protein-Shake-30g-Protein-11-fl-oz-4-Ct/13391707734" target="_blank" rel="noopener noreferrer">
@@ -5451,14 +5247,66 @@
                 <span class="new-price">$24.19</span>
                 <span class="percent-off">10% OFF</span>
             </div>
+            <div class='availability online-only'>Online 3-pack only · $8.96 each in store</div>
             <div class="card-title">RXBAR</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-walmart" href="https://www.walmart.com/ip/RXBAR-Gluten-Free-Chocolate-Sea-Salt-Chewy-Protein-Bars-Ready-to-Eat-Protein-Snack-9-1-oz-5-Count/15353971782" target="_blank" rel="noopener noreferrer">
+                View on Walmart.com
+            </a>
+        </div>
+    </div>
+    
+
+    <div class="card card-tier-strong"
+         data-item-id="quest|quest protein chips|12"
+         data-section="food"
+         data-category="chips &amp; crunchy"
+         data-retailer="walmart"
+         data-brand="quest"
+         data-price="25.59"
+         data-saved="2.8500"
+         data-percent="10.0"
+         data-deal-count="1"
+         data-tier="strong"
+         data-search="quest protein chips quest chips &amp; crunchy walmart nacho cheese"
+         data-on-sale="1">
+        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
+          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
+          </svg>
+        </button>
+        <div class='badge badge-protein'>💪 Strong</div>
+        
+        <div class="card-image-wrap">
+            
+        <div class="card-carousel card-carousel--single" data-slide-count="1">
+            <div class="card-carousel-stage">
+                <div class="card-carousel-slide" data-index="0" data-flavor-name="Nacho Cheese"><a href="https://www.walmart.com/ip/QUEST-NACHO-FLAVORED-PROTEIN-CHIP/14439908414" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/Quest-Tortilla-Style-Protein-Chips-Nacho-Cheese-Flavored-1-1oz-Bags-12-Count_1c7f0c80-e7f1-4303-be5f-941cc855cacf.a40152d6a2329d9f7fc01e3f53b36bbe.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Nacho Cheese" class="card-image" loading="lazy"/></a></div>
+            </div>
+            
+            <div class="card-carousel-caption">Nacho Cheese</div>
+        </div>
+    
+            <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>ct</span></div>
+        </div>
+        <div class="card-content">
+            <div class="card-pricing">
+                <span class='old-price'>$28.44</span>
+                <span class="new-price">$25.59</span>
+                <span class="percent-off">10% OFF</span>
+            </div>
+            <div class='availability in-store'>In store only</div>
+            <div class="card-title">Quest Protein Chips</div>
+            
+            <div class="sb-last-sale-lines" hidden></div>
+            <div class="card-footer">
+                
+            </div>
+            <a class="view-button view-walmart" href="https://www.walmart.com/ip/QUEST-NACHO-FLAVORED-PROTEIN-CHIP/14439908414" target="_blank" rel="noopener noreferrer">
                 View on Walmart.com
             </a>
         </div>
@@ -5506,66 +5354,14 @@
                 <span class="new-price">$26.95</span>
                 <span class="percent-off">10% OFF</span>
             </div>
+            <div class='availability online-only'>Online 3-pack only · $9.98 each in store</div>
             <div class="card-title">ALOGA Vegan Protein Bar</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-walmart" href="https://www.walmart.com/ip/Aloha-Peanut-Butter-Cup-Protein-Bars-5-Pk/15320016567" target="_blank" rel="noopener noreferrer">
-                View on Walmart.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card card-tier-sale"
-         data-item-id="quest|quest protein chips|12"
-         data-section="food"
-         data-category="chips &amp; crunchy"
-         data-retailer="walmart"
-         data-brand="quest"
-         data-price="25.65"
-         data-saved="2.7900"
-         data-percent="9.8"
-         data-deal-count="1"
-         data-tier="sale"
-         data-search="quest protein chips quest chips &amp; crunchy walmart nacho cheese"
-         data-on-sale="1">
-        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
-          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
-          </svg>
-        </button>
-        <div class='badge badge-everyday'>🏷️ On Sale</div>
-        
-        <div class="card-image-wrap">
-            
-        <div class="card-carousel card-carousel--single" data-slide-count="1">
-            <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Nacho Cheese"><a href="https://www.walmart.com/ip/QUEST-NACHO-FLAVORED-PROTEIN-CHIP/14439908414" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://i5.walmartimages.com/seo/Quest-Tortilla-Style-Protein-Chips-Nacho-Cheese-Flavored-1-1oz-Bags-12-Count_1c7f0c80-e7f1-4303-be5f-941cc855cacf.a40152d6a2329d9f7fc01e3f53b36bbe.jpeg?odnHeight=2000&amp;odnWidth=2000&amp;odnBg=FFFFFF" alt="Nacho Cheese" class="card-image" loading="lazy"/></a></div>
-            </div>
-            
-            <div class="card-carousel-caption">Nacho Cheese</div>
-        </div>
-    
-            <div class='pack-pill'><span class='pack-count'>12</span> <span class='pack-unit'>ct</span></div>
-        </div>
-        <div class="card-content">
-            <div class="card-pricing">
-                <span class='old-price'>$28.44</span>
-                <span class="new-price">$25.65</span>
-                <span class="percent-off">10% OFF</span>
-            </div>
-            <div class="card-title">Quest Protein Chips</div>
-            
-            <div class="sb-last-sale-lines" hidden></div>
-            <div class="card-footer">
-                <div class='availability in-store'>In-store</div>
-                
-            </div>
-            <a class="view-button view-walmart" href="https://www.walmart.com/ip/QUEST-NACHO-FLAVORED-PROTEIN-CHIP/14439908414" target="_blank" rel="noopener noreferrer">
                 View on Walmart.com
             </a>
         </div>
@@ -5613,11 +5409,11 @@
                 <span class="new-price">$4.69</span>
                 <span class="percent-off">10% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">Core Power Protein Shake</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-harris-teeter" href="https://www.harristeeter.com/p/core-power-chocolate-26g-protein-shake-bottle/0081162002195" target="_blank" rel="noopener noreferrer">
@@ -5668,11 +5464,11 @@
                 <span class="new-price">$5.79</span>
                 <span class="percent-off">9% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">Core Power Elite Protein Shake</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-harris-teeter" href="https://www.harristeeter.com/p/core-power-chocolate-42g-high-protein-shake-bottle/0081162002063" target="_blank" rel="noopener noreferrer">
@@ -5723,11 +5519,11 @@
                 <span class="new-price">$5.00</span>
                 <span class="percent-off">9% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">Core Power Elite Protein Shake</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-kroger" href="https://www.kroger.com/p/core-power-elite-chocolate-high-protein-shake/0081162002063" target="_blank" rel="noopener noreferrer">
@@ -5775,67 +5571,15 @@
                 <span class="new-price">$31.60</span>
                 <span class="percent-off">9% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">Premier Protein Whey Protein</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-walmart" href="https://www.walmart.com/ip/Premier-Protein-100-Whey-Protein-Powder-Chocolate-Milkshake-30g-Protein-24-5-oz-1-5-lb/945235241" target="_blank" rel="noopener noreferrer">
                 View on Walmart.com
-            </a>
-        </div>
-    </div>
-    
-
-    <div class="card card-tier-sale"
-         data-item-id="catalina crunch|catalina crunch snack mix|1"
-         data-section="food"
-         data-category="cookies &amp; sweets"
-         data-retailer="target"
-         data-brand="catalina crunch"
-         data-price="5.49"
-         data-saved="0.5000"
-         data-percent="8.3"
-         data-deal-count="1"
-         data-tier="sale"
-         data-search="catalina crunch snack mix catalina crunch cookies &amp; sweets target cheddar"
-         data-on-sale="1">
-        <button type="button" class="sb-star-btn" aria-label="Save to My Items" aria-pressed="false" title="Save to My Items">
-          <svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/>
-          </svg>
-        </button>
-        <div class='badge badge-everyday'>🏷️ On Sale</div>
-        
-        <div class="card-image-wrap">
-            
-        <div class="card-carousel card-carousel--single" data-slide-count="1">
-            <div class="card-carousel-stage">
-                <div class="card-carousel-slide" data-index="0" data-flavor-name="Cheddar"><a href="https://www.target.com/p/catalina-crunch-snack-mix-5-25oz/-/A-94886919" target="_blank" rel="noopener noreferrer" class="card-carousel-link"><img src="https://target.scene7.com/is/image/Target/GUEST_e439e523-68a4-40b5-8155-de5f56a14f46?wid=1200&amp;hei=1200&amp;qlt=80" alt="Cheddar" class="card-image" loading="lazy"/></a></div>
-            </div>
-            
-            <div class="card-carousel-caption">Cheddar</div>
-        </div>
-    
-            <div class='pack-pill'><span class='pack-count'>1</span> <span class='pack-unit'>ct</span></div>
-        </div>
-        <div class="card-content">
-            <div class="card-pricing">
-                <span class='old-price'>$5.99</span>
-                <span class="new-price">$5.49</span>
-                <span class="percent-off">8% OFF</span>
-            </div>
-            <div class="card-title">Catalina Crunch Snack Mix</div>
-            
-            <div class="sb-last-sale-lines" hidden></div>
-            <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
-                
-            </div>
-            <a class="view-button view-target" href="https://www.target.com/p/catalina-crunch-snack-mix-5-25oz/-/A-94886919" target="_blank" rel="noopener noreferrer">
-                View on Target.com
             </a>
         </div>
     </div>
@@ -5879,11 +5623,11 @@
                 <span class="new-price">$23.99</span>
                 <span class="percent-off">8% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">Celsius Energy Drink</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-harris-teeter" href="https://www.harristeeter.com/p/celsius-vibe-energy-drink-variety-pack-cans/0088939200095" target="_blank" rel="noopener noreferrer">
@@ -5934,11 +5678,11 @@
                 <span class="new-price">$2.49</span>
                 <span class="percent-off">7% OFF</span>
             </div>
+            <div class='availability in-store'>In store only</div>
             <div class="card-title">Ghost Energy Drink</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability in-store'>In-store</div>
                 
             </div>
             <a class="view-button view-meijer" href="https://www.meijer.com/shopping/product/-/81012852819.html" target="_blank" rel="noopener noreferrer">
@@ -5989,11 +5733,11 @@
                 <span class="new-price">$3.99</span>
                 <span class="percent-off">7% OFF</span>
             </div>
+            <div class='availability online-only'>Online only · ships from Target</div>
             <div class="card-title">Mission Carb Balance</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability online-only'>Shipping only</div>
                 
             </div>
             <a class="view-button view-target" href="https://www.target.com/p/mission-carb-balance-super-soft-flour-tortillas-8oz-8ct/-/A-47087807#lnk=sametab" target="_blank" rel="noopener noreferrer">
@@ -6044,11 +5788,11 @@
                 <span class="new-price">$17.99</span>
                 <span class="percent-off">7% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">Clif Bar</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-target" href="https://www.target.com/p/clif-bar-chocolate-chip-energy-bars/-/A-90627993" target="_blank" rel="noopener noreferrer">
@@ -6099,11 +5843,11 @@
                 <span class="new-price">$27.99</span>
                 <span class="percent-off">7% OFF</span>
             </div>
+            <div class='availability online-only'>Online only · ships from Target</div>
             <div class="card-title">Barebells Protein Bar</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability online-only'>Shipping only</div>
                 
             </div>
             <a class="view-button view-target" href="https://www.target.com/p/barebells-nutrition-bars-cookies-cream/-/A-83942841" target="_blank" rel="noopener noreferrer">
@@ -6151,11 +5895,11 @@
                 <span class="new-price">$8.99</span>
                 <span class="percent-off">6% OFF</span>
             </div>
+            <div class='availability online-only'>Online only · ships from Target</div>
             <div class="card-title">RXBAR High Protein</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability online-only'>Shipping only</div>
                 
             </div>
             <a class="view-button view-target" href="https://www.target.com/p/rxbar-high-protein-chocolate-chip-peanut-butter-protein-bars-19g-protein-10-5oz-5ct/-/A-95116618#lnk=sametab" target="_blank" rel="noopener noreferrer">
@@ -6203,11 +5947,11 @@
                 <span class="new-price">$8.99</span>
                 <span class="percent-off">6% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">RXBAR</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-target" href="https://www.target.com/p/rxbar-peanut-butter-chocolate-protein-bars-12g-protein-9-1oz-5ct/-/A-95021016#lnk=sametab" target="_blank" rel="noopener noreferrer">
@@ -6255,11 +5999,11 @@
                 <span class="new-price">$32.80</span>
                 <span class="percent-off">6% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">Isopure Whey Protein Isolate</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-walmart" href="https://www.walmart.com/ip/Isopure-Zero-Carb-100-Whey-Protein-Isolate-Powder-Creamy-Vanilla-25g-Protein-15-Servings-Tub/16522658589?filters=%5B%7B%22intent%22%3A%22fulfillmentIntent%22%2C%22values%22%3A%5B%22In-store%22%5D%7D%5D" target="_blank" rel="noopener noreferrer">
@@ -6307,11 +6051,11 @@
                 <span class="new-price">$8.89</span>
                 <span class="percent-off">6% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">Quest Protein Bar</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-walmart" href="https://www.walmart.com/ip/Quest-Nutrition-20g-nbsp-Protein-Bar-Strawberry-Shortcake-4pk-2-12oz/14941900761" target="_blank" rel="noopener noreferrer">
@@ -6359,11 +6103,11 @@
                 <span class="new-price">$4.69</span>
                 <span class="percent-off">6% OFF</span>
             </div>
+            <div class='availability online-only'>Online only · ships from Target</div>
             <div class="card-title">La Banderita Carb Counter</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability online-only'>Shipping only</div>
                 
             </div>
             <a class="view-button view-target" href="https://www.target.com/p/la-banderita-carb-counter-keto-friendly-white-tortilla-wraps-11-9oz-8ct/-/A-79628828#lnk=sametab" target="_blank" rel="noopener noreferrer">
@@ -6411,11 +6155,11 @@
                 <span class="new-price">$4.89</span>
                 <span class="percent-off">6% OFF</span>
             </div>
+            <div class='availability online-only'>Online only · ships from Target</div>
             <div class="card-title">Ole Xtreme Wellness</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability online-only'>Shipping only</div>
                 
             </div>
             <a class="view-button view-target" href="https://www.target.com/p/ole-xtreme-wellness-high-fiber-low-carb-keto-friendly-tortilla-wraps-12-7oz-8ct/-/A-50325179#lnk=sametab" target="_blank" rel="noopener noreferrer">
@@ -6463,11 +6207,11 @@
                 <span class="new-price">$8.99</span>
                 <span class="percent-off">5% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">Chomplings Meat Sticks</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-kroger" href="https://www.kroger.com/p/chomplings-original-turkey-mini-meat-sticks-6-count/0085658400487?fulfillment=PICKUP" target="_blank" rel="noopener noreferrer">
@@ -6515,11 +6259,11 @@
                 <span class="new-price">$8.99</span>
                 <span class="percent-off">5% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">Chomplings Meat Sticks</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-kroger" href="https://www.kroger.com/p/chomps-chomplings-original-beef-mini-sticks/0085658400486" target="_blank" rel="noopener noreferrer">
@@ -6567,11 +6311,11 @@
                 <span class="new-price">$3.77</span>
                 <span class="percent-off">5% OFF</span>
             </div>
+            <div class='availability both'>In store &amp; online</div>
             <div class="card-title">La Banderita Carb Counter</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability both'>In-store & online</div>
                 
             </div>
             <a class="view-button view-walmart" href="https://www.walmart.com/ip/La-Banderita-Carb-Counter-Snack-Size-Flour-Tortillas-7-9-oz-8-Count/338018955?classType=VARIANT&amp;from=/search" target="_blank" rel="noopener noreferrer">
@@ -6622,11 +6366,11 @@
                 <span class="new-price">$9.49</span>
                 <span class="percent-off">5% OFF</span>
             </div>
+            <div class='availability in-store'>In store only</div>
             <div class="card-title">Quest Protein Chips</div>
             
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                <div class='availability in-store'>In-store</div>
                 
             </div>
             <a class="view-button view-meijer" href="https://www.meijer.com/shopping/product/quest-protein-chips-tortilla-loaded-taco-4pk/88884901096.html" target="_blank" rel="noopener noreferrer">

@@ -1,7 +1,9 @@
+import csv
 import json
 import html
 import os
 import random
+import re
 from pathlib import Path
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
@@ -13,6 +15,13 @@ ROOT = Path(__file__).parent
 JSON_PATH = ROOT / "deals_today.json"
 DOCS_DIR = ROOT / "docs"
 OUTPUT_PATH = DOCS_DIR / "index.html"
+SNACK_BUDDY_ROOT = ROOT.parent / "snack-buddy"
+WALMART_PRICE_DIRS = [
+    SNACK_BUDDY_ROOT / "walmart",
+    SNACK_BUDDY_ROOT / "Walmart",
+]
+PRODUCTS_FEED = SNACK_BUDDY_ROOT / "products_clean_unified.csv"
+_BUNDLE_TITLE_RE = re.compile(r"^\(\s*(\d+)\s*packs?\s*\)", re.I)
 
 # Beehiiv IDs — from beehiiv Settings / Subscribe forms.
 # Prefer env / sibling snack-buddy .env so IDs aren't hardcoded.
@@ -132,17 +141,212 @@ def normalize_retailer_value(raw: str) -> str:
     return r  # fallback
 
 def normalise_availability(raw):
-    if not isinstance(raw, str):
+    """Legacy helper — prefer howto_buy_line for under-price copy."""
+    text, css = howto_buy_line({"availability": raw})
+    return text or "Check store availability", css or "availability check"
+
+
+def _norm_url_key(url: str) -> str:
+    u = (url or "").strip().lower()
+    return u.split("?", 1)[0].split("#", 1)[0].rstrip("/")
+
+
+def _latest_walmart_prices_csv() -> Path | None:
+    cands: list[Path] = []
+    for d in WALMART_PRICE_DIRS:
+        if d.exists():
+            cands.extend(d.glob("walmart_prices_*.csv"))
+    if not cands:
+        return None
+    uniq = {c.resolve(): c for c in cands}
+    return max(uniq.values(), key=lambda p: p.stat().st_mtime)
+
+
+def load_walmart_buy_context() -> dict:
+    """
+    page_title by URL + today's priced singles by (brand, flavor, pack)
+    + DB keys for Walmart brand/flavor/pack (products feed).
+    """
+    by_url: dict[str, dict] = {}
+    by_bfp: dict[tuple[str, str, int], list[dict]] = {}
+    db_keys: set[tuple[str, str, int]] = set()
+
+    if PRODUCTS_FEED.exists():
+        try:
+            with PRODUCTS_FEED.open("r", encoding="utf-8-sig", newline="") as f:
+                for row in csv.DictReader(f):
+                    if "walmart" not in (row.get("retailer") or "").lower():
+                        continue
+                    try:
+                        pack = int(float(row.get("pack_size") or 0))
+                    except (TypeError, ValueError):
+                        continue
+                    if pack <= 0:
+                        continue
+                    brand = (row.get("brand") or "").strip().lower()
+                    flavor = (
+                        row.get("description/flavor")
+                        or row.get("flavor")
+                        or ""
+                    ).strip().lower()
+                    db_keys.add((brand, flavor, pack))
+        except OSError:
+            pass
+
+    path = _latest_walmart_prices_csv()
+    if not path:
+        return {"by_url": by_url, "by_bfp": by_bfp, "db_keys": db_keys}
+
+    try:
+        with path.open("r", encoding="utf-8-sig", newline="") as f:
+            rows = list(csv.DictReader(f))
+    except OSError:
+        return {"by_url": by_url, "by_bfp": by_bfp, "db_keys": db_keys}
+
+    for row in rows:
+        url = _norm_url_key(row.get("canonical_url") or row.get("url") or "")
+        title = (row.get("page_title") or "").strip()
+        if url:
+            by_url[url] = {
+                "page_title": title,
+                "brand": (row.get("brand") or "").strip(),
+                "flavor": (row.get("flavor") or "").strip(),
+                "pack_size": row.get("pack_size"),
+                "price": row.get("price"),
+                "availability": (row.get("availability") or "").strip().lower(),
+            }
+        if (row.get("status") or "").strip().lower() != "ok":
+            continue
+        try:
+            pack = int(float(row.get("pack_size") or 0))
+            price = float(row.get("price"))
+        except (TypeError, ValueError):
+            continue
+        if pack <= 0 or price <= 0:
+            continue
+        key = (
+            (row.get("brand") or "").strip().lower(),
+            (row.get("flavor") or "").strip().lower(),
+            pack,
+        )
+        by_bfp.setdefault(key, []).append(
+            {
+                "price": price,
+                "availability": (row.get("availability") or "").strip().lower(),
+            }
+        )
+        # Tracked Walmart scrape rows are DB-backed; allow single lookup even if
+        # feed flavor-column naming differs slightly.
+        db_keys.add(key)
+
+    return {"by_url": by_url, "by_bfp": by_bfp, "db_keys": db_keys}
+
+
+def resolve_page_title(deal: dict, walmart_ctx: dict | None) -> str:
+    direct = (deal.get("page_title") or "").strip()
+    if direct:
+        return direct
+    if not walmart_ctx:
+        return ""
+    retailer = (deal.get("retailer") or "").lower()
+    if "walmart" not in retailer:
+        return ""
+    url = _norm_url_key(deal.get("retailer_url") or deal.get("canonical_url") or "")
+    meta = (walmart_ctx.get("by_url") or {}).get(url) or {}
+    return (meta.get("page_title") or "").strip()
+
+
+def single_each_in_store_price(
+    deal: dict, bundle_n: int, walmart_ctx: dict | None
+) -> float | None:
+    """If DB has same brand+flavor at pack=total/N, return today's single price."""
+    if not walmart_ctx or bundle_n <= 0:
+        return None
+    try:
+        total = int(float(deal.get("pack_count") or deal.get("pack_size") or 0))
+    except (TypeError, ValueError):
+        return None
+    if total <= 0 or total % bundle_n != 0:
+        return None
+    single_pack = total // bundle_n
+    brand = (deal.get("brand") or "").strip().lower()
+    flavor = (deal.get("flavor") or "").strip().lower()
+    key = (brand, flavor, single_pack)
+    if key not in (walmart_ctx.get("db_keys") or set()):
+        return None
+    cands = (walmart_ctx.get("by_bfp") or {}).get(key) or []
+    if not cands:
+        return None
+    # Prefer an in-store-capable price for the "each in store" note.
+    preferred = [
+        c
+        for c in cands
+        if c.get("availability") in ("in_store", "both", "")
+    ] or cands
+    try:
+        return float(preferred[0]["price"])
+    except (TypeError, ValueError, KeyError):
+        return None
+
+
+def howto_buy_line(
+    deal: dict,
+    *,
+    page_title: str = "",
+    walmart_ctx: dict | None = None,
+) -> tuple[str, str]:
+    """
+    Under-price how-to-buy copy from availability_norm (+ Walmart bundle titles).
+    Returns (text, css_class). Empty text → omit the line.
+    """
+    title = (page_title or "").strip() or resolve_page_title(deal, walmart_ctx)
+    retailer = (deal.get("retailer") or "").strip()
+    retailer_l = retailer.lower()
+
+    # Walmart multi-pack web listing: "(N pack) ..."
+    if "walmart" in retailer_l:
+        m = _BUNDLE_TITLE_RE.match(title)
+        if m:
+            n = int(m.group(1))
+            text = f"Online {n}-pack only"
+            each = single_each_in_store_price(deal, n, walmart_ctx)
+            if each is not None:
+                text += f" · ${each:.2f} each in store"
+            return text, "availability online-only"
+
+    avail = (
+        deal.get("availability")
+        or deal.get("availability_norm")
+        or ""
+    )
+    if not isinstance(avail, str):
         return "Check store availability", "availability check"
-    val = raw.strip().lower()
-    if val == "in_store":
-        return "In-store", "availability in-store"
+    val = avail.strip().lower()
     if val == "both":
-        return "In-store & online", "availability both"
+        return "In store & online", "availability both"
+    if val == "in_store":
+        return "In store only", "availability in-store"
     if val == "online_only":
-        return "Shipping only", "availability online-only"
-    # Unknown / blank / other → generic helpful message
+        # Walmart.com-sold online-only items keep a fixed label.
+        if "walmart" in retailer_l:
+            return "Online only · ships from Walmart", "availability online-only"
+        ship_from = retailer or "store"
+        return f"Online only · ships from {ship_from}", "availability online-only"
+    if not val:
+        return "", ""
     return "Check store availability", "availability check"
+
+
+def howto_buy_html(
+    deal: dict,
+    *,
+    page_title: str = "",
+    walmart_ctx: dict | None = None,
+) -> str:
+    text, css = howto_buy_line(deal, page_title=page_title, walmart_ctx=walmart_ctx)
+    if not text:
+        return ""
+    return f"<div class='{css}'>{html.escape(text)}</div>"
 
 
 def _norm_str(val) -> str:
@@ -581,7 +785,7 @@ def build_card_image_carousel_html(deal, default_alt: str) -> str:
     """
 
 
-def build_card_html(deal):
+def build_card_html(deal, walmart_ctx: dict | None = None):
     # Use product_name directly from the deal (from CSV, not combined)
     # Remove pack size indicators since we have a pack pill overlay
     product_name = deal.get("product_name", "")
@@ -618,10 +822,8 @@ def build_card_html(deal):
     # Retailer specific styling
     pill_class, button_class = retailer_classes(deal.get("retailer", ""))
 
-    # Availability
-    availability_text, availability_class = normalise_availability(
-        deal.get("availability", "")
-    )
+    # How-to-buy line (under price)
+    buy_html = howto_buy_html(deal, walmart_ctx=walmart_ctx)
 
     # Badge
     badge_label, badge_class = get_badge(deal)
@@ -687,10 +889,6 @@ def build_card_html(deal):
     dollars_saved = (
         (old_price_val - new_price_val) if old_price_val is not None else 0.0
     )
-
-    availability_html = ""
-    if availability_text:
-        availability_html = f"<div class='{availability_class}'>{availability_text}</div>"
 
     streak_html = ""
     if streak_text:
@@ -782,11 +980,11 @@ def build_card_html(deal):
                 <span class="new-price">${new_price_val:.2f}</span>
                 <span class="percent-off">{percent_off:.0f}% OFF</span>
             </div>
+            {buy_html}
             <div class="card-title">{name}</div>
             {flavor_html}
             <div class="sb-last-sale-lines" hidden></div>
             <div class="card-footer">
-                {availability_html}
                 {streak_html}
             </div>
             <a class="{button_class}" href="{retailer_url}" target="_blank" rel="noopener noreferrer">
@@ -837,7 +1035,9 @@ def pick_best_savings_deals(deals: list[dict], limit: int = 6) -> list[dict]:
     return out
 
 
-def build_best_savings_html(deals: list[dict]) -> str:
+def build_best_savings_html(
+    deals: list[dict], walmart_ctx: dict | None = None
+) -> str:
     picks = pick_best_savings_deals(deals, limit=6)
     if not picks:
         return ""
@@ -858,6 +1058,7 @@ def build_best_savings_html(deals: list[dict]) -> str:
         except (TypeError, ValueError):
             continue
         item_id = html.escape(d.get("_item_id") or "")
+        buy_html = howto_buy_html(d, walmart_ctx=walmart_ctx)
         img_html = (
             f'<img src="{html.escape(img)}" alt="{html.escape(title)}" loading="lazy" decoding="async" />'
             if img
@@ -880,6 +1081,7 @@ def build_best_savings_html(deals: list[dict]) -> str:
                 <span class="new-price">${new_p:.2f}</span>
                 <span class="percent-off">{pct:.0f}% OFF</span>
               </div>
+              {buy_html}
             </article>
             """
         )
@@ -905,6 +1107,7 @@ def build_best_savings_html(deals: list[dict]) -> str:
 
 
 def build_page_html(deals):
+    walmart_ctx = load_walmart_buy_context()
     # Group deals into deal families
     grouped_deals = group_deals(deals)
     # Calculate total number of individual deals (flavors) across all groups
@@ -934,8 +1137,10 @@ def build_page_html(deals):
         )
 
     deals_sorted = sorted(grouped_deals, key=sort_key)
-    cards_html = "\n".join(build_card_html(d) for d in deals_sorted)
-    best_savings_html = build_best_savings_html(deals)
+    cards_html = "\n".join(
+        build_card_html(d, walmart_ctx=walmart_ctx) for d in deals_sorted
+    )
+    best_savings_html = build_best_savings_html(deals, walmart_ctx=walmart_ctx)
     beehiiv_form_id = html.escape(BEEHIIV_FORM_ID)
     beehiiv_pub_id = html.escape(BEEHIIV_PUBLICATION_ID)
     beehiiv_embed_script = (
@@ -3349,6 +3554,13 @@ def build_page_html(deals):
             font-size: 11px;
         }}
 
+        .card-content > .availability,
+        .sb-savings-tile > .availability {{
+            font-size: 11px;
+            color: var(--text-muted);
+            line-height: 1.3;
+            margin-top: 2px;
+        }}
         .availability.check {{
             font-style: italic;
             color: var(--text-muted);
