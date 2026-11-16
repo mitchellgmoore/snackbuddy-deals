@@ -143,7 +143,7 @@ def normalize_retailer_value(raw: str) -> str:
 def normalise_availability(raw):
     """Legacy helper — prefer howto_buy_line for under-price copy."""
     text, css = howto_buy_line({"availability": raw})
-    return text or "Check store availability", css or "availability check"
+    return text or "Check availability at store", css or "availability check"
 
 
 def _norm_url_key(url: str) -> str:
@@ -289,6 +289,89 @@ def single_each_in_store_price(
         return None
 
 
+def _truthy_flag(val) -> bool:
+    if isinstance(val, bool):
+        return val
+    if val is None:
+        return False
+    return str(val).strip().lower() in ("1", "true", "yes", "y", "t")
+
+
+def _card_or_clip_prefix(deal: dict) -> str | None:
+    """
+    Kroger-family promo disclosure. Clip takes precedence over card.
+    Other retailers → None (leave their how-to-buy labels unchanged).
+    """
+    retailer_l = (deal.get("retailer") or "").strip().lower()
+    is_kroger = "kroger" in retailer_l
+    is_ht = "harris" in retailer_l
+    if not (is_kroger or is_ht):
+        return None
+    if _truthy_flag(deal.get("requires_clip")):
+        return "Clip digital coupon"
+    if _truthy_flag(deal.get("requires_card")):
+        if is_ht:
+            return "VIC card price"
+        return "Kroger Plus card price"
+    return None
+
+
+def parse_promo_end(val) -> datetime | None:
+    """Parse promo_end ISO/date to aware datetime; None if missing/unparseable."""
+    s = str(val or "").strip()
+    if not s:
+        return None
+    try:
+        if s.endswith("Z"):
+            s = s[:-1] + "+00:00"
+        parsed = datetime.fromisoformat(s)
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=timezone.utc)
+        return parsed
+    except Exception:
+        return None
+
+
+def is_expired_promo(deal: dict, *, now: datetime | None = None) -> bool:
+    """True when Kroger/HT promo_end is parseable and already past (Central)."""
+    end = parse_promo_end(deal.get("promo_end"))
+    if end is None:
+        return False
+    now = now or datetime.now(tz=US_CENTRAL)
+    if now.tzinfo is None:
+        now = now.replace(tzinfo=US_CENTRAL)
+    return end.astimezone(US_CENTRAL) < now.astimezone(US_CENTRAL)
+
+
+def format_promo_end_phrase(deal: dict) -> str | None:
+    """
+    Shopper-facing end date for Kroger/HT, e.g. 'ends Sat 11/21' (Central).
+    None when missing/unparseable — leave the card unchanged.
+    """
+    retailer_l = (deal.get("retailer") or "").strip().lower()
+    if "kroger" not in retailer_l and "harris" not in retailer_l:
+        return None
+    end = parse_promo_end(deal.get("promo_end"))
+    if end is None:
+        return None
+    central = end.astimezone(US_CENTRAL)
+    return f"ends {central.strftime('%a')} {central.month}/{central.day}"
+
+
+def _with_card_clip_prefix(text: str, css: str, deal: dict) -> tuple[str, str]:
+    """
+    Prefix how-to-buy with card/clip (and optional promo end date) for Kroger/HT.
+    Example: 'Kroger Plus card price · ends Sat 11/21 · in store & online'
+    """
+    prefix = _card_or_clip_prefix(deal)
+    end_bit = format_promo_end_phrase(deal)
+    if (not prefix and not end_bit) or not text:
+        return text, css
+    rest = text[0].lower() + text[1:] if text else text
+    bits = [b for b in (prefix, end_bit, rest) if b]
+    return " · ".join(bits), css
+
+
 def howto_buy_line(
     deal: dict,
     *,
@@ -320,21 +403,32 @@ def howto_buy_line(
         or ""
     )
     if not isinstance(avail, str):
-        return "Check store availability", "availability check"
+        return _with_card_clip_prefix(
+            "Check availability at store", "availability check", deal
+        )
     val = avail.strip().lower()
     if val == "both":
-        return "In store & online", "availability both"
+        return _with_card_clip_prefix("In store & online", "availability both", deal)
     if val == "in_store":
-        return "In store only", "availability in-store"
+        return _with_card_clip_prefix("In store only", "availability in-store", deal)
     if val == "online_only":
         # Walmart.com-sold online-only items keep a fixed label.
         if "walmart" in retailer_l:
             return "Online only · ships from Walmart", "availability online-only"
         ship_from = retailer or "store"
-        return f"Online only · ships from {ship_from}", "availability online-only"
-    if not val:
-        return "", ""
-    return "Check store availability", "availability check"
+        return _with_card_clip_prefix(
+            f"Online only · ships from {ship_from}",
+            "availability online-only",
+            deal,
+        )
+    if val in ("check_store_availability", "check", "unknown", ""):
+        return _with_card_clip_prefix(
+            "Check availability at store", "availability check", deal
+        )
+    # Unrecognized → never omit the how-to-buy line.
+    return _with_card_clip_prefix(
+        "Check availability at store", "availability check", deal
+    )
 
 
 def howto_buy_html(
@@ -995,14 +1089,29 @@ def build_card_html(deal, walmart_ctx: dict | None = None):
     """
 
 
+def _best_savings_buy_known(deal: dict) -> bool:
+    """
+    Strip only shows deals with a concrete how-to-buy path.
+    Unknown / check_store_availability stay in the main grid only.
+    """
+    avail = deal.get("availability") or deal.get("availability_norm") or ""
+    if not isinstance(avail, str):
+        return False
+    val = avail.strip().lower()
+    return val in ("both", "in_store", "online_only")
+
+
 def pick_best_savings_deals(deals: list[dict], limit: int = 6) -> list[dict]:
     """
     Top dollar-savings deals (≥10% off) from today's published set.
     Quarantined / safety-held deals are already absent from deals_today.json.
     One product family (brand + product + pack) only — best flavor/store wins.
+    Skips unknown / check_store_availability how-to-buy; backfills next-best.
     """
     ranked: list[tuple[float, float, dict]] = []
     for row in deals:
+        if not _best_savings_buy_known(row):
+            continue
         try:
             pct = float(row.get("percent_off") or 0.0)
             old_p = float(row.get("old_price"))
@@ -6395,6 +6504,10 @@ document.addEventListener("DOMContentLoaded", function () {{
     """
 def main():
     deals = load_deals()
+    expired = [d for d in deals if is_expired_promo(d)]
+    if expired:
+        print(f"EXPIRED_PROMO: dropped {len(expired)} deal(s) with past promo_end")
+        deals = [d for d in deals if not is_expired_promo(d)]
     page_html = build_page_html(deals)
 
     DOCS_DIR.mkdir(parents=True, exist_ok=True)

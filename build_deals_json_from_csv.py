@@ -21,6 +21,16 @@ def cell_str(val, default: str = "") -> str:
     return str(val).strip()
 
 
+def cell_bool(val, default: bool = False) -> bool:
+    """Coerce a CSV cell to bool; blank/NaN → default."""
+    if isinstance(val, bool):
+        return val
+    s = cell_str(val, "")
+    if not s:
+        return default
+    return s.lower() in ("1", "true", "yes", "y", "t")
+
+
 def build_product_name(row: pd.Series) -> str:
     """
     Build a readable product name like:
@@ -197,6 +207,10 @@ def main():
             "streak_days": streak_days,
             "page_title": cell_str(row.get("page_title")),
             "seller": cell_str(row.get("seller")),
+            "requires_card": cell_bool(row.get("requires_card"), False),
+            "requires_clip": cell_bool(row.get("requires_clip"), False),
+            "promo_start": cell_str(row.get("promo_start")),
+            "promo_end": cell_str(row.get("promo_end")),
         }
 
         deals.append(deal)
