@@ -26,6 +26,10 @@ _BUNDLE_TITLE_RE = re.compile(r"^\(\s*(\d+)\s*packs?\s*\)", re.I)
 # Flat bundle price for this many calendar days → everyday multipack saving, not a deal.
 EVERYDAY_BUNDLE_STABLE_DAYS = 30
 _BUNDLE_PRICE_MATCH_TOL = 0.01  # cents-level scrape jitter still counts as "same"
+# Structural multipack: baseline within 2% of N × smaller listing's current price.
+_BUNDLE_BASELINE_VS_MULTIPLE_PCT = 0.02
+_AISLE_DETAIL_RE = re.compile(r"(?:^|;)\s*aisle=(True|False)\b", re.I)
+_AISLE_LABEL_DETAIL_RE = re.compile(r"(?:^|;)\s*aisle_label=([^;]*)", re.I)
 
 # Beehiiv IDs — from beehiiv Settings / Subscribe forms.
 # Prefer env / sibling snack-buddy .env so IDs aren't hardcoded.
@@ -166,14 +170,43 @@ def _latest_walmart_prices_csv() -> Path | None:
     return max(uniq.values(), key=lambda p: p.stat().st_mtime)
 
 
+def _parse_aisle_from_detail(detail: str) -> tuple[bool | None, str]:
+    """Parse aisle=True/False and aisle_label from walmart scrape detail string."""
+    s = str(detail or "")
+    m = _AISLE_DETAIL_RE.search(s)
+    aisle = None
+    if m:
+        aisle = m.group(1).lower() == "true"
+    label = ""
+    lm = _AISLE_LABEL_DETAIL_RE.search(s)
+    if lm:
+        label = (lm.group(1) or "").strip()
+    return aisle, label
+
+
+def _truthy_csv_flag(val) -> bool | None:
+    if val is None or str(val).strip() == "":
+        return None
+    if isinstance(val, bool):
+        return val
+    s = str(val).strip().lower()
+    if s in ("1", "true", "yes", "y", "t"):
+        return True
+    if s in ("0", "false", "no", "n", "f"):
+        return False
+    return None
+
+
 def load_walmart_buy_context() -> dict:
     """
     page_title by URL + today's priced singles by (brand, flavor, pack)
-    + DB keys for Walmart brand/flavor/pack (products feed).
+    + DB keys for Walmart brand/flavor/pack (products feed)
+    + aisle / pickup / shipping from the latest scrape (detail + flags).
     """
     by_url: dict[str, dict] = {}
     by_bfp: dict[tuple[str, str, int], list[dict]] = {}
     db_keys: set[tuple[str, str, int]] = set()
+    has_aisle_data = False
 
     if PRODUCTS_FEED.exists():
         try:
@@ -182,14 +215,15 @@ def load_walmart_buy_context() -> dict:
                     if "walmart" not in (row.get("retailer") or "").lower():
                         continue
                     try:
-                        pack = int(float(row.get("pack_size") or 0))
+                        pack = int(float(row.get("Pack_Size") or row.get("pack_size") or 0))
                     except (TypeError, ValueError):
                         continue
                     if pack <= 0:
                         continue
-                    brand = (row.get("brand") or "").strip().lower()
+                    brand = (row.get("Brand") or row.get("brand") or "").strip().lower()
                     flavor = (
-                        row.get("description/flavor")
+                        row.get("Description/Flavor")
+                        or row.get("description/flavor")
                         or row.get("flavor")
                         or ""
                     ).strip().lower()
@@ -199,17 +233,33 @@ def load_walmart_buy_context() -> dict:
 
     path = _latest_walmart_prices_csv()
     if not path:
-        return {"by_url": by_url, "by_bfp": by_bfp, "db_keys": db_keys}
+        return {
+            "by_url": by_url,
+            "by_bfp": by_bfp,
+            "db_keys": db_keys,
+            "has_aisle_data": has_aisle_data,
+        }
 
     try:
         with path.open("r", encoding="utf-8-sig", newline="") as f:
             rows = list(csv.DictReader(f))
     except OSError:
-        return {"by_url": by_url, "by_bfp": by_bfp, "db_keys": db_keys}
+        return {
+            "by_url": by_url,
+            "by_bfp": by_bfp,
+            "db_keys": db_keys,
+            "has_aisle_data": has_aisle_data,
+        }
 
     for row in rows:
         url = _norm_url_key(row.get("canonical_url") or row.get("url") or "")
         title = (row.get("page_title") or "").strip()
+        detail = row.get("detail") or row.get("availability_detail") or ""
+        aisle, aisle_label = _parse_aisle_from_detail(detail)
+        if aisle is not None:
+            has_aisle_data = True
+        pickup = _truthy_csv_flag(row.get("pickup_available"))
+        shipping = _truthy_csv_flag(row.get("shipping_available"))
         if url:
             by_url[url] = {
                 "page_title": title,
@@ -218,6 +268,11 @@ def load_walmart_buy_context() -> dict:
                 "pack_size": row.get("pack_size"),
                 "price": row.get("price"),
                 "availability": (row.get("availability") or "").strip().lower(),
+                "aisle": aisle,
+                "aisle_label": aisle_label,
+                "pickup_available": pickup,
+                "shipping_available": shipping,
+                "detail": detail,
             }
         if (row.get("status") or "").strip().lower() != "ok":
             continue
@@ -243,7 +298,12 @@ def load_walmart_buy_context() -> dict:
         # feed flavor-column naming differs slightly.
         db_keys.add(key)
 
-    return {"by_url": by_url, "by_bfp": by_bfp, "db_keys": db_keys}
+    return {
+        "by_url": by_url,
+        "by_bfp": by_bfp,
+        "db_keys": db_keys,
+        "has_aisle_data": has_aisle_data,
+    }
 
 
 def resolve_page_title(deal: dict, walmart_ctx: dict | None) -> str:
@@ -293,7 +353,26 @@ def single_each_in_store_price(
         return None
 
 
-def walmart_bundle_n(deal: dict, walmart_ctx: dict | None = None) -> int | None:
+def _deal_pack_count(deal: dict) -> int | None:
+    try:
+        total = int(float(deal.get("pack_count") or deal.get("pack_size") or 0))
+    except (TypeError, ValueError):
+        return None
+    return total if total > 0 else None
+
+
+def _deal_baseline(deal: dict) -> float | None:
+    for key in ("old_price", "baseline", "baseline_db"):
+        try:
+            val = float(deal.get(key))
+        except (TypeError, ValueError):
+            continue
+        if val > 0:
+            return val
+    return None
+
+
+def walmart_title_bundle_n(deal: dict, walmart_ctx: dict | None = None) -> int | None:
     """N from Walmart '(N pack) ...' page title, else None."""
     retailer_l = (deal.get("retailer") or "").strip().lower()
     if "walmart" not in retailer_l:
@@ -309,6 +388,55 @@ def walmart_bundle_n(deal: dict, walmart_ctx: dict | None = None) -> int | None:
     except (TypeError, ValueError):
         return None
     return n if n > 0 else None
+
+
+def walmart_structural_bundle_n(
+    deal: dict, walmart_ctx: dict | None = None
+) -> int | None:
+    """
+    Detect multipack when title has no '(N pack)' but pack size is an exact
+    multiple of a smaller same brand+flavor listing at Walmart, and baseline is
+    within 2% of N × that smaller listing's current price.
+    Returns N (units of the smaller pack), preferring the largest N.
+    """
+    retailer_l = (deal.get("retailer") or "").strip().lower()
+    if "walmart" not in retailer_l or not walmart_ctx:
+        return None
+    pack = _deal_pack_count(deal)
+    baseline = _deal_baseline(deal)
+    if not pack or pack <= 1 or baseline is None:
+        return None
+    brand = (deal.get("brand") or "").strip().lower()
+    flavor = (deal.get("flavor") or "").strip().lower()
+    by_bfp = walmart_ctx.get("by_bfp") or {}
+    best_n = None
+    for single_pack in range(1, pack):
+        if pack % single_pack != 0:
+            continue
+        n = pack // single_pack
+        if n < 2:
+            continue
+        cands = by_bfp.get((brand, flavor, single_pack)) or []
+        if not cands:
+            continue
+        try:
+            smaller_price = float(cands[0]["price"])
+        except (TypeError, ValueError, KeyError):
+            continue
+        if smaller_price <= 0:
+            continue
+        expected = n * smaller_price
+        if abs(baseline - expected) / expected <= _BUNDLE_BASELINE_VS_MULTIPLE_PCT:
+            if best_n is None or n > best_n:
+                best_n = n
+    return best_n
+
+
+def walmart_bundle_n(deal: dict, walmart_ctx: dict | None = None) -> int | None:
+    """Title '(N pack)' first; else structural multipack N."""
+    return walmart_title_bundle_n(deal, walmart_ctx) or walmart_structural_bundle_n(
+        deal, walmart_ctx
+    )
 
 
 _WALMART_IP_SKU_RE = re.compile(r"/ip/[^/]+/(\d{6,})", re.I)
@@ -402,42 +530,122 @@ def is_everyday_bundle_price(
     return (newest - oldest).days >= EVERYDAY_BUNDLE_STABLE_DAYS
 
 
+def is_drop_below_usual_bundle_price(
+    dates_to_price: dict[str, float], today_price: float
+) -> bool:
+    """
+    True when today's price is below a prior price that itself held for
+    EVERYDAY_BUNDLE_STABLE_DAYS+ calendar days (time-limited multipack sale).
+    """
+    if not dates_to_price:
+        return False
+    try:
+        today_p = float(today_price)
+    except (TypeError, ValueError):
+        return False
+    if today_p <= 0:
+        return False
+
+    days = sorted(dates_to_price.keys())
+    i = len(days) - 1
+    # Skip the current-price streak.
+    while i >= 0:
+        try:
+            p = float(dates_to_price[days[i]])
+        except (TypeError, ValueError):
+            return False
+        if _price_same(p, today_p):
+            i -= 1
+            continue
+        break
+    if i < 0:
+        return False
+    try:
+        prior = float(dates_to_price[days[i]])
+    except (TypeError, ValueError):
+        return False
+    if prior <= today_p + _BUNDLE_PRICE_MATCH_TOL:
+        return False  # not a drop from a higher usual
+
+    prior_days: list[str] = []
+    while i >= 0:
+        try:
+            p = float(dates_to_price[days[i]])
+        except (TypeError, ValueError):
+            break
+        if _price_same(p, prior):
+            prior_days.append(days[i])
+            i -= 1
+        else:
+            break
+    if len(prior_days) < 2:
+        return False
+    try:
+        newest = datetime.fromisoformat(prior_days[0]).date()
+        oldest = datetime.fromisoformat(prior_days[-1]).date()
+    except ValueError:
+        return False
+    return (newest - oldest).days >= EVERYDAY_BUNDLE_STABLE_DAYS
+
+
 def annotate_everyday_bundles(
     deals: list[dict], walmart_ctx: dict | None = None
 ) -> list[dict]:
     """
-    Mark Walmart '(N pack)' listings whose own price has been flat 30+ days.
-    Sets deal['is_everyday_bundle'] / deal['bundle_n']. Does not change prices
-    or baselines.
+    Mark Walmart multipack listings (title '(N pack)' or structural pack
+    multiple) for everyday-bundle treatment.
+
+    Title bundles: everyday when own price flat 30+ days.
+    Structural bundles: everyday multipack saving vs singles, unless the
+    listing dropped below its own long-held usual price (then a normal deal).
+
+    Sets deal['is_everyday_bundle'] / deal['bundle_n'] / deal['bundle_source'].
+    Does not change prices or baselines.
     """
-    bundle_meta: list[tuple[dict, int, str, float]] = []
+    bundle_meta: list[tuple[dict, int, str, float, str]] = []
     skus: set[str] = set()
     for deal in deals:
-        n = walmart_bundle_n(deal, walmart_ctx)
+        title_n = walmart_title_bundle_n(deal, walmart_ctx)
+        structural_n = None if title_n else walmart_structural_bundle_n(
+            deal, walmart_ctx
+        )
+        n = title_n or structural_n
+        source = "title" if title_n else ("structural" if structural_n else "")
         if not n:
             deal["is_everyday_bundle"] = False
             deal["bundle_n"] = None
+            deal["bundle_source"] = None
             continue
         try:
             price = float(deal.get("new_price"))
         except (TypeError, ValueError):
             deal["is_everyday_bundle"] = False
             deal["bundle_n"] = n
+            deal["bundle_source"] = source
             continue
         deal["bundle_n"] = n
+        deal["bundle_source"] = source
         sku = walmart_listing_sku(deal)
         if sku:
             deal["retailer_sku"] = deal.get("retailer_sku") or sku
             skus.add(sku)
-            bundle_meta.append((deal, n, sku, price))
+            bundle_meta.append((deal, n, sku, price, source))
         else:
             deal["is_everyday_bundle"] = False
 
     history = load_walmart_price_history_by_sku(skus)
-    for deal, n, sku, price in bundle_meta:
-        deal["is_everyday_bundle"] = is_everyday_bundle_price(
-            history.get(sku) or {}, price
-        )
+    for deal, n, sku, price, source in bundle_meta:
+        hist = history.get(sku) or {}
+        if source == "title":
+            deal["is_everyday_bundle"] = is_everyday_bundle_price(hist, price)
+        else:
+            # Structural: badge unless this is a drop below a long-held usual.
+            if is_everyday_bundle_price(hist, price):
+                deal["is_everyday_bundle"] = True
+            else:
+                deal["is_everyday_bundle"] = not is_drop_below_usual_bundle_price(
+                    hist, price
+                )
     return deals
 
 
@@ -524,6 +732,28 @@ def _with_card_clip_prefix(text: str, css: str, deal: dict) -> tuple[str, str]:
     return " · ".join(bits), css
 
 
+def _walmart_fulfillment_flags(
+    deal: dict, walmart_ctx: dict | None
+) -> tuple[bool | None, bool | None, bool | None]:
+    """
+    Return (aisle, pickup, shipping) for a Walmart deal.
+    Prefers scrape context (detail aisle= + tile flags); falls back to deal fields.
+    """
+    aisle = None
+    pickup = _truthy_csv_flag(deal.get("pickup_available"))
+    shipping = _truthy_csv_flag(deal.get("shipping_available"))
+    if walmart_ctx:
+        url = _norm_url_key(deal.get("retailer_url") or deal.get("canonical_url") or "")
+        meta = (walmart_ctx.get("by_url") or {}).get(url) or {}
+        if meta.get("aisle") is not None:
+            aisle = bool(meta.get("aisle"))
+        if meta.get("pickup_available") is not None:
+            pickup = bool(meta.get("pickup_available"))
+        if meta.get("shipping_available") is not None:
+            shipping = bool(meta.get("shipping_available"))
+    return aisle, pickup, shipping
+
+
 def howto_buy_line(
     deal: dict,
     *,
@@ -531,23 +761,41 @@ def howto_buy_line(
     walmart_ctx: dict | None = None,
 ) -> tuple[str, str]:
     """
-    Under-price how-to-buy copy from availability_norm (+ Walmart bundle titles).
+    Under-price how-to-buy copy from availability_norm (+ Walmart bundles / aisle).
     Returns (text, css_class). Empty text → omit the line.
     """
     title = (page_title or "").strip() or resolve_page_title(deal, walmart_ctx)
     retailer = (deal.get("retailer") or "").strip()
     retailer_l = retailer.lower()
 
-    # Walmart multi-pack web listing: "(N pack) ..."
+    # Walmart multipack (title '(N pack)' or structural pack multiple).
     if "walmart" in retailer_l:
-        m = _BUNDLE_TITLE_RE.match(title)
-        if m:
-            n = int(m.group(1))
-            text = f"Order online (pickup or delivery) · bundle of {n}"
-            each = single_each_in_store_price(deal, n, walmart_ctx)
-            if each is not None:
-                text += f" · ${each:.2f} each if bought separately in store"
-            return text, "availability online-only"
+        n = deal.get("bundle_n") or walmart_bundle_n(deal, walmart_ctx)
+        if n:
+            try:
+                n_int = int(n)
+            except (TypeError, ValueError):
+                n_int = 0
+            if n_int > 0:
+                text = f"Order online (pickup or delivery) · bundle of {n_int}"
+                each = single_each_in_store_price(deal, n_int, walmart_ctx)
+                if each is not None:
+                    text += f" · ${each:.2f} each if bought separately in store"
+                return text, "availability online-only"
+
+        # Aisle on the PDP = on-shelf in store. Pickup alone is an online order.
+        aisle, pickup, shipping = _walmart_fulfillment_flags(deal, walmart_ctx)
+        if walmart_ctx and walmart_ctx.get("has_aisle_data") and aisle is not None:
+            if aisle and (pickup or shipping or shipping is None):
+                return "In store & online", "availability both"
+            if aisle and shipping is False and pickup is False:
+                return "In store only", "availability in-store"
+            if (not aisle) and pickup:
+                return "Order online · pickup or delivery", "availability online-only"
+            if (not aisle) and shipping and not pickup:
+                return "Online only · ships from Walmart", "availability online-only"
+            if (not aisle) and shipping:
+                return "Online only · ships from Walmart", "availability online-only"
 
     avail = (
         deal.get("availability")
