@@ -30,6 +30,18 @@ _BUNDLE_PRICE_MATCH_TOL = 0.01  # cents-level scrape jitter still counts as "sam
 _BUNDLE_BASELINE_VS_MULTIPLE_PCT = 0.02
 _AISLE_DETAIL_RE = re.compile(r"(?:^|;)\s*aisle=(True|False)\b", re.I)
 _AISLE_LABEL_DETAIL_RE = re.compile(r"(?:^|;)\s*aisle_label=([^;]*)", re.I)
+_SAME_DAY_PICKUP_DETAIL_RE = re.compile(
+    r"(?:^|;)\s*same_day_pickup=(True|False|None)\b", re.I
+)
+_PICKUP_TEXT_DETAIL_RE = re.compile(r"(?:^|;)\s*pickup_text=([^;]*)", re.I)
+_PICKUP_LATER_DATE_RE = re.compile(
+    r"\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s+\d{1,2}\b",
+    re.I,
+)
+_PICKUP_SOON_RE = re.compile(
+    r"(?:\bin\s+\d+\s*(?:hours?|hrs?|mins?|minutes?)\b|as soon as\s+\d)",
+    re.I,
+)
 
 # Beehiiv IDs — from beehiiv Settings / Subscribe forms.
 # Prefer env / sibling snack-buddy .env so IDs aren't hardcoded.
@@ -184,6 +196,36 @@ def _parse_aisle_from_detail(detail: str) -> tuple[bool | None, str]:
     return aisle, label
 
 
+def _same_day_pickup_from_text(pickup_txt: str) -> bool | None:
+    t = (pickup_txt or "").strip().lower()
+    if not t:
+        return None
+    if "not available" in t or "out of stock" in t:
+        return None
+    if "tomorrow" in t or _PICKUP_LATER_DATE_RE.search(t):
+        return False
+    if "today" in t or _PICKUP_SOON_RE.search(t):
+        return True
+    return None
+
+
+def _parse_same_day_pickup_from_detail(detail: str) -> bool | None:
+    """Prefer same_day_pickup= from detail; else infer from pickup_text=."""
+    s = str(detail or "")
+    m = _SAME_DAY_PICKUP_DETAIL_RE.search(s)
+    if m:
+        val = m.group(1).lower()
+        if val == "true":
+            return True
+        if val == "false":
+            return False
+        return None
+    pm = _PICKUP_TEXT_DETAIL_RE.search(s)
+    if pm:
+        return _same_day_pickup_from_text(pm.group(1) or "")
+    return None
+
+
 def _truthy_csv_flag(val) -> bool | None:
     if val is None or str(val).strip() == "":
         return None
@@ -258,6 +300,7 @@ def load_walmart_buy_context() -> dict:
         aisle, aisle_label = _parse_aisle_from_detail(detail)
         if aisle is not None:
             has_aisle_data = True
+        same_day_pickup = _parse_same_day_pickup_from_detail(detail)
         pickup = _truthy_csv_flag(row.get("pickup_available"))
         shipping = _truthy_csv_flag(row.get("shipping_available"))
         if url:
@@ -270,6 +313,7 @@ def load_walmart_buy_context() -> dict:
                 "availability": (row.get("availability") or "").strip().lower(),
                 "aisle": aisle,
                 "aisle_label": aisle_label,
+                "same_day_pickup": same_day_pickup,
                 "pickup_available": pickup,
                 "shipping_available": shipping,
                 "detail": detail,
@@ -734,12 +778,13 @@ def _with_card_clip_prefix(text: str, css: str, deal: dict) -> tuple[str, str]:
 
 def _walmart_fulfillment_flags(
     deal: dict, walmart_ctx: dict | None
-) -> tuple[bool | None, bool | None, bool | None]:
+) -> tuple[bool | None, bool | None, bool | None, bool | None]:
     """
-    Return (aisle, pickup, shipping) for a Walmart deal.
-    Prefers scrape context (detail aisle= + tile flags); falls back to deal fields.
+    Return (aisle, same_day_pickup, pickup, shipping) for a Walmart deal.
+    Prefers scrape context (detail aisle= / same_day_pickup= + tile flags).
     """
     aisle = None
+    same_day = None
     pickup = _truthy_csv_flag(deal.get("pickup_available"))
     shipping = _truthy_csv_flag(deal.get("shipping_available"))
     if walmart_ctx:
@@ -747,11 +792,13 @@ def _walmart_fulfillment_flags(
         meta = (walmart_ctx.get("by_url") or {}).get(url) or {}
         if meta.get("aisle") is not None:
             aisle = bool(meta.get("aisle"))
+        if "same_day_pickup" in meta:
+            same_day = meta.get("same_day_pickup")
         if meta.get("pickup_available") is not None:
             pickup = bool(meta.get("pickup_available"))
         if meta.get("shipping_available") is not None:
             shipping = bool(meta.get("shipping_available"))
-    return aisle, pickup, shipping
+    return aisle, same_day, pickup, shipping
 
 
 def howto_buy_line(
@@ -783,15 +830,27 @@ def howto_buy_line(
                     text += f" · ${each:.2f} each if bought separately in store"
                 return text, "availability online-only"
 
-        # Aisle on the PDP = on-shelf in store. Only UPGRADE labels when aisle
-        # is positively found. aisle=False is not trusted yet — full-run capture
-        # is ~14% True, so treating False as "online order only" mislabels
-        # in-store items (revert until aisle capture is verified).
-        aisle, pickup, shipping = _walmart_fulfillment_flags(deal, walmart_ctx)
-        if walmart_ctx and walmart_ctx.get("has_aisle_data") and aisle is True:
-            if pickup or shipping or shipping is None:
+        # In-store = aisle found OR same-day pickup. Otherwise online labels.
+        # If both signals missing → fall through to availability_norm fallback.
+        aisle, same_day, pickup, shipping = _walmart_fulfillment_flags(
+            deal, walmart_ctx
+        )
+        if walmart_ctx and walmart_ctx.get("has_aisle_data"):
+            in_store = (aisle is True) or (same_day is True)
+            signals_present = (aisle is True) or (same_day is not None)
+            if in_store:
                 return "In store & online", "availability both"
-            return "In store only", "availability in-store"
+            if signals_present and not in_store:
+                if pickup:
+                    return (
+                        "Order online · pickup or delivery",
+                        "availability online-only",
+                    )
+                if shipping:
+                    return (
+                        "Online only · ships from Walmart",
+                        "availability online-only",
+                    )
 
     avail = (
         deal.get("availability")
