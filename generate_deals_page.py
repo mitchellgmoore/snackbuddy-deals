@@ -783,19 +783,15 @@ def howto_buy_line(
                     text += f" · ${each:.2f} each if bought separately in store"
                 return text, "availability online-only"
 
-        # Aisle on the PDP = on-shelf in store. Pickup alone is an online order.
+        # Aisle on the PDP = on-shelf in store. Only UPGRADE labels when aisle
+        # is positively found. aisle=False is not trusted yet — full-run capture
+        # is ~14% True, so treating False as "online order only" mislabels
+        # in-store items (revert until aisle capture is verified).
         aisle, pickup, shipping = _walmart_fulfillment_flags(deal, walmart_ctx)
-        if walmart_ctx and walmart_ctx.get("has_aisle_data") and aisle is not None:
-            if aisle and (pickup or shipping or shipping is None):
+        if walmart_ctx and walmart_ctx.get("has_aisle_data") and aisle is True:
+            if pickup or shipping or shipping is None:
                 return "In store & online", "availability both"
-            if aisle and shipping is False and pickup is False:
-                return "In store only", "availability in-store"
-            if (not aisle) and pickup:
-                return "Order online · pickup or delivery", "availability online-only"
-            if (not aisle) and shipping and not pickup:
-                return "Online only · ships from Walmart", "availability online-only"
-            if (not aisle) and shipping:
-                return "Online only · ships from Walmart", "availability online-only"
+            return "In store only", "availability in-store"
 
     avail = (
         deal.get("availability")
