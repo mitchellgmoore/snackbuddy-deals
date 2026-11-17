@@ -199,6 +199,7 @@ def main():
             "percent_off": round(float(percent_off), 1),
             "image_url": cell_str(row.get("image_url")),
             "retailer_url": cell_str(row.get("canonical_url")),
+            "retailer_sku": cell_str(row.get("retailer_sku")),
             "availability": availability,
             "verified_at": cell_str(row.get("timestamp")),
             "deal_strength": deal_strength,

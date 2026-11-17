@@ -21,7 +21,11 @@ WALMART_PRICE_DIRS = [
     SNACK_BUDDY_ROOT / "Walmart",
 ]
 PRODUCTS_FEED = SNACK_BUDDY_ROOT / "products_clean_unified.csv"
+HISTORY_MASTER = SNACK_BUDDY_ROOT / "Data" / "historical_master_prices.csv"
 _BUNDLE_TITLE_RE = re.compile(r"^\(\s*(\d+)\s*packs?\s*\)", re.I)
+# Flat bundle price for this many calendar days → everyday multipack saving, not a deal.
+EVERYDAY_BUNDLE_STABLE_DAYS = 30
+_BUNDLE_PRICE_MATCH_TOL = 0.01  # cents-level scrape jitter still counts as "same"
 
 # Beehiiv IDs — from beehiiv Settings / Subscribe forms.
 # Prefer env / sibling snack-buddy .env so IDs aren't hardcoded.
@@ -289,6 +293,154 @@ def single_each_in_store_price(
         return None
 
 
+def walmart_bundle_n(deal: dict, walmart_ctx: dict | None = None) -> int | None:
+    """N from Walmart '(N pack) ...' page title, else None."""
+    retailer_l = (deal.get("retailer") or "").strip().lower()
+    if "walmart" not in retailer_l:
+        return None
+    title = (deal.get("page_title") or "").strip() or resolve_page_title(
+        deal, walmart_ctx
+    )
+    m = _BUNDLE_TITLE_RE.match(title or "")
+    if not m:
+        return None
+    try:
+        n = int(m.group(1))
+    except (TypeError, ValueError):
+        return None
+    return n if n > 0 else None
+
+
+_WALMART_IP_SKU_RE = re.compile(r"/ip/[^/]+/(\d{6,})", re.I)
+
+
+def walmart_listing_sku(deal: dict) -> str:
+    """Prefer retailer_sku; else parse trailing id from Walmart /ip/.../SKU URL."""
+    sku = (deal.get("retailer_sku") or deal.get("sku") or "").strip()
+    if sku:
+        return sku
+    url = (deal.get("retailer_url") or deal.get("canonical_url") or "").strip()
+    m = _WALMART_IP_SKU_RE.search(url)
+    return m.group(1) if m else ""
+
+
+def _price_same(a: float, b: float, tol: float = _BUNDLE_PRICE_MATCH_TOL) -> bool:
+    return abs(float(a) - float(b)) <= tol
+
+
+def load_walmart_price_history_by_sku(
+    skus: set[str],
+) -> dict[str, dict[str, float]]:
+    """
+    date(YYYY-MM-DD) → price for requested Walmart SKUs from historical master.
+    Last write wins when a date appears more than once.
+    """
+    out: dict[str, dict[str, float]] = {s: {} for s in skus if s}
+    if not out or not HISTORY_MASTER.exists():
+        return out
+    try:
+        with HISTORY_MASTER.open("r", encoding="utf-8-sig", newline="") as f:
+            for row in csv.DictReader(f):
+                if "walmart" not in (row.get("retailer") or "").lower():
+                    continue
+                sku = (row.get("retailer_sku") or "").strip()
+                if sku not in out:
+                    continue
+                day = (row.get("date") or "").strip()[:10]
+                if len(day) != 10:
+                    continue
+                try:
+                    price = float(row.get("price"))
+                except (TypeError, ValueError):
+                    continue
+                if price <= 0:
+                    continue
+                out[sku][day] = price
+    except OSError:
+        pass
+    return out
+
+
+def is_everyday_bundle_price(
+    dates_to_price: dict[str, float], today_price: float
+) -> bool:
+    """
+    True when today's bundle price has held for EVERYDAY_BUNDLE_STABLE_DAYS+
+    calendar days (same price walking backward from the newest history day).
+
+    A fresh drop below that long-held price yields a short streak → False →
+    treat as a normal time-limited deal again.
+    """
+    if not dates_to_price:
+        return False
+    try:
+        today_p = float(today_price)
+    except (TypeError, ValueError):
+        return False
+    if today_p <= 0:
+        return False
+
+    days = sorted(dates_to_price.keys())
+    streak_days: list[str] = []
+    for day in reversed(days):
+        try:
+            p = float(dates_to_price[day])
+        except (TypeError, ValueError):
+            break
+        if _price_same(p, today_p):
+            streak_days.append(day)
+        else:
+            # Older / higher "usual" price — today's level is new → not everyday.
+            break
+    if len(streak_days) < 2:
+        return False
+    try:
+        newest = datetime.fromisoformat(streak_days[0]).date()
+        oldest = datetime.fromisoformat(streak_days[-1]).date()
+    except ValueError:
+        return False
+    return (newest - oldest).days >= EVERYDAY_BUNDLE_STABLE_DAYS
+
+
+def annotate_everyday_bundles(
+    deals: list[dict], walmart_ctx: dict | None = None
+) -> list[dict]:
+    """
+    Mark Walmart '(N pack)' listings whose own price has been flat 30+ days.
+    Sets deal['is_everyday_bundle'] / deal['bundle_n']. Does not change prices
+    or baselines.
+    """
+    bundle_meta: list[tuple[dict, int, str, float]] = []
+    skus: set[str] = set()
+    for deal in deals:
+        n = walmart_bundle_n(deal, walmart_ctx)
+        if not n:
+            deal["is_everyday_bundle"] = False
+            deal["bundle_n"] = None
+            continue
+        try:
+            price = float(deal.get("new_price"))
+        except (TypeError, ValueError):
+            deal["is_everyday_bundle"] = False
+            deal["bundle_n"] = n
+            continue
+        deal["bundle_n"] = n
+        sku = walmart_listing_sku(deal)
+        if sku:
+            deal["retailer_sku"] = deal.get("retailer_sku") or sku
+            skus.add(sku)
+            bundle_meta.append((deal, n, sku, price))
+        else:
+            deal["is_everyday_bundle"] = False
+
+    history = load_walmart_price_history_by_sku(skus)
+    for deal, n, sku, price in bundle_meta:
+        deal["is_everyday_bundle"] = is_everyday_bundle_price(
+            history.get(sku) or {}, price
+        )
+    return deals
+
+
 def _truthy_flag(val) -> bool:
     if isinstance(val, bool):
         return val
@@ -391,10 +543,10 @@ def howto_buy_line(
         m = _BUNDLE_TITLE_RE.match(title)
         if m:
             n = int(m.group(1))
-            text = f"Online {n}-pack only"
+            text = f"Order online (pickup or delivery) · bundle of {n}"
             each = single_each_in_store_price(deal, n, walmart_ctx)
             if each is not None:
-                text += f" · ${each:.2f} each in store"
+                text += f" · ${each:.2f} each if bought separately in store"
             return text, "availability online-only"
 
     avail = (
@@ -632,6 +784,10 @@ def group_deals(rows: list[dict]) -> list[dict]:
             groups[key] = g
 
         g = groups[key]
+        if row.get("is_everyday_bundle"):
+            g["is_everyday_bundle"] = True
+        if g.get("bundle_n") is None and row.get("bundle_n") is not None:
+            g["bundle_n"] = row.get("bundle_n")
 
         # Get flavor from JSON if available, otherwise try to extract from product_name
         flavor_name = _norm_str(row.get("flavor")) or extract_flavor_from_product_name(product_name)
@@ -644,6 +800,8 @@ def group_deals(rows: list[dict]) -> list[dict]:
                 "name": flavor_name,
                 "url": retailer_url,
                 "image_url": _norm_str(row.get("image_url") or ""),
+                "is_everyday_bundle": bool(row.get("is_everyday_bundle")),
+                "bundle_n": row.get("bundle_n"),
             })
             g["group_size"] = len(g["flavor_data"])
 
@@ -659,16 +817,19 @@ def group_deals(rows: list[dict]) -> list[dict]:
     return list(groups.values())
 
 
-def get_tier_name(percent_off):
+def get_tier_name(percent_off, deal: dict | None = None):
     """
     Get tier name from percent_off for filtering.
-    Returns: "diamond", "fire", "strong", or "sale"
+    Returns: "diamond", "fire", "strong", "sale", or "bundle"
+    Everyday Walmart bundles are "bundle" (not in deal-tier chips).
     """
+    if deal and deal.get("is_everyday_bundle"):
+        return "bundle"
     try:
         pct = float(percent_off)
     except Exception:
         pct = 0.0
-    
+
     if pct >= 25.0:
         return "diamond"
     if pct >= 20.0:
@@ -769,11 +930,15 @@ def get_badge(deal):
     """
     Decide badge label & class from percent_off.
     Tier system:
+    - everyday Walmart bundle → Cheaper in the bundle (badge-bundle)
     - ≥25% → 💎 Diamond (badge-elite)
     - 20–24.99% → 🔥 Fire (badge-strong)
     - 10–19.99% → 💪 Strong (badge-protein)
     - 0–9.99% → 🏷️ On Sale (badge-everyday)
     """
+    if deal.get("is_everyday_bundle"):
+        return "Cheaper in the bundle", "badge badge-bundle"
+
     try:
         percent_off = float(deal.get("percent_off", 0.0))
     except Exception:
@@ -921,9 +1086,10 @@ def build_card_html(deal, walmart_ctx: dict | None = None):
 
     # Badge
     badge_label, badge_class = get_badge(deal)
-    
-    # Tier for filtering
-    tier_name = get_tier_name(percent_off)
+    is_everyday_bundle = bool(deal.get("is_everyday_bundle"))
+
+    # Tier for filtering (everyday bundles are not deal tiers)
+    tier_name = get_tier_name(percent_off, deal)
     tier_class = f"card-tier-{tier_name}"
 
     # Search blob: title + brand + flavors (client-side filter)
@@ -983,9 +1149,13 @@ def build_card_html(deal, walmart_ctx: dict | None = None):
     dollars_saved = (
         (old_price_val - new_price_val) if old_price_val is not None else 0.0
     )
+    if is_everyday_bundle:
+        # Not a time-limited deal — don't imply baseline savings dollars/strike.
+        old_price_html = ""
+        dollars_saved = 0.0
 
     streak_html = ""
-    if streak_text:
+    if streak_text and not is_everyday_bundle:
         streak_html = f"<div class='streak'>{streak_text}</div>"
 
     badge_html = ""
@@ -1003,7 +1173,13 @@ def build_card_html(deal, walmart_ctx: dict | None = None):
                 f"<span class='fire-pill-label'>🔥 Fire</span></div>"
             )
         else:
-            badge_html = f"<div class='{badge_class}'>{badge_label}</div>"
+            badge_html = f"<div class='{badge_class}'>{html.escape(badge_label)}</div>"
+
+    percent_off_html = ""
+    if not is_everyday_bundle:
+        percent_off_html = (
+            f"<span class='percent-off'>{percent_off:.0f}% OFF</span>"
+        )
 
     diamond_sparkles_html = ""
     diamond_style_attr = ""
@@ -1072,7 +1248,7 @@ def build_card_html(deal, walmart_ctx: dict | None = None):
             <div class="card-pricing">
                 {old_price_html}
                 <span class="new-price">${new_price_val:.2f}</span>
-                <span class="percent-off">{percent_off:.0f}% OFF</span>
+                {percent_off_html}
             </div>
             {buy_html}
             <div class="card-title">{name}</div>
@@ -1107,9 +1283,12 @@ def pick_best_savings_deals(deals: list[dict], limit: int = 6) -> list[dict]:
     Quarantined / safety-held deals are already absent from deals_today.json.
     One product family (brand + product + pack) only — best flavor/store wins.
     Skips unknown / check_store_availability how-to-buy; backfills next-best.
+    Everyday Walmart bundles (flat price 30+ days) are excluded from the strip.
     """
     ranked: list[tuple[float, float, dict]] = []
     for row in deals:
+        if row.get("is_everyday_bundle"):
+            continue
         if not _best_savings_buy_known(row):
             continue
         try:
@@ -1217,8 +1396,20 @@ def build_best_savings_html(
 
 def build_page_html(deals):
     walmart_ctx = load_walmart_buy_context()
+    annotate_everyday_bundles(deals, walmart_ctx=walmart_ctx)
     # Group deals into deal families
     grouped_deals = group_deals(deals)
+    # Propagate everyday-bundle flag onto grouped cards (any flavor counts).
+    for g in grouped_deals:
+        flavors = g.get("flavor_data") or []
+        g["is_everyday_bundle"] = bool(g.get("is_everyday_bundle")) or any(
+            bool(f.get("is_everyday_bundle")) for f in flavors
+        )
+        if g.get("bundle_n") is None:
+            for f in flavors:
+                if f.get("bundle_n"):
+                    g["bundle_n"] = f.get("bundle_n")
+                    break
     # Calculate total number of individual deals (flavors) across all groups
     total_deals = sum(
         len(g.get("flavor_data", [])) if g.get("flavor_data") else 1
@@ -1228,17 +1419,22 @@ def build_page_html(deals):
     last_updated_short = get_last_updated_short(deals)
 
     # Sort: tier (diamond first, then fire, then strong, then sale) → best savings → price
+    # Everyday bundles sort after sale tiers.
     def sort_key(d):
-        percent = float(d.get("percent_off") or 0.0)
-        # Tier priority: diamond (4) > fire (3) > strong (2) > sale (1)
-        if percent >= 25.0:
-            tier_priority = 4
-        elif percent >= 20.0:
-            tier_priority = 3
-        elif percent >= 10.0:
-            tier_priority = 2
+        if d.get("is_everyday_bundle"):
+            tier_priority = 0
+            percent = 0.0
         else:
-            tier_priority = 1
+            percent = float(d.get("percent_off") or 0.0)
+            # Tier priority: diamond (4) > fire (3) > strong (2) > sale (1)
+            if percent >= 25.0:
+                tier_priority = 4
+            elif percent >= 20.0:
+                tier_priority = 3
+            elif percent >= 10.0:
+                tier_priority = 2
+            else:
+                tier_priority = 1
         return (
             -tier_priority,  # Higher tier first
             -percent,  # Then by percent off (best deals first)
@@ -3558,6 +3754,20 @@ def build_page_html(deals):
         .badge-everyday {{
             color: #6b7280;
             border-color: #d1d5db;
+        }}
+
+        .badge-bundle {{
+            color: #0f766e;
+            border-color: #5eead4;
+            background: linear-gradient(180deg, #ffffff 0%, #ccfbf1 100%);
+            max-width: 11.5rem;
+            white-space: normal;
+            line-height: 1.2;
+            text-align: left;
+        }}
+
+        .card-tier-bundle {{
+            /* Everyday multipack saving — still in grid, not a deal tier */
         }}
 
         .card-content {{
