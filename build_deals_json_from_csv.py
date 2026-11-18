@@ -198,6 +198,11 @@ def main():
             "new_price": new_price,
             "percent_off": round(float(percent_off), 1),
             "image_url": cell_str(row.get("image_url")),
+            "servings": cell_str(row.get("Servings") or row.get("servings")),
+            "protein_g_per_serving": cell_str(
+                row.get("Protein_g_per_serving") or row.get("protein_g_per_serving")
+            ),
+            "net_size": cell_str(row.get("Net_size") or row.get("net_size")),
             "retailer_url": cell_str(row.get("canonical_url")),
             "retailer_sku": cell_str(row.get("retailer_sku")),
             "availability": availability,
