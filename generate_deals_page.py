@@ -43,34 +43,9 @@ _PICKUP_SOON_RE = re.compile(
     re.I,
 )
 
-# Beehiiv IDs — from beehiiv Settings / Subscribe forms.
-# Prefer env / sibling snack-buddy .env so IDs aren't hardcoded.
-def _load_env_value(*keys: str) -> str:
-    for key in keys:
-        val = os.environ.get(key, "").strip()
-        if val:
-            return val
-    for env_path in (ROOT / ".env", ROOT.parent / "snack-buddy" / ".env"):
-        if not env_path.is_file():
-            continue
-        try:
-            for line in env_path.read_text(encoding="utf-8").splitlines():
-                line = line.strip()
-                if not line or line.startswith("#") or "=" not in line:
-                    continue
-                k, _, v = line.partition("=")
-                if k.strip() in keys:
-                    val = v.strip().strip('"').strip("'")
-                    if val:
-                        return val
-        except OSError:
-            pass
-    return ""
-
-
-BEEHIIV_PUBLICATION_ID = _load_env_value("BEEHIIV_PUBLICATION_ID", "BEEHIIV_PUB_ID")
-# Official v3 subscribe form (Audience → Subscribe forms → Get embed code)
-BEEHIIV_FORM_ID = _load_env_value("BEEHIIV_FORM_ID") or "fe019cbd-c068-4f4a-a458-757e07b5460a"
+# Supabase (public URL + publishable key only — never a secret/service key).
+SUPABASE_URL = "https://krqwprircvvcdtgdqmpi.supabase.co"
+SUPABASE_ANON_KEY = "sb_publishable_jVSVInpL8qMGyJP0kOCZkw_3UD74m34"
 
 def load_deals():
     if not JSON_PATH.exists():
@@ -1749,14 +1724,8 @@ def build_page_html(deals):
         build_card_html(d, walmart_ctx=walmart_ctx) for d in deals_sorted
     )
     best_savings_html = build_best_savings_html(deals, walmart_ctx=walmart_ctx)
-    beehiiv_form_id = html.escape(BEEHIIV_FORM_ID)
-    beehiiv_pub_id = html.escape(BEEHIIV_PUBLICATION_ID)
-    beehiiv_embed_script = (
-        f'<script async src="https://subscribe-forms.beehiiv.com/v3/loader.js" '
-        f'data-beehiiv-form="{beehiiv_form_id}"></script>'
-        if BEEHIIV_FORM_ID
-        else '<p class="sb-note">Email signup is almost ready.</p>'
-    )
+    supabase_url = html.escape(SUPABASE_URL)
+    supabase_anon_key = html.escape(SUPABASE_ANON_KEY)
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -3208,13 +3177,33 @@ def build_page_html(deals):
             font-size: 14px;
             font-weight: 600;
         }}
+        .sb-auth-line {{
+            margin: 0 0 12px 0;
+            font-size: 12px;
+            line-height: 1.4;
+            color: var(--text-muted);
+            font-weight: 500;
+        }}
+        .sb-auth-line button {{
+            background: none;
+            border: none;
+            padding: 0;
+            margin: 0;
+            color: inherit;
+            font: inherit;
+            text-decoration: underline;
+            cursor: pointer;
+        }}
+        .sb-auth-line button:hover {{
+            color: var(--text);
+        }}
         .sb-my-items-notify {{
             margin: 0 0 14px 0;
             padding: 14px 16px;
             border-radius: 12px;
-            background: #ffffff;
-            border: 1px solid var(--border-subtle);
-            box-shadow: var(--shadow-soft);
+            background: #fffbeb;
+            border: 1px solid #f59e0b;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
         }}
         .sb-my-items-notify-title {{
             margin: 0 0 4px 0;
@@ -3274,13 +3263,6 @@ def build_page_html(deals):
         .sb-my-items-notify-status.is-error {{
             color: #b91c1c;
         }}
-        .sb-my-items-notify-frame {{
-            position: absolute;
-            width: 0;
-            height: 0;
-            border: 0;
-            overflow: hidden;
-        }}
         .sb-my-items-empty {{
             display: none;
             margin: 24px auto;
@@ -3292,6 +3274,186 @@ def build_page_html(deals):
         }}
         .sb-my-items-empty.is-visible {{
             display: block;
+        }}
+        body.sb-email-ask-open {{
+            padding-bottom: 150px;
+        }}
+        .sb-email-ask {{
+            position: fixed;
+            left: 12px;
+            right: 12px;
+            bottom: 12px;
+            z-index: 40;
+            max-width: 420px;
+            margin: 0 auto;
+            padding: 14px 40px 12px 14px;
+            border-radius: 14px;
+            background: #ffffff;
+            border: 1px solid var(--border-subtle);
+            box-shadow: 0 12px 32px rgba(15, 23, 42, 0.18);
+            transform: translateY(120%);
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 0.28s ease, opacity 0.28s ease;
+        }}
+        .sb-email-ask.is-on {{
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }}
+        .sb-email-ask-close {{
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 999px;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 22px;
+            line-height: 1;
+            cursor: pointer;
+        }}
+        .sb-email-ask-close:hover {{
+            color: var(--text-main);
+            background: #f1f5f9;
+        }}
+        .sb-email-ask-title {{
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1.35;
+            color: var(--text-main);
+            padding-right: 4px;
+        }}
+        .sb-email-ask-row {{
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }}
+        .sb-email-ask-email {{
+            flex: 1 1 160px;
+            min-width: 0;
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 14px;
+            font-family: inherit;
+        }}
+        .sb-email-ask-email:focus {{
+            outline: 2px solid #f59e0b;
+            outline-offset: 1px;
+            border-color: #f59e0b;
+        }}
+        .sb-email-ask-submit {{
+            border: none;
+            border-radius: 10px;
+            padding: 10px 14px;
+            background: #0f172a;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            white-space: nowrap;
+        }}
+        .sb-email-ask-submit:hover {{
+            filter: brightness(1.08);
+        }}
+        .sb-email-ask-submit:disabled {{
+            opacity: 0.6;
+            cursor: default;
+        }}
+        .sb-email-ask-note {{
+            margin: 8px 0 0 0;
+            font-size: 11px;
+            line-height: 1.35;
+            color: var(--text-muted);
+        }}
+        .sb-email-ask-status {{
+            margin: 6px 0 0 0;
+            font-size: 13px;
+            font-weight: 600;
+            color: #15803d;
+            min-height: 1.2em;
+        }}
+        .sb-email-ask-status.is-error {{
+            color: #b91c1c;
+        }}
+        .sb-email-ask-pill {{
+            position: fixed;
+            right: 12px;
+            bottom: 12px;
+            z-index: 41;
+            border: 1px solid var(--border-subtle);
+            border-radius: 999px;
+            background: #ffffff;
+            color: var(--text-main);
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.16);
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            font-family: inherit;
+            line-height: 1.2;
+            cursor: pointer;
+            max-width: min(200px, calc(100vw - 24px));
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transform: translateY(120%);
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 0.25s ease, opacity 0.25s ease;
+        }}
+        .sb-email-ask-pill.is-on {{
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }}
+        .sb-email-ask-pill:hover {{
+            filter: brightness(0.98);
+        }}
+        .sb-star-toast {{
+            position: fixed;
+            left: 50%;
+            bottom: 18px;
+            z-index: 45;
+            transform: translate(-50%, 120%);
+            max-width: calc(100% - 24px);
+            padding: 10px 14px;
+            border-radius: 999px;
+            background: #0f172a;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.28);
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 0.25s ease, opacity 0.25s ease;
+            text-align: center;
+        }}
+        .sb-star-toast.is-on {{
+            transform: translate(-50%, 0);
+            opacity: 1;
+        }}
+        @media (max-width: 640px) {{
+            .sb-email-ask {{
+                left: 8px;
+                right: 8px;
+                bottom: 8px;
+                padding: 12px 36px 10px 12px;
+            }}
+            .sb-email-ask-title {{
+                font-size: 13px;
+            }}
+            .sb-email-ask-pill {{
+                right: 8px;
+                bottom: 8px;
+                padding: 8px 11px;
+                font-size: 12px;
+                max-width: min(180px, calc(100vw - 16px));
+            }}
         }}
 
         .sb-hero-tier {{
@@ -4811,26 +4973,14 @@ def build_page_html(deals):
             flex: 1;
             min-width: 200px;
         }}
-        .sb-beehiiv-embed {{
+        .sb-footer-signup {{
             margin-top: 10px;
             width: 100%;
             max-width: 520px;
-            min-height: 120px;
-        }}
-        .sb-beehiiv-embed iframe {{
-            max-width: 100% !important;
         }}
         .sb-welcome-signup {{
             margin: 8px 0 4px;
             width: 100%;
-        }}
-        .sb-welcome-signup-frame {{
-            position: absolute;
-            width: 0;
-            height: 0;
-            border: 0;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
         }}
         .sb-subscribe-status {{
             width: 100%;
@@ -4968,7 +5118,6 @@ def build_page_html(deals):
                 <button type="button" class="sb-filter-scroll-btn sb-filter-scroll-next" id="sb-tier-scroll-next" aria-label="Scroll deal tiers right">&#8250;</button>
             </div>
         </section>
-        <div class="sb-my-items-summary" id="sb-my-items-summary" hidden></div>
         <div class="sb-my-items-notify" id="sb-my-items-notify" hidden>
             <p class="sb-my-items-notify-title">Get notified when these go on sale</p>
             <p class="sb-my-items-notify-text">
@@ -4993,13 +5142,9 @@ def build_page_html(deals):
                 </div>
                 <p class="sb-my-items-notify-status" id="sb-my-items-notify-status" aria-live="polite"></p>
             </form>
-            <iframe
-                class="sb-my-items-notify-frame"
-                id="sb-my-items-notify-frame"
-                name="sb-my-items-notify-frame"
-                title="Subscribe helper"
-            ></iframe>
         </div>
+        <div class="sb-auth-line" id="sb-auth-line" hidden></div>
+        <div class="sb-my-items-summary" id="sb-my-items-summary" hidden></div>
 
         <section class="sb-filter-bar-section" aria-label="Deal filters">
             <div class="sb-filter-bar">
@@ -5116,12 +5261,28 @@ def build_page_html(deals):
             <div class="sb-info-card" id="subscribe">
                 <h2 class="sb-info-title">Don’t miss the ones worth a trip</h2>
                 <p class="sb-info-text">
-                    We’ll email when the good stuff drops. Your filters stay either way.
+                    We’ll send you the best savings every week, along with your favorite items when they go on sale.
                 </p>
 
-                <div class="sb-beehiiv-embed" id="sb-beehiiv-footer">
-                    {beehiiv_embed_script}
-                </div>
+                <form class="sb-footer-signup" id="sb-footer-signup" novalidate>
+                    <div class="sb-welcome-email-row">
+                        <label class="visually-hidden" for="sb-footer-email">Email address</label>
+                        <input
+                            class="sb-welcome-email"
+                            id="sb-footer-email"
+                            type="email"
+                            name="email"
+                            autocomplete="email"
+                            inputmode="email"
+                            enterkeyhint="done"
+                            placeholder="Email address"
+                        />
+                        <button type="submit" class="sb-welcome-email-submit" id="sb-footer-email-submit">
+                            Subscribe
+                        </button>
+                    </div>
+                    <p class="sb-subscribe-status" id="sb-footer-email-status" aria-live="polite"></p>
+                </form>
 
                 <a class="sb-subscribe-alt"
                    href="mailto:savewithsnackbuddy@gmail.com?subject=SnackBuddy%20Daily%20Deals">
@@ -5211,12 +5372,6 @@ def build_page_html(deals):
             </div>
             <p class="sb-welcome-status" id="sb-welcome-email-status" aria-live="polite"></p>
           </form>
-          <iframe
-            class="sb-welcome-signup-frame"
-            id="sb-welcome-signup-frame"
-            name="sb-welcome-signup-frame"
-            title="Subscribe helper"
-          ></iframe>
           <p class="sb-welcome-note">No spam. Unsubscribe anytime. Prefs stay on this device.</p>
           <div class="sb-welcome-actions">
             <button type="button" class="sb-welcome-btn" data-welcome-next>See my deals</button>
@@ -5235,7 +5390,32 @@ def build_page_html(deals):
         </p>
     </footer>
 
-    <!-- Tiny JS for slide-out menu -->
+    <div class="sb-email-ask" id="sb-email-ask" hidden aria-live="polite">
+      <button type="button" class="sb-email-ask-close" id="sb-email-ask-close" aria-label="Dismiss">&times;</button>
+      <p class="sb-email-ask-title">⭐ Saved! Want an email when your starred items go on sale?</p>
+      <form class="sb-email-ask-form" id="sb-email-ask-form" novalidate>
+        <div class="sb-email-ask-row">
+          <label class="visually-hidden" for="sb-email-ask-email">Email address</label>
+          <input
+            class="sb-email-ask-email"
+            id="sb-email-ask-email"
+            type="email"
+            name="email"
+            autocomplete="email"
+            inputmode="email"
+            enterkeyhint="done"
+            placeholder="Email address"
+          />
+          <button type="submit" class="sb-email-ask-submit" id="sb-email-ask-submit">Notify me</button>
+        </div>
+        <p class="sb-email-ask-note">Only when it&apos;s worth it. Unsubscribe anytime.</p>
+        <p class="sb-email-ask-status" id="sb-email-ask-status"></p>
+      </form>
+    </div>
+    <button type="button" class="sb-email-ask-pill" id="sb-email-ask-pill" hidden>⭐ Favorites Alerts</button>
+    <div class="sb-star-toast" id="sb-star-toast" hidden role="status" aria-live="polite">Saved ⭐ We&apos;ll let you know when it&apos;s on sale</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {{
   const grid = document.getElementById("deals-list");
@@ -5410,12 +5590,43 @@ document.addEventListener("DOMContentLoaded", function () {{
   let selectedTiers = new Set();
   let myItemsView = false;
   const MY_ITEMS_KEY = "sb_my_items_v1";
+  const MY_ITEMS_NAMES_KEY = "sb_my_items_names_v1";
+  const STAR_PENDING_KEY = "sb_star_pending_v1";
   const EMAIL_SUB_KEY = "sb_email_subscribed_v1";
+  const EMAIL_ASKS_KEY = "sb_email_asks_v1";
+  const SUPABASE_URL = "{supabase_url}";
+  const SUPABASE_ANON_KEY = "{supabase_anon_key}";
+  const MAGIC_LINK_MSG = "Check your email: tap the link to confirm and save your items.";
   const myItemsSummary = document.getElementById("sb-my-items-summary");
   const myItemsNotify = document.getElementById("sb-my-items-notify");
   const myItemsEmpty = document.getElementById("sb-my-items-empty");
+  const authLine = document.getElementById("sb-auth-line");
+  const emailAsk = document.getElementById("sb-email-ask");
+  const emailAskForm = document.getElementById("sb-email-ask-form");
+  const emailAskEmail = document.getElementById("sb-email-ask-email");
+  const emailAskSubmit = document.getElementById("sb-email-ask-submit");
+  const emailAskStatus = document.getElementById("sb-email-ask-status");
+  const emailAskClose = document.getElementById("sb-email-ask-close");
+  const emailAskPill = document.getElementById("sb-email-ask-pill");
+  const starToast = document.getElementById("sb-star-toast");
   const offSaleCards = new Map();
   let lastSaleItems = {{}};
+  let sbAuthUser = null;
+  let sbSyncing = false;
+  let emailAskShownThisVisit = false;
+  let emailAskPillActive = false;
+  let welcomeEmailAskCounted = false;
+  let emailAskTimer = null;
+  let emailAskRemainingMs = 0;
+  let emailAskDeadline = 0;
+  let starToastTimer = null;
+
+  const sbClient = (window.supabase && typeof window.supabase.createClient === "function")
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+    : null;
+  if (!sbClient) {{
+    console.error("[SnackBuddy] supabase-js failed to load; email sync disabled.");
+  }}
 
   function hasEmailSubscription() {{
     try {{
@@ -5429,10 +5640,204 @@ document.addEventListener("DOMContentLoaded", function () {{
       localStorage.setItem(EMAIL_SUB_KEY, "1");
     }} catch (err) {{}}
   }}
+  function getEmailAskCount() {{
+    try {{
+      const n = parseInt(localStorage.getItem(EMAIL_ASKS_KEY) || "0", 10);
+      return (isFinite(n) && n > 0) ? n : 0;
+    }} catch (err) {{
+      return 0;
+    }}
+  }}
+  function recordEmailAsk() {{
+    const next = getEmailAskCount() + 1;
+    try {{
+      localStorage.setItem(EMAIL_ASKS_KEY, String(next));
+    }} catch (err) {{}}
+    return next;
+  }}
+  function canShowEmailAsk() {{
+    // Full banner at most once/visit; collapsing to pill does not consume an ask count.
+    return !sbAuthUser && !hasEmailSubscription() && getEmailAskCount() < 2 && !emailAskShownThisVisit && !emailAskPillActive;
+  }}
+  function setEmailAskStatus(msg, isError) {{
+    if (!emailAskStatus) return;
+    emailAskStatus.textContent = msg || "";
+    emailAskStatus.classList.toggle("is-error", !!isError);
+  }}
+  function clearEmailAskTimer() {{
+    if (emailAskTimer) {{
+      window.clearTimeout(emailAskTimer);
+      emailAskTimer = null;
+    }}
+  }}
+  function hideEmailAskPill() {{
+    emailAskPillActive = false;
+    if (!emailAskPill) return;
+    emailAskPill.classList.remove("is-on");
+    window.setTimeout(function() {{
+      if (emailAskPill && !emailAskPill.classList.contains("is-on")) emailAskPill.hidden = true;
+    }}, 280);
+  }}
+  function showEmailAskPill() {{
+    if (!emailAskPill || sbAuthUser || hasEmailSubscription()) return;
+    emailAskPillActive = true;
+    emailAskPill.hidden = false;
+    void emailAskPill.offsetWidth;
+    emailAskPill.classList.add("is-on");
+  }}
+  function hideEmailAskBannerOnly() {{
+    clearEmailAskTimer();
+    emailAskRemainingMs = 0;
+    emailAskDeadline = 0;
+    document.body.classList.remove("sb-email-ask-open");
+    if (!emailAsk) return;
+    emailAsk.classList.remove("is-on");
+    window.setTimeout(function() {{
+      if (emailAsk && !emailAsk.classList.contains("is-on")) emailAsk.hidden = true;
+    }}, 300);
+  }}
+  function dismissEmailAsk(countAsAsk) {{
+    // Permanent dismiss for this interaction (× / submit / sign-in).
+    hideEmailAskBannerOnly();
+    hideEmailAskPill();
+    if (countAsAsk) recordEmailAsk();
+  }}
+  function collapseEmailAskToPill() {{
+    // Timeout with no interaction: keep the invite as a pill; do NOT count an ask.
+    hideEmailAskBannerOnly();
+    showEmailAskPill();
+  }}
+  function scheduleEmailAskAutoCollapse(ms) {{
+    clearEmailAskTimer();
+    const wait = (typeof ms === "number" && ms > 0) ? ms : 15000;
+    emailAskRemainingMs = wait;
+    emailAskDeadline = Date.now() + wait;
+    emailAskTimer = window.setTimeout(function() {{
+      emailAskTimer = null;
+      if (emailAskEmail && document.activeElement === emailAskEmail) {{
+        // Still focused — check again after a short delay.
+        scheduleEmailAskAutoCollapse(1500);
+        return;
+      }}
+      collapseEmailAskToPill();
+    }}, wait);
+  }}
+  function pauseEmailAskAutoCollapse() {{
+    if (!emailAskTimer) return;
+    emailAskRemainingMs = Math.max(0, emailAskDeadline - Date.now());
+    clearEmailAskTimer();
+  }}
+  function resumeEmailAskAutoCollapse() {{
+    if (!emailAsk || !emailAsk.classList.contains("is-on")) return;
+    if (emailAskRemainingMs <= 0) {{
+      collapseEmailAskToPill();
+      return;
+    }}
+    scheduleEmailAskAutoCollapse(emailAskRemainingMs);
+  }}
+  function openEmailAskBanner(opts) {{
+    opts = opts || {{}};
+    const fromPill = !!opts.fromPill;
+    if (!emailAsk) return false;
+    if (!fromPill && !canShowEmailAsk()) return false;
+    if (sbAuthUser || hasEmailSubscription()) return false;
+
+    emailAskShownThisVisit = true;
+    hideEmailAskPill();
+    emailAsk.hidden = false;
+    setEmailAskStatus("");
+    if (emailAskSubmit) emailAskSubmit.disabled = false;
+    if (!fromPill && emailAskEmail) emailAskEmail.value = "";
+    void emailAsk.offsetWidth;
+    emailAsk.classList.add("is-on");
+    document.body.classList.add("sb-email-ask-open");
+    scheduleEmailAskAutoCollapse(15000);
+    return true;
+  }}
+  function showEmailAskBanner() {{
+    return openEmailAskBanner({{ fromPill: false }});
+  }}
+  function maybeAskEmailAfterStar() {{
+    if (emailAskPillActive) return; // pill already represents this visit's ask
+    if (!canShowEmailAsk()) return;
+    if (starredIds.size >= 2) showEmailAskBanner();
+  }}
+  function maybeAskEmailOnMyItemsOpen() {{
+    if (emailAskPillActive) return;
+    if (!canShowEmailAsk()) return;
+    if (starredIds.size >= 1) showEmailAskBanner();
+  }}
+  function showStarSavedToast() {{
+    if (!starToast) return;
+    starToast.hidden = false;
+    void starToast.offsetWidth;
+    starToast.classList.add("is-on");
+    if (starToastTimer) window.clearTimeout(starToastTimer);
+    starToastTimer = window.setTimeout(function() {{
+      starToast.classList.remove("is-on");
+      window.setTimeout(function() {{
+        if (starToast && !starToast.classList.contains("is-on")) starToast.hidden = true;
+      }}, 280);
+    }}, 2800);
+  }}
   function syncMyItemsNotifyVisibility() {{
     if (!myItemsNotify) return;
-    const show = myItemsView && !hasEmailSubscription();
+    // Always available at the top of My Items when not signed in.
+    const show = myItemsView && !sbAuthUser;
     myItemsNotify.hidden = !show;
+  }}
+  function wireEmailAskBanner() {{
+    if (emailAskClose) {{
+      emailAskClose.addEventListener("click", function() {{
+        dismissEmailAsk(true); // × counts toward the 2-ask limit
+      }});
+    }}
+    if (emailAskPill) {{
+      emailAskPill.addEventListener("click", function() {{
+        openEmailAskBanner({{ fromPill: true }});
+      }});
+    }}
+    if (emailAskEmail) {{
+      emailAskEmail.addEventListener("focus", pauseEmailAskAutoCollapse);
+      emailAskEmail.addEventListener("blur", resumeEmailAskAutoCollapse);
+    }}
+    if (!emailAskForm || emailAskForm.dataset.wired === "1") return;
+    emailAskForm.dataset.wired = "1";
+    emailAskForm.addEventListener("submit", function(ev) {{
+      ev.preventDefault();
+      if (sbAuthUser) {{
+        setEmailAskStatus("You’re already signed in.");
+        dismissEmailAsk(false);
+        return;
+      }}
+      const email = emailAskEmail ? String(emailAskEmail.value || "").trim() : "";
+      if (!isValidEmail(email)) {{
+        setEmailAskStatus("Enter a valid email address.", true);
+        if (emailAskEmail) emailAskEmail.focus();
+        return;
+      }}
+      if (!sbClient) {{
+        setEmailAskStatus("Signup is temporarily unavailable. Try again later.", true);
+        return;
+      }}
+      clearEmailAskTimer();
+      if (emailAskSubmit) emailAskSubmit.disabled = true;
+      setEmailAskStatus("Sending link…");
+      submitMagicLinkSignup(email).then(function() {{
+        markEmailSubscribed();
+        syncMyItemsNotifyVisibility();
+        trackEvent("generate_lead", {{ method: "after_star_banner" }});
+        setEmailAskStatus(MAGIC_LINK_MSG);
+        if (emailAskEmail) emailAskEmail.blur();
+        // Subscribed — dismiss banner + pill; submit does not count as an ask.
+        window.setTimeout(function() {{ dismissEmailAsk(false); }}, 1600);
+      }}).catch(function(err) {{
+        console.error("[SnackBuddy] after-star magic link failed", err);
+        setEmailAskStatus("Couldn’t send the link. Try again.", true);
+        if (emailAskSubmit) emailAskSubmit.disabled = false;
+        resumeEmailAskAutoCollapse();
+      }});
+    }});
   }}
 
   function loadStarredIds() {{
@@ -5450,6 +5855,309 @@ document.addEventListener("DOMContentLoaded", function () {{
     try {{
       localStorage.setItem(MY_ITEMS_KEY, JSON.stringify(Array.from(starredIds)));
     }} catch (err) {{}}
+  }}
+
+  function loadStarNames() {{
+    try {{
+      const raw = localStorage.getItem(MY_ITEMS_NAMES_KEY);
+      const obj = raw ? JSON.parse(raw) : {{}};
+      return (obj && typeof obj === "object") ? obj : {{}};
+    }} catch (err) {{
+      return {{}};
+    }}
+  }}
+  let starNames = loadStarNames();
+
+  function saveStarNames() {{
+    try {{
+      localStorage.setItem(MY_ITEMS_NAMES_KEY, JSON.stringify(starNames));
+    }} catch (err) {{}}
+  }}
+
+  function setStarName(itemId, itemName) {{
+    if (!itemId) return;
+    const name = String(itemName || "").trim();
+    if (name) starNames[itemId] = name;
+    else if (!starNames[itemId]) {{
+      const meta = lastSaleItems[itemId];
+      if (meta && meta.product_name) starNames[itemId] = String(meta.product_name);
+    }}
+    saveStarNames();
+  }}
+
+  function getStarName(itemId) {{
+    if (starNames[itemId]) return starNames[itemId];
+    const meta = lastSaleItems[itemId];
+    if (meta && meta.product_name) return String(meta.product_name);
+    return "";
+  }}
+
+  function loadPendingStars() {{
+    try {{
+      const raw = localStorage.getItem(STAR_PENDING_KEY);
+      const arr = raw ? JSON.parse(raw) : [];
+      return Array.isArray(arr) ? arr : [];
+    }} catch (err) {{
+      return [];
+    }}
+  }}
+
+  function savePendingStars(arr) {{
+    try {{
+      localStorage.setItem(STAR_PENDING_KEY, JSON.stringify(arr || []));
+    }} catch (err) {{}}
+  }}
+
+  function enqueueStarOp(op, itemId, itemName) {{
+    if (!itemId) return;
+    const q = loadPendingStars().filter(function(row) {{
+      return !(row && row.item_id === itemId);
+    }});
+    q.push({{ op: op, item_id: itemId, item_name: itemName || getStarName(itemId) || "" }});
+    savePendingStars(q);
+  }}
+
+  function magicLinkRedirectTo() {{
+    try {{
+      return window.location.origin + window.location.pathname + window.location.search;
+    }} catch (err) {{
+      return window.location.href;
+    }}
+  }}
+
+  function requestMagicLink(email) {{
+    if (!sbClient) {{
+      return Promise.reject(new Error("supabase unavailable"));
+    }}
+    return sbClient.auth.signInWithOtp({{
+      email: email,
+      options: {{ emailRedirectTo: magicLinkRedirectTo() }},
+    }}).then(function(res) {{
+      if (res && res.error) throw res.error;
+      return res;
+    }});
+  }}
+
+  function updateAuthLine() {{
+    if (!authLine) return;
+    if (!sbAuthUser || !myItemsView) {{
+      authLine.hidden = true;
+      authLine.textContent = "";
+      return;
+    }}
+    authLine.hidden = false;
+    authLine.textContent = "";
+    authLine.appendChild(document.createTextNode("Signed in as " + (sbAuthUser.email || "") + " · "));
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = "Sign out";
+    btn.addEventListener("click", function() {{
+      if (!sbClient) return;
+      sbClient.auth.signOut().then(function(res) {{
+        if (res && res.error) console.error("[SnackBuddy] signOut failed", res.error);
+      }}).catch(function(err) {{
+        console.error("[SnackBuddy] signOut failed", err);
+      }});
+    }});
+    authLine.appendChild(btn);
+  }}
+
+  function upsertSubscriberRow() {{
+    if (!sbClient || !sbAuthUser) return Promise.resolve();
+    const prefs = loadWelcomePrefs() || {{}};
+    const localStores = Array.isArray(prefs.retailers)
+      ? prefs.retailers.map(function(v) {{ return String(v || "").trim(); }}).filter(Boolean)
+      : [];
+    const localCats = Array.isArray(prefs.categories)
+      ? prefs.categories.map(function(v) {{ return String(v || "").trim(); }}).filter(Boolean)
+      : [];
+
+    return sbClient
+      .from("subscribers")
+      .select("stores,categories")
+      .eq("user_id", sbAuthUser.id)
+      .maybeSingle()
+      .then(function(res) {{
+        if (res && res.error) throw res.error;
+        const existing = res.data || null;
+        const serverStores = (existing && Array.isArray(existing.stores))
+          ? existing.stores.map(function(v) {{ return String(v || "").trim(); }}).filter(Boolean)
+          : [];
+        const serverCats = (existing && Array.isArray(existing.categories))
+          ? existing.categories.map(function(v) {{ return String(v || "").trim(); }}).filter(Boolean)
+          : [];
+
+        // Only send stores/categories when this device has something to keep.
+        // Omitting them on upsert leaves existing Supabase values untouched.
+        const payload = {{
+          user_id: sbAuthUser.id,
+          email: sbAuthUser.email || "",
+        }};
+        if (localStores.length) payload.stores = localStores;
+        if (localCats.length) payload.categories = localCats;
+
+        // New/empty device: pull saved prefs down into local welcome storage.
+        let prefsChanged = false;
+        const nextPrefs = Object.assign({{}}, prefs);
+        if (!localStores.length && serverStores.length) {{
+          nextPrefs.retailers = serverStores.slice();
+          prefsChanged = true;
+        }}
+        if (!localCats.length && serverCats.length) {{
+          nextPrefs.categories = serverCats.slice();
+          prefsChanged = true;
+        }}
+        if (prefsChanged) {{
+          if (!nextPrefs.completed) nextPrefs.completed = true;
+          saveWelcomePrefs(nextPrefs);
+          applyWelcomePrefs(nextPrefs);
+        }}
+
+        return sbClient.from("subscribers").upsert(payload, {{ onConflict: "user_id" }});
+      }})
+      .then(function(res) {{
+        if (res && res.error) {{
+          console.error("[SnackBuddy] subscribers upsert failed", res.error);
+        }}
+      }})
+      .catch(function(err) {{
+        console.error("[SnackBuddy] subscribers upsert failed", err);
+      }});
+  }}
+
+  function pushStarToServer(op, itemId, itemName, enqueueOnFail) {{
+    if (!sbClient || !sbAuthUser || !itemId) {{
+      return Promise.resolve(false);
+    }}
+    const name = itemName || getStarName(itemId) || "";
+    const shouldEnqueue = enqueueOnFail !== false;
+    let req;
+    if (op === "upsert") {{
+      req = sbClient.from("stars").upsert({{
+        user_id: sbAuthUser.id,
+        item_id: itemId,
+        item_name: name,
+      }}, {{ onConflict: "user_id,item_id" }});
+    }} else {{
+      req = sbClient.from("stars").delete()
+        .eq("user_id", sbAuthUser.id)
+        .eq("item_id", itemId);
+    }}
+    return req.then(function(res) {{
+      if (res && res.error) throw res.error;
+      return true;
+    }}).catch(function(err) {{
+      console.error("[SnackBuddy] star " + op + " failed", err);
+      if (shouldEnqueue) enqueueStarOp(op, itemId, name);
+      return false;
+    }});
+  }}
+
+  function flushPendingStars() {{
+    if (!sbClient || !sbAuthUser) return Promise.resolve();
+    const q = loadPendingStars();
+    if (!q.length) return Promise.resolve();
+    // Clear first so concurrent toggles can enqueue fresh ops.
+    savePendingStars([]);
+    const remaining = [];
+    let chain = Promise.resolve();
+    q.forEach(function(row) {{
+      chain = chain.then(function() {{
+        if (!row || !row.item_id) return;
+        const op = row.op === "delete" ? "delete" : "upsert";
+        // Skip stale ops that no longer match local state.
+        if (op === "upsert" && !starredIds.has(row.item_id)) return;
+        if (op === "delete" && starredIds.has(row.item_id)) return;
+        return pushStarToServer(op, row.item_id, row.item_name, false).then(function(ok) {{
+          if (!ok) remaining.push(row);
+        }});
+      }});
+    }});
+    return chain.then(function() {{
+      if (!remaining.length) return;
+      const fresh = loadPendingStars();
+      savePendingStars(remaining.concat(fresh));
+    }});
+  }}
+
+  function mergeStarsWithServer() {{
+    if (!sbClient || !sbAuthUser || sbSyncing) return Promise.resolve();
+    sbSyncing = true;
+    return sbClient.from("stars").select("item_id,item_name").eq("user_id", sbAuthUser.id)
+      .then(function(res) {{
+        if (res && res.error) throw res.error;
+        const rows = Array.isArray(res.data) ? res.data : [];
+        const serverIds = new Set();
+        rows.forEach(function(row) {{
+          const id = row && row.item_id ? String(row.item_id) : "";
+          if (!id) return;
+          serverIds.add(id);
+          if (row.item_name) setStarName(id, row.item_name);
+        }});
+
+        const uploads = [];
+        starredIds.forEach(function(id) {{
+          if (!serverIds.has(id)) {{
+            uploads.push(pushStarToServer("upsert", id, getStarName(id)));
+          }}
+        }});
+
+        let changed = false;
+        serverIds.forEach(function(id) {{
+          if (!starredIds.has(id)) {{
+            starredIds.add(id);
+            changed = true;
+          }}
+        }});
+        if (changed) {{
+          saveStarredIds();
+          syncStarButtons();
+          if (myItemsView) applyFiltersAndSort();
+        }}
+
+        return Promise.all(uploads).then(function() {{
+          return flushPendingStars();
+        }});
+      }})
+      .catch(function(err) {{
+        console.error("[SnackBuddy] star merge failed", err);
+      }})
+      .then(function() {{
+        sbSyncing = false;
+      }});
+  }}
+
+  function handleSignedInSession(user) {{
+    sbAuthUser = user || null;
+    updateAuthLine();
+    syncMyItemsNotifyVisibility();
+    if (!sbAuthUser) return Promise.resolve();
+    markEmailSubscribed();
+    dismissEmailAsk(false);
+    return upsertSubscriberRow().then(function() {{
+      return mergeStarsWithServer();
+    }});
+  }}
+
+  function initSupabaseAuth() {{
+    if (!sbClient) return;
+    sbClient.auth.onAuthStateChange(function(event, session) {{
+      const user = session && session.user ? session.user : null;
+      if (event === "SIGNED_OUT" || !user) {{
+        sbAuthUser = null;
+        updateAuthLine();
+        syncMyItemsNotifyVisibility();
+        return;
+      }}
+      if (event === "TOKEN_REFRESHED" && sbAuthUser && sbAuthUser.id === user.id) {{
+        sbAuthUser = user;
+        updateAuthLine();
+        return;
+      }}
+      if (event === "SIGNED_IN" || event === "INITIAL_SESSION" || event === "USER_UPDATED") {{
+        handleSignedInSession(user);
+      }}
+    }});
   }}
 
   function displayRetailerName(name) {{
@@ -5576,16 +6284,26 @@ document.addEventListener("DOMContentLoaded", function () {{
 
   function toggleStar(itemId, itemName) {{
     if (!itemId) return;
+    const name = String(itemName || "").trim() || getStarName(itemId);
+    let adding = false;
     if (starredIds.has(itemId)) {{
       starredIds.delete(itemId);
-      trackEvent("star_remove", {{ item_id: itemId, item_name: itemName || "" }});
+      trackEvent("star_remove", {{ item_id: itemId, item_name: name || "" }});
     }} else {{
+      adding = true;
       starredIds.add(itemId);
-      trackEvent("star_add", {{ item_id: itemId, item_name: itemName || "" }});
+      setStarName(itemId, name);
+      trackEvent("star_add", {{ item_id: itemId, item_name: name || "" }});
     }}
     saveStarredIds();
     syncStarButtons();
     if (myItemsView) applyFiltersAndSort();
+    if (sbAuthUser) {{
+      pushStarToServer(adding ? "upsert" : "delete", itemId, name);
+      if (adding) showStarSavedToast();
+    }} else if (adding) {{
+      maybeAskEmailAfterStar();
+    }}
   }}
 
   function bindStarClicks(root) {{
@@ -5651,6 +6369,7 @@ document.addEventListener("DOMContentLoaded", function () {{
       if (myItemsView) {{
         selectedTiers.clear();
         trackEvent("my_items_open", {{}});
+        maybeAskEmailOnMyItemsOpen();
       }}
       syncTierChips();
       applyFiltersAndSort();
@@ -6011,6 +6730,7 @@ document.addEventListener("DOMContentLoaded", function () {{
 
     if (searchWrap) searchWrap.classList.toggle("has-value", !!q);
     if (myItemsSummary) myItemsSummary.hidden = !myItemsView;
+    updateAuthLine();
     syncMyItemsNotifyVisibility();
     if (myItemsEmpty) myItemsEmpty.classList.remove("is-visible");
 
@@ -6278,10 +6998,8 @@ document.addEventListener("DOMContentLoaded", function () {{
     .catch(function() {{}});
 
   /* ============================
-     WELCOME PREFS + BEEHIIV EMBED
+     WELCOME PREFS + SUPABASE AUTH
      ============================ */
-  const BEEHIIV_FORM_ID = "{beehiiv_form_id}";
-  const BEEHIIV_PUBLICATION_ID = "{beehiiv_pub_id}";
   const WELCOME_STORAGE_KEY = "sb_welcome_v3";
   const RETAILER_ORDER = ["walmart", "target", "kroger", "harris teeter", "meijer"];
 
@@ -6338,60 +7056,8 @@ document.addEventListener("DOMContentLoaded", function () {{
     return /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(String(value || "").trim());
   }}
 
-  function submitWelcomeEmail(email, utmSource) {{
-    // Hidden-iframe POST to beehiiv's public subscribe endpoint (same family as
-    // their embed). We can't read the cross-origin response; friend tests /
-    // Audience list confirm delivery.
-    if (!BEEHIIV_PUBLICATION_ID) {{
-      return Promise.reject(new Error("missing publication id"));
-    }}
-    return new Promise(function(resolve, reject) {{
-      const frame =
-        document.getElementById("sb-welcome-signup-frame") ||
-        document.getElementById("sb-my-items-notify-frame");
-      if (!frame) {{
-        reject(new Error("missing frame"));
-        return;
-      }}
-
-      const form = document.createElement("form");
-      form.method = "POST";
-      form.target = frame.name;
-      form.action = "https://subscribe-forms.beehiiv.com/" + encodeURIComponent(BEEHIIV_PUBLICATION_ID) + "/submissions";
-      form.style.display = "none";
-
-      function addField(name, value) {{
-        const input = document.createElement("input");
-        input.type = "hidden";
-        input.name = name;
-        input.value = value;
-        form.appendChild(input);
-      }}
-      addField("email", email);
-      addField("reactivate_existing", "true");
-      addField("send_welcome_email", "true");
-      addField("utm_source", utmSource || "snackbuddy_welcome");
-      if (BEEHIIV_FORM_ID) addField("form_id", BEEHIIV_FORM_ID);
-
-      let settled = false;
-      function done(ok) {{
-        if (settled) return;
-        settled = true;
-        try {{ form.remove(); }} catch (err) {{}}
-        if (ok) resolve();
-        else reject(new Error("subscribe failed"));
-      }}
-
-      frame.onload = function() {{ done(true); }};
-      document.body.appendChild(form);
-      try {{
-        form.submit();
-      }} catch (err) {{
-        done(false);
-        return;
-      }}
-      window.setTimeout(function() {{ done(true); }}, 1200);
-    }});
+  function submitMagicLinkSignup(email) {{
+    return requestMagicLink(email);
   }}
 
   function initWelcomeFlow() {{
@@ -6455,8 +7121,12 @@ document.addEventListener("DOMContentLoaded", function () {{
       welcomeSignup.dataset.wired = "1";
       welcomeSignup.addEventListener("submit", function(ev) {{
         ev.preventDefault();
+        if (sbAuthUser) {{
+          setEmailStatus("You’re already signed in as " + (sbAuthUser.email || "your email") + ".");
+          return;
+        }}
         if (draft.subscribed) {{
-          setEmailStatus("You’re already on the list.");
+          setEmailStatus(MAGIC_LINK_MSG);
           return;
         }}
         const email = welcomeEmail ? String(welcomeEmail.value || "").trim() : "";
@@ -6465,22 +7135,23 @@ document.addEventListener("DOMContentLoaded", function () {{
           if (welcomeEmail) welcomeEmail.focus();
           return;
         }}
-        if (!BEEHIIV_PUBLICATION_ID) {{
-          setEmailStatus("Signup is temporarily unavailable. Try the footer form.", true);
+        if (!sbClient) {{
+          setEmailStatus("Signup is temporarily unavailable. Try again later.", true);
           return;
         }}
         if (welcomeEmailSubmit) welcomeEmailSubmit.disabled = true;
-        setEmailStatus("Subscribing…");
+        setEmailStatus("Sending link…");
         draft.email = email;
-        submitWelcomeEmail(email, "snackbuddy_welcome").then(function() {{
+        submitMagicLinkSignup(email).then(function() {{
           draft.subscribed = true;
           markEmailSubscribed();
           syncMyItemsNotifyVisibility();
           trackEvent("generate_lead", {{ method: "welcome_flow" }});
-          setEmailStatus("You’re in — watch for a welcome email from SnackBuddy.");
+          setEmailStatus(MAGIC_LINK_MSG);
           if (welcomeEmail) welcomeEmail.blur();
-        }}).catch(function() {{
-          setEmailStatus("Couldn’t subscribe. Try again or use the footer form.", true);
+        }}).catch(function(err) {{
+          console.error("[SnackBuddy] welcome magic link failed", err);
+          setEmailStatus("Couldn’t send the link. Try again or use the footer form.", true);
           if (welcomeEmailSubmit) welcomeEmailSubmit.disabled = false;
         }});
       }});
@@ -6690,6 +7361,11 @@ document.addEventListener("DOMContentLoaded", function () {{
       }}
       if (step === 3) {{
         wireWelcomeSignup();
+        // Welcome email step counts as ask #1 (once per welcome session).
+        if (!welcomeEmailAskCounted) {{
+          welcomeEmailAskCounted = true;
+          recordEmailAsk();
+        }}
         window.setTimeout(function() {{
           if (welcomeEmail) {{
             welcomeEmail.focus({{ preventScroll: false }});
@@ -6796,9 +7472,13 @@ document.addEventListener("DOMContentLoaded", function () {{
 
     form.addEventListener("submit", function(ev) {{
       ev.preventDefault();
-      if (hasEmailSubscription()) {{
-        setNotifyStatus("You’re already on the list.");
+      if (sbAuthUser) {{
+        setNotifyStatus("You’re already signed in.");
         syncMyItemsNotifyVisibility();
+        return;
+      }}
+      if (hasEmailSubscription()) {{
+        setNotifyStatus(MAGIC_LINK_MSG);
         return;
       }}
       const email = emailInput ? String(emailInput.value || "").trim() : "";
@@ -6807,27 +7487,77 @@ document.addEventListener("DOMContentLoaded", function () {{
         if (emailInput) emailInput.focus();
         return;
       }}
-      if (!BEEHIIV_PUBLICATION_ID) {{
-        setNotifyStatus("Signup is temporarily unavailable. Try the footer form.", true);
+      if (!sbClient) {{
+        setNotifyStatus("Signup is temporarily unavailable. Try again later.", true);
         return;
       }}
       if (submitBtn) submitBtn.disabled = true;
-      setNotifyStatus("Subscribing…");
-      submitWelcomeEmail(email, "my_items_notify").then(function() {{
+      setNotifyStatus("Sending link…");
+      submitMagicLinkSignup(email).then(function() {{
         markEmailSubscribed();
         trackEvent("generate_lead", {{ method: "my_items_notify" }});
-        setNotifyStatus("You’re in — we’ll email when the good stuff drops.");
+        setNotifyStatus(MAGIC_LINK_MSG);
         if (emailInput) emailInput.blur();
-        window.setTimeout(syncMyItemsNotifyVisibility, 1200);
-      }}).catch(function() {{
-        setNotifyStatus("Couldn’t subscribe. Try again or use the footer form.", true);
+        window.setTimeout(syncMyItemsNotifyVisibility, 1600);
+      }}).catch(function(err) {{
+        console.error("[SnackBuddy] my-items magic link failed", err);
+        setNotifyStatus("Couldn’t send the link. Try again or use the footer form.", true);
         if (submitBtn) submitBtn.disabled = false;
       }});
     }});
   }}
 
+  function wireFooterSignup() {{
+    const form = document.getElementById("sb-footer-signup");
+    const emailInput = document.getElementById("sb-footer-email");
+    const submitBtn = document.getElementById("sb-footer-email-submit");
+    const statusEl = document.getElementById("sb-footer-email-status");
+    if (!form || form.dataset.wired === "1") return;
+    form.dataset.wired = "1";
+
+    function setFooterStatus(msg, isError) {{
+      if (!statusEl) return;
+      statusEl.textContent = msg || "";
+      statusEl.classList.toggle("is-error", !!isError);
+    }}
+
+    form.addEventListener("submit", function(ev) {{
+      ev.preventDefault();
+      if (sbAuthUser) {{
+        setFooterStatus("You’re already signed in as " + (sbAuthUser.email || "your email") + ".");
+        return;
+      }}
+      const email = emailInput ? String(emailInput.value || "").trim() : "";
+      if (!isValidEmail(email)) {{
+        setFooterStatus("Enter a valid email address.", true);
+        if (emailInput) emailInput.focus();
+        return;
+      }}
+      if (!sbClient) {{
+        setFooterStatus("Signup is temporarily unavailable. Try again later.", true);
+        return;
+      }}
+      if (submitBtn) submitBtn.disabled = true;
+      setFooterStatus("Sending link…");
+      submitMagicLinkSignup(email).then(function() {{
+        markEmailSubscribed();
+        syncMyItemsNotifyVisibility();
+        trackEvent("generate_lead", {{ method: "footer" }});
+        setFooterStatus(MAGIC_LINK_MSG);
+        if (emailInput) emailInput.blur();
+      }}).catch(function(err) {{
+        console.error("[SnackBuddy] footer magic link failed", err);
+        setFooterStatus("Couldn’t send the link. Try again in a moment.", true);
+        if (submitBtn) submitBtn.disabled = false;
+      }});
+    }});
+  }}
+
+  initSupabaseAuth();
   initWelcomeFlow();
   wireMyItemsNotifySignup();
+  wireFooterSignup();
+  wireEmailAskBanner();
 
   filterMasterBtn?.addEventListener("click", function(e) {{
     e.stopPropagation();
@@ -7029,14 +7759,7 @@ def main():
     print("OUTPUT PATH:", OUTPUT_PATH.resolve())
     print("WROTE:", OUTPUT_PATH.resolve())
     print("DEALS:", len(deals))
-    form_id = BEEHIIV_FORM_ID
-    if form_id:
-        print("BEEHIIV FORM:", form_id[:8] + "…" if len(form_id) > 8 else form_id)
-    else:
-        print("BEEHIIV FORM: (not set)")
-    pub = BEEHIIV_PUBLICATION_ID
-    if pub:
-        print("BEEHIIV PUB:", pub[:8] + "…" if len(pub) > 8 else pub)
+    print("SUPABASE:", SUPABASE_URL)
 
 if __name__ == "__main__":
     main()
