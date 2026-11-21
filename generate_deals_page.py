@@ -28,6 +28,10 @@ EVERYDAY_BUNDLE_STABLE_DAYS = 30
 _BUNDLE_PRICE_MATCH_TOL = 0.01  # cents-level scrape jitter still counts as "same"
 # Structural multipack: baseline within 2% of N × smaller listing's current price.
 _BUNDLE_BASELINE_VS_MULTIPLE_PCT = 0.02
+# Until Item DB baselines for Walmart online bundles are approved, keep them
+# out of the deals feed (they still get bundle_n / per-unit math for a future
+# "Cheaper in the bundle" badge — never a deal tier).
+EXCLUDE_WALMART_BUNDLES_FROM_DEALS = True
 _AISLE_DETAIL_RE = re.compile(r"(?:^|;)\s*aisle=(True|False)\b", re.I)
 _AISLE_LABEL_DETAIL_RE = re.compile(r"(?:^|;)\s*aisle_label=([^;]*)", re.I)
 _SAME_DAY_PICKUP_DETAIL_RE = re.compile(
@@ -452,10 +456,11 @@ def walmart_structural_bundle_n(
 
 
 def walmart_bundle_n(deal: dict, walmart_ctx: dict | None = None) -> int | None:
-    """Title '(N pack)' first; else structural multipack N."""
-    return walmart_title_bundle_n(deal, walmart_ctx) or walmart_structural_bundle_n(
-        deal, walmart_ctx
-    )
+    """
+    Online-bundle detection = page title '(N pack) ...' only.
+    Structural pack multiples are normal retail boxes, not bundles.
+    """
+    return walmart_title_bundle_n(deal, walmart_ctx)
 
 
 _WALMART_IP_SKU_RE = re.compile(r"/ip/[^/]+/(\d{6,})", re.I)
@@ -611,61 +616,71 @@ def annotate_everyday_bundles(
     deals: list[dict], walmart_ctx: dict | None = None
 ) -> list[dict]:
     """
-    Mark Walmart multipack listings (title '(N pack)' or structural pack
-    multiple) for everyday-bundle treatment.
+    Mark Walmart online-bundle listings from page title '(N pack) ...' only.
 
-    Title bundles: everyday when own price flat 30+ days.
-    Structural bundles: everyday multipack saving vs singles, unless the
-    listing dropped below its own long-held usual price (then a normal deal).
+    Sets:
+      deal['bundle_n'] / deal['bundle_source'] / deal['is_walmart_bundle']
+      deal['is_everyday_bundle']  (per-unit / future badge math; never a deal tier)
 
-    Sets deal['is_everyday_bundle'] / deal['bundle_n'] / deal['bundle_source'].
+    Structural pack multiples are normal boxes and are not marked. Bundle
+    listings must never count as a deal or tier. EXCLUDE_WALMART_BUNDLES_FROM_DEALS
+    drops title bundles from the feed until/unless you turn it off.
     Does not change prices or baselines.
     """
-    bundle_meta: list[tuple[dict, int, str, float, str]] = []
+    bundle_meta: list[tuple[dict, int, str, float]] = []
     skus: set[str] = set()
     for deal in deals:
-        title_n = walmart_title_bundle_n(deal, walmart_ctx)
-        structural_n = None if title_n else walmart_structural_bundle_n(
-            deal, walmart_ctx
-        )
-        n = title_n or structural_n
-        source = "title" if title_n else ("structural" if structural_n else "")
+        n = walmart_title_bundle_n(deal, walmart_ctx)
         if not n:
             deal["is_everyday_bundle"] = False
+            deal["is_walmart_bundle"] = False
             deal["bundle_n"] = None
             deal["bundle_source"] = None
             continue
+        deal["is_walmart_bundle"] = True
+        deal["bundle_n"] = n
+        deal["bundle_source"] = "title"
         try:
             price = float(deal.get("new_price"))
         except (TypeError, ValueError):
-            deal["is_everyday_bundle"] = False
-            deal["bundle_n"] = n
-            deal["bundle_source"] = source
+            deal["is_everyday_bundle"] = True  # still not a deal tier
             continue
-        deal["bundle_n"] = n
-        deal["bundle_source"] = source
         sku = walmart_listing_sku(deal)
         if sku:
             deal["retailer_sku"] = deal.get("retailer_sku") or sku
             skus.add(sku)
-            bundle_meta.append((deal, n, sku, price, source))
+            bundle_meta.append((deal, n, sku, price))
         else:
-            deal["is_everyday_bundle"] = False
+            deal["is_everyday_bundle"] = True
 
     history = load_walmart_price_history_by_sku(skus)
-    for deal, n, sku, price, source in bundle_meta:
+    for deal, n, sku, price in bundle_meta:
         hist = history.get(sku) or {}
-        if source == "title":
-            deal["is_everyday_bundle"] = is_everyday_bundle_price(hist, price)
-        else:
-            # Structural: badge unless this is a drop below a long-held usual.
-            if is_everyday_bundle_price(hist, price):
-                deal["is_everyday_bundle"] = True
-            else:
-                deal["is_everyday_bundle"] = not is_drop_below_usual_bundle_price(
-                    hist, price
-                )
+        # Keep everyday / drop-below detection for a future badge.
+        deal["is_everyday_bundle"] = is_everyday_bundle_price(hist, price)
+        if EXCLUDE_WALMART_BUNDLES_FROM_DEALS:
+            deal["is_everyday_bundle"] = True
     return deals
+
+
+def filter_walmart_bundles_from_deals(deals: list[dict]) -> list[dict]:
+    """Drop Walmart online-bundle listings from the deals feed (pending baseline approval)."""
+    if not EXCLUDE_WALMART_BUNDLES_FROM_DEALS:
+        return deals
+    kept: list[dict] = []
+    dropped = 0
+    for d in deals:
+        if d.get("is_walmart_bundle") or d.get("bundle_n"):
+            dropped += 1
+            continue
+        kept.append(d)
+    if dropped:
+        print(
+            f"WALMART_BUNDLES: excluded {dropped} listing(s) from deals "
+            f"(baselines pending approval)",
+            flush=True,
+        )
+    return kept
 
 
 def _truthy_flag(val) -> bool:
@@ -790,7 +805,9 @@ def howto_buy_line(
     retailer = (deal.get("retailer") or "").strip()
     retailer_l = retailer.lower()
 
-    # Walmart multipack (title '(N pack)' or structural pack multiple).
+    # Walmart online bundle = page title '(N pack) ...' only.
+    # Always "Online bundle only" — never "In store & online". Per-unit
+    # comparison is kept on the deal object for a future badge, not this line.
     if "walmart" in retailer_l:
         n = deal.get("bundle_n") or walmart_bundle_n(deal, walmart_ctx)
         if n:
@@ -799,11 +816,11 @@ def howto_buy_line(
             except (TypeError, ValueError):
                 n_int = 0
             if n_int > 0:
-                text = f"Order online (pickup or delivery) · bundle of {n_int}"
+                # Preserve each-in-store math for future "Cheaper in the bundle".
                 each = single_each_in_store_price(deal, n_int, walmart_ctx)
                 if each is not None:
-                    text += f" · ${each:.2f} each if bought separately in store"
-                return text, "availability online-only"
+                    deal["bundle_each_in_store"] = each
+                return "Online bundle only", "availability online-only"
 
         # In-store = aisle found OR same-day pickup. Otherwise online labels.
         # If both signals missing → fall through to availability_norm fallback.
@@ -1099,9 +1116,9 @@ def get_tier_name(percent_off, deal: dict | None = None):
     """
     Get tier name from percent_off for filtering.
     Returns: "diamond", "fire", "strong", "sale", or "bundle"
-    Everyday Walmart bundles are "bundle" (not in deal-tier chips).
+    Walmart bundles are "bundle" (never a deal-tier chip).
     """
-    if deal and deal.get("is_everyday_bundle"):
+    if deal and (deal.get("is_everyday_bundle") or deal.get("is_walmart_bundle") or deal.get("bundle_n")):
         return "bundle"
     try:
         pct = float(percent_off)
@@ -1214,7 +1231,8 @@ def get_badge(deal):
     - 10–19.99% → 💪 Strong (badge-protein)
     - 0–9.99% → 🏷️ On Sale (badge-everyday)
     """
-    if deal.get("is_everyday_bundle"):
+    # Future badge: per-unit bundle saving — never a deal tier.
+    if deal.get("is_everyday_bundle") or deal.get("is_walmart_bundle") or deal.get("bundle_n"):
         return "Cheaper in the bundle", "badge badge-bundle"
 
     try:
@@ -1364,9 +1382,13 @@ def build_card_html(deal, walmart_ctx: dict | None = None):
 
     # Badge
     badge_label, badge_class = get_badge(deal)
-    is_everyday_bundle = bool(deal.get("is_everyday_bundle"))
+    is_everyday_bundle = bool(
+        deal.get("is_everyday_bundle")
+        or deal.get("is_walmart_bundle")
+        or deal.get("bundle_n")
+    )
 
-    # Tier for filtering (everyday bundles are not deal tiers)
+    # Tier for filtering (Walmart bundles are not deal tiers)
     tier_name = get_tier_name(percent_off, deal)
     tier_class = f"card-tier-{tier_name}"
 
@@ -1675,6 +1697,7 @@ def build_best_savings_html(
 def build_page_html(deals):
     walmart_ctx = load_walmart_buy_context()
     annotate_everyday_bundles(deals, walmart_ctx=walmart_ctx)
+    deals = filter_walmart_bundles_from_deals(deals)
     # Group deals into deal families
     grouped_deals = group_deals(deals)
     # Propagate everyday-bundle flag onto grouped cards (any flavor counts).
