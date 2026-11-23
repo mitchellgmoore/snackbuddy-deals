@@ -22,6 +22,7 @@ WALMART_PRICE_DIRS = [
 ]
 PRODUCTS_FEED = SNACK_BUDDY_ROOT / "products_clean_unified.csv"
 HISTORY_MASTER = SNACK_BUDDY_ROOT / "Data" / "historical_master_prices.csv"
+ITEM_DATABASE_XLSX = SNACK_BUDDY_ROOT / "Item Database.xlsx"
 _BUNDLE_TITLE_RE = re.compile(r"^\(\s*(\d+)\s*packs?\s*\)", re.I)
 # Flat bundle price for this many calendar days → everyday multipack saving, not a deal.
 EVERYDAY_BUNDLE_STABLE_DAYS = 30
@@ -78,6 +79,61 @@ def _as_us_central(dt: datetime) -> datetime:
         # Naive values are treated as UTC (ISO scrapes / pipeline clock).
         dt = dt.replace(tzinfo=timezone.utc)
     return dt.astimezone(US_CENTRAL)
+
+
+def active_catalog_stats(db_path: Path | None = None) -> tuple[int, int]:
+    """
+    Count ACTIVE Item Database rows (all stores, including probation) and
+    distinct retailers among them. Returns (tracked_count, store_count).
+    """
+    path = db_path or ITEM_DATABASE_XLSX
+    if not path.is_file():
+        return 0, 0
+    try:
+        from openpyxl import load_workbook
+    except ImportError:
+        print("WARNING: openpyxl missing; proof-of-work counts default to 0", flush=True)
+        return 0, 0
+
+    wb = load_workbook(path, read_only=True, data_only=True)
+    ws = wb.active
+    rows = ws.iter_rows(values_only=True)
+    try:
+        headers = [str(h or "").strip() for h in next(rows)]
+    except StopIteration:
+        wb.close()
+        return 0, 0
+    idx = {h: i for i, h in enumerate(headers)}
+    status_i = idx.get("Status")
+    retailer_i = idx.get("Retailer")
+    if status_i is None or retailer_i is None:
+        wb.close()
+        return 0, 0
+
+    tracked = 0
+    stores: set[str] = set()
+    for row in rows:
+        status = str(row[status_i] or "").strip().upper()
+        if status != "ACTIVE":
+            continue
+        tracked += 1
+        retailer = str(row[retailer_i] or "").strip()
+        if retailer:
+            stores.add(retailer)
+    wb.close()
+    return tracked, len(stores)
+
+
+def proof_of_work_line(*, tracked_count: int, store_count: int, deal_count: int) -> str:
+    """Hero line under the h1 — build-time copy only (no JS)."""
+    tracked_s = f"{tracked_count:,}"
+    if deal_count == 1:
+        sale_bit = "1 is on sale today."
+    else:
+        sale_bit = f"{deal_count} are on sale today."
+    return (
+        f"We check {tracked_s} snacks at {store_count} stores every day. {sale_bit}"
+    )
 
 
 def get_last_updated_text(deals):
@@ -1747,6 +1803,22 @@ def build_page_html(deals):
         build_card_html(d, walmart_ctx=walmart_ctx) for d in deals_sorted
     )
     best_savings_html = build_best_savings_html(deals, walmart_ctx=walmart_ctx)
+    tracked_count, store_count = active_catalog_stats()
+    # Individual on-sale items (flavor/pack/store), same units as tracked_count —
+    # not grouped card count.
+    deal_count = len(deals)
+    proof_line = html.escape(
+        proof_of_work_line(
+            tracked_count=tracked_count,
+            store_count=store_count,
+            deal_count=deal_count,
+        )
+    )
+    print(
+        f"PROOF_OF_WORK: tracked={tracked_count} stores={store_count} "
+        f"on_sale={deal_count} cards={len(deals_sorted)}",
+        flush=True,
+    )
     supabase_url = html.escape(SUPABASE_URL)
     supabase_anon_key = html.escape(SUPABASE_ANON_KEY)
 
@@ -3519,9 +3591,11 @@ def build_page_html(deals):
         }}
 
         .sb-hero-subtitle {{
-            font-size: 14px;
+            font-size: 15px;
+            font-weight: 400;
             margin: 4px 0 10px;
-            color: #374151;
+            color: #374151; /* same muted tone as hero freshness copy */
+            line-height: 1.35;
         }}
 
         .sb-hero-tiers {{
@@ -4922,6 +4996,16 @@ def build_page_html(deals):
             color: var(--text-muted);
             line-height: 1.4;
         }}
+        .sb-welcome-edit-hint {{
+            margin: 10px 0 0;
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.4;
+            text-align: center;
+        }}
+        .sb-welcome.is-edit .sb-welcome-progress {{
+            display: none;
+        }}
         .sb-welcome-status {{
             min-height: 1.2em;
             margin: 0 0 8px;
@@ -5075,6 +5159,7 @@ def build_page_html(deals):
                         <span>Prices from Bowling Green, KY stores · checked {last_updated_short} · your store may differ</span>
                     </div>
                     <h1 class="sb-hero-title">Don&apos;t overpay for the snacks you already buy.</h1>
+                    <p class="sb-hero-subtitle">{proof_line}</p>
                 </div>
             </div>
         </section>
@@ -5356,9 +5441,13 @@ def build_page_html(deals):
             <p class="sb-welcome-other-hint">We’ll use this to decide which stores to add next.</p>
           </div>
           <p class="sb-welcome-preview" id="sb-welcome-preview-stores"></p>
+          <p class="sb-welcome-edit-hint" id="sb-welcome-edit-hint" hidden>
+            Sign in to save this to your email alerts too.
+          </p>
           <div class="sb-welcome-actions">
-            <button type="button" class="sb-welcome-btn" data-welcome-next>Next</button>
+            <button type="button" class="sb-welcome-btn" data-welcome-next data-welcome-stores-next>Next</button>
             <button type="button" class="sb-welcome-btn sb-welcome-btn-ghost" data-welcome-back>Back</button>
+            <button type="button" class="sb-welcome-btn sb-welcome-btn-ghost" data-welcome-edit-cancel hidden>Cancel</button>
           </div>
         </section>
 
@@ -5829,8 +5918,15 @@ document.addEventListener("DOMContentLoaded", function () {{
     emailAskForm.addEventListener("submit", function(ev) {{
       ev.preventDefault();
       if (sbAuthUser) {{
-        setEmailAskStatus("You’re already signed in.");
-        dismissEmailAsk(false);
+        if (emailAskSubmit) emailAskSubmit.disabled = true;
+        setEmailAskStatus("Re-enabling emails…");
+        resubscribeSignedInUser().then(function(ok) {{
+          setEmailAskStatus(ok
+            ? "You’re back on the list — emails re-enabled."
+            : "Couldn’t update preferences. Try again.");
+          if (ok) window.setTimeout(function() {{ dismissEmailAsk(false); }}, 1600);
+          else if (emailAskSubmit) emailAskSubmit.disabled = false;
+        }});
         return;
       }}
       const email = emailAskEmail ? String(emailAskEmail.value || "").trim() : "";
@@ -6015,6 +6111,10 @@ document.addEventListener("DOMContentLoaded", function () {{
         const payload = {{
           user_id: sbAuthUser.id,
           email: sbAuthUser.email || "",
+          // Re-subscribe / keep opted in whenever we sync a signed-in account.
+          weekly_email: true,
+          deal_alerts: true,
+          unsubscribed_at: null,
         }};
         if (localStores.length) payload.stores = localStores;
         if (localCats.length) payload.categories = localCats;
@@ -6046,6 +6146,25 @@ document.addEventListener("DOMContentLoaded", function () {{
       .catch(function(err) {{
         console.error("[SnackBuddy] subscribers upsert failed", err);
       }});
+  }}
+
+  function resubscribeSignedInUser() {{
+    // Signed-in user submitted an email form again → clear unsubscribe flags.
+    if (!sbClient || !sbAuthUser) return Promise.resolve(false);
+    return sbClient.from("subscribers").upsert({{
+      user_id: sbAuthUser.id,
+      email: sbAuthUser.email || "",
+      weekly_email: true,
+      deal_alerts: true,
+      unsubscribed_at: null,
+    }}, {{ onConflict: "user_id" }}).then(function(res) {{
+      if (res && res.error) throw res.error;
+      markEmailSubscribed();
+      return true;
+    }}).catch(function(err) {{
+      console.error("[SnackBuddy] resubscribe failed", err);
+      return false;
+    }});
   }}
 
   function pushStarToServer(op, itemId, itemName, enqueueOnFail) {{
@@ -6154,6 +6273,7 @@ document.addEventListener("DOMContentLoaded", function () {{
     sbAuthUser = user || null;
     updateAuthLine();
     syncMyItemsNotifyVisibility();
+    syncWelcomeEditHint();
     if (!sbAuthUser) return Promise.resolve();
     markEmailSubscribed();
     dismissEmailAsk(false);
@@ -6170,6 +6290,7 @@ document.addEventListener("DOMContentLoaded", function () {{
         sbAuthUser = null;
         updateAuthLine();
         syncMyItemsNotifyVisibility();
+        syncWelcomeEditHint();
         return;
       }}
       if (event === "TOKEN_REFRESHED" && sbAuthUser && sbAuthUser.id === user.id) {{
@@ -7083,12 +7204,33 @@ document.addEventListener("DOMContentLoaded", function () {{
     return requestMagicLink(email);
   }}
 
+  function wantsEditStores() {{
+    try {{
+      return new URLSearchParams(window.location.search || "").get("edit") === "stores";
+    }} catch (err) {{
+      return false;
+    }}
+  }}
+
+  function clearEditStoresParam() {{
+    try {{
+      const url = new URL(window.location.href);
+      if (!url.searchParams.has("edit")) return;
+      url.searchParams.delete("edit");
+      const next = url.pathname + (url.searchParams.toString() ? "?" + url.searchParams.toString() : "") + url.hash;
+      window.history.replaceState({{}}, "", next);
+    }} catch (err) {{}}
+  }}
+
+  let syncWelcomeEditHint = function() {{}};
+
   function initWelcomeFlow() {{
     const root = document.getElementById("sb-welcome");
     if (!root) return;
 
+    const editStores = wantsEditStores();
     const existing = loadWelcomePrefs();
-    if (existing && existing.completed) {{
+    if (existing && existing.completed && !editStores) {{
       applyWelcomePrefs(existing);
       return;
     }}
@@ -7099,6 +7241,10 @@ document.addEventListener("DOMContentLoaded", function () {{
     const otherInput = document.getElementById("sb-welcome-other-store");
     const previewStores = document.getElementById("sb-welcome-preview-stores");
     const previewCategories = document.getElementById("sb-welcome-preview-categories");
+    const editHint = document.getElementById("sb-welcome-edit-hint");
+    const storesNextBtn = root.querySelector("[data-welcome-stores-next]");
+    const storesBackBtn = root.querySelector('[data-step="1"] [data-welcome-back]');
+    const editCancelBtn = root.querySelector("[data-welcome-edit-cancel]");
     const welcomeSignup = document.getElementById("sb-welcome-signup");
     const welcomeEmail = document.getElementById("sb-welcome-email");
     const welcomeEmailSubmit = document.getElementById("sb-welcome-email-submit");
@@ -7116,6 +7262,7 @@ document.addEventListener("DOMContentLoaded", function () {{
     }};
 
     let step = 0;
+    let editMode = false;
 
     function getOtherStore() {{
       if (!draft.otherOn) return "";
@@ -7145,7 +7292,14 @@ document.addEventListener("DOMContentLoaded", function () {{
       welcomeSignup.addEventListener("submit", function(ev) {{
         ev.preventDefault();
         if (sbAuthUser) {{
-          setEmailStatus("You’re already signed in as " + (sbAuthUser.email || "your email") + ".");
+          if (welcomeEmailSubmit) welcomeEmailSubmit.disabled = true;
+          setEmailStatus("Re-enabling emails…");
+          resubscribeSignedInUser().then(function(ok) {{
+            setEmailStatus(ok
+              ? "You’re back on the list — emails re-enabled."
+              : "Couldn’t update preferences. Try again.", !ok);
+            if (!ok && welcomeEmailSubmit) welcomeEmailSubmit.disabled = false;
+          }});
           return;
         }}
         if (draft.subscribed) {{
@@ -7407,7 +7561,41 @@ document.addEventListener("DOMContentLoaded", function () {{
       }});
     }}
 
+    function syncEditHint() {{
+      if (!editHint) return;
+      if (!editMode) {{
+        editHint.hidden = true;
+        return;
+      }}
+      editHint.hidden = !!sbAuthUser;
+    }}
+    syncWelcomeEditHint = syncEditHint;
+
+    function showWelcomePanel() {{
+      root.hidden = false;
+      root.setAttribute("aria-hidden", "false");
+      root.classList.add("open");
+      document.body.classList.add("sb-welcome-lock");
+    }}
+
+    function hideWelcomePanel() {{
+      root.classList.remove("open");
+      root.classList.remove("is-edit");
+      document.body.classList.remove("sb-welcome-lock");
+      window.setTimeout(function() {{
+        root.hidden = true;
+        root.setAttribute("aria-hidden", "true");
+      }}, 320);
+    }}
+
     function openWelcome() {{
+      editMode = false;
+      root.classList.remove("is-edit");
+      if (storesNextBtn) storesNextBtn.textContent = "Next";
+      if (storesBackBtn) storesBackBtn.hidden = false;
+      if (editCancelBtn) editCancelBtn.hidden = true;
+      if (editHint) editHint.hidden = true;
+
       // First paint: show the full (unfiltered) deals page behind the frost
       draft.retailers.clear();
       draft.categories.clear();
@@ -7423,11 +7611,44 @@ document.addEventListener("DOMContentLoaded", function () {{
       applyFiltersAndSort();
       refreshFilterOptionLists();
 
-      root.hidden = false;
-      root.setAttribute("aria-hidden", "false");
-      root.classList.add("open");
-      document.body.classList.add("sb-welcome-lock");
+      showWelcomePanel();
       setStep(0);
+    }}
+
+    function fillDraftFromPrefs(prefs) {{
+      const src = prefs || {{}};
+      draft.retailers = new Set(
+        (Array.isArray(src.retailers) ? src.retailers : [])
+          .map(function(v) {{ return String(v || "").trim(); }})
+          .filter(Boolean)
+      );
+      draft.categories = new Set(
+        (Array.isArray(src.categories) ? src.categories : [])
+          .map(function(v) {{ return String(v || "").trim(); }})
+          .filter(Boolean)
+      );
+      draft.otherStore = String(src.otherStore || "").trim();
+      draft.otherOn = !!draft.otherStore;
+      draft.email = String(src.email || "").trim();
+      draft.subscribed = !!src.subscribed;
+      if (otherInput) otherInput.value = draft.otherStore;
+    }}
+
+    function openEditStores(prefs) {{
+      editMode = true;
+      root.classList.add("is-edit");
+      if (storesNextBtn) storesNextBtn.textContent = "Save";
+      if (storesBackBtn) storesBackBtn.hidden = true;
+      if (editCancelBtn) editCancelBtn.hidden = false;
+
+      fillDraftFromPrefs(prefs);
+      applyWelcomePrefs({{
+        retailers: Array.from(draft.retailers),
+        categories: Array.from(draft.categories),
+      }});
+      syncEditHint();
+      showWelcomePanel();
+      setStep(1);
     }}
 
     function closeWelcome(prefs) {{
@@ -7439,31 +7660,73 @@ document.addEventListener("DOMContentLoaded", function () {{
       if (draft.subscribed) payload.subscribed = true;
       saveWelcomePrefs(payload);
       applyWelcomePrefs(payload);
-      root.classList.remove("open");
-      document.body.classList.remove("sb-welcome-lock");
-      window.setTimeout(function() {{
-        root.hidden = true;
-        root.setAttribute("aria-hidden", "true");
-      }}, 320);
+      editMode = false;
+      hideWelcomePanel();
       try {{
         const dealsList = document.getElementById("deals-list");
         if (dealsList) dealsList.scrollIntoView({{ behavior: "smooth", block: "start" }});
       }} catch (err) {{}}
     }}
 
+    function finishEditStores() {{
+      const payload = {{
+        completed: true,
+        retailers: Array.from(draft.retailers),
+        categories: Array.from(draft.categories),
+        otherStore: getOtherStore(),
+      }};
+      if (draft.email) payload.email = draft.email;
+      if (draft.subscribed) payload.subscribed = true;
+      // Preserve prior email/subscribe flags from storage if draft lacks them.
+      const prior = loadWelcomePrefs() || {{}};
+      if (!payload.email && prior.email) payload.email = prior.email;
+      if (!payload.subscribed && prior.subscribed) payload.subscribed = true;
+
+      saveWelcomePrefs(payload);
+      applyWelcomePrefs(payload);
+      clearEditStoresParam();
+      editMode = false;
+      hideWelcomePanel();
+
+      const after = sbAuthUser ? upsertSubscriberRow() : Promise.resolve();
+      after.finally(function() {{
+        try {{
+          const dealsList = document.getElementById("deals-list");
+          if (dealsList) dealsList.scrollIntoView({{ behavior: "smooth", block: "start" }});
+        }} catch (err) {{}}
+      }});
+    }}
+
+    function cancelEditStores() {{
+      const prior = loadWelcomePrefs();
+      if (prior && prior.completed) applyWelcomePrefs(prior);
+      clearEditStoresParam();
+      editMode = false;
+      hideWelcomePanel();
+    }}
+
     root.querySelectorAll("[data-welcome-next]").forEach(function(btn) {{
       btn.addEventListener("click", function() {{
+        if (editMode) {{
+          finishEditStores();
+          return;
+        }}
         if (step < 3) setStep(step + 1);
         else closeWelcome({{}});
       }});
     }});
     root.querySelectorAll("[data-welcome-back]").forEach(function(btn) {{
       btn.addEventListener("click", function() {{
+        if (editMode) return;
         if (step > 0) setStep(step - 1);
       }});
     }});
     root.querySelectorAll("[data-welcome-skip]").forEach(function(btn) {{
       btn.addEventListener("click", function() {{
+        if (editMode) {{
+          cancelEditStores();
+          return;
+        }}
         if (step === 0) {{
           draft.retailers.clear();
           draft.categories.clear();
@@ -7475,8 +7738,17 @@ document.addEventListener("DOMContentLoaded", function () {{
         }}
       }});
     }});
+    if (editCancelBtn) {{
+      editCancelBtn.addEventListener("click", function() {{
+        cancelEditStores();
+      }});
+    }}
 
-    openWelcome();
+    if (editStores) {{
+      openEditStores(existing || {{}});
+    }} else {{
+      openWelcome();
+    }}
   }}
 
   function wireMyItemsNotifySignup() {{
@@ -7496,8 +7768,15 @@ document.addEventListener("DOMContentLoaded", function () {{
     form.addEventListener("submit", function(ev) {{
       ev.preventDefault();
       if (sbAuthUser) {{
-        setNotifyStatus("You’re already signed in.");
-        syncMyItemsNotifyVisibility();
+        if (submitBtn) submitBtn.disabled = true;
+        setNotifyStatus("Re-enabling emails…");
+        resubscribeSignedInUser().then(function(ok) {{
+          setNotifyStatus(ok
+            ? "You’re back on the list — emails re-enabled."
+            : "Couldn’t update preferences. Try again.", !ok);
+          syncMyItemsNotifyVisibility();
+          if (!ok && submitBtn) submitBtn.disabled = false;
+        }});
         return;
       }}
       if (hasEmailSubscription()) {{
@@ -7547,7 +7826,14 @@ document.addEventListener("DOMContentLoaded", function () {{
     form.addEventListener("submit", function(ev) {{
       ev.preventDefault();
       if (sbAuthUser) {{
-        setFooterStatus("You’re already signed in as " + (sbAuthUser.email || "your email") + ".");
+        if (submitBtn) submitBtn.disabled = true;
+        setFooterStatus("Re-enabling emails…");
+        resubscribeSignedInUser().then(function(ok) {{
+          setFooterStatus(ok
+            ? "You’re back on the list — emails re-enabled."
+            : "Couldn’t update preferences. Try again.", !ok);
+          if (!ok && submitBtn) submitBtn.disabled = false;
+        }});
         return;
       }}
       const email = emailInput ? String(emailInput.value || "").trim() : "";

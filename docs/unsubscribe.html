@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Unsubscribe · SnackBuddy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --sage: #A2B88E;
+      --text: #111827;
+      --muted: #6b7280;
+      --bg: #ffffff;
+      --border: #e5e7eb;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Outfit, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      min-height: 100vh;
+    }
+    .wrap {
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 40px 20px 64px;
+      text-align: center;
+    }
+    .logo {
+      display: block;
+      width: 160px;
+      max-width: 50%;
+      height: auto;
+      margin: 0 auto 20px;
+    }
+    .accent {
+      height: 3px;
+      width: 72px;
+      background: var(--sage);
+      border-radius: 2px;
+      margin: 0 auto 28px;
+    }
+    h1 {
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.3;
+      margin: 0 0 12px;
+    }
+    p {
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--muted);
+      margin: 0 0 10px;
+    }
+    .status {
+      min-height: 1.5em;
+      font-size: 15px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+    .status.is-ok { color: #166534; }
+    .status.is-err { color: #9a3412; }
+    .note {
+      font-size: 13px;
+      margin-top: 18px;
+    }
+    a { color: #047857; }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <img class="logo" src="assets/logo-transparent.png" alt="SnackBuddy" width="160" height="160" />
+    <div class="accent" aria-hidden="true"></div>
+    <h1>Unsubscribe</h1>
+    <p class="status" id="status" aria-live="polite">Working on it…</p>
+    <p class="note" id="note" hidden></p>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    (function () {
+      // Same public project URL + publishable key as generate_deals_page.py (never the secret).
+      var SUPABASE_URL = "https://krqwprircvvcdtgdqmpi.supabase.co";
+      var SUPABASE_ANON_KEY = "sb_publishable_jVSVInpL8qMGyJP0kOCZkw_3UD74m34";
+
+      var statusEl = document.getElementById("status");
+      var noteEl = document.getElementById("note");
+
+      function showOk() {
+        statusEl.className = "status is-ok";
+        statusEl.textContent = "You're unsubscribed. You won't get any more SnackBuddy emails.";
+        noteEl.hidden = false;
+        noteEl.innerHTML = 'Changed your mind? Sign up again anytime on <a href="https://snacksbuddy.com/">snacksbuddy.com</a>.';
+      }
+
+      function showErr() {
+        statusEl.className = "status is-err";
+        statusEl.textContent =
+          "We couldn't find that link. Email savewithsnackbuddy@gmail.com and we'll take you off the list right away.";
+        noteEl.hidden = true;
+      }
+
+      var params = new URLSearchParams(window.location.search || "");
+      var token = (params.get("t") || "").trim();
+      if (!token) {
+        showErr();
+        return;
+      }
+
+      if (!window.supabase || !window.supabase.createClient) {
+        showErr();
+        return;
+      }
+
+      var client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      client.rpc("unsubscribe_by_token", { t: token }).then(function (res) {
+        if (res && !res.error && res.data === true) {
+          showOk();
+        } else {
+          showErr();
+        }
+      }).catch(function () {
+        showErr();
+      });
+    })();
+  </script>
+</body>
+</html>
