@@ -3341,7 +3341,7 @@ def build_page_html(deals):
         .sb-catalog {{
             max-width: var(--page-max);
             margin: 0 auto 28px;
-            padding: 10px 12px 40px;
+            padding: 10px 12px 96px;
         }}
         .sb-catalog[hidden] {{
             display: none !important;
@@ -3406,16 +3406,36 @@ def build_page_html(deals):
             white-space: nowrap;
         }}
         .sb-catalog-list {{
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: 1fr;
             gap: 8px;
+            align-items: stretch;
+            padding-bottom: 88px;
+        }}
+        @media (min-width: 640px) {{
+            .sb-catalog-list {{
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px;
+            }}
+        }}
+        @media (min-width: 1024px) {{
+            .sb-catalog-list {{
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 12px;
+            }}
+        }}
+        @media (min-width: 1280px) {{
+            .sb-catalog-list {{
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }}
         }}
         .sb-catalog-row {{
+            position: relative;
             display: grid;
-            grid-template-columns: 52px minmax(0, 1fr) 40px;
+            grid-template-columns: 52px minmax(0, 1fr);
             gap: 10px;
             align-items: start;
-            padding: 10px;
+            padding: 10px 44px 10px 10px;
             border-radius: 14px;
             border: 1px solid #e2e8f0;
             background: #fff;
@@ -3424,6 +3444,7 @@ def build_page_html(deals):
             font: inherit;
             color: inherit;
             width: 100%;
+            height: 100%;
             box-sizing: border-box;
         }}
         .sb-catalog-row:hover {{
@@ -3449,6 +3470,7 @@ def build_page_html(deals):
         }}
         .sb-catalog-main {{
             min-width: 0;
+            padding-right: 2px;
         }}
         .sb-catalog-name {{
             font-weight: 700;
@@ -3495,8 +3517,10 @@ def build_page_html(deals):
             color: #475569;
         }}
         .sb-catalog-row .sb-star-btn {{
-            margin-top: 4px;
-            justify-self: end;
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            z-index: 5;
         }}
         .sb-catalog-expand {{
             grid-column: 1 / -1;
@@ -3520,7 +3544,7 @@ def build_page_html(deals):
         .sb-catalog-more {{
             display: block;
             width: 100%;
-            margin: 14px 0 0;
+            margin: 14px 0 24px;
             padding: 12px 14px;
             border-radius: 14px;
             border: 1.5px solid #cbd5e1;
@@ -3529,6 +3553,11 @@ def build_page_html(deals):
             font-weight: 700;
             color: var(--navy);
             cursor: pointer;
+        }}
+        @media (min-width: 640px) {{
+            .sb-catalog-more {{
+                grid-column: 1 / -1;
+            }}
         }}
         .sb-catalog-more[hidden] {{
             display: none !important;
@@ -4384,6 +4413,7 @@ def build_page_html(deals):
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
             gap: 14px;
+            padding-bottom: 88px;
         }}
 
         @media (min-width: 1100px) {{
@@ -7920,7 +7950,7 @@ document.addEventListener("DOMContentLoaded", function () {{
     saveStarredIds();
     syncStarButtons();
     if (myItemsView) applyFiltersAndSort();
-    else syncFloatButton();
+    syncFloatButton();
     if (sbAuthUser) {{
       pushStarToServer(adding ? "upsert" : "delete", itemId, name);
       if (adding) showStarSavedToast();
@@ -8890,8 +8920,12 @@ document.addEventListener("DOMContentLoaded", function () {{
           escapeHtml(f) + saleNote + "</div>";
       }}).join("") + "</div>";
     }}
+    const starLabel = starred ? "Remove from My Items" : "Save to My Items";
     return (
       '<article class="sb-catalog-row' + (open ? " is-open" : "") + '" data-item-id="' + escapeHtml(it.item_id) + '" role="button" tabindex="0">' +
+        '<button type="button" class="sb-star-btn' + (starred ? " is-starred" : "") + '" aria-pressed="' + (starred ? "true" : "false") + '" aria-label="' + starLabel + '" title="' + starLabel + '">' +
+          '<svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/></svg>' +
+        "</button>" +
         img +
         '<div class="sb-catalog-main">' +
           '<p class="sb-catalog-name">' + escapeHtml(name) + "</p>" +
@@ -8900,7 +8934,6 @@ document.addEventListener("DOMContentLoaded", function () {{
           (badges.length ? ('<div class="sb-catalog-badges">' + badges.join("") + "</div>") : "") +
           (open ? expand : "") +
         "</div>" +
-        '<button type="button" class="sb-star-btn' + (starred ? " is-starred" : "") + '" aria-pressed="' + (starred ? "true" : "false") + '" aria-label="' + (starred ? "Remove from My Items" : "Save to My Items") + '" title="' + (starred ? "Remove from My Items" : "Save to My Items") + '">★</button>' +
       "</article>"
     );
   }}
@@ -8911,6 +8944,20 @@ document.addEventListener("DOMContentLoaded", function () {{
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;");
+  }}
+
+  function catalogStoreProductCount() {{
+    const stores = getCatalogStores();
+    return catalogItems.filter(function(it) {{
+      return catalogCarriedStores(it, stores).length > 0;
+    }}).length;
+  }}
+
+  function syncCatalogSearchPlaceholder() {{
+    if (!catalogSearch) return;
+    const n = catalogStoreProductCount();
+    const nFmt = Number(n).toLocaleString("en-US");
+    catalogSearch.placeholder = "Search " + nFmt + " products — Quest, Celsius, protein bars…";
   }}
 
   function renderCatalogList() {{
@@ -8926,6 +8973,7 @@ document.addEventListener("DOMContentLoaded", function () {{
     if (catalogCountEl) {{
       catalogCountEl.textContent = rows.length === 1 ? "1 product" : (rows.length + " products");
     }}
+    syncCatalogSearchPlaceholder();
     if (catalogEmpty) {{
       if (!rows.length) {{
         const q = String(catalogQuery || "").trim();
@@ -9018,7 +9066,11 @@ document.addEventListener("DOMContentLoaded", function () {{
   catalogList?.addEventListener("click", function(ev) {{
     const t = ev.target;
     if (!t || !t.closest) return;
-    if (t.closest(".sb-star-btn")) return;
+    if (t.closest(".sb-star-btn")) {{
+      ev.preventDefault();
+      ev.stopPropagation();
+      return;
+    }}
     const row = t.closest(".sb-catalog-row");
     if (!row || !catalogList.contains(row)) return;
     const id = row.dataset.itemId || "";
