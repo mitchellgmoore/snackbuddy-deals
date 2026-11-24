@@ -3354,12 +3354,19 @@
         .sb-welcome-panel {
             position: relative;
             z-index: 1;
+            display: flex;
+            flex-direction: column;
             width: min(620px, 100%);
-            margin: auto 16px;
-            max-height: min(92vh, 780px);
-            overflow: auto;
-            padding: 28px 24px 22px;
-            border-radius: 24px;
+            /* Never taller than the visible viewport (iPhone Safari toolbar included). */
+            height: 100vh;
+            height: 100dvh;
+            max-height: 100vh;
+            max-height: 100dvh;
+            margin: 0 auto;
+            overflow: hidden;
+            padding: 0;
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+            border-radius: 0;
             background:
                 linear-gradient(180deg, rgba(255,255,255,0.98), rgba(239, 246, 255, 0.94));
             border: 1px solid rgba(37, 99, 235, 0.12);
@@ -3367,9 +3374,65 @@
             font-family: "Outfit", system-ui, sans-serif;
             transform: translateY(18px) scale(0.98);
             transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            box-sizing: border-box;
+        }
+        @media (min-width: 560px) {
+            .sb-welcome-panel {
+                margin: auto 16px;
+                height: min(92vh, 92dvh, 780px);
+                max-height: min(92vh, 92dvh, 780px);
+                border-radius: 24px;
+            }
         }
         .sb-welcome.open .sb-welcome-panel {
             transform: translateY(0) scale(1);
+        }
+        .sb-welcome-close {
+            position: absolute;
+            top: max(10px, env(safe-area-inset-top, 0px));
+            right: 12px;
+            z-index: 5;
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 999px;
+            background: rgba(15, 23, 42, 0.06);
+            color: #334155;
+            font-size: 26px;
+            line-height: 1;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            padding: 0;
+        }
+        .sb-welcome-close:hover {
+            background: rgba(15, 23, 42, 0.12);
+            color: var(--navy);
+        }
+        .sb-welcome-panel-header {
+            flex: 0 0 auto;
+            padding: 20px 52px 8px 22px;
+            padding-top: max(20px, calc(env(safe-area-inset-top, 0px) + 8px));
+        }
+        .sb-welcome-panel-scroll {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-x: hidden;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            padding: 4px 22px 16px;
+        }
+        .sb-welcome-panel-footer {
+            flex: 0 0 auto;
+            padding: 12px 22px;
+            padding-bottom: max(14px, env(safe-area-inset-bottom, 0px));
+            border-top: 1px solid rgba(15, 23, 42, 0.08);
+            background: rgba(255, 255, 255, 0.96);
+        }
+        .sb-welcome-panel-footer .sb-welcome-actions,
+        .sb-welcome-panel-footer .sb-prefs-actions {
+            margin-top: 0;
         }
         .sb-welcome-brand {
             font-family: "Fraunces", Georgia, serif;
@@ -3401,10 +3464,20 @@
         }
         .sb-welcome-step {
             display: none;
+            flex: 1 1 auto;
+            min-height: 0;
+            flex-direction: column;
+            overflow: hidden;
             animation: sbWelcomeIn 0.4s ease both;
         }
         .sb-welcome-step.is-active {
-            display: block;
+            display: flex;
+        }
+        .sb-welcome-step .sb-welcome-panel-scroll {
+            flex: 1 1 auto;
+        }
+        .sb-welcome-step .sb-welcome-panel-footer {
+            flex: 0 0 auto;
         }
         @keyframes sbWelcomeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -3426,7 +3499,7 @@
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 10px;
-            margin-bottom: 18px;
+            margin-bottom: 12px;
         }
         @media (min-width: 560px) {
             .sb-welcome-chips {
@@ -3741,7 +3814,7 @@
         .sb-welcome-progress {
             display: flex;
             gap: 6px;
-            margin-bottom: 18px;
+            margin: 0;
         }
         .sb-welcome-dot {
             width: 8px;
@@ -3789,6 +3862,10 @@
         }
         body.sb-welcome-lock {
             overflow: hidden;
+        }
+        body.sb-welcome-lock .sb-email-ask-pill {
+            display: none !important;
+            pointer-events: none !important;
         }
 
         .sb-subscribe-form {
@@ -6269,138 +6346,85 @@
     <div class="sb-welcome" id="sb-welcome" hidden aria-hidden="true">
       <div class="sb-welcome-backdrop" aria-hidden="true"></div>
       <div class="sb-welcome-panel" role="dialog" aria-modal="true" aria-labelledby="sb-welcome-brand">
-        <div class="sb-welcome-progress" aria-hidden="true">
-          <span class="sb-welcome-dot is-on" data-dot="0"></span>
-          <span class="sb-welcome-dot" data-dot="1"></span>
-          <span class="sb-welcome-dot" data-dot="2"></span>
-          <span class="sb-welcome-dot" data-dot="3"></span>
+        <button type="button" class="sb-welcome-close" id="sb-welcome-close" aria-label="Close">&times;</button>
+        <div class="sb-welcome-panel-header">
+          <div class="sb-welcome-progress" aria-hidden="true">
+            <span class="sb-welcome-dot is-on" data-dot="0"></span>
+            <span class="sb-welcome-dot" data-dot="1"></span>
+            <span class="sb-welcome-dot" data-dot="2"></span>
+            <span class="sb-welcome-dot" data-dot="3"></span>
+          </div>
         </div>
 
         <section class="sb-welcome-step is-active" data-step="0">
-          <div class="sb-welcome-kicker">Better snacks. Smarter buys.</div>
-          <h1 class="sb-welcome-brand" id="sb-welcome-brand">Snack<span>Buddy</span></h1>
-          <p class="sb-welcome-lead">Your better-for-you deals, cut down to the stores and snacks you actually buy.</p>
-          <div class="sb-welcome-actions">
-            <button type="button" class="sb-welcome-btn" data-welcome-next>Personalize my deals</button>
-            <button type="button" class="sb-welcome-btn sb-welcome-btn-ghost" data-welcome-skip>Just show everything</button>
+          <div class="sb-welcome-panel-scroll">
+            <div class="sb-welcome-kicker">Better snacks. Smarter buys.</div>
+            <h1 class="sb-welcome-brand" id="sb-welcome-brand">Snack<span>Buddy</span></h1>
+            <p class="sb-welcome-lead">Your better-for-you deals, cut down to the stores and snacks you actually buy.</p>
+          </div>
+          <div class="sb-welcome-panel-footer">
+            <div class="sb-welcome-actions">
+              <button type="button" class="sb-welcome-btn" data-welcome-next>Personalize my deals</button>
+              <button type="button" class="sb-welcome-btn sb-welcome-btn-ghost" data-welcome-skip>Just show everything</button>
+            </div>
           </div>
         </section>
 
         <section class="sb-welcome-step" data-step="1">
-          <h2 class="sb-welcome-step-title">Where do you shop?</h2>
-          <p class="sb-welcome-step-text">Pick any stores to narrow the list, or leave them all off to keep every store.</p>
-          <div class="sb-welcome-chips" id="sb-welcome-retailers"></div>
-          <div class="sb-welcome-other" id="sb-welcome-other-wrap" hidden>
-            <label class="sb-welcome-other-label" for="sb-welcome-other-store">Which store?</label>
-            <input
-              class="sb-welcome-other-input"
-              id="sb-welcome-other-store"
-              type="text"
-              maxlength="80"
-              placeholder="e.g. Costco, Aldi, Publix…"
-              autocomplete="organization"
-            />
-            <p class="sb-welcome-other-hint">We’ll use this to decide which stores to add next.</p>
+          <div class="sb-welcome-panel-scroll">
+            <h2 class="sb-welcome-step-title">Where do you shop?</h2>
+            <p class="sb-welcome-step-text">Pick any stores to narrow the list, or leave them all off to keep every store.</p>
+            <div class="sb-welcome-chips" id="sb-welcome-retailers"></div>
+            <div class="sb-welcome-other" id="sb-welcome-other-wrap" hidden>
+              <label class="sb-welcome-other-label" for="sb-welcome-other-store">Which store?</label>
+              <input
+                class="sb-welcome-other-input"
+                id="sb-welcome-other-store"
+                type="text"
+                maxlength="80"
+                placeholder="e.g. Costco, Aldi, Publix…"
+                autocomplete="organization"
+              />
+              <p class="sb-welcome-other-hint">We’ll use this to decide which stores to add next.</p>
+            </div>
+            <p class="sb-welcome-preview" id="sb-welcome-preview-stores"></p>
+            <p class="sb-welcome-edit-hint" id="sb-welcome-edit-hint" hidden>
+              Sign in to save this to your email alerts too.
+            </p>
           </div>
-          <p class="sb-welcome-preview" id="sb-welcome-preview-stores"></p>
-          <p class="sb-welcome-edit-hint" id="sb-welcome-edit-hint" hidden>
-            Sign in to save this to your email alerts too.
-          </p>
-          <div class="sb-welcome-actions">
-            <button type="button" class="sb-welcome-btn" data-welcome-next data-welcome-stores-next>Next</button>
-            <button type="button" class="sb-welcome-btn sb-welcome-btn-ghost" data-welcome-back>Back</button>
-            <button type="button" class="sb-welcome-btn sb-welcome-btn-ghost" data-welcome-edit-cancel hidden>Cancel</button>
+          <div class="sb-welcome-panel-footer">
+            <div class="sb-welcome-actions">
+              <button type="button" class="sb-welcome-btn" data-welcome-next data-welcome-stores-next>Next</button>
+              <button type="button" class="sb-welcome-btn sb-welcome-btn-ghost" data-welcome-back>Back</button>
+              <button type="button" class="sb-welcome-btn sb-welcome-btn-ghost" data-welcome-edit-cancel hidden>Cancel</button>
+            </div>
           </div>
         </section>
 
         <section class="sb-welcome-step" data-step="2">
-          <h2 class="sb-welcome-step-title">What’s usually in your pantry?</h2>
-          <p class="sb-welcome-step-text">Pick the categories you restock most, or leave them off to keep everything.</p>
-          <div class="sb-welcome-chips" id="sb-welcome-categories"></div>
-          <p class="sb-welcome-preview" id="sb-welcome-preview-categories"></p>
-          <div class="sb-welcome-actions">
-            <button type="button" class="sb-welcome-btn" data-welcome-next>See my deals</button>
-            <button type="button" class="sb-welcome-btn sb-welcome-btn-ghost" data-welcome-back>Back</button>
+          <div class="sb-welcome-panel-scroll">
+            <h2 class="sb-welcome-step-title">What’s usually in your pantry?</h2>
+            <p class="sb-welcome-step-text">Pick the categories you restock most, or leave them off to keep everything.</p>
+            <div class="sb-welcome-chips" id="sb-welcome-categories"></div>
+            <p class="sb-welcome-preview" id="sb-welcome-preview-categories"></p>
+          </div>
+          <div class="sb-welcome-panel-footer">
+            <div class="sb-welcome-actions">
+              <button type="button" class="sb-welcome-btn" data-welcome-next>See my deals</button>
+              <button type="button" class="sb-welcome-btn sb-welcome-btn-ghost" data-welcome-back>Back</button>
+            </div>
           </div>
         </section>
 
         <section class="sb-welcome-step" data-step="3">
-          <h2 class="sb-welcome-step-title">Don’t miss the ones worth a trip</h2>
-          <p class="sb-welcome-step-text">Optional. We’ll email when the good stuff drops, your filters stay either way.</p>
-          <form class="sb-welcome-signup" id="sb-welcome-signup" novalidate>
-            <div class="sb-welcome-email-row">
-              <input
-                class="sb-welcome-email"
-                id="sb-welcome-email"
-                type="email"
-                name="email"
-                autocomplete="email"
-                inputmode="email"
-                enterkeyhint="done"
-                placeholder="Email address"
-                aria-label="Email address"
-              />
-              <button type="submit" class="sb-welcome-email-submit" id="sb-welcome-email-submit">
-                Subscribe
-              </button>
-            </div>
-            <p class="sb-welcome-status" id="sb-welcome-email-status" aria-live="polite"></p>
-          </form>
-          <p class="sb-welcome-note">No spam. Unsubscribe anytime. Prefs stay on this device.</p>
-          <div class="sb-welcome-actions">
-            <button type="button" class="sb-welcome-btn" data-welcome-next>See my deals</button>
-            <button type="button" class="sb-welcome-btn sb-welcome-btn-ghost" data-welcome-skip>Skip for now</button>
-          </div>
-        </section>
-      </div>
-    </div>
-
-    <div class="sb-welcome" id="sb-prefs" hidden aria-hidden="true">
-      <div class="sb-welcome-backdrop" data-prefs-cancel aria-hidden="true"></div>
-      <div class="sb-welcome-panel" role="dialog" aria-modal="true" aria-labelledby="sb-prefs-title">
-        <div class="sb-welcome-kicker">Your setup</div>
-        <h1 class="sb-welcome-brand" id="sb-prefs-title">Preferences</h1>
-        <p class="sb-welcome-lead">Stores, snacks, and whether you want The Weekly Snack.</p>
-
-        <section class="sb-prefs-section">
-          <h2 class="sb-prefs-section-title">Your stores</h2>
-          <p class="sb-prefs-section-text">Pick any stores to narrow the list, or leave them all off to keep every store.</p>
-          <div class="sb-welcome-chips" id="sb-prefs-retailers"></div>
-          <div class="sb-welcome-other" id="sb-prefs-other-wrap" hidden>
-            <label class="sb-welcome-other-label" for="sb-prefs-other-store">Which store?</label>
-            <input
-              class="sb-welcome-other-input"
-              id="sb-prefs-other-store"
-              type="text"
-              maxlength="80"
-              placeholder="e.g. Costco, Aldi, Publix…"
-              autocomplete="organization"
-            />
-            <p class="sb-welcome-other-hint">We’ll use this to decide which stores to add next.</p>
-          </div>
-        </section>
-
-        <section class="sb-prefs-section">
-          <h2 class="sb-prefs-section-title">What you snack on</h2>
-          <p class="sb-prefs-section-text">Pick the categories you restock most, or leave them off to keep everything.</p>
-          <div class="sb-welcome-chips" id="sb-prefs-categories"></div>
-        </section>
-
-        <section class="sb-prefs-section" id="sb-prefs-email-section">
-          <h2 class="sb-prefs-section-title">Emails</h2>
-          <div id="sb-prefs-email-signed-in" hidden>
-            <label class="sb-prefs-toggle" for="sb-prefs-weekly">
-              <input type="checkbox" id="sb-prefs-weekly" />
-              <span>Send me The Weekly Snack</span>
-            </label>
-          </div>
-          <div id="sb-prefs-email-signed-out" hidden>
-            <p class="sb-prefs-signin-note">Sign in to get The Weekly Snack and save these across devices.</p>
-            <form class="sb-welcome-signup" id="sb-prefs-signup" novalidate>
+          <div class="sb-welcome-panel-scroll">
+            <h2 class="sb-welcome-step-title">Don’t miss the ones worth a trip</h2>
+            <p class="sb-welcome-step-text">Optional. We’ll email when the good stuff drops, your filters stay either way.</p>
+            <form class="sb-welcome-signup" id="sb-welcome-signup" novalidate>
               <div class="sb-welcome-email-row">
                 <input
                   class="sb-welcome-email"
-                  id="sb-prefs-email"
+                  id="sb-welcome-email"
                   type="email"
                   name="email"
                   autocomplete="email"
@@ -6409,18 +6433,97 @@
                   placeholder="Email address"
                   aria-label="Email address"
                 />
-                <button type="submit" class="sb-welcome-email-submit" id="sb-prefs-email-submit">
-                  Sign in
+                <button type="submit" class="sb-welcome-email-submit" id="sb-welcome-email-submit">
+                  Subscribe
                 </button>
               </div>
-              <p class="sb-welcome-status" id="sb-prefs-email-status" aria-live="polite"></p>
+              <p class="sb-welcome-status" id="sb-welcome-email-status" aria-live="polite"></p>
             </form>
+            <p class="sb-welcome-note">No spam. Unsubscribe anytime. Prefs stay on this device.</p>
+          </div>
+          <div class="sb-welcome-panel-footer">
+            <div class="sb-welcome-actions">
+              <button type="button" class="sb-welcome-btn" data-welcome-next>See my deals</button>
+              <button type="button" class="sb-welcome-btn sb-welcome-btn-ghost" data-welcome-skip>Skip for now</button>
+            </div>
           </div>
         </section>
+      </div>
+    </div>
 
-        <div class="sb-prefs-actions">
-          <button type="button" class="sb-welcome-btn" id="sb-prefs-save">Save preferences</button>
-          <button type="button" class="sb-prefs-cancel" id="sb-prefs-cancel" data-prefs-cancel>Cancel</button>
+    <div class="sb-welcome" id="sb-prefs" hidden aria-hidden="true">
+      <div class="sb-welcome-backdrop" data-prefs-cancel aria-hidden="true"></div>
+      <div class="sb-welcome-panel" role="dialog" aria-modal="true" aria-labelledby="sb-prefs-title">
+        <button type="button" class="sb-welcome-close" id="sb-prefs-close" data-prefs-cancel aria-label="Close">&times;</button>
+        <div class="sb-welcome-panel-header">
+          <div class="sb-welcome-kicker">Your setup</div>
+          <h1 class="sb-welcome-brand" id="sb-prefs-title">Preferences</h1>
+          <p class="sb-welcome-lead">Stores, snacks, and whether you want The Weekly Snack.</p>
+        </div>
+
+        <div class="sb-welcome-panel-scroll">
+          <section class="sb-prefs-section">
+            <h2 class="sb-prefs-section-title">Your stores</h2>
+            <p class="sb-prefs-section-text">Pick any stores to narrow the list, or leave them all off to keep every store.</p>
+            <div class="sb-welcome-chips" id="sb-prefs-retailers"></div>
+            <div class="sb-welcome-other" id="sb-prefs-other-wrap" hidden>
+              <label class="sb-welcome-other-label" for="sb-prefs-other-store">Which store?</label>
+              <input
+                class="sb-welcome-other-input"
+                id="sb-prefs-other-store"
+                type="text"
+                maxlength="80"
+                placeholder="e.g. Costco, Aldi, Publix…"
+                autocomplete="organization"
+              />
+              <p class="sb-welcome-other-hint">We’ll use this to decide which stores to add next.</p>
+            </div>
+          </section>
+
+          <section class="sb-prefs-section">
+            <h2 class="sb-prefs-section-title">What you snack on</h2>
+            <p class="sb-prefs-section-text">Pick the categories you restock most, or leave them off to keep everything.</p>
+            <div class="sb-welcome-chips" id="sb-prefs-categories"></div>
+          </section>
+
+          <section class="sb-prefs-section" id="sb-prefs-email-section">
+            <h2 class="sb-prefs-section-title">Emails</h2>
+            <div id="sb-prefs-email-signed-in" hidden>
+              <label class="sb-prefs-toggle" for="sb-prefs-weekly">
+                <input type="checkbox" id="sb-prefs-weekly" />
+                <span>Send me The Weekly Snack</span>
+              </label>
+            </div>
+            <div id="sb-prefs-email-signed-out" hidden>
+              <p class="sb-prefs-signin-note">Sign in to get The Weekly Snack and save these across devices.</p>
+              <form class="sb-welcome-signup" id="sb-prefs-signup" novalidate>
+                <div class="sb-welcome-email-row">
+                  <input
+                    class="sb-welcome-email"
+                    id="sb-prefs-email"
+                    type="email"
+                    name="email"
+                    autocomplete="email"
+                    inputmode="email"
+                    enterkeyhint="done"
+                    placeholder="Email address"
+                    aria-label="Email address"
+                  />
+                  <button type="submit" class="sb-welcome-email-submit" id="sb-prefs-email-submit">
+                    Sign in
+                  </button>
+                </div>
+                <p class="sb-welcome-status" id="sb-prefs-email-status" aria-live="polite"></p>
+              </form>
+            </div>
+          </section>
+        </div>
+
+        <div class="sb-welcome-panel-footer">
+          <div class="sb-prefs-actions">
+            <button type="button" class="sb-welcome-btn" id="sb-prefs-save">Save preferences</button>
+            <button type="button" class="sb-prefs-cancel" id="sb-prefs-cancel" data-prefs-cancel>Cancel</button>
+          </div>
         </div>
       </div>
     </div>
@@ -6790,10 +6893,19 @@ document.addEventListener("DOMContentLoaded", function () {
     if (wasHidden) void emailAskPill.offsetWidth;
     emailAskPill.classList.add("is-on");
   }
+  function isWelcomeOrPrefsOpen() {
+    const welcomeEl = document.getElementById("sb-welcome");
+    const prefsEl = document.getElementById("sb-prefs");
+    return !!(
+      (welcomeEl && welcomeEl.classList.contains("open") && !welcomeEl.hidden) ||
+      (prefsEl && prefsEl.classList.contains("open") && !prefsEl.hidden)
+    );
+  }
   function syncFloatButton() {
     if (!emailAskPill) return;
     const bannerOpen = !!(emailAsk && emailAsk.classList.contains("is-on"));
     const panelOpen = !!(savingsPanel && savingsPanel.classList.contains("is-on"));
+    const modalOpen = isWelcomeOrPrefsOpen();
     const nStars = starredIds.size;
     const signedUp = !!sbAuthUser || hasEmailSubscription();
 
@@ -6802,7 +6914,7 @@ document.addEventListener("DOMContentLoaded", function () {
       closeSavingsPanel();
       return;
     }
-    if (bannerOpen || panelOpen) {
+    if (bannerOpen || panelOpen || modalOpen) {
       setFloatButton("", "");
       return;
     }
@@ -9163,14 +9275,17 @@ document.addEventListener("DOMContentLoaded", function () {
       root.setAttribute("aria-hidden", "false");
       root.classList.add("open");
       document.body.classList.add("sb-welcome-lock");
+      syncFloatButton();
     }
 
     function hideWelcomePanel() {
       root.classList.remove("open");
       document.body.classList.remove("sb-welcome-lock");
+      syncFloatButton();
       window.setTimeout(function() {
         root.hidden = true;
         root.setAttribute("aria-hidden", "true");
+        syncFloatButton();
       }, 320);
     }
 
@@ -9235,6 +9350,20 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
     });
+    const welcomeCloseBtn = document.getElementById("sb-welcome-close");
+    if (welcomeCloseBtn) {
+      welcomeCloseBtn.addEventListener("click", function() {
+        if (step === 0) {
+          draft.retailers.clear();
+          draft.categories.clear();
+          draft.otherOn = false;
+          draft.otherStore = "";
+          closeWelcome({ skipped: true });
+        } else {
+          closeWelcome({});
+        }
+      });
+    }
 
     if (existing && existing.completed) {
       applyWelcomePrefs(existing);
@@ -9495,16 +9624,19 @@ document.addEventListener("DOMContentLoaded", function () {
       root.classList.add("open");
       document.body.classList.add("sb-welcome-lock");
       open = true;
+      syncFloatButton();
     }
 
     function hidePanel() {
       root.classList.remove("open");
       document.body.classList.remove("sb-welcome-lock");
       open = false;
+      syncFloatButton();
       window.setTimeout(function() {
         if (!open) {
           root.hidden = true;
           root.setAttribute("aria-hidden", "true");
+          syncFloatButton();
         }
       }, 320);
     }
