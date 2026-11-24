@@ -3272,6 +3272,43 @@ def build_page_html(deals):
             font-size: 14px;
             font-weight: 600;
         }}
+        .sb-savings-calc {{
+            margin: 0 0 12px 0;
+            padding: 14px 16px;
+            border-radius: 12px;
+            background: #fff;
+            border: 1px solid #A2B88E;
+            border-left: 4px solid #A2B88E;
+            color: var(--text);
+        }}
+        .sb-savings-calc-headline {{
+            margin: 0 0 4px 0;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 1.35;
+            color: var(--text);
+        }}
+        .sb-savings-calc-sub {{
+            margin: 0 0 6px 0;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.4;
+            color: #374151;
+        }}
+        .sb-savings-calc-meta {{
+            margin: 0;
+            font-size: 12px;
+            font-weight: 500;
+            line-height: 1.4;
+            color: #6b7280;
+        }}
+        .sb-savings-calc-note {{
+            margin: 4px 0 0;
+            font-size: 12px;
+            font-weight: 500;
+            line-height: 1.4;
+            color: #6b7280;
+        }}
         .sb-auth-line {{
             margin: 0 0 12px 0;
             font-size: 12px;
@@ -5332,6 +5369,12 @@ def build_page_html(deals):
             </form>
         </div>
         <div class="sb-auth-line" id="sb-auth-line" hidden></div>
+        <div class="sb-savings-calc" id="sb-savings-calc" hidden>
+            <p class="sb-savings-calc-headline" id="sb-savings-calc-headline"></p>
+            <p class="sb-savings-calc-sub" id="sb-savings-calc-sub" hidden></p>
+            <p class="sb-savings-calc-meta" id="sb-savings-calc-meta" hidden></p>
+            <p class="sb-savings-calc-note" id="sb-savings-calc-note" hidden></p>
+        </div>
         <div class="sb-my-items-summary" id="sb-my-items-summary" hidden></div>
 
         <section class="sb-filter-bar-section" aria-label="Deal filters">
@@ -5864,6 +5907,11 @@ document.addEventListener("DOMContentLoaded", function () {{
   const SUPABASE_ANON_KEY = "{supabase_anon_key}";
   const MAGIC_LINK_MSG = "Check your email: tap the link to confirm and save your items.";
   const myItemsSummary = document.getElementById("sb-my-items-summary");
+  const savingsCalc = document.getElementById("sb-savings-calc");
+  const savingsCalcHeadline = document.getElementById("sb-savings-calc-headline");
+  const savingsCalcSub = document.getElementById("sb-savings-calc-sub");
+  const savingsCalcMeta = document.getElementById("sb-savings-calc-meta");
+  const savingsCalcNote = document.getElementById("sb-savings-calc-note");
   const myItemsNotify = document.getElementById("sb-my-items-notify");
   const myItemsEmpty = document.getElementById("sb-my-items-empty");
   const authLine = document.getElementById("sb-auth-line");
@@ -5877,6 +5925,9 @@ document.addEventListener("DOMContentLoaded", function () {{
   const starToast = document.getElementById("sb-star-toast");
   const offSaleCards = new Map();
   let lastSaleItems = {{}};
+  let savingsByItem = {{}};
+  // "pending" | "ok" | "error" — never treat a failed fetch as "too new".
+  let savingsLoadStatus = "pending";
   let sbAuthUser = null;
   let sbSyncing = false;
   let emailAskShownThisVisit = false;
@@ -7050,6 +7101,7 @@ document.addEventListener("DOMContentLoaded", function () {{
 
     if (searchWrap) searchWrap.classList.toggle("has-value", !!q);
     if (myItemsSummary) myItemsSummary.hidden = !myItemsView;
+    updateSavingsCalc();
     updateAuthLine();
     syncMyItemsNotifyVisibility();
     if (myItemsEmpty) myItemsEmpty.classList.remove("is-visible");
@@ -7346,11 +7398,175 @@ document.addEventListener("DOMContentLoaded", function () {{
     }})
     .catch(function() {{}});
 
+  fetch("savings.json", {{ cache: "no-store" }})
+    .then(function(r) {{
+      if (!r || !r.ok) throw new Error("savings.json HTTP " + (r && r.status));
+      return r.json();
+    }})
+    .then(function(data) {{
+      if (!data || typeof data !== "object" || Array.isArray(data)) {{
+        throw new Error("savings.json invalid payload");
+      }}
+      savingsByItem = data;
+      savingsLoadStatus = "ok";
+      updateSavingsCalc();
+    }})
+    .catch(function(err) {{
+      console.error("[SnackBuddy] savings.json failed to load", err);
+      savingsByItem = {{}};
+      savingsLoadStatus = "error";
+      updateSavingsCalc();
+    }});
+
   /* ============================
      WELCOME PREFS + SUPABASE AUTH
      ============================ */
   const WELCOME_STORAGE_KEY = "sb_welcome_v3";
   const RETAILER_ORDER = ["walmart", "target", "kroger", "harris teeter", "meijer"];
+
+  function pickSavingsForItem(itemId, preferredStores) {{
+    const byStore = savingsByItem[itemId];
+    if (!byStore || typeof byStore !== "object") return null;
+    let best = null;
+    const preferred = Array.isArray(preferredStores) ? preferredStores : [];
+    function consider(store, rec) {{
+      if (!rec) return;
+      const y = Number(rec.yearly_saving);
+      if (!isFinite(y)) return;
+      const pctRaw = rec.avg_pct_off;
+      const pct = (pctRaw === null || pctRaw === undefined || pctRaw === "")
+        ? null
+        : Number(pctRaw);
+      if (!best || y > best.yearly_saving) {{
+        best = {{
+          yearly_saving: y,
+          avg_pct_off: (pct !== null && isFinite(pct)) ? pct : null,
+          sale_weeks: Number(rec.sale_weeks) || 0,
+          store: store,
+        }};
+      }}
+    }}
+    if (preferred.length) {{
+      preferred.forEach(function(store) {{ consider(store, byStore[store]); }});
+      if (best) return best;
+    }}
+    Object.keys(byStore).forEach(function(store) {{ consider(store, byStore[store]); }});
+    return best;
+  }}
+
+  function updateSavingsCalc() {{
+    if (!savingsCalc || !savingsCalcHeadline) return;
+    if (!myItemsView) {{
+      savingsCalc.hidden = true;
+      return;
+    }}
+    savingsCalc.hidden = false;
+
+    const nStarred = starredIds.size;
+    if (savingsCalcNote) {{ savingsCalcNote.hidden = true; savingsCalcNote.textContent = ""; }}
+    if (nStarred === 0) {{
+      savingsCalcHeadline.textContent = "Star snacks you buy to see how much you could save.";
+      if (savingsCalcSub) {{ savingsCalcSub.hidden = true; savingsCalcSub.textContent = ""; }}
+      if (savingsCalcMeta) {{ savingsCalcMeta.hidden = true; savingsCalcMeta.textContent = ""; }}
+      return;
+    }}
+
+    if (savingsLoadStatus === "pending") {{
+      savingsCalcHeadline.textContent = "Calculating savings…";
+      if (savingsCalcSub) {{ savingsCalcSub.hidden = true; savingsCalcSub.textContent = ""; }}
+      if (savingsCalcMeta) {{ savingsCalcMeta.hidden = true; savingsCalcMeta.textContent = ""; }}
+      return;
+    }}
+
+    if (savingsLoadStatus === "error") {{
+      savingsCalcHeadline.textContent = "Savings estimate unavailable right now";
+      if (savingsCalcSub) {{
+        savingsCalcSub.hidden = false;
+        savingsCalcSub.textContent = "Try refreshing — we couldn’t load the savings data.";
+      }}
+      if (savingsCalcMeta) {{
+        savingsCalcMeta.hidden = false;
+        savingsCalcMeta.textContent = nStarred + " items starred";
+      }}
+      return;
+    }}
+
+    const preferred = (typeof getPreferredStoreList === "function")
+      ? getPreferredStoreList()
+      : [];
+    const hasSavedStores = preferred.length > 0;
+    let totalYearly = 0;
+    let pctSum = 0;
+    let pctCount = 0;
+    let counted = 0;
+    let tooNew = 0;
+    let noSaleLately = 0;
+
+    starredIds.forEach(function(itemId) {{
+      const pick = pickSavingsForItem(itemId, preferred);
+      if (!pick) {{
+        tooNew += 1;
+        return;
+      }}
+      totalYearly += pick.yearly_saving;
+      counted += 1;
+      if (pick.sale_weeks > 0 && pick.avg_pct_off !== null) {{
+        pctSum += pick.avg_pct_off;
+        pctCount += 1;
+      }} else {{
+        noSaleLately += 1;
+      }}
+    }});
+
+    if (counted === 0) {{
+      savingsCalcHeadline.textContent =
+        "Your favorites are too new to estimate yet — check back next week.";
+      if (savingsCalcSub) {{ savingsCalcSub.hidden = true; savingsCalcSub.textContent = ""; }}
+      if (savingsCalcMeta) {{
+        savingsCalcMeta.hidden = false;
+        savingsCalcMeta.textContent =
+          nStarred + " items starred · Star more snacks to see more savings" +
+          (tooNew ? (" · " + tooNew + " too new to estimate yet") : "");
+      }}
+      return;
+    }}
+
+    const dollars = Math.round(totalYearly);
+    savingsCalcHeadline.textContent =
+      "Stock up on sales and your favorites could save you about $" + dollars + " a year";
+    if (savingsCalcSub) {{
+      if (pctCount > 0) {{
+        const avgPct = Math.round((pctSum / pctCount) * 100);
+        savingsCalcSub.hidden = false;
+        savingsCalcSub.textContent =
+          "That’s about " + avgPct + "% off what you’d normally pay" +
+          (hasSavedStores ? " at your stores" : "") +
+          ". Based on 8 weeks of real prices.";
+      }} else {{
+        savingsCalcSub.hidden = false;
+        savingsCalcSub.textContent =
+          "None of these hit a sale in the last 8 weeks" +
+          (hasSavedStores ? " at your stores" : "") +
+          ". Based on 8 weeks of real prices.";
+      }}
+    }}
+    if (savingsCalcMeta) {{
+      savingsCalcMeta.hidden = false;
+      let meta = nStarred + " items starred · Star more snacks to see more savings";
+      if (tooNew) meta += " · " + tooNew + " too new to estimate yet";
+      savingsCalcMeta.textContent = meta;
+    }}
+    if (savingsCalcNote) {{
+      if (noSaleLately > 0) {{
+        savingsCalcNote.hidden = false;
+        savingsCalcNote.textContent =
+          noSaleLately + " of your favorites haven’t gone on sale lately.";
+      }} else {{
+        savingsCalcNote.hidden = true;
+        savingsCalcNote.textContent = "";
+      }}
+    }}
+  }}
 
   function countMatchingCards() {{
     const q = (searchInput?.value || "").trim().toLowerCase();
