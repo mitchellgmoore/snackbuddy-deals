@@ -1472,6 +1472,247 @@
         .sb-deals-empty.is-visible {
             display: block;
         }
+        .sb-browse-catalog {
+            max-width: var(--page-max);
+            margin: 8px auto 18px;
+            padding: 0 12px;
+            text-align: center;
+        }
+        .sb-browse-catalog-link {
+            appearance: none;
+            border: none;
+            background: none;
+            padding: 0;
+            font: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--blue);
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            cursor: pointer;
+        }
+        .sb-browse-catalog-link:hover {
+            color: var(--navy);
+        }
+        body.sb-catalog-open .sb-hero,
+        body.sb-catalog-open #sb-best-savings,
+        body.sb-catalog-open #sb-chip-row,
+        body.sb-catalog-open #sb-deals-shell,
+        body.sb-catalog-open #sb-my-items-notify,
+        body.sb-catalog-open #sb-auth-line,
+        body.sb-catalog-open .sb-browse-catalog {
+            display: none !important;
+        }
+        .sb-catalog {
+            max-width: var(--page-max);
+            margin: 0 auto 28px;
+            padding: 10px 12px 40px;
+        }
+        .sb-catalog[hidden] {
+            display: none !important;
+        }
+        .sb-catalog-back {
+            appearance: none;
+            border: none;
+            background: none;
+            padding: 0;
+            margin: 0 0 10px;
+            font: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--blue);
+            cursor: pointer;
+        }
+        .sb-catalog-title {
+            font-family: "Fraunces", Georgia, serif;
+            font-size: 1.6rem;
+            margin: 0 0 12px;
+            color: var(--navy);
+        }
+        .sb-catalog-search-wrap {
+            margin: 0 0 10px;
+        }
+        .sb-catalog-search {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: 1.5px solid #cbd5e1;
+            font: inherit;
+            font-size: 16px;
+            color: var(--navy);
+            background: #fff;
+        }
+        .sb-catalog-search:focus {
+            outline: 2px solid rgba(37, 99, 235, 0.28);
+            border-color: var(--blue);
+        }
+        .sb-catalog-chips {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 8px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding: 2px 0 10px;
+        }
+        .sb-catalog-chips::-webkit-scrollbar { display: none; }
+        .sb-catalog-stores-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin: 0 0 12px;
+        }
+        .sb-catalog-count {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+        .sb-catalog-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .sb-catalog-row {
+            display: grid;
+            grid-template-columns: 52px minmax(0, 1fr) 40px;
+            gap: 10px;
+            align-items: start;
+            padding: 10px;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            background: #fff;
+            cursor: pointer;
+            text-align: left;
+            font: inherit;
+            color: inherit;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .sb-catalog-row:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+        }
+        .sb-catalog-row.is-open {
+            border-color: rgba(162, 184, 142, 0.7);
+        }
+        .sb-catalog-thumb {
+            width: 52px;
+            height: 52px;
+            border-radius: 10px;
+            object-fit: contain;
+            background: #f8fafc;
+            border: 1px solid #eef2f7;
+        }
+        .sb-catalog-thumb-ph {
+            width: 52px;
+            height: 52px;
+            border-radius: 10px;
+            background: #f1f5f9;
+        }
+        .sb-catalog-main {
+            min-width: 0;
+        }
+        .sb-catalog-name {
+            font-weight: 700;
+            font-size: 14px;
+            line-height: 1.25;
+            color: var(--navy);
+            margin: 0 0 2px;
+        }
+        .sb-catalog-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.35;
+            margin: 0 0 4px;
+        }
+        .sb-catalog-price {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--navy);
+            margin: 0 0 6px;
+        }
+        .sb-catalog-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        .sb-catalog-badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 999px;
+            line-height: 1.3;
+        }
+        .sb-catalog-badge.is-sale {
+            background: rgba(162, 184, 142, 0.22);
+            color: #3f5d34;
+        }
+        .sb-catalog-badge.is-often {
+            background: rgba(37, 99, 235, 0.1);
+            color: #1d4ed8;
+        }
+        .sb-catalog-badge.is-new {
+            background: #e2e8f0;
+            color: #475569;
+        }
+        .sb-catalog-row .sb-star-btn {
+            margin-top: 4px;
+            justify-self: end;
+        }
+        .sb-catalog-expand {
+            grid-column: 1 / -1;
+            margin-top: 4px;
+            padding-top: 8px;
+            border-top: 1px solid #eef2f7;
+            font-size: 13px;
+            color: #334155;
+            line-height: 1.4;
+        }
+        .sb-catalog-expand[hidden] {
+            display: none !important;
+        }
+        .sb-catalog-flavor {
+            padding: 3px 0;
+        }
+        .sb-catalog-flavor.is-sale {
+            color: #3f5d34;
+            font-weight: 600;
+        }
+        .sb-catalog-more {
+            display: block;
+            width: 100%;
+            margin: 14px 0 0;
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: 1.5px solid #cbd5e1;
+            background: #fff;
+            font: inherit;
+            font-weight: 700;
+            color: var(--navy);
+            cursor: pointer;
+        }
+        .sb-catalog-more[hidden] {
+            display: none !important;
+        }
+        .sb-catalog-empty {
+            margin-top: 18px;
+            padding: 16px;
+            border-radius: 14px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            font-size: 14px;
+            color: #334155;
+            line-height: 1.45;
+            text-align: center;
+        }
+        .sb-catalog-empty a {
+            color: var(--blue);
+            font-weight: 600;
+        }
 
         .sb-tier-chips-section {
             max-width: var(--page-max);
@@ -3915,7 +4156,8 @@
       <button class="sb-nav-close" aria-label="Close menu">&times;</button>
     </div>
 
-    <a href="#deals-list" class="sb-nav-link">All Deals</a>
+    <a href="#deals-list" class="sb-nav-link" data-view="deals">All Deals</a>
+    <a href="?view=catalog" class="sb-nav-link" data-view="catalog" id="sb-nav-catalog">Browse all snacks</a>
     <a href="#about" class="sb-nav-link">About SnackBuddy</a>
     <a href="#how-it-works" class="sb-nav-link">How SnackBuddy Works</a>
     <a href="#how-we-pick-snacks" class="sb-nav-link">How We Pick Snacks</a>
@@ -6237,9 +6479,40 @@
         <div class="sb-my-items-empty" id="sb-my-items-empty" role="status" aria-live="polite">
             No saved items yet. Tap the ★ on any deal card to save it here — we’ll track when it goes on sale at each store.
         </div>
+        <p class="sb-browse-catalog" id="sb-browse-catalog-wrap">
+            <button type="button" class="sb-browse-catalog-link" id="sb-browse-catalog">Browse all snacks →</button>
+        </p>
 
         </div>
         </div>
+
+        <section class="sb-catalog" id="sb-catalog" hidden aria-label="Snack catalog">
+            <div class="sb-catalog-inner">
+                <button type="button" class="sb-catalog-back" id="sb-catalog-back">← Back to deals</button>
+                <h2 class="sb-catalog-title">Catalog</h2>
+                <div class="sb-catalog-search-wrap">
+                    <label class="visually-hidden" for="sb-catalog-search">Search products</label>
+                    <input
+                        type="search"
+                        id="sb-catalog-search"
+                        class="sb-catalog-search"
+                        placeholder="Search 559 products — Quest, Celsius, protein bars…"
+                        autocomplete="off"
+                        enterkeyhint="search"
+                    />
+                </div>
+                <div class="sb-catalog-chips" id="sb-catalog-chips" role="group" aria-label="Catalog categories"></div>
+                <div class="sb-catalog-stores-row">
+                    <button type="button" class="sb-chip sb-chip-stores" id="sb-catalog-stores-chip" aria-haspopup="dialog" aria-expanded="false" title="Choose your stores">
+                        <span id="sb-catalog-stores-label">My stores</span><span class="sb-chip-caret" aria-hidden="true">&#9662;</span>
+                    </button>
+                    <div class="sb-catalog-count" id="sb-catalog-count" aria-live="polite"></div>
+                </div>
+                <div class="sb-catalog-list" id="sb-catalog-list"></div>
+                <button type="button" class="sb-catalog-more" id="sb-catalog-more" hidden>Show more</button>
+                <div class="sb-catalog-empty" id="sb-catalog-empty" hidden role="status"></div>
+            </div>
+        </section>
 
         <!-- ============================ -->
         <!-- SECTION 3A: ABOUT            -->
@@ -7989,13 +8262,15 @@ document.addEventListener("DOMContentLoaded", function () {
       ev.stopPropagation();
       const host = btn.closest("[data-item-id]");
       if (!host) return;
-      const nameEl = host.querySelector(".card-title, .sb-savings-tile-name");
+      const nameEl = host.querySelector(".card-title, .sb-savings-tile-name, .sb-catalog-name");
       toggleStar(host.dataset.itemId || "", nameEl ? nameEl.textContent.trim() : "");
     });
   }
   bindStarClicks(grid);
   const bestSavings = document.getElementById("sb-best-savings");
   bindStarClicks(bestSavings);
+  const catalogRootEl = document.getElementById("sb-catalog");
+  bindStarClicks(catalogRootEl);
   if (bestSavings) {
     bestSavings.addEventListener("click", function(ev) {
       if (ev.target && ev.target.closest && ev.target.closest(".sb-star-btn")) return;
@@ -8103,6 +8378,7 @@ document.addEventListener("DOMContentLoaded", function () {
     storesChip.title = stores.length
       ? ("Showing: " + stores.map(displayRetailerName).join(", "))
       : "Showing all stores";
+    if (typeof window.__sbRefreshCatalog === "function") window.__sbRefreshCatalog();
   }
 
   function syncTierChips() {
@@ -8722,14 +8998,369 @@ document.addEventListener("DOMContentLoaded", function () {
     applyFiltersAndSort();
   }
 
-  searchToggle?.addEventListener("click", function() {
-    const open = !!(searchWrap && !searchWrap.hidden);
-    if (open && !(searchInput && String(searchInput.value || "").trim())) {
-      setSearchExpanded(false, false);
-    } else {
-      setSearchExpanded(true, true);
+  /* ============================
+     CATALOG VIEW
+     ============================ */
+  const catalogEl = document.getElementById("sb-catalog");
+  const catalogBack = document.getElementById("sb-catalog-back");
+  const catalogSearch = document.getElementById("sb-catalog-search");
+  const catalogChips = document.getElementById("sb-catalog-chips");
+  const catalogStoresChip = document.getElementById("sb-catalog-stores-chip");
+  const catalogStoresLabel = document.getElementById("sb-catalog-stores-label");
+  const catalogCountEl = document.getElementById("sb-catalog-count");
+  const catalogList = document.getElementById("sb-catalog-list");
+  const catalogMore = document.getElementById("sb-catalog-more");
+  const catalogEmpty = document.getElementById("sb-catalog-empty");
+  const browseCatalogBtn = document.getElementById("sb-browse-catalog");
+  let catalogView = false;
+  let catalogItems = [];
+  let catalogLoaded = false;
+  let catalogLoadPromise = null;
+  let catalogCategory = "";
+  let catalogQuery = "";
+  let catalogVisibleCount = 40;
+  let catalogExpandedId = "";
+  const CATALOG_PAGE_SIZE = 40;
+
+  function getCatalogStores() {
+    return getSavingsStores();
+  }
+
+  function syncCatalogStoresChip() {
+    if (!catalogStoresChip || !catalogStoresLabel) return;
+    const stores = Array.from(selected.retailer);
+    let label = "My stores";
+    if (stores.length === 1) label = displayRetailerName(stores[0]);
+    else if (stores.length > 1) label = stores.length + " stores";
+    catalogStoresLabel.textContent = label;
+    catalogStoresChip.classList.toggle("is-active", stores.length > 0);
+  }
+
+  function loadCatalogJson() {
+    if (catalogLoaded) return Promise.resolve(catalogItems);
+    if (catalogLoadPromise) return catalogLoadPromise;
+    catalogLoadPromise = fetch("catalog.json", { cache: "no-store" })
+      .then(function(r) {
+        if (!r || !r.ok) throw new Error("catalog.json HTTP " + (r && r.status));
+        return r.json();
+      })
+      .then(function(data) {
+        const items = (data && Array.isArray(data.items)) ? data.items : (Array.isArray(data) ? data : []);
+        catalogItems = items;
+        catalogLoaded = true;
+        return catalogItems;
+      })
+      .catch(function(err) {
+        console.error("[SnackBuddy] catalog.json failed", err);
+        catalogItems = [];
+        catalogLoaded = true;
+        return catalogItems;
+      });
+    return catalogLoadPromise;
+  }
+
+  function buildCatalogCategoryChips() {
+    if (!catalogChips) return;
+    const present = {};
+    catalogItems.forEach(function(it) {
+      const c = String(it.category || "").toLowerCase().trim();
+      if (c) present[c] = true;
+    });
+    const ordered = CATEGORY_PREFERRED.filter(function(c) { return present[c]; });
+    Object.keys(present).forEach(function(c) {
+      if (ordered.indexOf(c) === -1) ordered.push(c);
+    });
+    catalogChips.innerHTML = "";
+    [{ value: "", label: "All" }].concat(ordered.map(function(v) {
+      return { value: v, label: categoryChipLabel(v) };
+    })).forEach(function(opt) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "sb-chip sb-cat-chip";
+      btn.dataset.category = opt.value;
+      btn.textContent = opt.label;
+      btn.setAttribute("aria-pressed", opt.value === catalogCategory ? "true" : "false");
+      if (opt.value === catalogCategory) btn.classList.add("is-active");
+      btn.addEventListener("click", function() {
+        catalogCategory = opt.value || "";
+        catalogVisibleCount = CATALOG_PAGE_SIZE;
+        catalogExpandedId = "";
+        buildCatalogCategoryChips();
+        renderCatalogList();
+      });
+      catalogChips.appendChild(btn);
+    });
+  }
+
+  function catalogPriceRange(it, stores) {
+    const prices = it.prices || {};
+    const vals = [];
+    stores.forEach(function(s) {
+      const p = prices[s];
+      if (typeof p === "number" && p > 0) vals.push(p);
+    });
+    if (!vals.length) return "";
+    const lo = Math.min.apply(null, vals);
+    const hi = Math.max.apply(null, vals);
+    const fmt = function(n) { return "$" + (Math.round(n * 100) / 100).toFixed(2); };
+    if (Math.abs(lo - hi) < 0.005) return fmt(lo);
+    return fmt(lo) + "–" + fmt(hi);
+  }
+
+  function catalogCarriedStores(it, stores) {
+    const set = new Set((it.stores || []).map(normStoreKey));
+    return stores.filter(function(s) { return set.has(normStoreKey(s)); });
+  }
+
+  function catalogDisplayName(it) {
+    const brand = String(it.brand || "").trim();
+    const product = String(it.product_name || "").trim();
+    if (!brand) return product;
+    if (!product) return brand;
+    const b = brand.toLowerCase();
+    const p = product.toLowerCase();
+    if (p === b || p.indexOf(b + " ") === 0 || p.indexOf(b) === 0) return product;
+    return (brand + " " + product).trim();
+  }
+
+  function catalogOnSaleAtStores(it, stores) {
+    const sale = new Set((it.on_sale_stores || []).map(normStoreKey));
+    return stores.some(function(s) { return sale.has(normStoreKey(s)); });
+  }
+
+  function catalogMatchesQuery(it, q) {
+    if (!q) return true;
+    const hay = [
+      it.brand || "",
+      it.product_name || "",
+      catalogDisplayName(it),
+      it.item_id || "",
+      (it.flavors || []).join(" ")
+    ].join(" ").toLowerCase();
+    return hay.indexOf(q) !== -1;
+  }
+
+  function filteredCatalogItems() {
+    const stores = getCatalogStores();
+    const q = String(catalogQuery || "").trim().toLowerCase();
+    let rows = catalogItems.filter(function(it) {
+      if (catalogCategory && String(it.category || "").toLowerCase() !== catalogCategory) return false;
+      // Hide items not carried at any of the visitor's stores (BG defaults if none saved).
+      if (!catalogCarriedStores(it, stores).length) return false;
+      if (!catalogMatchesQuery(it, q)) return false;
+      return true;
+    });
+    rows = rows.slice().sort(function(a, b) {
+      const aSale = catalogOnSaleAtStores(a, stores) ? 1 : 0;
+      const bSale = catalogOnSaleAtStores(b, stores) ? 1 : 0;
+      if (aSale !== bSale) return bSale - aSale;
+      const aOften = a.goes_on_sale_often ? 1 : 0;
+      const bOften = b.goes_on_sale_often ? 1 : 0;
+      if (aOften !== bOften) return bOften - aOften;
+      const an = catalogDisplayName(a).toLowerCase();
+      const bn = catalogDisplayName(b).toLowerCase();
+      if (an < bn) return -1;
+      if (an > bn) return 1;
+      return (a.pack_size || 0) - (b.pack_size || 0);
+    });
+    return rows;
+  }
+
+  function catalogRowHtml(it, stores) {
+    const carried = catalogCarriedStores(it, stores);
+    const onSale = catalogOnSaleAtStores(it, stores);
+    const pack = Number(it.pack_size) || 0;
+    const packBit = pack > 1 ? (pack + "-pack") : "";
+    const flavorN = (it.flavors || []).length;
+    const flavorBit = flavorN === 1 ? "1 flavor" : (flavorN + " flavors");
+    const storeBit = carried.length
+      ? carried.map(displayRetailerName).join(", ")
+      : ((it.stores || []).map(displayRetailerName).join(", ") || "—");
+    const metaParts = [];
+    if (packBit) metaParts.push(packBit);
+    metaParts.push(flavorBit + " · " + storeBit);
+    const price = catalogPriceRange(it, stores.length ? stores : (it.stores || []));
+    const badges = [];
+    if (onSale) badges.push('<span class="sb-catalog-badge is-sale">On sale now</span>');
+    if (it.goes_on_sale_often) badges.push('<span class="sb-catalog-badge is-often">Goes on sale often</span>');
+    if (it.is_new) badges.push('<span class="sb-catalog-badge is-new">New</span>');
+    const img = it.image_url
+      ? ('<img class="sb-catalog-thumb" src="' + String(it.image_url).replace(/"/g, "&quot;") + '" alt="" loading="lazy" />')
+      : '<div class="sb-catalog-thumb-ph" aria-hidden="true"></div>';
+    const name = catalogDisplayName(it);
+    const starred = starredIds.has(it.item_id);
+    const open = catalogExpandedId === it.item_id;
+    let expand = "";
+    if (open) {
+      const flavorSale = it.on_sale_flavors || {};
+      const flavors = (it.flavors || []).slice();
+      if (!flavors.length) flavors.push("Standard");
+      // Ensure on-sale flavors appear even if missing from Description/Flavor list.
+      Object.keys(flavorSale).forEach(function(f) {
+        if (flavors.indexOf(f) === -1) flavors.push(f);
+      });
+      expand = '<div class="sb-catalog-expand">' + flavors.map(function(f) {
+        const rawStores = flavorSale[f] || [];
+        const visStores = rawStores.filter(function(s) {
+          return stores.indexOf(normStoreKey(s)) !== -1 || !stores.length;
+        });
+        // Fall back: item-level sale stores when flavor map is empty but item is on sale.
+        const useStores = visStores.length ? visStores : (onSale && !Object.keys(flavorSale).length ? (it.on_sale_stores || []) : []);
+        const saleHere = useStores.length > 0;
+        const saleNote = saleHere
+          ? (" · on sale at " + useStores.map(displayRetailerName).join(", "))
+          : "";
+        return '<div class="sb-catalog-flavor' + (saleHere ? " is-sale" : "") + '">' +
+          escapeHtml(f) + saleNote + "</div>";
+      }).join("") + "</div>";
     }
+    return (
+      '<article class="sb-catalog-row' + (open ? " is-open" : "") + '" data-item-id="' + escapeHtml(it.item_id) + '" role="button" tabindex="0">' +
+        img +
+        '<div class="sb-catalog-main">' +
+          '<p class="sb-catalog-name">' + escapeHtml(name) + "</p>" +
+          '<p class="sb-catalog-meta">' + escapeHtml(metaParts.join(" · ")) + "</p>" +
+          (price ? ('<p class="sb-catalog-price">' + escapeHtml(price) + "</p>") : "") +
+          (badges.length ? ('<div class="sb-catalog-badges">' + badges.join("") + "</div>") : "") +
+          (open ? expand : "") +
+        "</div>" +
+        '<button type="button" class="sb-star-btn' + (starred ? " is-starred" : "") + '" aria-pressed="' + (starred ? "true" : "false") + '" aria-label="' + (starred ? "Remove from My Items" : "Save to My Items") + '" title="' + (starred ? "Remove from My Items" : "Save to My Items") + '">★</button>' +
+      "</article>"
+    );
+  }
+
+  function escapeHtml(s) {
+    return String(s || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function renderCatalogList() {
+    if (!catalogList) return;
+    const stores = getCatalogStores();
+    const rows = filteredCatalogItems();
+    const shown = rows.slice(0, catalogVisibleCount);
+    catalogList.innerHTML = shown.map(function(it) { return catalogRowHtml(it, stores); }).join("");
+    if (catalogMore) {
+      catalogMore.hidden = shown.length >= rows.length;
+      catalogMore.textContent = "Show more (" + Math.min(CATALOG_PAGE_SIZE, Math.max(0, rows.length - shown.length)) + ")";
+    }
+    if (catalogCountEl) {
+      catalogCountEl.textContent = rows.length === 1 ? "1 product" : (rows.length + " products");
+    }
+    if (catalogEmpty) {
+      if (!rows.length) {
+        const q = String(catalogQuery || "").trim();
+        const safeQ = escapeHtml(q || "that");
+        catalogEmpty.hidden = false;
+        catalogEmpty.innerHTML = "No products match '" + safeQ + "'. Want us to track it? " +
+          '<a href="mailto:savewithsnackbuddy@gmail.com?subject=' + encodeURIComponent("Please track " + (q || "a snack")) + '">Email us</a>';
+      } else {
+        catalogEmpty.hidden = true;
+        catalogEmpty.innerHTML = "";
+      }
+    }
+    syncStarButtons();
+  }
+
+  function setCatalogUrl(on) {
+    try {
+      const url = new URL(window.location.href);
+      if (on) url.searchParams.set("view", "catalog");
+      else url.searchParams.delete("view");
+      const next = url.pathname + (url.searchParams.toString() ? "?" + url.searchParams.toString() : "") + url.hash;
+      window.history.replaceState({}, "", next);
+    } catch (err) {}
+  }
+
+  function openCatalogView(opts) {
+    opts = opts || {};
+    catalogView = true;
+    document.body.classList.add("sb-catalog-open");
+    if (catalogEl) catalogEl.hidden = false;
+    setCatalogUrl(true);
+    closeNav && closeNav();
+    loadCatalogJson().then(function() {
+      buildCatalogCategoryChips();
+      syncCatalogStoresChip();
+      renderCatalogList();
+      if (opts.focusSearch && catalogSearch) {
+        window.setTimeout(function() {
+          try { catalogSearch.focus(); } catch (err) {}
+        }, 50);
+      }
+      try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch (err) { window.scrollTo(0, 0); }
+    });
+    trackEvent("catalog_open", {});
+  }
+
+  function closeCatalogView() {
+    catalogView = false;
+    document.body.classList.remove("sb-catalog-open");
+    if (catalogEl) catalogEl.hidden = true;
+    setCatalogUrl(false);
+    syncFloatButton();
+  }
+
+  // Expose for stores popover / filter changes while catalog is open.
+  window.__sbRefreshCatalog = function() {
+    if (!catalogView) return;
+    syncCatalogStoresChip();
+    renderCatalogList();
+  };
+
+  searchToggle?.addEventListener("click", function() {
+    openCatalogView({ focusSearch: true });
   });
+  browseCatalogBtn?.addEventListener("click", function() {
+    openCatalogView({ focusSearch: false });
+  });
+  catalogBack?.addEventListener("click", function() {
+    closeCatalogView();
+  });
+  catalogMore?.addEventListener("click", function() {
+    catalogVisibleCount += CATALOG_PAGE_SIZE;
+    renderCatalogList();
+  });
+  catalogStoresChip?.addEventListener("click", function(ev) {
+    ev.preventDefault();
+    // Reuse the main stores popover / chip handler if available.
+    if (storesChip) storesChip.click();
+  });
+  let catalogSearchTimer = null;
+  catalogSearch?.addEventListener("input", function() {
+    clearTimeout(catalogSearchTimer);
+    catalogSearchTimer = setTimeout(function() {
+      catalogQuery = String(catalogSearch.value || "");
+      catalogVisibleCount = CATALOG_PAGE_SIZE;
+      catalogExpandedId = "";
+      renderCatalogList();
+    }, 120);
+  });
+  catalogList?.addEventListener("click", function(ev) {
+    const t = ev.target;
+    if (!t || !t.closest) return;
+    if (t.closest(".sb-star-btn")) return;
+    const row = t.closest(".sb-catalog-row");
+    if (!row || !catalogList.contains(row)) return;
+    const id = row.dataset.itemId || "";
+    catalogExpandedId = (catalogExpandedId === id) ? "" : id;
+    renderCatalogList();
+  });
+  document.querySelectorAll('a.sb-nav-link[data-view="catalog"]').forEach(function(a) {
+    a.addEventListener("click", function(ev) {
+      ev.preventDefault();
+      openCatalogView({ focusSearch: false });
+    });
+  });
+  document.querySelectorAll('a.sb-nav-link[data-view="deals"]').forEach(function(a) {
+    a.addEventListener("click", function() {
+      if (catalogView) closeCatalogView();
+    });
+  });
+
   if (searchClear) {
     searchClear.addEventListener("click", closeSearch);
   }
@@ -8760,6 +9391,11 @@ document.addEventListener("DOMContentLoaded", function () {
   updateChipRowScroll();
   syncStarButtons();
   applyFiltersAndSort();
+
+  try {
+    const bootParams = new URLSearchParams(window.location.search || "");
+    if (bootParams.get("view") === "catalog") openCatalogView({ focusSearch: true });
+  } catch (err) {}
 
   fetch("last_sale.json", { cache: "no-store" })
     .then(function(r) { return r.ok ? r.json() : null; })
