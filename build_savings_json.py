@@ -1,5 +1,5 @@
 """
-Build docs/savings.json — yearly savings estimates for My Items.
+Build docs/savings.json — 8-week sale history for My Items.
 
 Uses the last 56 days of snack-buddy Data/historical_master_prices.csv (status ok)
 plus Item Database baselines.
@@ -7,11 +7,10 @@ plus Item Database baselines.
 For each item_id (brand|product|pack) + retailer:
   - Split into 8 fixed week buckets.
   - Sale week: week's lowest price is ≥5% below baseline.
-  - weekly_saving = baseline − week low (sale weeks only).
-  - Stock-up model: you buy on sale and stock up until the next sale, so
-    yearly_saving = mean(weekly_saving on sale weeks) × 52.
-    (Not diluted by non-sale weeks.)
-  - avg_pct_off = mean % off across sale weeks (0–1 fraction).
+  - Each sale week counted ONCE: saving = baseline − week low.
+  - sale_weeks_8wk, total_8wk_savings (sum of those savings),
+    avg_pct_off, avg_weeks_between_sales.
+  - No ×52 / yearly projection.
 
 Skipped (not written):
   - fewer than 4 weeks with prices ("too_new")
@@ -19,8 +18,9 @@ Skipped (not written):
   - Walmart page title "(N pack) …" bundles ("walmart_bundle")
   - Kroger/HT chronic card discount vs baseline ("everyday_card")
 
-Items with 4+ weeks but zero sale weeks are kept with yearly_saving=0,
-avg_pct_off=null, sale_weeks=0.
+Items with 4+ weeks but zero sale weeks are kept with
+sale_weeks_8wk=0, total_8wk_savings=0, avg_pct_off=null,
+avg_weeks_between_sales=null.
 """
 
 from __future__ import annotations
@@ -52,7 +52,7 @@ ITEM_DB_CANDIDATES = [
 ]
 
 LOOKBACK_DAYS = 56
-WEEK_COUNT = 8  # LOOKBACK_DAYS // 7
+WEEK_COUNT = 8
 SALE_PCT_MIN = 0.05
 MIN_WEEKS = 4
 EVERYDAY_CARD_MIN_DAYS = 7
@@ -99,7 +99,6 @@ def is_kroger_family(retailer: str) -> bool:
 
 
 def load_baselines(path: Path) -> dict[tuple[str, str], float]:
-    """Map (item_id, retailer_n) → baseline price."""
     if openpyxl is None:
         raise SystemExit("openpyxl is required to read Item Database.xlsx")
 
@@ -144,7 +143,22 @@ def week_index(d: date, window_start: date) -> int | None:
     delta = (d - window_start).days
     if delta < 0 or delta >= LOOKBACK_DAYS:
         return None
-    return delta // 7  # 0..7
+    return delta // 7
+
+
+def avg_weeks_between(sale_week_idxs: list[int], observed_weeks: int) -> float | None:
+    if not sale_week_idxs:
+        return None
+    if len(sale_week_idxs) == 1:
+        return float(max(observed_weeks, 1))
+    gaps = [
+        sale_week_idxs[i] - sale_week_idxs[i - 1]
+        for i in range(1, len(sale_week_idxs))
+        if sale_week_idxs[i] > sale_week_idxs[i - 1]
+    ]
+    if not gaps:
+        return float(max(observed_weeks, 1))
+    return round(sum(gaps) / len(gaps), 1)
 
 
 def main() -> None:
@@ -197,7 +211,6 @@ def main() -> None:
 
     print(f"[Savings] History rows in window: {len(df):,}")
 
-    # Walmart title-bundle keys (item_id, retailer)
     walmart = df[df["retailer_n"].str.contains("walmart", na=False)].copy()
     walmart["page_title"] = walmart["page_title"].fillna("").astype(str)
     bundle_keys: set[tuple[str, str]] = set()
@@ -206,7 +219,6 @@ def main() -> None:
         if titles.map(lambda t: bool(_BUNDLE_TITLE_RE.match(t.strip()))).any():
             bundle_keys.add((item_id, retailer))
 
-    # Daily min price per item/retailer/day (for everyday-card share)
     daily = (
         df.groupby(["item_id", "retailer_n", "day"], sort=False)["price"]
         .min()
@@ -217,7 +229,6 @@ def main() -> None:
         key = (row.item_id, row.retailer_n)
         daily_prices.setdefault(key, []).append(float(row.price))
 
-    # Weekly min price
     weekly = (
         df.groupby(["item_id", "retailer_n", "week"], sort=False)["price"]
         .min()
@@ -233,7 +244,7 @@ def main() -> None:
         "no_baseline": 0,
     }
     out: dict[str, dict[str, dict]] = {}
-    yearly_by_item: list[float] = []
+    totals_by_item: list[float] = []
 
     pairs = weekly.groupby(["item_id", "retailer_n"], sort=False)
     for (item_id, retailer), wdf in pairs:
@@ -256,7 +267,6 @@ def main() -> None:
             skip_counts["too_new"] += 1
             continue
 
-        # Everyday card: kroger family, ≥70% of days at ≥5% below baseline
         if is_kroger_family(retailer):
             prices = daily_prices.get((item_id, retailer), [])
             n_days = len(prices)
@@ -267,50 +277,46 @@ def main() -> None:
                     skip_counts["everyday_card"] += 1
                     continue
 
-        # Sale-week savings only (stock-up: don't dilute with non-sale weeks).
         sale_savings: list[float] = []
         pct_offs: list[float] = []
-        sale_weeks = 0
+        sale_week_idxs: list[int] = []
         threshold = baseline * (1.0 - SALE_PCT_MIN)
-        for _w, low in sorted(week_lows.items()):
+        for w, low in sorted(week_lows.items()):
             if low <= threshold + 1e-9:
                 saving = max(0.0, baseline - low)
-                sale_weeks += 1
                 sale_savings.append(saving)
                 pct_offs.append(saving / baseline)
+                sale_week_idxs.append(int(w))
 
+        sale_weeks = len(sale_week_idxs)
         if sale_weeks >= 7:
             skip_counts["baseline_suspect"] += 1
             continue
 
-        # 4+ weeks with no sale weeks still count — $0 / year, no % off yet.
-        if sale_savings:
-            avg_sale_saving = sum(sale_savings) / len(sale_savings)
-            yearly = round(avg_sale_saving * 52, 2)
-            avg_pct = round(sum(pct_offs) / len(pct_offs), 4)
-        else:
-            yearly = 0.0
-            avg_pct = None
+        total_8wk = round(sum(sale_savings), 2) if sale_savings else 0.0
+        avg_pct = (
+            round(sum(pct_offs) / len(pct_offs), 4) if pct_offs else None
+        )
+        avg_gap = avg_weeks_between(sale_week_idxs, weeks)
 
         out.setdefault(item_id, {})[retailer] = {
-            "yearly_saving": yearly,
+            "sale_weeks_8wk": sale_weeks,
+            "total_8wk_savings": total_8wk,
             "avg_pct_off": avg_pct,
-            "sale_weeks": sale_weeks,
+            "avg_weeks_between_sales": avg_gap,
             "weeks": weeks,
         }
 
-    # Per-item best yearly for median
     for _item_id, retailers in out.items():
-        best = max(float(v["yearly_saving"]) for v in retailers.values())
-        yearly_by_item.append(best)
+        best = max(float(v["total_8wk_savings"]) for v in retailers.values())
+        totals_by_item.append(best)
 
     DOCS_DIR.mkdir(parents=True, exist_ok=True)
-    payload = out  # flat map per user spec
-    OUT_PATH.write_text(json.dumps(payload, separators=(",", ":")), encoding="utf-8")
+    OUT_PATH.write_text(json.dumps(out, separators=(",", ":")), encoding="utf-8")
 
     n_pairs = sum(len(v) for v in out.values())
-    median_yearly = (
-        round(statistics.median(yearly_by_item), 2) if yearly_by_item else 0.0
+    median_total = (
+        round(statistics.median(totals_by_item), 2) if totals_by_item else 0.0
     )
     size_kb = OUT_PATH.stat().st_size / 1024
 
@@ -318,7 +324,7 @@ def main() -> None:
     print("[Savings] Skipped:")
     for reason, n in skip_counts.items():
         print(f"  {reason}: {n}")
-    print(f"[Savings] Median yearly_saving (best store per item): ${median_yearly:.2f}")
+    print(f"[Savings] Median total_8wk_savings (best store per item): ${median_total:.2f}")
 
 
 if __name__ == "__main__":

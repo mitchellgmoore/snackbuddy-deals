@@ -1609,7 +1609,7 @@ def build_card_html(deal, walmart_ctx: dict | None = None):
             {buy_html}
             <div class="card-title">{name}</div>
             {flavor_html}
-            <div class="sb-last-sale-lines" hidden></div>
+            <details class="sb-deal-history" hidden><summary>See deal history <span class="sb-hist-chev">▾</span></summary><div class="sb-last-sale-lines"></div></details>
             <div class="card-footer">
                 {streak_html}
             </div>
@@ -2120,51 +2120,291 @@ def build_page_html(deals):
   display: none;
 }}
 
-@media (min-width: 900px) {{
-  .sb-filter-bar-section {{
-    display: none;
-  }}
+/* ============================ */
+/* CHIP ROW + FILTER SHEET          */
+/* ============================ */
 
-  .sb-filter-master {{
-    width: auto;
-    padding: 0 14px 0 12px;
-  }}
+.sb-chip-row-section {{
+  max-width: var(--page-max);
+  margin: 4px auto 6px;
+  padding: 0 8px 0 4px;
+  position: relative;
+  z-index: 30;
+}}
 
-  .sb-filter-master-label {{
-    display: inline;
-  }}
+.sb-chip-row-bar {{
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}}
 
-  .sb-results-count {{
-    display: inline;
-  }}
+.sb-chip-row-scroll {{
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+}}
 
-  .sb-deals-shell {{
-    display: grid;
-    grid-template-columns: 250px minmax(0, 1fr);
-    gap: 22px;
-    align-items: start;
-  }}
+.sb-chip-row-scroll.has-scroll-prev::before,
+.sb-chip-row-scroll.has-scroll-next::after {{
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 22px;
+  z-index: 2;
+  pointer-events: none;
+}}
 
-  .sb-deals-shell.is-filters-collapsed {{
-    grid-template-columns: minmax(0, 1fr);
-  }}
+.sb-chip-row-scroll.has-scroll-prev::before {{
+  left: 0;
+  background: linear-gradient(to right, var(--bg) 15%, rgba(243, 244, 246, 0));
+}}
 
-  .sb-filter-sidebar {{
-    display: block;
-    position: sticky;
-    top: 72px;
-    max-height: calc(100vh - 88px);
-    overflow: auto;
-    background: #ffffff;
-    border: 1px solid var(--border-subtle);
-    border-radius: 14px;
-    padding: 12px 12px 14px;
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-  }}
+.sb-chip-row-scroll.has-scroll-next::after {{
+  right: 0;
+  background: linear-gradient(to left, var(--bg) 15%, rgba(243, 244, 246, 0));
+}}
 
-  .sb-deals-shell.is-filters-collapsed .sb-filter-sidebar {{
-    display: none;
-  }}
+.sb-chip-row-track {{
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}}
+
+.sb-chip-row-track::-webkit-scrollbar {{
+  display: none;
+}}
+
+.sb-chip-row-inner {{
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 4px 5px;
+  min-width: min-content;
+}}
+
+.sb-chip-row-actions {{
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 0 5px;
+  background: var(--bg);
+  z-index: 3;
+}}
+
+.sb-category-chips {{
+  display: contents;
+}}
+
+.sb-chip-divider {{
+  flex: 0 0 1px;
+  align-self: stretch;
+  margin: 5px 2px;
+  background: #d1d5db;
+}}
+
+.sb-chip {{
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  border: 1px solid #111827;
+  background: #ffffff;
+  color: #111827;
+  border-radius: 999px;
+  padding: 9px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease, box-shadow 0.12s ease;
+}}
+
+.sb-chip[hidden] {{
+  display: none;
+}}
+
+.sb-chip:hover {{
+  background: #f9fafb;
+}}
+
+.sb-chip.is-active,
+.sb-chip[aria-expanded="true"] {{
+  background: #A2B88E;
+  border-color: #6f8a5a;
+  color: #14210c;
+  box-shadow: inset 0 0 0 1px #6f8a5a;
+}}
+
+.sb-chip-caret {{
+  font-size: 11px;
+  line-height: 1;
+}}
+
+.sb-chip-icon {{
+  min-width: 40px;
+  justify-content: center;
+  padding: 8px 11px;
+  font-size: 16px;
+}}
+
+.sb-chip-exit {{
+  border-color: #f59e0b;
+  background: #fffbeb;
+  color: #b45309;
+}}
+
+.sb-chip-badge {{
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #111827;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 18px;
+  text-align: center;
+}}
+
+.sb-chip-badge[hidden] {{
+  display: none;
+}}
+
+.sb-chip-meta {{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 2px 6px 0 4px;
+}}
+
+.sb-legend-link {{
+  border: none;
+  background: transparent;
+  padding: 2px 0;
+  color: #4b6638;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}}
+
+.sb-chip-meta .sb-results-count {{
+  display: inline;
+  margin-left: auto;
+}}
+
+.sb-badge-legend {{
+  margin: 6px 4px 4px;
+  padding: 10px 14px;
+  background: #ffffff;
+  border: 1px solid #A2B88E;
+  border-radius: 12px;
+  font-size: 13px;
+  color: #334155;
+}}
+
+.sb-badge-legend[hidden] {{
+  display: none;
+}}
+
+.sb-badge-legend-list {{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+  line-height: 1.35;
+}}
+
+.sb-chip-row-section .sb-search-wrap {{
+  margin: 4px 4px 2px;
+  position: relative;
+}}
+
+.sb-chip-row-section .sb-search-wrap[hidden] {{
+  display: none;
+}}
+
+.sb-chip-row-section .sb-search-input:focus {{
+  border-color: #A2B88E;
+  box-shadow: 0 0 0 3px rgba(162, 184, 142, 0.35);
+}}
+
+.sb-chip-row-section .sb-search-clear {{
+  display: block;
+}}
+
+.sb-stores-popover {{
+  min-width: 240px;
+  padding: 12px;
+}}
+
+.sb-popover-title {{
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: 6px;
+  color: var(--text-main);
+}}
+
+.sb-popover-footer {{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-subtle);
+}}
+
+.sb-popover-link {{
+  border: none;
+  background: transparent;
+  color: #4b6638;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+}}
+
+.sb-popover-done {{
+  border: 1px solid #6f8a5a;
+  background: #A2B88E;
+  color: #14210c;
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+}}
+
+.sb-filter-check input {{
+  accent-color: #6f8a5a;
+}}
+
+.sb-filter-sheet-scroll {{
+  max-height: 220px;
+  overflow-y: auto;
+}}
+
+.sb-deals-shell {{
+  display: block;
 }}
 
 .sb-filter-sidebar-head {{
@@ -3241,13 +3481,6 @@ def build_page_html(deals):
             fill: currentColor;
             stroke: currentColor;
         }}
-        .card.card-off-sale {{
-            opacity: 0.92;
-            background: #f8fafc;
-        }}
-        .card.card-off-sale .card-pricing .new-price {{
-            color: var(--text-muted);
-        }}
         .sb-last-sale-lines {{
             margin: 8px 0 0 0;
             display: grid;
@@ -3262,52 +3495,237 @@ def build_page_html(deals):
             color: #15803d;
             font-weight: 600;
         }}
-        .sb-my-items-summary {{
+        .sb-my-items-today-line {{
+            display: none;
+            width: 100%;
             margin: 0 0 12px 0;
-            padding: 12px 14px;
-            border-radius: 12px;
-            background: #fffbeb;
-            border: 1px solid #fde68a;
-            color: #92400e;
-            font-size: 14px;
-            font-weight: 600;
-        }}
-        .sb-savings-calc {{
-            margin: 0 0 12px 0;
-            padding: 14px 16px;
-            border-radius: 12px;
-            background: #fff;
+            padding: 10px 14px;
             border: 1px solid #A2B88E;
             border-left: 4px solid #A2B88E;
-            color: var(--text);
+            border-radius: 10px;
+            background: #ffffff;
+            color: var(--text-main);
+            font-size: 14px;
+            font-weight: 700;
+            font-family: inherit;
+            text-align: left;
+            cursor: pointer;
         }}
-        .sb-savings-calc-headline {{
-            margin: 0 0 4px 0;
+        .sb-my-items-today-line.is-visible {{
+            display: block;
+        }}
+        .sb-my-items-today-line:hover {{
+            background: #f6f9f2;
+        }}
+        /* My Items: condensed on-sale cards */
+        .sb-my-items-compact .card .badge,
+        .sb-my-items-compact .card .diamond-sparkles,
+        .sb-my-items-compact .card .streak,
+        .sb-my-items-compact .card .card-footer,
+        .sb-my-items-compact .card [class*="availability"] {{
+            display: none !important;
+        }}
+        .sb-my-items-compact .card .card-title {{
+            margin-bottom: 0;
+            min-height: 0;
+        }}
+        .sb-mi-extra {{
+            display: none;
+        }}
+        .sb-my-items-compact .sb-mi-extra {{
+            display: block;
+        }}
+        .sb-mi-store {{
+            margin: 0;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1.35;
+            color: #374151;
+        }}
+        .sb-mi-also {{
+            margin: 0;
+            font-size: 11px;
+            line-height: 1.35;
+            color: var(--text-muted);
+        }}
+        .sb-deal-history {{
+            margin: 6px 0 0 0;
+            font-size: 12px;
+            color: var(--text-muted);
+        }}
+        .sb-deal-history[hidden] {{
+            display: none;
+        }}
+        .sb-deal-history > summary {{
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-muted);
+            list-style: none;
+        }}
+        .sb-deal-history > summary::-webkit-details-marker {{
+            display: none;
+        }}
+        .sb-hist-chev {{
+            display: inline-block;
+            transition: transform 0.2s ease;
+        }}
+        .sb-deal-history[open] .sb-hist-chev {{
+            transform: rotate(180deg);
+        }}
+        .sb-deal-history .sb-last-sale-lines {{
+            margin-top: 6px;
+        }}
+        /* My Items: compact not-on-sale rows */
+        .sb-my-items-offrow {{
+            grid-column: 1 / -1;
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+        }}
+        .sb-my-items-offrow .sb-star-btn {{
+            position: static;
+            flex: 0 0 auto;
+            width: 32px;
+            height: 32px;
+            box-shadow: none;
+            background: transparent;
+        }}
+        .sb-offrow-main {{
+            flex: 1 1 auto;
+            min-width: 0;
+        }}
+        .sb-my-items-offrow .card-title {{
+            margin: 0;
+            min-height: 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+        }}
+        .sb-offrow-sub {{
+            margin: 2px 0 0 0;
+            font-size: 12px;
+            line-height: 1.35;
+            color: #6b7280;
+        }}
+        /* Savings slide-out panel */
+        .sb-savings-panel {{
+            position: fixed;
+            left: 12px;
+            right: 12px;
+            bottom: 12px;
+            z-index: 42;
+            max-width: 460px;
+            max-height: 80vh;
+            overflow-y: auto;
+            margin: 0 auto;
+            padding: 16px 44px 14px 16px;
+            border-radius: 14px;
+            background: #ffffff;
+            border: 1px solid var(--border-subtle);
+            border-top: 4px solid #A2B88E;
+            box-shadow: 0 12px 32px rgba(15, 23, 42, 0.18);
+            transform: translateY(120%);
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 0.28s ease, opacity 0.28s ease;
+        }}
+        .sb-savings-panel[hidden] {{
+            display: none;
+        }}
+        .sb-savings-panel.is-on {{
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }}
+        .sb-savings-panel-close {{
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 999px;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 22px;
+            line-height: 1;
+            cursor: pointer;
+        }}
+        .sb-savings-panel-close:hover {{
+            color: var(--text-main);
+            background: #f1f5f9;
+        }}
+        .sb-savings-panel-headline {{
+            margin: 0 0 6px 0;
             font-size: 16px;
             font-weight: 700;
             line-height: 1.35;
-            color: var(--text);
+            color: var(--text-main);
         }}
-        .sb-savings-calc-sub {{
+        .sb-savings-panel-line {{
             margin: 0 0 6px 0;
             font-size: 14px;
-            font-weight: 500;
             line-height: 1.4;
             color: #374151;
         }}
-        .sb-savings-calc-meta {{
-            margin: 0;
+        .sb-savings-panel-qty {{
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 8px 0 10px 0;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+        }}
+        .sb-savings-panel-qty[hidden] {{
+            display: none;
+        }}
+        .sb-savings-qty-btn {{
+            min-width: 34px;
+            padding: 5px 10px;
+            border: 1px solid #A2B88E;
+            border-radius: 999px;
+            background: #ffffff;
+            color: #374151;
+            font-size: 13px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+        }}
+        .sb-savings-qty-btn.is-active {{
+            background: #A2B88E;
+            color: #1f2937;
+        }}
+        .sb-savings-panel-how {{
+            margin: 10px 0 0 0;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 8px;
+        }}
+        .sb-savings-panel-how-title {{
+            margin: 0 0 6px 0;
             font-size: 12px;
-            font-weight: 500;
-            line-height: 1.4;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
             color: #6b7280;
         }}
-        .sb-savings-calc-note {{
-            margin: 4px 0 0;
+        .sb-savings-panel-list {{
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: grid;
+            gap: 4px;
+        }}
+        .sb-savings-panel-list li {{
             font-size: 12px;
-            font-weight: 500;
             line-height: 1.4;
-            color: #6b7280;
+            color: #4b5563;
         }}
         .sb-auth-line {{
             margin: 0 0 12px 0;
@@ -3567,6 +3985,11 @@ def build_page_html(deals):
         .sb-email-ask-pill:hover {{
             filter: brightness(0.98);
         }}
+        .sb-email-ask-pill[data-mode="items"],
+        .sb-email-ask-pill[data-mode="savings"] {{
+            border-color: #A2B88E;
+            background: #f6f9f2;
+        }}
         .sb-star-toast {{
             position: fixed;
             left: 50%;
@@ -3599,6 +4022,12 @@ def build_page_html(deals):
             }}
             .sb-email-ask-title {{
                 font-size: 13px;
+            }}
+            .sb-savings-panel {{
+                left: 8px;
+                right: 8px;
+                bottom: 8px;
+                padding: 14px 40px 12px 12px;
             }}
             .sb-email-ask-pill {{
                 right: 8px;
@@ -5283,17 +5712,31 @@ def build_page_html(deals):
 
         {best_savings_html}
 
-        <section class="sb-tools-bar" aria-label="Search and sort deals">
-            <div class="sb-filter-toggle-wrap">
-                <button type="button" class="sb-filter-master" id="sb-filter-master" aria-label="Filters" aria-expanded="true" aria-controls="sb-filter-sidebar">
-                    <svg class="sb-filter-master-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                        <path fill="currentColor" d="M4.5 5.75c0-.69.56-1.25 1.25-1.25h12.5c.69 0 1.25.56 1.25 1.25v.51c0 .24-.07.47-.2.67l-5.2 7.28v5.04c0 .41-.25.78-.63.92l-2.45 1.02c-.77.32-1.63-.24-1.63-1.08v-6.9L4.7 6.93c-.13-.2-.2-.43-.2-.67v-.51z"/>
-                    </svg>
-                    <span class="sb-filter-master-label" id="sb-filter-master-label">Hide Filters</span>
-                    <span class="sb-filter-master-badge" id="sb-filter-master-count" hidden>0</span>
+        <section class="sb-chip-row-section" id="sb-chip-row" aria-label="Filter deals">
+            <div class="sb-chip-row-bar">
+            <div class="sb-chip-row-scroll" id="sb-chip-row-scroll">
+                <div class="sb-chip-row-track" id="sb-chip-row-track">
+                    <div class="sb-chip-row-inner" id="sb-chip-row-inner">
+                        <button type="button" class="sb-chip sb-chip-exit" id="sb-my-items-exit" hidden title="Back to all deals">★ My Items &times;</button>
+                        <button type="button" class="sb-chip sb-chip-stores" id="sb-stores-chip" aria-haspopup="dialog" aria-expanded="false" aria-controls="sb-stores-popover" title="Choose your stores">
+                            <span id="sb-stores-chip-label">My stores</span><span class="sb-chip-caret" aria-hidden="true">&#9662;</span>
+                        </button>
+                        <span class="sb-chip-divider" aria-hidden="true"></span>
+                        <div class="sb-category-chips" id="sb-category-chips" role="group" aria-label="Category"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="sb-chip-row-actions" id="sb-chip-row-actions">
+                <button type="button" class="sb-chip sb-chip-icon" id="sb-filter-master" aria-label="Filters" aria-haspopup="dialog" aria-expanded="false" aria-controls="sb-filter-sheet">
+                    <span aria-hidden="true">&#9881;&#65039;</span>
+                    <span class="sb-chip-badge" id="sb-filter-master-count" hidden>0</span>
+                </button>
+                <button type="button" class="sb-chip sb-chip-icon" id="sb-search-toggle" aria-label="Search deals" aria-expanded="false" aria-controls="sb-search-wrap">
+                    <span aria-hidden="true">&#128269;</span>
                 </button>
             </div>
-            <div class="sb-search-wrap" id="sb-search-wrap">
+            </div>
+            <div class="sb-search-wrap" id="sb-search-wrap" hidden>
                 <label class="visually-hidden" for="sb-search-input">Search deals</label>
                 <input
                     type="search"
@@ -5303,45 +5746,27 @@ def build_page_html(deals):
                     autocomplete="off"
                     enterkeyhint="search"
                 />
-                <button type="button" class="sb-search-clear" id="sb-search-clear" aria-label="Clear search">&times;</button>
+                <button type="button" class="sb-search-clear" id="sb-search-clear" aria-label="Clear and close search">&times;</button>
             </div>
-            <div class="sb-results-count" id="sb-results-count" aria-live="polite"></div>
-            <div class="sb-sort-wrap">
-                <button type="button" class="sb-sort-pill" id="sb-sort-pill" aria-haspopup="listbox" aria-expanded="false" aria-controls="sb-sort-menu">
-                    Sort <span class="sb-filter-pill-chevron" aria-hidden="true">▾</span>
-                </button>
-                <div class="sb-sort-menu" id="sb-sort-menu" role="listbox" aria-label="Sort deals" hidden>
-                    <button type="button" class="sb-sort-option is-selected" role="option" data-sort="best" aria-selected="true">Best discount (default)</button>
-                    <button type="button" class="sb-sort-option" role="option" data-sort="pct-desc" aria-selected="false">% off: high to low</button>
-                    <button type="button" class="sb-sort-option" role="option" data-sort="saved-desc" aria-selected="false">Most $ saved</button>
-                    <button type="button" class="sb-sort-option" role="option" data-sort="price-asc" aria-selected="false">Price: low to high</button>
-                    <button type="button" class="sb-sort-option" role="option" data-sort="price-desc" aria-selected="false">Price: high to low</button>
-                </div>
-                <select id="sb-sort-select" class="sb-sort-select" aria-hidden="true" tabindex="-1">
-                    <option value="best" selected>Best discount (default)</option>
-                    <option value="pct-desc">% off: high to low</option>
-                    <option value="saved-desc">Most $ saved</option>
-                    <option value="price-asc">Price: low to high</option>
-                    <option value="price-desc">Price: high to low</option>
-                </select>
+            <div class="sb-chip-meta">
+                <button type="button" class="sb-legend-link" id="sb-legend-toggle" aria-expanded="false" aria-controls="sb-badge-legend">What do these badges mean?</button>
+                <div class="sb-results-count" id="sb-results-count" aria-live="polite"></div>
             </div>
-        </section>
-
-        <section class="sb-tier-chips-section" aria-label="Filter by deal strength">
-            <div class="sb-tier-chips-scroll" id="sb-tier-chips-scroll">
-                <button type="button" class="sb-filter-scroll-btn sb-filter-scroll-prev" id="sb-tier-scroll-prev" aria-label="Scroll deal tiers left">&#8249;</button>
-                <div class="sb-tier-chips-track" id="sb-tier-chips-track">
-                    <div class="sb-tier-chips">
-                        <span class="sb-tier-chips-label">Show</span>
-                        <button type="button" class="sb-tier-chip sb-my-items-chip" id="sb-my-items-chip" data-tier-filter="my-items" aria-pressed="false" title="Starred items">★ My Items</button>
-                        <button type="button" class="sb-tier-chip is-active" data-tier-filter="all" aria-pressed="true">All</button>
-                        <button type="button" class="sb-tier-chip" data-tier-filter="diamond" aria-pressed="false" title="25% off and up">💎 Diamond</button>
-                        <button type="button" class="sb-tier-chip" data-tier-filter="fire" aria-pressed="false" title="20–24% off">🔥 Fire</button>
-                        <button type="button" class="sb-tier-chip" data-tier-filter="strong" aria-pressed="false" title="10–19% off">💪 Strong</button>
-                    </div>
-                </div>
-                <button type="button" class="sb-filter-scroll-btn sb-filter-scroll-next" id="sb-tier-scroll-next" aria-label="Scroll deal tiers right">&#8250;</button>
+            <div class="sb-badge-legend" id="sb-badge-legend" hidden>
+                <ul class="sb-badge-legend-list">
+                    <li><span aria-hidden="true">💎</span> <strong>Diamond</strong> — 30%+ off its usual price</li>
+                    <li><span aria-hidden="true">🔥</span> <strong>Fire</strong> — 20–29% off</li>
+                    <li><span aria-hidden="true">💪</span> <strong>Strong</strong> — 10–19% off</li>
+                    <li><span aria-hidden="true">🏷️</span> <strong>On Sale</strong> — 5–9% off</li>
+                </ul>
             </div>
+            <select id="sb-sort-select" class="sb-sort-select" aria-hidden="true" tabindex="-1">
+                <option value="best" selected>Best discount (default)</option>
+                <option value="pct-desc">% off: high to low</option>
+                <option value="saved-desc">Most $ saved</option>
+                <option value="price-asc">Price: low to high</option>
+                <option value="price-desc">Price: high to low</option>
+            </select>
         </section>
         <div class="sb-my-items-notify" id="sb-my-items-notify" hidden>
             <p class="sb-my-items-notify-title">Get notified when these go on sale</p>
@@ -5369,27 +5794,8 @@ def build_page_html(deals):
             </form>
         </div>
         <div class="sb-auth-line" id="sb-auth-line" hidden></div>
-        <div class="sb-savings-calc" id="sb-savings-calc" hidden>
-            <p class="sb-savings-calc-headline" id="sb-savings-calc-headline"></p>
-            <p class="sb-savings-calc-sub" id="sb-savings-calc-sub" hidden></p>
-            <p class="sb-savings-calc-meta" id="sb-savings-calc-meta" hidden></p>
-            <p class="sb-savings-calc-note" id="sb-savings-calc-note" hidden></p>
-        </div>
-        <div class="sb-my-items-summary" id="sb-my-items-summary" hidden></div>
-
-        <section class="sb-filter-bar-section" aria-label="Deal filters">
-            <div class="sb-filter-bar">
-                <div class="sb-filter-bar-scroll" id="sb-filter-bar-scroll">
-                    <button type="button" class="sb-filter-scroll-btn sb-filter-scroll-prev" id="sb-filter-scroll-prev" aria-label="Scroll filters left">&#8249;</button>
-                    <div class="sb-filter-bar-track" id="sb-filter-bar-track">
-                        <div class="sb-filter-bar-inner" id="sb-filter-bar-inner"></div>
-                    </div>
-                    <button type="button" class="sb-filter-scroll-btn sb-filter-scroll-next" id="sb-filter-scroll-next" aria-label="Scroll filters right">&#8250;</button>
-                </div>
-            </div>
-        </section>
         <div class="sb-filter-dropdown-backdrop" id="sb-filter-dropdown-backdrop"></div>
-        <div class="sb-filter-dropdown-panel" id="sb-filter-dropdown-panel" hidden role="dialog" aria-modal="true"></div>
+        <div class="sb-filter-dropdown-panel sb-stores-popover" id="sb-stores-popover" hidden role="dialog" aria-label="My stores"></div>
         <div class="sb-filter-sheet-backdrop" id="sb-filter-sheet-backdrop"></div>
         <aside class="sb-filter-sheet" id="sb-filter-sheet" aria-label="All filters">
             <div class="sb-filter-sheet-header">
@@ -5404,18 +5810,12 @@ def build_page_html(deals):
         </aside>
 
         <div class="sb-deals-shell" id="sb-deals-shell">
-        <aside class="sb-filter-sidebar" id="sb-filter-sidebar" aria-label="Deal filters">
-            <div class="sb-filter-sidebar-head">
-                <div class="sb-filter-sidebar-title">Filters</div>
-                <button type="button" class="sb-filter-sidebar-clear" id="sb-filter-sidebar-clear">Clear all</button>
-            </div>
-            <div id="sb-filter-sidebar-body"></div>
-        </aside>
         <div class="sb-deals-main">
         <p class="sb-stores-line" id="sb-stores-line" hidden>
             Your stores: <span id="sb-stores-line-names"></span>
             · <button type="button" id="sb-stores-line-change">Change</button>
         </p>
+        <button type="button" class="sb-my-items-today-line" id="sb-my-items-today-line"></button>
         <section class="card-grid" id="deals-list">
             {cards_html}
         </section>
@@ -5721,7 +6121,24 @@ def build_page_html(deals):
         <p class="sb-email-ask-status" id="sb-email-ask-status"></p>
       </form>
     </div>
-    <button type="button" class="sb-email-ask-pill" id="sb-email-ask-pill" hidden>⭐ Favorites Alerts</button>
+    <div class="sb-savings-panel" id="sb-savings-panel" hidden role="dialog" aria-label="Your favorites savings" aria-live="polite">
+      <button type="button" class="sb-savings-panel-close" id="sb-savings-panel-close" aria-label="Close">&times;</button>
+      <p class="sb-savings-panel-headline" id="sb-savings-panel-headline"></p>
+      <p class="sb-savings-panel-line" id="sb-savings-panel-onsale"></p>
+      <p class="sb-savings-panel-line" id="sb-savings-panel-eight"></p>
+      <div class="sb-savings-panel-qty" id="sb-savings-panel-qty">
+        <span>Buy</span>
+        <button type="button" class="sb-savings-qty-btn is-active" data-qty="1" aria-pressed="true">1</button>
+        <button type="button" class="sb-savings-qty-btn" data-qty="2" aria-pressed="false">2</button>
+        <button type="button" class="sb-savings-qty-btn" data-qty="3" aria-pressed="false">3</button>
+        <span>each sale</span>
+      </div>
+      <div class="sb-savings-panel-how" id="sb-savings-panel-how">
+        <p class="sb-savings-panel-how-title">How we figured this</p>
+        <ul class="sb-savings-panel-list" id="sb-savings-panel-list"></ul>
+      </div>
+    </div>
+    <button type="button" class="sb-email-ask-pill" id="sb-email-ask-pill" data-mode="alerts" hidden>⭐ Favorites Alerts</button>
     <div class="sb-star-toast" id="sb-star-toast" hidden role="status" aria-live="polite">Saved ⭐ We&apos;ll let you know when it&apos;s on sale</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -5765,47 +6182,26 @@ document.addEventListener("DOMContentLoaded", function () {{
     }});
   }}
 
-  const filterBarInner = document.getElementById("sb-filter-bar-inner");
   const filterSheetBody = document.getElementById("sb-filter-sheet-body");
   const filterMasterBtn = document.getElementById("sb-filter-master");
-  const filterMasterLabel = document.getElementById("sb-filter-master-label");
   const filterMasterCount = document.getElementById("sb-filter-master-count");
-  const dealsShell = document.getElementById("sb-deals-shell");
-  const filterSidebar = document.getElementById("sb-filter-sidebar");
-  const filterSidebarBody = document.getElementById("sb-filter-sidebar-body");
-  const filterSidebarClear = document.getElementById("sb-filter-sidebar-clear");
   const resultsCount = document.getElementById("sb-results-count");
   const filterDropdownBackdrop = document.getElementById("sb-filter-dropdown-backdrop");
-  const filterDropdownPanel = document.getElementById("sb-filter-dropdown-panel");
   const filterSheet = document.getElementById("sb-filter-sheet");
   const filterSheetBackdrop = document.getElementById("sb-filter-sheet-backdrop");
   const filterSheetClose = document.getElementById("sb-filter-sheet-close");
   const filterSheetClear = document.getElementById("sb-filter-sheet-clear");
   const filterSheetDone = document.getElementById("sb-filter-sheet-done");
-  const filterTrack = document.getElementById("sb-filter-bar-track");
-  const filterBarScroll = document.getElementById("sb-filter-bar-scroll");
-  const filterScrollPrev = document.getElementById("sb-filter-scroll-prev");
-  const filterScrollNext = document.getElementById("sb-filter-scroll-next");
-  const tierTrack = document.getElementById("sb-tier-chips-track");
-  const tierBarScroll = document.getElementById("sb-tier-chips-scroll");
-  const tierScrollPrev = document.getElementById("sb-tier-scroll-prev");
-  const tierScrollNext = document.getElementById("sb-tier-scroll-next");
-
-  function isDesktopSidebar() {{
-    return window.matchMedia("(min-width: 900px)").matches;
-  }}
-
-  function updateFilterToggleLabel() {{
-    if (!filterMasterLabel) return;
-    if (!isDesktopSidebar()) {{
-      filterMasterLabel.textContent = "Filters";
-      filterMasterBtn?.setAttribute("aria-expanded", filterSheet?.classList.contains("open") ? "true" : "false");
-      return;
-    }}
-    const collapsed = !!dealsShell?.classList.contains("is-filters-collapsed");
-    filterMasterLabel.textContent = collapsed ? "Show Filters" : "Hide Filters";
-    filterMasterBtn?.setAttribute("aria-expanded", collapsed ? "false" : "true");
-  }}
+  const storesChip = document.getElementById("sb-stores-chip");
+  const storesChipLabel = document.getElementById("sb-stores-chip-label");
+  const storesPopover = document.getElementById("sb-stores-popover");
+  const categoryChipsBox = document.getElementById("sb-category-chips");
+  const myItemsExitChip = document.getElementById("sb-my-items-exit");
+  const searchToggle = document.getElementById("sb-search-toggle");
+  const chipRowScroll = document.getElementById("sb-chip-row-scroll");
+  const chipRowTrack = document.getElementById("sb-chip-row-track");
+  const legendToggle = document.getElementById("sb-legend-toggle");
+  const badgeLegend = document.getElementById("sb-badge-legend");
 
   /* ============================
      NAV DRAWER (RIGHT)
@@ -5847,7 +6243,7 @@ document.addEventListener("DOMContentLoaded", function () {{
   /* ============================
      FILTER BAR (Walmart-style pills)
      ============================ */
-  if (!grid || !cards.length || !filterBarInner) {{
+  if (!grid || !cards.length || !chipRowTrack) {{
     return;
   }}
 
@@ -5889,6 +6285,40 @@ document.addEventListener("DOMContentLoaded", function () {{
     {{ key: "category", label: "Category" }},
     {{ key: "brand", label: "Brand" }},
   ];
+  // Filters sheet only builds Section + Brand lists (Retailer = My stores chip, Category = chip row).
+  const SHEET_DEFS = FILTER_DEFS.filter(function(def) {{
+    return def.key === "section" || def.key === "brand";
+  }});
+  const TIER_OPTIONS = [
+    {{ value: "diamond", label: "💎 Diamond" }},
+    {{ value: "fire", label: "🔥 Fire" }},
+    {{ value: "strong", label: "💪 Strong" }},
+    {{ value: "sale", label: "🏷️ On Sale" }},
+  ];
+  const SORT_OPTIONS = [
+    {{ value: "best", label: "Best discount (default)" }},
+    {{ value: "pct-desc", label: "% off: high to low" }},
+    {{ value: "saved-desc", label: "Most $ saved" }},
+    {{ value: "price-asc", label: "Price: low to high" }},
+    {{ value: "price-desc", label: "Price: high to low" }},
+  ];
+  const CATEGORY_PREFERRED = [
+    "bars",
+    "energy drink",
+    "rtd protein shake",
+    "protein powder",
+    "chips & crunchy",
+  ];
+  const CATEGORY_CHIP_LABELS = {{
+    "bars": "Bars",
+    "energy drink": "Drinks",
+    "rtd protein shake": "Shakes",
+    "protein powder": "Powder",
+    "chips & crunchy": "Chips & Snacks",
+    "cookies & sweets": "Cookies & Sweets",
+    "meat snack": "Meat Stick",
+    "wraps": "Wraps",
+  }};
 
   const selected = {{
     retailer: new Set(),
@@ -5906,12 +6336,16 @@ document.addEventListener("DOMContentLoaded", function () {{
   const SUPABASE_URL = "{supabase_url}";
   const SUPABASE_ANON_KEY = "{supabase_anon_key}";
   const MAGIC_LINK_MSG = "Check your email: tap the link to confirm and save your items.";
-  const myItemsSummary = document.getElementById("sb-my-items-summary");
-  const savingsCalc = document.getElementById("sb-savings-calc");
-  const savingsCalcHeadline = document.getElementById("sb-savings-calc-headline");
-  const savingsCalcSub = document.getElementById("sb-savings-calc-sub");
-  const savingsCalcMeta = document.getElementById("sb-savings-calc-meta");
-  const savingsCalcNote = document.getElementById("sb-savings-calc-note");
+  const myItemsTodayLine = document.getElementById("sb-my-items-today-line");
+  const savingsPanel = document.getElementById("sb-savings-panel");
+  const savingsPanelClose = document.getElementById("sb-savings-panel-close");
+  const savingsPanelHeadline = document.getElementById("sb-savings-panel-headline");
+  const savingsPanelOnSale = document.getElementById("sb-savings-panel-onsale");
+  const savingsPanelEight = document.getElementById("sb-savings-panel-eight");
+  const savingsPanelQty = document.getElementById("sb-savings-panel-qty");
+  const savingsPanelHow = document.getElementById("sb-savings-panel-how");
+  const savingsPanelList = document.getElementById("sb-savings-panel-list");
+  let savingsBuyQty = 1;
   const myItemsNotify = document.getElementById("sb-my-items-notify");
   const myItemsEmpty = document.getElementById("sb-my-items-empty");
   const authLine = document.getElementById("sb-auth-line");
@@ -5956,6 +6390,7 @@ document.addEventListener("DOMContentLoaded", function () {{
     try {{
       localStorage.setItem(EMAIL_SUB_KEY, "1");
     }} catch (err) {{}}
+    syncFloatButton();
   }}
   function getEmailAskCount() {{
     try {{
@@ -5989,18 +6424,71 @@ document.addEventListener("DOMContentLoaded", function () {{
   }}
   function hideEmailAskPill() {{
     emailAskPillActive = false;
-    if (!emailAskPill) return;
-    emailAskPill.classList.remove("is-on");
-    window.setTimeout(function() {{
-      if (emailAskPill && !emailAskPill.classList.contains("is-on")) emailAskPill.hidden = true;
-    }}, 280);
+    syncFloatButton();
   }}
   function showEmailAskPill() {{
     if (!emailAskPill || sbAuthUser || hasEmailSubscription()) return;
     emailAskPillActive = true;
+    syncFloatButton();
+  }}
+
+  /* ============================
+     ONE CONTEXT-AWARE FLOAT BUTTON
+     modes: alerts (Favorites Alerts) | items (My Items (N)) | savings (💲 $X)
+     ============================ */
+  function setFloatButton(mode, label) {{
+    if (!emailAskPill) return;
+    if (!mode) {{
+      emailAskPill.classList.remove("is-on");
+      window.setTimeout(function() {{
+        if (emailAskPill && !emailAskPill.classList.contains("is-on")) emailAskPill.hidden = true;
+      }}, 280);
+      return;
+    }}
+    emailAskPill.dataset.mode = mode;
+    emailAskPill.textContent = label;
+    emailAskPill.setAttribute("aria-label",
+      mode === "savings" ? "See how much your favorites could save" :
+      (mode === "items" ? "Open My Items" : "Favorites alerts"));
+    const wasHidden = emailAskPill.hidden;
     emailAskPill.hidden = false;
-    void emailAskPill.offsetWidth;
+    if (wasHidden) void emailAskPill.offsetWidth;
     emailAskPill.classList.add("is-on");
+  }}
+  function syncFloatButton() {{
+    if (!emailAskPill) return;
+    const bannerOpen = !!(emailAsk && emailAsk.classList.contains("is-on"));
+    const panelOpen = !!(savingsPanel && savingsPanel.classList.contains("is-on"));
+    const nStars = starredIds.size;
+    const signedUp = !!sbAuthUser || hasEmailSubscription();
+
+    // Panel only makes sense on My Items with stars.
+    if (panelOpen && !(myItemsView && nStars > 0)) {{
+      closeSavingsPanel();
+      return;
+    }}
+    if (bannerOpen || panelOpen) {{
+      setFloatButton("", "");
+      return;
+    }}
+
+    if (myItemsView) {{
+      if (nStars > 0) {{
+        const today = computeTodaySavings().total;
+        const whole = Math.round(today);
+        setFloatButton("savings", whole > 0 ? ("💲 $" + whole) : "💲");
+      }} else {{
+        setFloatButton("", "");
+      }}
+      return;
+    }}
+    if (!signedUp) {{
+      if (emailAskPillActive) setFloatButton("alerts", "⭐ Favorites Alerts");
+      else setFloatButton("", "");
+      return;
+    }}
+    if (nStars > 0) setFloatButton("items", "⭐ My Items (" + nStars + ")");
+    else setFloatButton("", "");
   }}
   function hideEmailAskBannerOnly() {{
     clearEmailAskTimer();
@@ -6012,6 +6500,7 @@ document.addEventListener("DOMContentLoaded", function () {{
     window.setTimeout(function() {{
       if (emailAsk && !emailAsk.classList.contains("is-on")) emailAsk.hidden = true;
     }}, 300);
+    syncFloatButton();
   }}
   function dismissEmailAsk(countAsAsk) {{
     // Permanent dismiss for this interaction (× / submit / sign-in).
@@ -6060,6 +6549,7 @@ document.addEventListener("DOMContentLoaded", function () {{
     if (sbAuthUser || hasEmailSubscription()) return false;
 
     emailAskShownThisVisit = true;
+    if (savingsPanel && savingsPanel.classList.contains("is-on")) closeSavingsPanel();
     hideEmailAskPill();
     emailAsk.hidden = false;
     setEmailAskStatus("");
@@ -6068,6 +6558,7 @@ document.addEventListener("DOMContentLoaded", function () {{
     void emailAsk.offsetWidth;
     emailAsk.classList.add("is-on");
     document.body.classList.add("sb-email-ask-open");
+    syncFloatButton();
     scheduleEmailAskAutoCollapse(15000);
     return true;
   }}
@@ -6125,7 +6616,14 @@ document.addEventListener("DOMContentLoaded", function () {{
     }}
     if (emailAskPill) {{
       emailAskPill.addEventListener("click", function() {{
-        openEmailAskBanner({{ fromPill: true }});
+        const mode = emailAskPill.dataset.mode || "alerts";
+        if (mode === "savings") {{
+          openSavingsPanel();
+        }} else if (mode === "items") {{
+          if (!myItemsView) setTierSelection("my-items");
+        }} else {{
+          openEmailAskBanner({{ fromPill: true }});
+        }}
       }});
     }}
     if (emailAskEmail) {{
@@ -6481,6 +6979,7 @@ document.addEventListener("DOMContentLoaded", function () {{
           saveStarredIds();
           syncStarButtons();
           if (myItemsView) applyFiltersAndSort();
+          else syncFloatButton();
         }}
 
         return Promise.all(uploads).then(function() {{
@@ -6500,6 +6999,7 @@ document.addEventListener("DOMContentLoaded", function () {{
     updateAuthLine();
     syncMyItemsNotifyVisibility();
     syncWelcomeEditHint();
+    syncFloatButton();
     if (!sbAuthUser) return Promise.resolve();
     markEmailSubscribed();
     dismissEmailAsk(false);
@@ -6517,6 +7017,7 @@ document.addEventListener("DOMContentLoaded", function () {{
         updateAuthLine();
         syncMyItemsNotifyVisibility();
         syncWelcomeEditHint();
+        syncFloatButton();
         return;
       }}
       if (event === "TOKEN_REFRESHED" && sbAuthUser && sbAuthUser.id === user.id) {{
@@ -6597,12 +7098,23 @@ document.addEventListener("DOMContentLoaded", function () {{
     }});
   }}
 
+  function clearLastSaleLines(card) {{
+    const box = card.querySelector(".sb-last-sale-lines");
+    if (!box) return;
+    box.hidden = true;
+    box.innerHTML = "";
+    const wrap = box.closest(".sb-deal-history");
+    if (wrap) {{
+      wrap.hidden = true;
+      wrap.open = false;
+    }}
+  }}
+
   function fillLastSaleLines(card) {{
     const box = card.querySelector(".sb-last-sale-lines");
     if (!box) return;
     if (!myItemsView) {{
-      box.hidden = true;
-      box.innerHTML = "";
+      clearLastSaleLines(card);
       return;
     }}
     const id = card.dataset.itemId || "";
@@ -6618,6 +7130,8 @@ document.addEventListener("DOMContentLoaded", function () {{
     }});
     box.innerHTML = buildLastSaleLinesHtml(id, onSale);
     box.hidden = false;
+    const histWrap = box.closest(".sb-deal-history");
+    if (histWrap) histWrap.hidden = false;
   }}
 
   function ensureOffSaleCard(itemId) {{
@@ -6625,7 +7139,7 @@ document.addEventListener("DOMContentLoaded", function () {{
     const meta = lastSaleItems[itemId];
     if (!meta) return null;
     const card = document.createElement("div");
-    card.className = "card card-off-sale";
+    card.className = "sb-my-items-offrow";
     card.dataset.itemId = itemId;
     card.dataset.onSale = "0";
     card.dataset.tier = "sale";
@@ -6641,15 +7155,357 @@ document.addEventListener("DOMContentLoaded", function () {{
       '<button type="button" class="sb-star-btn is-starred" aria-label="Remove from My Items" aria-pressed="true" title="Remove from My Items">' +
       '<svg class="sb-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
       '<path d="M12 3.6l2.47 5.01 5.53.8-4 3.9.94 5.5L12 16.9l-4.94 2.6.94-5.5-4-3.9 5.53-.8L12 3.6z"/></svg></button>' +
-      '<div class="card-image-wrap"></div>' +
-      '<div class="card-content">' +
-      '<div class="card-pricing"><span class="new-price">Not on sale</span></div>' +
+      '<div class="sb-offrow-main">' +
       '<div class="card-title"></div>' +
-      '<div class="sb-last-sale-lines"></div>' +
+      '<div class="sb-offrow-sub"></div>' +
+      '<details class="sb-deal-history" hidden><summary>See deal history <span class="sb-hist-chev">▾</span></summary>' +
+      '<div class="sb-last-sale-lines"></div></details>' +
       '</div>';
     card.querySelector(".card-title").textContent = meta.product_name || meta.brand || "Saved item";
     offSaleCards.set(itemId, card);
     return card;
+  }}
+
+  function updateOffSaleRow(row, itemId) {{
+    const meta = lastSaleItems[itemId] || {{}};
+    const titleEl = row.querySelector(".card-title");
+    const name = meta.product_name || meta.brand || getStarName(itemId) || "Saved item";
+    if (titleEl && titleEl.textContent !== name) titleEl.textContent = name;
+    const sub = row.querySelector(".sb-offrow-sub");
+    if (!sub) return;
+    let text = "Not on sale right now";
+    const pick = pickSavingsForItem(itemId, getSavingsStores());
+    if (pick && pick.sale_weeks > 0 && pick.avg_pct_off !== null) {{
+      if (pick.avg_weeks_between !== null && pick.avg_weeks_between <= 1.5) {{
+        text += " · usually on sale most weeks, ~" + pick.avg_pct_off + "% off";
+      }} else {{
+        text += " · usually ~" + pick.avg_pct_off + "% off";
+        if (pick.avg_weeks_between !== null) {{
+          const wks = Math.max(1, Math.round(pick.avg_weeks_between));
+          text += wks === 1 ? " about every week" : (" about every " + wks + " weeks");
+        }}
+      }}
+    }}
+    sub.textContent = text;
+  }}
+
+  /* ============================
+     SAVINGS (My Items) — stores, today's live savings, 8-week history
+     ============================ */
+  // Bowling Green defaults — never include Harris Teeter (Baltimore) unless the visitor picks it.
+  const BG_DEFAULT_STORES = ["walmart", "target", "kroger", "meijer"];
+  const SAVINGS_DEFAULT_STORES = BG_DEFAULT_STORES;
+
+  function normStoreKey(s) {{
+    return String(s || "").toLowerCase().trim();
+  }}
+
+  function isHarrisTeeterKey(s) {{
+    const k = normStoreKey(s);
+    return k.indexOf("harris") !== -1 && k.indexOf("teeter") !== -1;
+  }}
+
+  function getActiveStoreFilter() {{
+    // Explicit My-stores selection wins (may include Harris Teeter).
+    // With nothing saved/selected, All Deals is BG-only (no HT).
+    if (selected.retailer.size > 0) return Array.from(selected.retailer);
+    return BG_DEFAULT_STORES.slice();
+  }}
+
+  function cardMatchesActiveStores(retailer) {{
+    const key = normStoreKey(retailer);
+    const stores = getActiveStoreFilter().map(normStoreKey);
+    if (!stores.length) return true;
+    return stores.indexOf(key) !== -1;
+  }}
+
+  function getSavingsStores() {{
+    const pref = getPreferredStoreList().map(normStoreKey).filter(Boolean);
+    return pref.length ? pref : SAVINGS_DEFAULT_STORES.slice();
+  }}
+
+  function fmtSavingsDollars(n) {{
+    const v = Number(n) || 0;
+    return v >= 1 ? ("$" + Math.round(v)) : ("$" + v.toFixed(2));
+  }}
+
+  function extractEndsText(card) {{
+    const el = card.querySelector('[class*="availability"]');
+    const txt = el ? String(el.textContent || "") : "";
+    const m = txt.match(/ends\\s+[A-Za-z]{{3}}\\s+\\d{{1,2}}\\/\\d{{1,2}}/i);
+    return m ? m[0] : "";
+  }}
+
+  // savings.json -> best retailer pick for one item (null = not in file / too new).
+  function pickSavingsForItem(itemId, stores) {{
+    const byStore = savingsByItem[itemId];
+    if (!byStore || typeof byStore !== "object") return null;
+    const allowed = new Set((Array.isArray(stores) ? stores : []).map(normStoreKey));
+    function toPick(store, rec) {{
+      if (!rec || typeof rec !== "object") return null;
+      const weeks = Number(rec.sale_weeks_8wk);
+      const total = Number(rec.total_8wk_savings);
+      const pctRaw = rec.avg_pct_off;
+      let pct = (pctRaw === null || pctRaw === undefined || pctRaw === "") ? null : Number(pctRaw);
+      if (pct !== null && !isFinite(pct)) pct = null;
+      if (pct !== null) pct = Math.round(pct <= 1 ? pct * 100 : pct);
+      const gapRaw = rec.avg_weeks_between_sales;
+      let gap = (gapRaw === null || gapRaw === undefined || gapRaw === "") ? null : Number(gapRaw);
+      if (gap !== null && (!isFinite(gap) || gap <= 0)) gap = null;
+      return {{
+        store: store,
+        sale_weeks: isFinite(weeks) ? weeks : 0,
+        total: isFinite(total) ? total : 0,
+        avg_pct_off: pct,
+        avg_weeks_between: gap,
+      }};
+    }}
+    function better(a, b) {{
+      if (!a) return b;
+      if (!b) return a;
+      if (b.total !== a.total) return b.total > a.total ? b : a;
+      return b.sale_weeks > a.sale_weeks ? b : a;
+    }}
+    let best = null;
+    Object.keys(byStore).forEach(function(store) {{
+      if (!allowed.has(normStoreKey(store))) return;
+      best = better(best, toPick(store, byStore[store]));
+    }});
+    if (best) return best;
+    // None of the visitor's stores have data — fall back to best overall,
+    // but never Harris Teeter unless it is one of their stores.
+    Object.keys(byStore).forEach(function(store) {{
+      if (isHarrisTeeterKey(store) && !allowed.has(normStoreKey(store))) return;
+      best = better(best, toPick(store, byStore[store]));
+    }});
+    return best;
+  }}
+
+  // Live deals on the page for starred items, restricted to the savings stores.
+  function computeTodaySavings() {{
+    const stores = new Set(getSavingsStores());
+    const byItem = new Map();
+    cards.forEach(function(card) {{
+      const id = card.dataset.itemId || "";
+      if (!id || !starredIds.has(id) || card.dataset.onSale !== "1") return;
+      const r = normStoreKey(card.dataset.retailer);
+      if (!stores.has(r)) return;
+      const price = parseFloat(card.dataset.price || "0") || 0;
+      let saved = parseFloat(card.dataset.saved || "0") || 0;
+      if (saved <= 0) {{
+        const oldEl = card.querySelector(".old-price");
+        const oldVal = oldEl ? parseFloat(String(oldEl.textContent || "").replace(/[^0-9.]/g, "")) : NaN;
+        if (isFinite(oldVal) && oldVal > price) saved = oldVal - price;
+      }}
+      if (!byItem.has(id)) byItem.set(id, []);
+      byItem.get(id).push({{ card: card, retailer: r, price: price, saved: saved }});
+    }});
+    let total = 0;
+    byItem.forEach(function(list) {{
+      list.sort(function(a, b) {{
+        if (a.saved !== b.saved) return b.saved - a.saved;
+        return a.price - b.price;
+      }});
+      if (list[0].saved > 0) total += list[0].saved;
+    }});
+    return {{ total: total, onSaleCount: byItem.size, byItem: byItem }};
+  }}
+
+  function getItemDisplayName(itemId) {{
+    const n = getStarName(itemId);
+    if (n) return n;
+    for (let i = 0; i < cards.length; i += 1) {{
+      if (cards[i].dataset.itemId === itemId) {{
+        const t = cards[i].querySelector(".card-title");
+        if (t && t.textContent.trim()) return t.textContent.trim();
+      }}
+    }}
+    return "Saved item";
+  }}
+
+  /* ---- My Items compact card decoration ---- */
+  function ensureMiExtras(card) {{
+    const content = card.querySelector(".card-content");
+    if (!content) return null;
+    let store = content.querySelector(".sb-mi-store");
+    let also = content.querySelector(".sb-mi-also");
+    if (!store || !also) {{
+      store = document.createElement("p");
+      store.className = "sb-mi-store sb-mi-extra";
+      also = document.createElement("p");
+      also.className = "sb-mi-also sb-mi-extra";
+      const anchor = content.querySelector(".sb-deal-history") || content.querySelector(".card-footer");
+      if (anchor) {{
+        content.insertBefore(store, anchor);
+        content.insertBefore(also, anchor);
+      }} else {{
+        content.appendChild(store);
+        content.appendChild(also);
+      }}
+    }}
+    return {{ store: store, also: also }};
+  }}
+
+  function setCardCompact(card, on, alsoEntry) {{
+    const cta = card.querySelector("a.view-button");
+    if (cta) {{
+      if (on) {{
+        if (cta.dataset.origCta === undefined) cta.dataset.origCta = cta.textContent;
+        cta.textContent = "See deal";
+      }} else if (cta.dataset.origCta !== undefined) {{
+        cta.textContent = cta.dataset.origCta;
+        delete cta.dataset.origCta;
+      }}
+    }}
+    if (!on) return;
+    const ex = ensureMiExtras(card);
+    if (!ex) return;
+    const ends = extractEndsText(card);
+    ex.store.textContent = "at " + displayRetailerName(card.dataset.retailer) + (ends ? " · " + ends : "");
+    if (alsoEntry) {{
+      ex.also.textContent = "Also on sale at " + displayRetailerName(alsoEntry.retailer) + ": " + money(alsoEntry.price);
+      ex.also.hidden = false;
+    }} else {{
+      ex.also.textContent = "";
+      ex.also.hidden = true;
+    }}
+  }}
+
+  /* ---- My Items slim top line ---- */
+  function renderMyItemsTodayLine(today) {{
+    if (!myItemsTodayLine) return;
+    const show = myItemsView && starredIds.size > 0 && today.total > 0;
+    myItemsTodayLine.classList.toggle("is-visible", show);
+    if (show) myItemsTodayLine.textContent = "Save " + fmtSavingsDollars(today.total) + " today on your favorites ›";
+  }}
+
+  /* ---- Savings slide-out panel ---- */
+  function renderSavingsPanel() {{
+    if (!savingsPanel || !savingsPanel.classList.contains("is-on")) return;
+    const total = starredIds.size;
+
+    if (savingsLoadStatus === "error") {{
+      savingsPanelHeadline.textContent = "Savings details are unavailable right now.";
+      savingsPanelOnSale.textContent = "Try refreshing in a bit.";
+      savingsPanelEight.hidden = true;
+      if (savingsPanelQty) savingsPanelQty.hidden = true;
+      if (savingsPanelHow) savingsPanelHow.hidden = true;
+      return;
+    }}
+    savingsPanelEight.hidden = false;
+    if (savingsPanelHow) savingsPanelHow.hidden = false;
+
+    const today = computeTodaySavings();
+    savingsPanelHeadline.textContent = today.total > 0
+      ? ("Your favorites on sale today: save " + fmtSavingsDollars(today.total))
+      : "None of your favorites are on sale today.";
+    savingsPanelOnSale.textContent = total === 1
+      ? (today.onSaleCount > 0 ? "Your favorite is on sale right now." : "Your favorite isn’t on sale right now.")
+      : (today.onSaleCount + " of your " + total + " favorites are on sale right now.");
+
+    if (savingsLoadStatus === "pending") {{
+      savingsPanelEight.textContent = "Calculating how often your favorites go on sale…";
+      if (savingsPanelQty) savingsPanelQty.hidden = true;
+      if (savingsPanelList) savingsPanelList.innerHTML = "";
+      return;
+    }}
+
+    const stores = getSavingsStores();
+    let count = 0;
+    let sum = 0;
+    let withData = 0;
+    const rows = [];
+    Array.from(starredIds).forEach(function(itemId) {{
+      const pick = pickSavingsForItem(itemId, stores);
+      rows.push({{ id: itemId, name: getItemDisplayName(itemId), pick: pick }});
+      if (!pick) return;
+      withData += 1;
+      count += pick.sale_weeks;
+      sum += pick.total;
+    }});
+
+    const qty = savingsBuyQty;
+    if (withData === 0) {{
+      savingsPanelEight.textContent = "Your favorites are too new to tell yet — check back soon.";
+    }} else if (count === 0) {{
+      savingsPanelEight.textContent = "In the last 2 months, none of your favorites went on sale.";
+    }} else {{
+      savingsPanelEight.textContent =
+        "In the last 2 months, your favorites went on sale " + count + (count === 1 ? " time" : " times") +
+        " — worth " + fmtSavingsDollars(sum * qty) + " if you’d caught each one" +
+        (qty > 1 ? " (buying " + qty + " each time)" : "") + ".";
+    }}
+    if (savingsPanelQty) {{
+      savingsPanelQty.hidden = !(count > 0 && sum > 0);
+      savingsPanelQty.querySelectorAll(".sb-savings-qty-btn").forEach(function(btn) {{
+        const on = Number(btn.getAttribute("data-qty")) === qty;
+        btn.classList.toggle("is-active", on);
+        btn.setAttribute("aria-pressed", on ? "true" : "false");
+      }});
+    }}
+
+    if (savingsPanelList) {{
+      rows.sort(function(a, b) {{ return a.name.localeCompare(b.name); }});
+      savingsPanelList.innerHTML = "";
+      rows.forEach(function(row) {{
+        const li = document.createElement("li");
+        let text;
+        if (!row.pick) {{
+          text = row.name + " — too new to tell yet";
+        }} else if (row.pick.sale_weeks <= 0) {{
+          text = row.name + " — no sales in 2 months";
+        }} else {{
+          text = row.name + " — on sale " + row.pick.sale_weeks + "× in 2 months" +
+            (row.pick.avg_pct_off !== null ? (", usually ~" + row.pick.avg_pct_off + "% off") : "");
+        }}
+        li.textContent = text;
+        savingsPanelList.appendChild(li);
+      }});
+    }}
+  }}
+
+  function openSavingsPanel() {{
+    if (!savingsPanel || !myItemsView || starredIds.size === 0) return;
+    savingsPanel.hidden = false;
+    void savingsPanel.offsetWidth;
+    savingsPanel.classList.add("is-on");
+    renderSavingsPanel();
+    syncFloatButton();
+    trackEvent("savings_panel_open", {{}});
+  }}
+
+  function closeSavingsPanel() {{
+    if (!savingsPanel) return;
+    const wasOn = savingsPanel.classList.contains("is-on");
+    savingsPanel.classList.remove("is-on");
+    window.setTimeout(function() {{
+      if (savingsPanel && !savingsPanel.classList.contains("is-on")) savingsPanel.hidden = true;
+    }}, 300);
+    if (wasOn) syncFloatButton();
+  }}
+
+  function wireSavingsPanel() {{
+    if (savingsPanelClose) savingsPanelClose.addEventListener("click", closeSavingsPanel);
+    if (myItemsTodayLine) myItemsTodayLine.addEventListener("click", openSavingsPanel);
+    if (savingsPanelQty) {{
+      savingsPanelQty.addEventListener("click", function(ev) {{
+        const btn = ev.target && ev.target.closest ? ev.target.closest(".sb-savings-qty-btn") : null;
+        if (!btn) return;
+        const n = parseInt(btn.getAttribute("data-qty") || "1", 10);
+        savingsBuyQty = (n >= 1 && n <= 3) ? n : 1;
+        renderSavingsPanel();
+      }});
+    }}
+    document.addEventListener("keydown", function(ev) {{
+      if (ev.key === "Escape" && savingsPanel && savingsPanel.classList.contains("is-on")) closeSavingsPanel();
+    }});
+    document.addEventListener("click", function(ev) {{
+      if (!savingsPanel || !savingsPanel.classList.contains("is-on")) return;
+      const t = ev.target;
+      if (!t || !t.closest) return;
+      if (savingsPanel.contains(t) || t.closest("#sb-my-items-today-line, #sb-email-ask-pill")) return;
+      closeSavingsPanel();
+    }});
   }}
 
   function toggleStar(itemId, itemName) {{
@@ -6668,6 +7524,7 @@ document.addEventListener("DOMContentLoaded", function () {{
     saveStarredIds();
     syncStarButtons();
     if (myItemsView) applyFiltersAndSort();
+    else syncFloatButton();
     if (sbAuthUser) {{
       pushStarToServer(adding ? "upsert" : "delete", itemId, name);
       if (adding) showStarSavedToast();
@@ -6710,8 +7567,7 @@ document.addEventListener("DOMContentLoaded", function () {{
     }});
   }}
 
-  const pillWraps = {{}};
-  let openDropdownKey = null;
+  let storesPopoverOpen = false;
 
   function cardMatchesTier(card) {{
     if (myItemsView) return true;
@@ -6720,17 +7576,96 @@ document.addEventListener("DOMContentLoaded", function () {{
     return selectedTiers.has(t);
   }}
 
-  function syncTierChips() {{
-    document.querySelectorAll(".sb-tier-chip[data-tier-filter]").forEach(function(el) {{
-      const mode = el.getAttribute("data-tier-filter") || "all";
-      let active = false;
-      if (mode === "my-items") active = myItemsView;
-      else if (myItemsView) active = false;
-      else if (mode === "all") active = selectedTiers.size === 0;
-      else active = selectedTiers.has(mode);
-      el.classList.toggle("is-active", active);
-      if (el.hasAttribute("aria-pressed")) el.setAttribute("aria-pressed", active ? "true" : "false");
+  // Number of active filters that live inside the Filters sheet (sort, section, brand, tiers).
+  function sheetFilterCount() {{
+    const sortMode = sortSelect ? (sortSelect.value || "best") : "best";
+    return (sortMode !== "best" ? 1 : 0)
+      + selected.section.size + selected.brand.size + selectedTiers.size;
+  }}
+
+  function categoryChipLabel(val) {{
+    return CATEGORY_CHIP_LABELS[String(val || "").toLowerCase()] || titleize(val);
+  }}
+
+  function categoryChoices() {{
+    const present = uniq(cards.map(function(c) {{ return c.dataset.category; }}));
+    const ordered = CATEGORY_PREFERRED.filter(function(c) {{ return present.indexOf(c) !== -1; }});
+    present.forEach(function(c) {{
+      if (ordered.indexOf(c) === -1) ordered.push(c);
     }});
+    return ordered;
+  }}
+
+  function buildCategoryChips() {{
+    if (!categoryChipsBox) return;
+    categoryChipsBox.innerHTML = "";
+    const opts = [{{ value: "", label: "All" }}].concat(categoryChoices().map(function(v) {{
+      return {{ value: v, label: categoryChipLabel(v) }};
+    }}));
+    opts.forEach(function(opt) {{
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "sb-chip sb-cat-chip";
+      btn.dataset.category = opt.value;
+      btn.setAttribute("aria-pressed", "false");
+      btn.textContent = opt.label;
+      btn.addEventListener("click", function() {{
+        setCategorySelection(opt.value);
+      }});
+      categoryChipsBox.appendChild(btn);
+    }});
+    syncCategoryChips();
+  }}
+
+  function syncCategoryChips() {{
+    if (!categoryChipsBox) return;
+    const multi = selected.category.size > 1;
+    const cur = selected.category.size === 1 ? Array.from(selected.category)[0] : "";
+    categoryChipsBox.querySelectorAll(".sb-cat-chip").forEach(function(el) {{
+      const v = el.dataset.category || "";
+      const active = !multi && v === cur;
+      el.classList.toggle("is-active", active);
+      el.setAttribute("aria-pressed", active ? "true" : "false");
+    }});
+  }}
+
+  function setCategorySelection(value) {{
+    selected.category.clear();
+    if (value) {{
+      selected.category.add(value);
+      trackEvent("filter_apply", {{
+        filter_type: "category",
+        filter_value: value
+      }});
+    }}
+    // Picking a category leaves the My Items view.
+    myItemsView = false;
+    syncTierChips();
+    applyFiltersAndSort();
+    refreshFilterOptionLists();
+  }}
+
+  function updateStoresChip() {{
+    if (!storesChip || !storesChipLabel) return;
+    const stores = Array.from(selected.retailer);
+    let label = "My stores";
+    if (stores.length === 1) label = displayRetailerName(stores[0]);
+    else if (stores.length > 1) label = stores.length + " stores";
+    storesChipLabel.textContent = label;
+    storesChip.classList.toggle("is-active", stores.length > 0 && !storesPopoverOpen);
+    storesChip.title = stores.length
+      ? ("Showing: " + stores.map(displayRetailerName).join(", "))
+      : "Showing all stores";
+  }}
+
+  function syncTierChips() {{
+    document.querySelectorAll("input[data-tier-check]").forEach(function(cb) {{
+      cb.checked = !myItemsView && selectedTiers.has(cb.value);
+    }});
+    if (myItemsExitChip) myItemsExitChip.hidden = !myItemsView;
+    syncCategoryChips();
+    updateBadges();
+    updateChipRowScroll();
   }}
 
   function setTierSelection(mode) {{
@@ -6769,7 +7704,7 @@ document.addEventListener("DOMContentLoaded", function () {{
 
     if (!cardMatchesTier(card)) return false;
     // My Items ignores the store filter for visibility counts too.
-    if (!myItemsView && excludeKey !== "retailer" && selected.retailer.size > 0 && !selected.retailer.has(r)) return false;
+    if (!myItemsView && excludeKey !== "retailer" && !cardMatchesActiveStores(r)) return false;
     if (excludeKey !== "section" && selected.section.size > 0 && !selected.section.has(s)) return false;
     if (excludeKey !== "category" && selected.category.size > 0 && !selected.category.has(c)) return false;
     if (excludeKey !== "brand" && selected.brand.size > 0 && !selected.brand.has(b)) return false;
@@ -6787,8 +7722,9 @@ document.addEventListener("DOMContentLoaded", function () {{
     }});
   }}
 
+  // Only sheet filters (section/brand) are pruned; stores + category are explicit chip choices.
   function pruneInvalidSelections() {{
-    FILTER_DEFS.forEach(function(def) {{
+    SHEET_DEFS.forEach(function(def) {{
       const available = new Set(getSmartOptionsForKey(def.key).map(function(opt) {{ return opt.value; }}));
       Array.from(selected[def.key]).forEach(function(val) {{
         if (!available.has(val)) selected[def.key].delete(val);
@@ -6796,26 +7732,8 @@ document.addEventListener("DOMContentLoaded", function () {{
     }});
   }}
 
-  function totalSelectedCount() {{
-    return selected.retailer.size + selected.section.size
-      + selected.category.size + selected.brand.size;
-  }}
-
   function updateBadges() {{
-    FILTER_DEFS.forEach(function(def) {{
-      const wrap = pillWraps[def.key];
-      if (!wrap) return;
-      const badge = wrap.querySelector(".sb-filter-pill-badge");
-      const n = selected[def.key].size;
-      if (!badge) return;
-      if (n > 0) {{
-        badge.textContent = String(n);
-        badge.hidden = false;
-      }} else {{
-        badge.hidden = true;
-      }}
-    }});
-    const total = totalSelectedCount();
+    const total = sheetFilterCount();
     if (filterMasterCount) {{
       if (total > 0) {{
         filterMasterCount.textContent = String(total);
@@ -6824,6 +7742,9 @@ document.addEventListener("DOMContentLoaded", function () {{
         filterMasterCount.hidden = true;
       }}
     }}
+    filterMasterBtn?.classList.toggle("is-active", total > 0 && !(filterSheet?.classList.contains("open")));
+    syncCategoryChips();
+    updateStoresChip();
   }}
 
   function syncCheckboxes(key) {{
@@ -6836,67 +7757,145 @@ document.addEventListener("DOMContentLoaded", function () {{
     FILTER_DEFS.forEach(function(def) {{ syncCheckboxes(def.key); }});
   }}
 
-  function closeAllDropdowns() {{
-    openDropdownKey = null;
-    Object.keys(pillWraps).forEach(function(k) {{
-      pillWraps[k].classList.remove("is-open");
-      const btn = pillWraps[k].querySelector(".sb-filter-pill");
-      if (btn) btn.setAttribute("aria-expanded", "false");
+  /* ---------- My stores popover ---------- */
+  function storeChoices() {{
+    const present = uniq(cards.map(function(c) {{ return c.dataset.retailer; }}));
+    const ordered = RETAILER_ORDER.filter(function(r) {{ return present.indexOf(r) !== -1; }});
+    present.forEach(function(r) {{
+      if (ordered.indexOf(r) === -1) ordered.push(r);
     }});
-    if (filterDropdownPanel) {{
-      filterDropdownPanel.hidden = true;
-      filterDropdownPanel.innerHTML = "";
-    }}
-    filterDropdownBackdrop?.classList.remove("open");
+    return ordered;
   }}
 
-  function positionDropdownPanel(anchorBtn) {{
-    if (!filterDropdownPanel || !anchorBtn) return;
-    filterDropdownPanel.hidden = false;
-    const rect = anchorBtn.getBoundingClientRect();
-    const panelWidth = filterDropdownPanel.offsetWidth;
-    const panelHeight = filterDropdownPanel.offsetHeight;
-    let left = rect.left;
+  function persistStoreSelection() {{
+    const existing = loadWelcomePrefs() || {{ completed: true, categories: [] }};
+    const next = Object.assign({{}}, existing, {{
+      completed: true,
+      retailers: Array.from(selected.retailer),
+    }});
+    saveWelcomePrefs(next);
+  }}
+
+  function onStoreToggle(value, checked) {{
+    if (checked) {{
+      selected.retailer.add(value);
+      trackEvent("filter_apply", {{
+        filter_type: "retailer",
+        filter_value: value
+      }});
+    }} else {{
+      selected.retailer.delete(value);
+    }}
+    persistStoreSelection();
+    syncCheckboxes("retailer");
+    updateBadges();
+    applyFiltersAndSort();
+    refreshFilterOptionLists();
+    updateStoresLine();
+  }}
+
+  function buildStoresPopover() {{
+    if (!storesPopover) return;
+    storesPopover.innerHTML = "";
+    const title = document.createElement("div");
+    title.className = "sb-popover-title";
+    title.textContent = "My stores";
+    storesPopover.appendChild(title);
+    storeChoices().forEach(function(val) {{
+      const label = document.createElement("label");
+      label.className = "sb-filter-check";
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.value = val;
+      cb.dataset.filterKey = "retailer";
+      cb.checked = selected.retailer.has(val);
+      cb.addEventListener("change", function() {{
+        onStoreToggle(val, cb.checked);
+      }});
+      const span = document.createElement("span");
+      span.textContent = displayRetailerName(val);
+      label.appendChild(cb);
+      label.appendChild(span);
+      storesPopover.appendChild(label);
+    }});
+    const footer = document.createElement("div");
+    footer.className = "sb-popover-footer";
+    const allBtn = document.createElement("button");
+    allBtn.type = "button";
+    allBtn.className = "sb-popover-link";
+    allBtn.textContent = "Show all stores";
+    allBtn.addEventListener("click", function() {{
+      selected.retailer.clear();
+      persistStoreSelection();
+      syncCheckboxes("retailer");
+      updateBadges();
+      applyFiltersAndSort();
+      refreshFilterOptionLists();
+      updateStoresLine();
+    }});
+    const done = document.createElement("button");
+    done.type = "button";
+    done.className = "sb-popover-done";
+    done.textContent = "Done";
+    done.addEventListener("click", closeStoresPopover);
+    footer.appendChild(allBtn);
+    footer.appendChild(done);
+    storesPopover.appendChild(footer);
+  }}
+
+  function positionStoresPopover() {{
+    if (!storesPopover || !storesChip) return;
+    const rect = storesChip.getBoundingClientRect();
+    const panelWidth = storesPopover.offsetWidth;
+    const panelHeight = storesPopover.offsetHeight;
+    let left = Math.max(8, Math.min(rect.left, window.innerWidth - panelWidth - 8));
     let top = rect.bottom + 6;
-    left = Math.max(8, Math.min(left, window.innerWidth - panelWidth - 8));
     if (top + panelHeight > window.innerHeight - 8) {{
       top = Math.max(8, rect.top - panelHeight - 6);
     }}
-    filterDropdownPanel.style.left = left + "px";
-    filterDropdownPanel.style.top = top + "px";
+    storesPopover.style.left = left + "px";
+    storesPopover.style.top = top + "px";
   }}
 
-  function openDropdown(key) {{
-    closeAllDropdowns();
-    if (typeof closeSortMenu === "function") closeSortMenu();
-    const wrap = pillWraps[key];
-    if (!wrap || !filterDropdownPanel) return;
-    const btn = wrap.querySelector(".sb-filter-pill");
-    if (!btn) return;
-
-    openDropdownKey = key;
-    wrap.classList.add("is-open");
-    btn.setAttribute("aria-expanded", "true");
-    buildCheckboxList(filterDropdownPanel, key);
-    const def = FILTER_DEFS.find(function(d) {{ return d.key === key; }});
-    filterDropdownPanel.setAttribute("aria-label", (def ? def.label : "Filter") + " options");
-    positionDropdownPanel(btn);
+  function openStoresPopover() {{
+    if (!storesPopover || !storesChip) return;
+    closeFilterSheet();
+    buildStoresPopover();
+    storesPopover.hidden = false;
+    storesPopoverOpen = true;
+    storesChip.setAttribute("aria-expanded", "true");
+    positionStoresPopover();
     filterDropdownBackdrop?.classList.add("open");
+    updateStoresChip();
   }}
 
+  function closeStoresPopover() {{
+    if (!storesPopoverOpen && (!storesPopover || storesPopover.hidden)) return;
+    storesPopoverOpen = false;
+    if (storesPopover) {{
+      storesPopover.hidden = true;
+      storesPopover.innerHTML = "";
+    }}
+    storesChip?.setAttribute("aria-expanded", "false");
+    filterDropdownBackdrop?.classList.remove("open");
+    updateStoresChip();
+  }}
+
+  /* ---------- Filters sheet ---------- */
   function openFilterSheet() {{
+    closeStoresPopover();
     buildFilterSheet();
     filterSheet?.classList.add("open");
     filterSheetBackdrop?.classList.add("open");
     filterMasterBtn?.setAttribute("aria-expanded", "true");
-    closeAllDropdowns();
-    if (typeof closeSortMenu === "function") closeSortMenu();
+    updateBadges();
   }}
 
   function closeFilterSheet() {{
     filterSheet?.classList.remove("open");
     filterSheetBackdrop?.classList.remove("open");
-    updateFilterToggleLabel();
+    filterMasterBtn?.setAttribute("aria-expanded", "false");
+    updateBadges();
   }}
 
   function onFilterChange(key, value, checked) {{
@@ -6948,145 +7947,86 @@ document.addEventListener("DOMContentLoaded", function () {{
     if (filterSheet?.classList.contains("open")) {{
       buildFilterSheet();
     }}
-    if (isDesktopSidebar()) {{
-      buildFilterSidebar();
-    }}
-    if (openDropdownKey && filterDropdownPanel && !filterDropdownPanel.hidden) {{
-      const wrap = pillWraps[openDropdownKey];
-      const btn = wrap?.querySelector(".sb-filter-pill");
-      buildCheckboxList(filterDropdownPanel, openDropdownKey);
-      if (btn) positionDropdownPanel(btn);
-    }}
   }}
 
-  function buildFilterBar() {{
-    filterBarInner.innerHTML = "";
-    FILTER_DEFS.forEach(function(def) {{
-      const wrap = document.createElement("div");
-      wrap.className = "sb-filter-pill-wrap";
-      wrap.dataset.filterKey = def.key;
-
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "sb-filter-pill";
-      btn.setAttribute("aria-expanded", "false");
-      btn.innerHTML = def.label + ' <span class="sb-filter-pill-chevron" aria-hidden="true">▾</span>';
-
-      const badge = document.createElement("span");
-      badge.className = "sb-filter-pill-badge";
-      badge.hidden = true;
-      btn.appendChild(badge);
-
-      btn.addEventListener("click", function(e) {{
-        e.stopPropagation();
-        if (wrap.classList.contains("is-open")) closeAllDropdowns();
-        else openDropdown(def.key);
-      }});
-
-      wrap.appendChild(btn);
-      filterBarInner.appendChild(wrap);
-      pillWraps[def.key] = wrap;
-    }});
+  function makeSheetGroup(titleText) {{
+    const group = document.createElement("div");
+    group.className = "sb-filter-sheet-group";
+    const title = document.createElement("div");
+    title.className = "sb-filter-sheet-group-title";
+    title.textContent = titleText;
+    group.appendChild(title);
+    return group;
   }}
 
   function buildFilterSheet() {{
     if (!filterSheetBody) return;
+    const prevScroll = filterSheetBody.scrollTop;
     filterSheetBody.innerHTML = "";
-    FILTER_DEFS.forEach(function(def) {{
-      const group = document.createElement("div");
-      group.className = "sb-filter-sheet-group";
-      const title = document.createElement("div");
-      title.className = "sb-filter-sheet-group-title";
-      title.textContent = def.label;
+
+    // Sort (kept in sync with the hidden #sb-sort-select)
+    const sortGroup = makeSheetGroup("Sort");
+    const currentSort = sortSelect ? (sortSelect.value || "best") : "best";
+    SORT_OPTIONS.forEach(function(opt) {{
+      const label = document.createElement("label");
+      label.className = "sb-filter-check";
+      const radio = document.createElement("input");
+      radio.type = "radio";
+      radio.name = "sb-sheet-sort";
+      radio.value = opt.value;
+      radio.checked = currentSort === opt.value;
+      radio.addEventListener("change", function() {{
+        if (!radio.checked || !sortSelect) return;
+        sortSelect.value = opt.value;
+        sortSelect.dispatchEvent(new Event("change", {{ bubbles: true }}));
+      }});
+      const span = document.createElement("span");
+      span.textContent = opt.label;
+      label.appendChild(radio);
+      label.appendChild(span);
+      sortGroup.appendChild(label);
+    }});
+    filterSheetBody.appendChild(sortGroup);
+
+    // Section + Brand
+    SHEET_DEFS.forEach(function(def) {{
+      const group = makeSheetGroup(def.label);
       const body = document.createElement("div");
+      if (def.key === "brand") body.className = "sb-filter-sheet-scroll";
       buildCheckboxList(body, def.key);
-      group.appendChild(title);
       group.appendChild(body);
       filterSheetBody.appendChild(group);
     }});
+
+    // Deal tiers
+    const tierGroup = makeSheetGroup("Deal tiers");
+    TIER_OPTIONS.forEach(function(opt) {{
+      const label = document.createElement("label");
+      label.className = "sb-filter-check";
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.value = opt.value;
+      cb.dataset.tierCheck = "1";
+      cb.checked = !myItemsView && selectedTiers.has(opt.value);
+      cb.addEventListener("change", function() {{
+        setTierSelection(opt.value);
+      }});
+      const span = document.createElement("span");
+      span.textContent = opt.label;
+      label.appendChild(cb);
+      label.appendChild(span);
+      tierGroup.appendChild(label);
+    }});
+    filterSheetBody.appendChild(tierGroup);
+    filterSheetBody.scrollTop = prevScroll;
   }}
 
-  function optionCountForKey(key, value) {{
-    let n = 0;
-    cards.forEach(function(card) {{
-      if (!cardMatchesSelected(card, key)) return;
-      if ((card.dataset[key] || "") === value) n += 1;
-    }});
-    return n;
-  }}
-
-  function buildFilterSidebar() {{
-    if (!filterSidebarBody) return;
-    const openState = {{}};
-    filterSidebarBody.querySelectorAll("details.sb-filter-acc").forEach(function(d) {{
-      openState[d.dataset.filterKey || ""] = d.open;
-    }});
-    filterSidebarBody.innerHTML = "";
-    FILTER_DEFS.forEach(function(def) {{
-      const details = document.createElement("details");
-      details.className = "sb-filter-acc";
-      details.dataset.filterKey = def.key;
-      details.open = openState[def.key] !== false;
-      const summary = document.createElement("summary");
-      summary.textContent = def.label;
-      const body = document.createElement("div");
-      body.className = "sb-filter-acc-body";
-      const options = getSmartOptionsForKey(def.key);
-      if (!options.length) {{
-        const empty = document.createElement("div");
-        empty.className = "sb-filter-dropdown-empty";
-        empty.textContent = "No options match.";
-        body.appendChild(empty);
-      }} else {{
-        options.forEach(function(opt) {{
-          const label = document.createElement("label");
-          label.className = "sb-filter-check";
-          const left = document.createElement("span");
-          left.style.display = "inline-flex";
-          left.style.alignItems = "center";
-          left.style.gap = "10px";
-          left.style.minWidth = "0";
-          const cb = document.createElement("input");
-          cb.type = "checkbox";
-          cb.value = opt.value;
-          cb.dataset.filterKey = def.key;
-          cb.checked = selected[def.key].has(opt.value);
-          cb.addEventListener("change", function() {{
-            onFilterChange(def.key, opt.value, cb.checked);
-          }});
-          const span = document.createElement("span");
-          span.textContent = opt.label;
-          const count = document.createElement("span");
-          count.className = "sb-filter-acc-count";
-          count.textContent = String(optionCountForKey(def.key, opt.value));
-          left.appendChild(cb);
-          left.appendChild(span);
-          label.appendChild(left);
-          label.appendChild(count);
-          body.appendChild(label);
-        }});
-      }}
-      details.appendChild(summary);
-      details.appendChild(body);
-      filterSidebarBody.appendChild(details);
-    }});
-  }}
-
-  function updateScrollButtonsFor(track, prevBtn, nextBtn, scrollWrap) {{
-    if (!track || !prevBtn || !nextBtn) return;
-    const maxScroll = track.scrollWidth - track.clientWidth;
+  function updateChipRowScroll() {{
+    if (!chipRowTrack || !chipRowScroll) return;
+    const maxScroll = chipRowTrack.scrollWidth - chipRowTrack.clientWidth;
     const show = maxScroll > 4;
-    const hasPrev = show && track.scrollLeft > 4;
-    const hasNext = show && track.scrollLeft < maxScroll - 4;
-    prevBtn.classList.toggle("is-visible", hasPrev);
-    nextBtn.classList.toggle("is-visible", hasNext);
-    scrollWrap?.classList.toggle("has-scroll-prev", hasPrev);
-    scrollWrap?.classList.toggle("has-scroll-next", hasNext);
-  }}
-
-  function updateScrollButtons() {{
-    updateScrollButtonsFor(filterTrack, filterScrollPrev, filterScrollNext, filterBarScroll);
-    updateScrollButtonsFor(tierTrack, tierScrollPrev, tierScrollNext, tierBarScroll);
+    chipRowScroll.classList.toggle("has-scroll-prev", show && chipRowTrack.scrollLeft > 4);
+    chipRowScroll.classList.toggle("has-scroll-next", show && chipRowTrack.scrollLeft < maxScroll - 4);
   }}
 
   function applyFiltersAndSort() {{
@@ -7100,8 +8040,8 @@ document.addEventListener("DOMContentLoaded", function () {{
     let shown = [];
 
     if (searchWrap) searchWrap.classList.toggle("has-value", !!q);
-    if (myItemsSummary) myItemsSummary.hidden = !myItemsView;
-    updateSavingsCalc();
+    if (q && searchWrap && searchWrap.hidden) setSearchExpanded(true, false);
+    grid.classList.toggle("sb-my-items-compact", myItemsView);
     updateAuthLine();
     syncMyItemsNotifyVisibility();
     if (myItemsEmpty) myItemsEmpty.classList.remove("is-visible");
@@ -7129,8 +8069,8 @@ document.addEventListener("DOMContentLoaded", function () {{
       const hay = (card.dataset.search || "").toLowerCase();
       const itemId = card.dataset.itemId || "";
 
-      // My Items always includes every store; All Deals still honors store prefs/filters.
-      const matchR = myItemsView || selR.size === 0 || selR.has(r);
+      // My Items always includes every store; All Deals uses saved stores or BG defaults (no HT).
+      const matchR = myItemsView || cardMatchesActiveStores(r);
       const matchS = selS.size === 0 || selS.has(s);
       const matchC = selC.size === 0 || selC.has(c);
       const matchB = selB.size === 0 || selB.has(b);
@@ -7141,22 +8081,25 @@ document.addEventListener("DOMContentLoaded", function () {{
       if (!(matchR && matchS && matchC && matchB && matchQ && matchT && matchStar)) {{
         if (!(myItemsBest && itemId && myItemsBest.get(itemId) === card)) {{
           card.style.display = "none";
-          const box = card.querySelector(".sb-last-sale-lines");
-          if (box) {{ box.hidden = true; box.innerHTML = ""; }}
+          clearLastSaleLines(card);
         }}
         return;
       }}
 
       if (myItemsView && itemId && myItemsBest) {{
         const prev = myItemsBest.get(itemId);
-        if (prev && preferredStoreRank(prev.dataset.retailer) <= preferredStoreRank(r)) {{
+        const prevRank = preferredStoreRank(prev ? prev.dataset.retailer : "");
+        const curRank = preferredStoreRank(r);
+        // Same item at several stores: prefer the visitor's stores, then the bigger saving.
+        if (prev && (prevRank < curRank ||
+            (prevRank === curRank &&
+              (parseFloat(prev.dataset.saved || "0") || 0) >= (parseFloat(card.dataset.saved || "0") || 0)))) {{
           card.style.display = "none";
           return;
         }}
         if (prev) {{
           prev.style.display = "none";
-          const prevBox = prev.querySelector(".sb-last-sale-lines");
-          if (prevBox) {{ prevBox.hidden = true; prevBox.innerHTML = ""; }}
+          clearLastSaleLines(prev);
         }}
         myItemsBest.set(itemId, card);
         return;
@@ -7168,13 +8111,23 @@ document.addEventListener("DOMContentLoaded", function () {{
       shown.push(card);
     }});
 
+    const today = computeTodaySavings();
     if (myItemsBest) {{
       myItemsBest.forEach(function(card, itemId) {{
         card.style.display = "";
         fillLastSaleLines(card);
+        const shownStore = normStoreKey(card.dataset.retailer);
+        const entries = today.byItem.get(itemId) || [];
+        let also = null;
+        for (let i = 0; i < entries.length; i += 1) {{
+          if (entries[i].retailer !== shownStore) {{ also = entries[i]; break; }}
+        }}
+        setCardCompact(card, true, also);
         shown.push(card);
         if (itemId) seenItemIds.add(itemId);
       }});
+    }} else {{
+      cards.forEach(function(card) {{ setCardCompact(card, false); }});
     }}
 
     if (myItemsView) {{
@@ -7189,25 +8142,15 @@ document.addEventListener("DOMContentLoaded", function () {{
         if (q && hay.indexOf(q) === -1) return;
         const card = ensureOffSaleCard(itemId);
         if (!card) return;
+        updateOffSaleRow(card, itemId);
         fillLastSaleLines(card);
         card.style.display = "";
         shown.push(card);
         seenItemIds.add(itemId);
       }});
-
-      const totalStarred = starredIds.size;
-      let onSaleCount = 0;
-      starredIds.forEach(function(id) {{
-        if (liveOnSaleIds.has(id)) onSaleCount += 1;
-      }});
-      if (myItemsSummary) {{
-        myItemsSummary.hidden = false;
-        myItemsSummary.textContent =
-          onSaleCount + " of your " + totalStarred +
-          (totalStarred === 1 ? " item is" : " items are") +
-          " on sale right now.";
-      }}
     }}
+
+    renderMyItemsTodayLine(today);
 
     function getTierPriority(tier) {{
       if (tier === "diamond") return 4;
@@ -7274,19 +8217,23 @@ document.addEventListener("DOMContentLoaded", function () {{
       if (myItemsView) {{
         resultsCount.textContent = shown.length + (shown.length === 1 ? " saved item" : " saved items");
       }} else {{
-        resultsCount.textContent = shown.length + (shown.length === 1 ? " deal" : " deals");
+        resultsCount.textContent = formatOnSaleCountLine();
       }}
     }}
+    syncFloatButton();
+    renderSavingsPanel();
   }}
 
   function clearAllFilters() {{
-    selected.retailer.clear();
+    // Stores are the visitor's saved default, so "Clear all" leaves them alone.
     selected.section.clear();
     selected.category.clear();
     selected.brand.clear();
-    if (searchInput) searchInput.value = "";
     selectedTiers.clear();
     myItemsView = false;
+    if (searchInput) searchInput.value = "";
+    if (sortSelect) sortSelect.value = "best";
+    setSearchExpanded(false, false);
     syncTierChips();
     syncAllCheckboxes();
     updateBadges();
@@ -7310,83 +8257,60 @@ document.addEventListener("DOMContentLoaded", function () {{
       }}, 800);
     }});
   }}
+  function setSearchExpanded(on, focusInput) {{
+    if (searchWrap) searchWrap.hidden = !on;
+    if (searchToggle) {{
+      searchToggle.setAttribute("aria-expanded", on ? "true" : "false");
+      const hasValue = !!(searchInput && String(searchInput.value || "").trim());
+      searchToggle.classList.toggle("is-active", on || hasValue);
+    }}
+    if (on && focusInput && searchInput) searchInput.focus();
+  }}
+
+  function closeSearch() {{
+    if (searchInput) searchInput.value = "";
+    lastTrackedSearch = "";
+    clearTimeout(searchAnalyticsTimer);
+    setSearchExpanded(false, false);
+    applyFiltersAndSort();
+  }}
+
+  searchToggle?.addEventListener("click", function() {{
+    const open = !!(searchWrap && !searchWrap.hidden);
+    if (open && !(searchInput && String(searchInput.value || "").trim())) {{
+      setSearchExpanded(false, false);
+    }} else {{
+      setSearchExpanded(true, true);
+    }}
+  }});
   if (searchClear) {{
-    searchClear.addEventListener("click", function() {{
-      if (!searchInput) return;
-      searchInput.value = "";
-      searchInput.focus();
-      lastTrackedSearch = "";
-      clearTimeout(searchAnalyticsTimer);
-      applyFiltersAndSort();
+    searchClear.addEventListener("click", closeSearch);
+  }}
+  if (searchInput) {{
+    searchInput.addEventListener("blur", function() {{
+      window.setTimeout(function() {{
+        if (searchWrap && searchWrap.contains(document.activeElement)) return;
+        if (!String(searchInput.value || "").trim()) setSearchExpanded(false, false);
+      }}, 150);
+    }});
+    searchInput.addEventListener("keydown", function(ev) {{
+      if (ev.key === "Escape") closeSearch();
     }});
   }}
   if (sortSelect) {{
-    sortSelect.addEventListener("change", applyFiltersAndSort);
-  }}
-
-  const sortPill = document.getElementById("sb-sort-pill");
-  const sortMenu = document.getElementById("sb-sort-menu");
-
-  function closeSortMenu() {{
-    if (!sortMenu || !sortPill) return;
-    sortMenu.hidden = true;
-    sortPill.setAttribute("aria-expanded", "false");
-  }}
-
-  function syncSortMenuSelection() {{
-    if (!sortMenu || !sortSelect) return;
-    const current = sortSelect.value || "best";
-    sortMenu.querySelectorAll(".sb-sort-option").forEach(function(btn) {{
-      const on = btn.getAttribute("data-sort") === current;
-      btn.classList.toggle("is-selected", on);
-      btn.setAttribute("aria-selected", on ? "true" : "false");
+    sortSelect.addEventListener("change", function() {{
+      updateBadges();
+      applyFiltersAndSort();
     }});
   }}
 
-  function openSortMenu() {{
-    if (!sortMenu || !sortPill) return;
-    closeAllDropdowns();
-    syncSortMenuSelection();
-    sortMenu.hidden = false;
-    sortPill.setAttribute("aria-expanded", "true");
-  }}
+  // Legacy hook (sort menu moved into the Filters sheet).
+  function closeSortMenu() {{}}
 
-  if (sortPill && sortMenu) {{
-    sortPill.addEventListener("click", function(ev) {{
-      ev.stopPropagation();
-      if (sortMenu.hidden) openSortMenu();
-      else closeSortMenu();
-    }});
-    sortMenu.addEventListener("click", function(ev) {{
-      const opt = ev.target && ev.target.closest ? ev.target.closest(".sb-sort-option") : null;
-      if (!opt) return;
-      const value = opt.getAttribute("data-sort") || "best";
-      if (sortSelect) {{
-        sortSelect.value = value;
-        sortSelect.dispatchEvent(new Event("change", {{ bubbles: true }}));
-      }}
-      syncSortMenuSelection();
-      closeSortMenu();
-    }});
-    document.addEventListener("click", function(ev) {{
-      if (!sortMenu.hidden && sortPill && !sortPill.contains(ev.target) && !sortMenu.contains(ev.target)) {{
-        closeSortMenu();
-      }}
-    }});
-  }}
-
-  document.querySelectorAll(".sb-tier-chip[data-tier-filter]").forEach(function(el) {{
-    el.addEventListener("click", function() {{
-      const mode = el.getAttribute("data-tier-filter") || "all";
-      setTierSelection(mode);
-    }});
-  }});
-
-  buildFilterBar();
+  buildCategoryChips();
   buildFilterSheet();
-  buildFilterSidebar();
   updateBadges();
-  updateFilterToggleLabel();
+  updateChipRowScroll();
   syncStarButtons();
   applyFiltersAndSort();
 
@@ -7395,6 +8319,7 @@ document.addEventListener("DOMContentLoaded", function () {{
     .then(function(data) {{
       if (data && data.items) lastSaleItems = data.items;
       if (myItemsView) applyFiltersAndSort();
+      else renderSavingsPanel();
     }})
     .catch(function() {{}});
 
@@ -7409,13 +8334,15 @@ document.addEventListener("DOMContentLoaded", function () {{
       }}
       savingsByItem = data;
       savingsLoadStatus = "ok";
-      updateSavingsCalc();
+      if (myItemsView) applyFiltersAndSort();
+      else renderSavingsPanel();
     }})
     .catch(function(err) {{
       console.error("[SnackBuddy] savings.json failed to load", err);
       savingsByItem = {{}};
       savingsLoadStatus = "error";
-      updateSavingsCalc();
+      if (myItemsView) applyFiltersAndSort();
+      else renderSavingsPanel();
     }});
 
   /* ============================
@@ -7423,150 +8350,6 @@ document.addEventListener("DOMContentLoaded", function () {{
      ============================ */
   const WELCOME_STORAGE_KEY = "sb_welcome_v3";
   const RETAILER_ORDER = ["walmart", "target", "kroger", "harris teeter", "meijer"];
-
-  function pickSavingsForItem(itemId, preferredStores) {{
-    const byStore = savingsByItem[itemId];
-    if (!byStore || typeof byStore !== "object") return null;
-    let best = null;
-    const preferred = Array.isArray(preferredStores) ? preferredStores : [];
-    function consider(store, rec) {{
-      if (!rec) return;
-      const y = Number(rec.yearly_saving);
-      if (!isFinite(y)) return;
-      const pctRaw = rec.avg_pct_off;
-      const pct = (pctRaw === null || pctRaw === undefined || pctRaw === "")
-        ? null
-        : Number(pctRaw);
-      if (!best || y > best.yearly_saving) {{
-        best = {{
-          yearly_saving: y,
-          avg_pct_off: (pct !== null && isFinite(pct)) ? pct : null,
-          sale_weeks: Number(rec.sale_weeks) || 0,
-          store: store,
-        }};
-      }}
-    }}
-    if (preferred.length) {{
-      preferred.forEach(function(store) {{ consider(store, byStore[store]); }});
-      if (best) return best;
-    }}
-    Object.keys(byStore).forEach(function(store) {{ consider(store, byStore[store]); }});
-    return best;
-  }}
-
-  function updateSavingsCalc() {{
-    if (!savingsCalc || !savingsCalcHeadline) return;
-    if (!myItemsView) {{
-      savingsCalc.hidden = true;
-      return;
-    }}
-    savingsCalc.hidden = false;
-
-    const nStarred = starredIds.size;
-    if (savingsCalcNote) {{ savingsCalcNote.hidden = true; savingsCalcNote.textContent = ""; }}
-    if (nStarred === 0) {{
-      savingsCalcHeadline.textContent = "Star snacks you buy to see how much you could save.";
-      if (savingsCalcSub) {{ savingsCalcSub.hidden = true; savingsCalcSub.textContent = ""; }}
-      if (savingsCalcMeta) {{ savingsCalcMeta.hidden = true; savingsCalcMeta.textContent = ""; }}
-      return;
-    }}
-
-    if (savingsLoadStatus === "pending") {{
-      savingsCalcHeadline.textContent = "Calculating savings…";
-      if (savingsCalcSub) {{ savingsCalcSub.hidden = true; savingsCalcSub.textContent = ""; }}
-      if (savingsCalcMeta) {{ savingsCalcMeta.hidden = true; savingsCalcMeta.textContent = ""; }}
-      return;
-    }}
-
-    if (savingsLoadStatus === "error") {{
-      savingsCalcHeadline.textContent = "Savings estimate unavailable right now";
-      if (savingsCalcSub) {{
-        savingsCalcSub.hidden = false;
-        savingsCalcSub.textContent = "Try refreshing — we couldn’t load the savings data.";
-      }}
-      if (savingsCalcMeta) {{
-        savingsCalcMeta.hidden = false;
-        savingsCalcMeta.textContent = nStarred + " items starred";
-      }}
-      return;
-    }}
-
-    const preferred = (typeof getPreferredStoreList === "function")
-      ? getPreferredStoreList()
-      : [];
-    const hasSavedStores = preferred.length > 0;
-    let totalYearly = 0;
-    let pctSum = 0;
-    let pctCount = 0;
-    let counted = 0;
-    let tooNew = 0;
-    let noSaleLately = 0;
-
-    starredIds.forEach(function(itemId) {{
-      const pick = pickSavingsForItem(itemId, preferred);
-      if (!pick) {{
-        tooNew += 1;
-        return;
-      }}
-      totalYearly += pick.yearly_saving;
-      counted += 1;
-      if (pick.sale_weeks > 0 && pick.avg_pct_off !== null) {{
-        pctSum += pick.avg_pct_off;
-        pctCount += 1;
-      }} else {{
-        noSaleLately += 1;
-      }}
-    }});
-
-    if (counted === 0) {{
-      savingsCalcHeadline.textContent =
-        "Your favorites are too new to estimate yet — check back next week.";
-      if (savingsCalcSub) {{ savingsCalcSub.hidden = true; savingsCalcSub.textContent = ""; }}
-      if (savingsCalcMeta) {{
-        savingsCalcMeta.hidden = false;
-        savingsCalcMeta.textContent =
-          nStarred + " items starred · Star more snacks to see more savings" +
-          (tooNew ? (" · " + tooNew + " too new to estimate yet") : "");
-      }}
-      return;
-    }}
-
-    const dollars = Math.round(totalYearly);
-    savingsCalcHeadline.textContent =
-      "Stock up on sales and your favorites could save you about $" + dollars + " a year";
-    if (savingsCalcSub) {{
-      if (pctCount > 0) {{
-        const avgPct = Math.round((pctSum / pctCount) * 100);
-        savingsCalcSub.hidden = false;
-        savingsCalcSub.textContent =
-          "That’s about " + avgPct + "% off what you’d normally pay" +
-          (hasSavedStores ? " at your stores" : "") +
-          ". Based on 8 weeks of real prices.";
-      }} else {{
-        savingsCalcSub.hidden = false;
-        savingsCalcSub.textContent =
-          "None of these hit a sale in the last 8 weeks" +
-          (hasSavedStores ? " at your stores" : "") +
-          ". Based on 8 weeks of real prices.";
-      }}
-    }}
-    if (savingsCalcMeta) {{
-      savingsCalcMeta.hidden = false;
-      let meta = nStarred + " items starred · Star more snacks to see more savings";
-      if (tooNew) meta += " · " + tooNew + " too new to estimate yet";
-      savingsCalcMeta.textContent = meta;
-    }}
-    if (savingsCalcNote) {{
-      if (noSaleLately > 0) {{
-        savingsCalcNote.hidden = false;
-        savingsCalcNote.textContent =
-          noSaleLately + " of your favorites haven’t gone on sale lately.";
-      }} else {{
-        savingsCalcNote.hidden = true;
-        savingsCalcNote.textContent = "";
-      }}
-    }}
-  }}
 
   function countMatchingCards() {{
     const q = (searchInput?.value || "").trim().toLowerCase();
@@ -7577,7 +8360,7 @@ document.addEventListener("DOMContentLoaded", function () {{
       const c = card.dataset.category;
       const b = card.dataset.brand;
       const hay = (card.dataset.search || "").toLowerCase();
-      const matchR = selected.retailer.size === 0 || selected.retailer.has(r);
+      const matchR = cardMatchesActiveStores(r);
       const matchS = selected.section.size === 0 || selected.section.has(s);
       const matchC = selected.category.size === 0 || selected.category.has(c);
       const matchB = selected.brand.size === 0 || selected.brand.has(b);
@@ -7594,6 +8377,29 @@ document.addEventListener("DOMContentLoaded", function () {{
       return prefs.retailers.map(function(v) {{ return String(v || "").trim(); }}).filter(Boolean);
     }}
     return Array.from(selected.retailer);
+  }}
+
+  function hasSavedStores() {{
+    return getPreferredStoreList().length > 0;
+  }}
+
+  function countOnSaleItemsAtStores() {{
+    // Individual flavors (data-deal-count), same units as the hero "N are on sale today".
+    // Uses saved stores when set; otherwise BG defaults (W/T/K/Meijer — no Harris Teeter).
+    let n = 0;
+    cards.forEach(function(card) {{
+      if (card.dataset.onSale === "0" || card.classList.contains("sb-my-items-offrow")) return;
+      if (!cardMatchesActiveStores(card.dataset.retailer)) return;
+      const dc = parseInt(card.dataset.dealCount || "1", 10);
+      n += (Number.isFinite(dc) && dc > 0) ? dc : 1;
+    }});
+    return n;
+  }}
+
+  function formatOnSaleCountLine() {{
+    const n = countOnSaleItemsAtStores();
+    const place = hasSavedStores() ? "at your stores" : "in Bowling Green";
+    return n + " on sale " + place;
   }}
 
   function preferredStoreRank(retailer) {{
@@ -7626,7 +8432,10 @@ document.addEventListener("DOMContentLoaded", function () {{
     selected.category.clear();
     selected.brand.clear();
     (prefs.retailers || []).forEach(function(v) {{ if (v) selected.retailer.add(v); }});
-    (prefs.categories || []).forEach(function(v) {{ if (v) selected.category.add(v); }});
+    // Main chip row is single-select: seed a category only if exactly one was saved, else All.
+    if (Array.isArray(prefs.categories) && prefs.categories.length === 1 && prefs.categories[0]) {{
+      selected.category.add(prefs.categories[0]);
+    }}
     syncAllCheckboxes();
     updateBadges();
     applyFiltersAndSort();
@@ -8656,61 +9465,50 @@ document.addEventListener("DOMContentLoaded", function () {{
   wireMyItemsNotifySignup();
   wireFooterSignup();
   wireEmailAskBanner();
+  wireSavingsPanel();
 
   filterMasterBtn?.addEventListener("click", function(e) {{
     e.stopPropagation();
-    if (isDesktopSidebar()) {{
-      dealsShell?.classList.toggle("is-filters-collapsed");
-      updateFilterToggleLabel();
-      return;
-    }}
     if (filterSheet?.classList.contains("open")) closeFilterSheet();
     else openFilterSheet();
   }});
 
-  filterSidebarClear?.addEventListener("click", clearAllFilters);
   filterSheetClose?.addEventListener("click", closeFilterSheet);
   filterSheetDone?.addEventListener("click", closeFilterSheet);
   filterSheetClear?.addEventListener("click", clearAllFilters);
   filterSheetBackdrop?.addEventListener("click", closeFilterSheet);
-  filterDropdownBackdrop?.addEventListener("click", closeAllDropdowns);
+  filterDropdownBackdrop?.addEventListener("click", closeStoresPopover);
 
-  filterScrollPrev?.addEventListener("click", function() {{
-    filterTrack.scrollBy({{ left: -180, behavior: "smooth" }});
+  storesChip?.addEventListener("click", function(e) {{
+    e.stopPropagation();
+    if (storesPopoverOpen) closeStoresPopover();
+    else openStoresPopover();
   }});
-  filterScrollNext?.addEventListener("click", function() {{
-    filterTrack.scrollBy({{ left: 180, behavior: "smooth" }});
+
+  myItemsExitChip?.addEventListener("click", function() {{
+    if (myItemsView) setTierSelection("my-items");
   }});
-  tierScrollPrev?.addEventListener("click", function() {{
-    tierTrack.scrollBy({{ left: -180, behavior: "smooth" }});
+
+  legendToggle?.addEventListener("click", function() {{
+    if (!badgeLegend) return;
+    const open = badgeLegend.hidden;
+    badgeLegend.hidden = !open;
+    legendToggle.setAttribute("aria-expanded", open ? "true" : "false");
   }});
-  tierScrollNext?.addEventListener("click", function() {{
-    tierTrack.scrollBy({{ left: 180, behavior: "smooth" }});
+
+  chipRowTrack?.addEventListener("scroll", function() {{
+    updateChipRowScroll();
+    if (storesPopoverOpen) positionStoresPopover();
   }});
-  filterTrack?.addEventListener("scroll", function() {{
-    updateScrollButtons();
-    if (openDropdownKey) {{
-      const btn = pillWraps[openDropdownKey]?.querySelector(".sb-filter-pill");
-      if (btn && filterDropdownPanel && !filterDropdownPanel.hidden) positionDropdownPanel(btn);
-    }}
-  }});
-  tierTrack?.addEventListener("scroll", updateScrollButtons);
   window.addEventListener("resize", function() {{
-    updateScrollButtons();
-    updateFilterToggleLabel();
-    if (isDesktopSidebar()) buildFilterSidebar();
-    if (openDropdownKey) {{
-      const btn = pillWraps[openDropdownKey]?.querySelector(".sb-filter-pill");
-      if (btn && filterDropdownPanel && !filterDropdownPanel.hidden) positionDropdownPanel(btn);
-    }}
+    updateChipRowScroll();
+    if (storesPopoverOpen) positionStoresPopover();
   }});
-  updateScrollButtons();
-  updateFilterToggleLabel();
+  updateChipRowScroll();
 
   document.addEventListener("keydown", function(ev) {{
     if (ev.key === "Escape") {{
-      closeAllDropdowns();
-      closeSortMenu();
+      closeStoresPopover();
       closeFilterSheet();
     }}
   }});
