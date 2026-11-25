@@ -8899,8 +8899,6 @@ document.addEventListener("DOMContentLoaded", function () {
   bindStarClicks(grid);
   const bestSavings = document.getElementById("sb-best-savings");
   bindStarClicks(bestSavings);
-  const catalogRootEl = document.getElementById("sb-catalog");
-  bindStarClicks(catalogRootEl);
   if (bestSavings) {
     bestSavings.addEventListener("click", function(ev) {
       if (ev.target && ev.target.closest && ev.target.closest(".sb-star-btn")) return;
@@ -9993,6 +9991,14 @@ document.addEventListener("DOMContentLoaded", function () {
     if (t.closest(".sb-star-btn")) {
       ev.preventDefault();
       ev.stopPropagation();
+      const row = t.closest(".sb-catalog-row");
+      if (row) {
+        const nameEl = row.querySelector(".sb-catalog-name");
+        toggleStar(
+          row.dataset.itemId || "",
+          (nameEl && nameEl.textContent && nameEl.textContent.trim()) || ""
+        );
+      }
       return;
     }
     const row = t.closest(".sb-catalog-row");
