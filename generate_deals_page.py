@@ -1867,6 +1867,7 @@ def build_page_html(deals):
             --radius-pill: 999px;
             --navy: #0f172a;
             --page-max: 1320px;
+            --sb-header-h: 72px;
         }}
 
         .visually-hidden {{
@@ -3342,9 +3343,20 @@ def build_page_html(deals):
             max-width: var(--page-max);
             margin: 0 auto 28px;
             padding: 10px 12px 96px;
+            scroll-margin-top: var(--sb-header-h);
         }}
         .sb-catalog[hidden] {{
             display: none !important;
+        }}
+        .sb-catalog-topbar {{
+            position: sticky;
+            top: var(--sb-header-h);
+            z-index: 35;
+            background: var(--bg);
+            /* Bleed into horizontal padding so rows scroll under a solid bar */
+            margin: 0 -12px 8px;
+            padding: 10px 12px 12px;
+            border-bottom: 1px solid rgba(15, 23, 42, 0.06);
         }}
         .sb-catalog-back {{
             appearance: none;
@@ -3357,6 +3369,9 @@ def build_page_html(deals):
             font-weight: 600;
             color: var(--blue);
             cursor: pointer;
+            display: block;
+            min-height: 44px;
+            line-height: 44px;
         }}
         .sb-catalog-title {{
             font-family: "Fraunces", Georgia, serif;
@@ -3365,7 +3380,7 @@ def build_page_html(deals):
             color: var(--navy);
         }}
         .sb-catalog-search-wrap {{
-            margin: 0 0 10px;
+            margin: 0;
         }}
         .sb-catalog-search {{
             width: 100%;
@@ -6194,19 +6209,21 @@ def build_page_html(deals):
 
         <section class="sb-catalog" id="sb-catalog" hidden aria-label="Snack catalog">
             <div class="sb-catalog-inner">
-                <button type="button" class="sb-catalog-back" id="sb-catalog-back">← Back to deals</button>
-                <h2 class="sb-catalog-title">Catalog</h2>
-                <div class="sb-catalog-search-wrap">
-                    <label class="visually-hidden" for="sb-catalog-search">Search products</label>
-                    <input
-                        type="search"
-                        id="sb-catalog-search"
-                        class="sb-catalog-search"
-                        placeholder="Search {catalog_count_fmt} products — Quest, Celsius, protein bars…"
-                        autocomplete="off"
-                        enterkeyhint="search"
-                    />
+                <div class="sb-catalog-topbar" id="sb-catalog-topbar">
+                    <button type="button" class="sb-catalog-back" id="sb-catalog-back">← Back to deals</button>
+                    <div class="sb-catalog-search-wrap">
+                        <label class="visually-hidden" for="sb-catalog-search">Search products</label>
+                        <input
+                            type="search"
+                            id="sb-catalog-search"
+                            class="sb-catalog-search"
+                            placeholder="Search {catalog_count_fmt} products — Quest, Celsius, protein bars…"
+                            autocomplete="off"
+                            enterkeyhint="search"
+                        />
+                    </div>
                 </div>
+                <h2 class="sb-catalog-title">Catalog</h2>
                 <div class="sb-catalog-chips" id="sb-catalog-chips" role="group" aria-label="Catalog categories"></div>
                 <div class="sb-catalog-stores-row">
                     <button type="button" class="sb-chip sb-chip-stores" id="sb-catalog-stores-chip" aria-haspopup="dialog" aria-expanded="false" title="Choose your stores">
@@ -8997,6 +9014,18 @@ document.addEventListener("DOMContentLoaded", function () {{
     }} catch (err) {{}}
   }}
 
+  function syncHeaderHeightVar() {{
+    const header = document.querySelector(".sb-header");
+    let h = 72;
+    if (header) {{
+      const rect = header.getBoundingClientRect();
+      if (rect && rect.height) h = Math.ceil(rect.height);
+    }}
+    document.documentElement.style.setProperty("--sb-header-h", h + "px");
+  }}
+  syncHeaderHeightVar();
+  window.addEventListener("resize", syncHeaderHeightVar);
+
   function openCatalogView(opts) {{
     opts = opts || {{}};
     catalogView = true;
@@ -9004,16 +9033,20 @@ document.addEventListener("DOMContentLoaded", function () {{
     if (catalogEl) catalogEl.hidden = false;
     setCatalogUrl(true);
     closeNav && closeNav();
+    syncHeaderHeightVar();
+    // Jump to top of catalog so the sticky back/search bar starts in view.
+    try {{ window.scrollTo(0, 0); }} catch (err) {{}}
     loadCatalogJson().then(function() {{
       buildCatalogCategoryChips();
       syncCatalogStoresChip();
       renderCatalogList();
+      syncHeaderHeightVar();
+      try {{ window.scrollTo(0, 0); }} catch (err) {{}}
       if (opts.focusSearch && catalogSearch) {{
         window.setTimeout(function() {{
           try {{ catalogSearch.focus(); }} catch (err) {{}}
         }}, 50);
       }}
-      try {{ window.scrollTo({{ top: 0, behavior: "smooth" }}); }} catch (err) {{ window.scrollTo(0, 0); }}
     }});
     trackEvent("catalog_open", {{}});
   }}
