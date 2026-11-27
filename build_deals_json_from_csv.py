@@ -1,4 +1,5 @@
 import json
+import sys
 from pathlib import Path
 
 import pandas as pd  # requires: py -m pip install pandas
@@ -7,6 +8,10 @@ import pandas as pd  # requires: py -m pip install pandas
 ROOT = Path(__file__).parent
 CSV_PATH = ROOT / "deals_today.csv"
 JSON_PATH = ROOT / "deals_today.json"
+_SNACK_BUDDY_TOOLS = ROOT.parent / "snack-buddy" / "Tools"
+if _SNACK_BUDDY_TOOLS.is_dir() and str(_SNACK_BUDDY_TOOLS) not in sys.path:
+    sys.path.insert(0, str(_SNACK_BUDDY_TOOLS))
+from status_taxonomy import is_buyable  # noqa: E402
 
 
 def cell_str(val, default: str = "") -> str:
@@ -143,12 +148,18 @@ def main():
 
     deals = []
 
+    skipped_unbuyable = 0
     for _, row in df.iterrows():
         # Skip items with "unknown" availability - they're likely out of stock or not currently serviced
         availability = row.get("availability_norm", "")
         if isinstance(availability, str) and availability.strip().lower() == "unknown":
             continue
-            
+
+        row_dict = {k: row.get(k) for k in df.columns}
+        if not is_buyable(row_dict):
+            skipped_unbuyable += 1
+            continue
+
         price = row.get("price")
         try:
             new_price = float(price)
@@ -206,6 +217,8 @@ def main():
             "retailer_url": cell_str(row.get("canonical_url")),
             "retailer_sku": cell_str(row.get("retailer_sku")),
             "availability": availability,
+            "pickup_available": cell_str(row.get("pickup_available")),
+            "shipping_available": cell_str(row.get("shipping_available")),
             "verified_at": cell_str(row.get("timestamp")),
             "deal_strength": deal_strength,
             "pack_count": pack_count,
@@ -222,7 +235,10 @@ def main():
         deals.append(deal)
 
     JSON_PATH.write_text(json.dumps(deals, indent=2), encoding="utf-8")
-    print(f"Wrote {JSON_PATH} with {len(deals)} deals.")
+    msg = f"Wrote {JSON_PATH} with {len(deals)} deals."
+    if skipped_unbuyable:
+        msg += f" (skipped {skipped_unbuyable} unbuyable)"
+    print(msg)
 
 
 if __name__ == "__main__":

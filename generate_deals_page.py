@@ -4,6 +4,7 @@ import html
 import os
 import random
 import re
+import sys
 from pathlib import Path
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
@@ -16,6 +17,10 @@ JSON_PATH = ROOT / "deals_today.json"
 DOCS_DIR = ROOT / "docs"
 OUTPUT_PATH = DOCS_DIR / "index.html"
 SNACK_BUDDY_ROOT = ROOT.parent / "snack-buddy"
+_SB_TOOLS = SNACK_BUDDY_ROOT / "Tools"
+if _SB_TOOLS.is_dir() and str(_SB_TOOLS) not in sys.path:
+    sys.path.insert(0, str(_SB_TOOLS))
+from status_taxonomy import is_buyable  # noqa: E402
 WALMART_PRICE_DIRS = [
     SNACK_BUDDY_ROOT / "walmart",
     SNACK_BUDDY_ROOT / "Walmart",
@@ -10517,6 +10522,10 @@ def main():
     if expired:
         print(f"EXPIRED_PROMO: dropped {len(expired)} deal(s) with past promo_end")
         deals = [d for d in deals if not is_expired_promo(d)]
+    unbuyable = [d for d in deals if not is_buyable(d)]
+    if unbuyable:
+        print(f"UNBUYABLE: dropped {len(unbuyable)} deal(s) (OOS / check-store with no pickup/shipping)")
+        deals = [d for d in deals if is_buyable(d)]
     page_html = build_page_html(deals)
 
     DOCS_DIR.mkdir(parents=True, exist_ok=True)
